@@ -1,0 +1,809 @@
+\pdfoutput=1
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,margin=30mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+\usepackage[nameinlink,capitalise,noabbrev]{cleveref}
+
+\hypersetup{
+  pdftitle={Exact Deterministic Ratios for Single-Machine Scheduling with Uniform Tests},
+  pdfauthor={Bolzano team},
+  pdfsubject={Online scheduling with testing under explorable uncertainty},
+  pdfkeywords={scheduling with testing, explorable uncertainty, online algorithms,
+    competitive analysis, total completion time, Lean 4}
+}
+
+\allowdisplaybreaks
+\setlist[itemize]{leftmargin=*,topsep=4pt,itemsep=2pt}
+\setlist[enumerate]{leftmargin=*,topsep=4pt,itemsep=2pt}
+
+% A small self-contained algorithmic environment.  Keeping the definitions
+% here avoids a nonstandard arXiv dependency while retaining numbered,
+% formally specified pseudocode.
+\floatstyle{ruled}
+\newfloat{algorithm}{tbp}{loa}
+\floatname{algorithm}{Algorithm}
+\newcounter{algorithmicline}
+\newenvironment{algorithmic}{%
+  \setcounter{algorithmicline}{0}%
+  \begin{list}{\footnotesize\arabic{algorithmicline}:}{%
+    \usecounter{algorithmicline}%
+    \setlength{\labelwidth}{2.2em}%
+    \setlength{\labelsep}{0.5em}%
+    \setlength{\leftmargin}{2.7em}%
+    \setlength{\itemsep}{1.5pt}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\topsep}{3pt}%
+  }\small
+}{\end{list}}
+\newcommand{\State}{\item}
+\newcommand{\Statex}{\item[]}
+\crefname{algorithm}{algorithm}{algorithms}
+\Crefname{algorithm}{Algorithm}{Algorithms}
+
+% Lean excerpts in the formalization appendix.  The literate substitutions
+% keep the source's Unicode notation while remaining compatible with pdfLaTeX
+% and arXiv's standard TeX environment.
+\lstdefinelanguage{Lean}{
+  morekeywords={structure,where,theorem,by,constructor,intro,exact,Prop},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[s]{/-}{-/}
+}
+\lstdefinestyle{lean}{
+  language=Lean,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\bfseries,
+  commentstyle=\itshape\color{black!60},
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  breaklines=true,
+  breakatwhitespace=true,
+  frame=single,
+  framerule=0.3pt,
+  rulecolor=\color{black!30},
+  framesep=5pt,
+  xleftmargin=0.5em,
+  xrightmargin=0.5em,
+  aboveskip=7pt,
+  belowskip=7pt,
+  literate=
+    {∀}{{$\forall$}}1
+    {∃}{{$\exists$}}1
+    {ℝ}{{$\mathbb{R}$}}1
+    {→}{{$\to$}}1
+    {∧}{{$\wedge$}}1
+    {·}{{$\mathord{\cdot}$}}1
+}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{claim}[theorem]{Claim}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\ALG}{\operatorname{ALG}}
+\newcommand{\OPT}{\operatorname{OPT}}
+\newcommand{\CR}{\operatorname{CR}}
+\newcommand{\Rstar}{R_\star}
+\newcommand{\zstar}{z_\star}
+\newcommand{\V}{V}
+\newcommand{\udiam}{u_\diamond}
+\newcommand{\uzero}{u_0}
+\newcommand{\Cmix}{C_{\mathrm{mix}}}
+\newcommand{\artanh}{\operatorname{artanh}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\defeq}{\mathrel{:=}}
+
+\title{Exact Deterministic Size-Asymptotic Ratios for\\
+Single-Machine Scheduling with Uniform Tests}
+
+% Review this author block before submission.
+\author{Bolzano team}
+\date{August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We determine the exact deterministic size-asymptotic competitive ratio for a
+single-machine family with unit tests, total completion time, and a common
+upper limit $u\in(0,\infty]$.  For finite $u$, a job may be executed raw for
+$u$ time or tested for one unit and then processed for its revealed time.
+The endpoint $u=\infty$ is obligatory testing: raw execution is unavailable.
+Its exact value is
+\[
+ R_{\rm obl}=1+r=1.570574096649395\ldots,
+ \qquad r=\frac{2}{z_\star-1},\qquad z_\star-3=\log z_\star.
+\]
+For finite $u$, the exact curve $V(u)$ has six explicit regimes: $1$, $u$, an algebraic
+root, \(1+1/\sqrt{u-1}\), a one-parameter transcendental interpolation, and
+the plateau \(R_{\rm obl}\).  In fact, $V(u)=V(\infty)=R_{\rm obl}$ for
+every $u\ge z_\star$.  The global maximum is
+\[
+ \sup_{u>0}V(u)=\frac{1+\sqrt{3+2\sqrt5}}2
+ =1.866760399173862\ldots .
+\]
+We provide matching lower bounds and formally specified online algorithms.
+The smaller-$u$ regimes use binary stopping games and two simple policies.
+The obligatory endpoint and the two large-$u$ regimes share one harmonic
+lower-bound core and one four-endpoint bank potential.  Finite $u$ adds one
+capped endpoint; a reserve pays for it on the transition interval and becomes
+unnecessary at $z_\star$.  The upper estimates are
+$\ALG\le V(u)\OPT+O_u(n)$, with one absolute $O(n)$ term simultaneously for
+all $u\in[z_\star,\infty]$.  All equalities are exact in the
+size-asymptotic sense.
+\end{abstract}
+
+\section{Introduction and proof intuition}
+
+Scheduling with testing separates information acquisition from productive
+work.  A test reveals the unknown processing time of a job, but the test
+itself occupies the machine and delays every unfinished job.  This makes a
+locally cheap experiment globally expensive: one unit spent testing near the
+beginning of a schedule can be counted in the completion time of almost every
+job.
+
+We study one machine, unit tests, nonpreemptive operations, and total
+completion time.  All jobs are initially available.  For a finite common
+upper limit $u$, a job can either be executed raw for $u$ time units, or be
+tested for one unit and then processed for its revealed time $p\in[0,u]$.
+It is useful to extend this family by one endpoint:
+\begin{equation}
+ u=\infty
+ \quad\Longleftrightarrow\quad
+ \text{raw execution is unavailable and every job must be tested.}
+ \label{eq:intro-infinite-endpoint}
+\end{equation}
+Thus obligatory testing is not a separate phenomenon; it is the cap-free
+endpoint of the common-upper family.  This viewpoint exposes which parts of
+the proofs are shared and which difficulty is created by a finite cap.
+
+For a clairvoyant scheduler, a job has effective length
+\begin{equation}
+ q_u(p)=\min\{u,1+p\},
+ \qquad q_\infty(p)=1+p.
+ \label{eq:intro-effective-length}
+\end{equation}
+The optimum simply orders these effective lengths from shortest to longest.
+The online scheduler does not know whether a test will save almost $u$ time
+or reveal a job so long that the optimum would have skipped the test.  The
+entire problem is the cost of making this distinction too late.
+
+\subsection{The exact answers}
+
+The obligatory endpoint had a gap between the best known deterministic lower
+and upper bounds \cite{DogeasErlebachLiang2024,LiangLiang2026}.  The finite
+common-upper problem likewise had no exact answer for arbitrary revealed
+values \cite{DurrErlebachMegowMeissner2020}.  We close both gaps in the
+natural size-asymptotic convention.
+
+Let $\zstar>1$ be the unique solution of
+\begin{equation}\label{eq:zstar}
+ \zstar-3=\log\zstar,
+\end{equation}
+where all logarithms are natural, and put
+\begin{equation}\label{eq:Rstar}
+ \Rstar=1+\frac{2}{\zstar-1}
+       =1.570574096649395\ldots,
+ \qquad
+ \zstar=4.505241495792883\ldots .
+\end{equation}
+
+\begin{theorem}[Obligatory endpoint]\label{thm:main-intro}
+The following matching statements hold for $u=\infty$.
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item For every deterministic online algorithm $\mathcal B$ and every
+      $\eps>0$, there are arbitrarily large instances $I$ for which
+      \[
+        \ALG_{\mathcal B}(I)\ge(\Rstar-\eps)\OPT(I).
+      \]
+\item There is one deterministic algorithm $\mathcal A$ and one absolute
+      constant $C$ such that every $n$-job instance satisfies
+      \[
+        \ALG_{\mathcal A}(I)\le\Rstar\OPT(I)+Cn.
+      \]
+\end{enumerate}
+Consequently the optimal deterministic size-asymptotic value at $u=\infty$
+is exactly $\Rstar$.
+\end{theorem}
+
+For the finite curve, let $\varphi=(1+\sqrt5)/2$ and define
+\[
+ \udiam=\frac{1+\sqrt{3+2\sqrt5}}2,
+ \qquad
+ \uzero=1+s_0,\quad s_0^3=(s_0+1)^2,
+\]
+where $s_0>1$.  For $s=u-1$, let $\rho_I(u)$ be the positive root of
+\[
+ s\rho^2+(s^3+s^2+1)\rho-(s^2+s+1)(s+2)=0.
+\]
+On $\varphi+2\le u\le\zstar$, define $\Cmix(u)=1+c$ by the unique pair
+$(c,m)$ satisfying
+\begin{equation}\label{eq:intro-mixed-system}
+ \artanh m-m
+ =1-\frac1c+\frac12\log\!\left(1+\frac2c\right),
+ \qquad
+ u=1+\frac2c-m,
+\end{equation}
+with $2/(\zstar-1)\le c\le1/\varphi$ and $0\le m\le1/\varphi$.
+
+\begin{theorem}[Finite common-upper curve]
+\label{thm:optional-intro}
+For every fixed $u>0$, the optimal deterministic size-asymptotic competitive
+ratio is
+\begin{equation}\label{eq:intro-optional-curve}
+ \V(u)=
+ \begin{cases}
+  1,&0<u\le1,\\
+  u,&1\le u\le\udiam,\\
+  \rho_I(u),&\udiam\le u\le\uzero,\\
+  1+1/\sqrt{u-1},&\uzero\le u\le\varphi+2,\\
+  \Cmix(u),&\varphi+2\le u\le\zstar,\\
+  \Rstar,&u\ge\zstar.
+ \end{cases}
+\end{equation}
+Every lower branch holds against arbitrary deterministic algorithms on
+arbitrarily large fixed instances.  Every upper branch is attained up to
+$O_u(n)$.  On the finite part of the last branch, one algorithm and one
+absolute $O(n)$ constant work simultaneously for all $u\ge\zstar$.
+Together with \cref{thm:main-intro}, the same witness covers the endpoint
+$u=\infty$.
+\end{theorem}
+
+The finite curve is continuous, rises from one to its global maximum
+\[
+ \V(\udiam)=\udiam=1.866760399173862\ldots,
+\]
+and then decreases to the obligatory value.  In fact it does more than
+converge:
+\begin{equation}
+ \V(u)=\V(\infty)=\Rstar
+ \qquad\text{for every }u\ge\zstar.
+ \label{eq:intro-plateau}
+\end{equation}
+This is equality of size-asymptotic game values, not equality of the finite
+problems.  At any finite $u$, the optimum may still save a test on a job with
+$p\ge u-1$.
+
+\begin{figure}[t]
+ \centering
+ \includegraphics[width=\textwidth]{curve.pdf}
+ \caption{The exact deterministic size-asymptotic ratio for finite common
+ upper limit $u$.  The curve stabilizes at the obligatory endpoint value;
+ dotted lines mark its five regime changes.}
+ \label{fig:optional-curve}
+\end{figure}
+
+\subsection{Why total completion time leads to pair accounting}
+
+The most useful way to think about total completion time is pairwise.  Every
+operation of job $i$ contributes once to $C_i$, and it contributes once more
+for each other job that remains unfinished while that operation is executed.
+Equivalently, the objective consists of diagonal job terms and one delay term
+for every unordered pair of jobs.  The offline pair term is simply the
+shorter effective length.  The online pair term records whether an earlier
+revealed job was processed immediately or left waiting.
+
+This representation explains both sides of our proof.  A lower-bound
+adversary tries to make many pairs wait in the wrong order.  An upper-bound
+algorithm tries to ensure that every expensive local decision can be charged
+to a corresponding offline pair.  Since there are $\Theta(n^2)$ pairs but
+only $n$ diagonal terms, controlling the quadratic pair coefficient gives
+the exact size-asymptotic ratio; bounded rounding errors of $O(1)$ per job
+become only $O(n)$.
+
+\subsection{Lower-bound intuition: hide the short jobs until the end}
+
+At the obligatory endpoint, the adversary reveals equal blocks of positive
+jobs from longer to shorter values and reveals a large zero block last.  The
+algorithm is forced to choose between two risks.  Processing a revealed job
+early may delay many still-hidden zeros.  Deferring it may leave a large tail
+that delays everything completed later.  The adaptive revelation is frozen
+after the interaction, so a standard replay argument produces one fixed
+instance for the chosen deterministic algorithm.
+
+The processing times are separated by harmonic gaps.  This choice is not a
+guess about the final constant.  The zero mass and the number of shorter
+positive blocks give two multiplicities; their sum exactly cancels the
+denominator of each harmonic gap.  After this cancellation, every possible
+postponement made by the algorithm has a nonnegative coefficient and every
+own-phase choice contributes the same completed square.  All algorithmic
+decisions disappear from the leading term.  What remains is a one-variable
+ratio describing the relative positive and zero masses, and its stationary
+equation is \eqref{eq:zstar}.
+
+For finite $u$, two additional adversarial pictures appear.  When $u$ is
+small or moderate, binary values $p\in\{0,u\}$ already suffice: the adversary
+watches how much work the algorithm completes before revealing whether the
+next jobs are zeros or caps.  For the transition to the obligatory value,
+the hard instance is a capped prefix followed by a scaled copy of the
+harmonic core.  The prefix exploits the optimum's ability to skip tests; the
+core exploits uncertainty in the test order.  As $u$ grows, the optimal cap
+mass decreases continuously to zero, leaving exactly the obligatory
+construction.
+
+\subsection{Upper-bound intuition: three policies and one common bank}
+\label{sec:intro-upper-intuition}
+
+The exact upper curve uses three simple algorithmic shapes.  Their formal
+pseudocode appears later; here we describe why they are natural.
+
+\begin{center}
+\begin{tabular}{@{}p{0.24\linewidth}p{0.68\linewidth}@{}}
+\toprule
+approximate range & upper-bound policy at a glance \\
+\midrule
+$u\lesssim1.87$
+ & Do not test: execute every job raw. \\
+$1.87\lesssim u\lesssim3.15$
+ & Test all jobs; always finish an initial fraction, then use a short/long
+   threshold.  The initial fraction shrinks as $u$ grows. \\
+$3.15\lesssim u\lesssim3.62$
+ & Test all jobs; finish values at most one immediately and sort the rest in
+   a final tail. \\
+$3.62\lesssim u\lesssim4.51$
+ & Use the history-dependent threshold; the proof adds a reserve for capped
+   outcomes. \\
+$u\gtrsim4.51$, including $\infty$
+ & Use the same adaptive threshold, now with no cap reserve. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Raw policy.}
+When $u$ is very small, information costs at least as much as it can save.
+The algorithm therefore runs every job raw.  Slightly beyond that trivial
+range, raw execution need no longer be clairvoyantly optimal for each job,
+but comparing its length $u$ with the optimum's effective lengths already
+gives the first nontrivial minimax branch.
+
+\paragraph{Forced-prefix threshold policy.}
+In the next regimes the algorithm tests every job.  During an initial
+fraction of the test order it processes every revealed value immediately.
+After that prefix it processes only sufficiently short outcomes and sends
+the rest to a shortest-processing-time tail.  The forced prefix guarantees
+that some jobs finish before too many tests accumulate; the suffix threshold
+protects the schedule from long revealed jobs.  As $u$ increases, the useful
+prefix shrinks continuously to zero.  The algebraic branch is exactly the
+point where the worst binary mixture is tangent to the target ratio; after
+the prefix vanishes, balancing a capped tail against a threshold-one tail
+gives the square-root branch.
+
+\paragraph{Adaptive-threshold policy.}
+For large $u$, a fixed prefix is too rigid.  The algorithm again tests jobs
+in a fixed order, but its immediate-processing threshold reacts to the
+observed history.  It remembers only the number $N$ of positive outcomes and
+the number $D$ of those outcomes that were deferred.  A normalized balance
+of the form
+\[
+ \frac{D-(1+c)N}{\text{number of untested jobs}}
+\]
+measures how much future delay has already been promised to the tail.  Near a
+neutral balance the algorithm can afford to process moderately long jobs
+immediately.  Every positive outcome drives the balance downward, while a
+deferral refunds one unit because future tests will also delay that tail job.
+When the normalized balance becomes sufficiently negative, the threshold
+falls toward one.  All deferred jobs are sorted only after the tests finish.
+
+The analysis first fixes the symbolic immediate/deferred path.  Convexity
+then reduces every ordinary revealed value to one of four endpoints: a true
+zero, a positive value tending to zero, the immediate side of the live
+threshold, or its deferred side.  A nonnegative bank potential pays the
+excess pair cost at each endpoint.  The logarithmic threshold is forced by
+making the immediate and deferred boundary equations balance simultaneously;
+the obligatory constant is forced by calibrating the bank's initial value.
+
+Finite $u$ creates exactly one new endpoint: a capped value $p=u$, for which
+the optimum can use raw execution and avoid the test.  On the middle bridge
+this endpoint can temporarily overdraw the ordinary bank, so we add a reserve
+whose balance depends only on the observed cap fraction.  At the end of the
+bridge the reserve becomes zero.  With $r=\Rstar-1$, the worst residual
+charge of the cap endpoint is at most $2-r(u-1)$.
+The right-hand side is nonpositive precisely when
+$u\ge1+2/r=\zstar$.  Thus beyond $\zstar$ the obligatory four-endpoint bank
+already pays for the fifth endpoint.  The plateau in
+\cref{eq:intro-plateau} is a proof-level fact, not merely a numerical
+coincidence.
+
+\subsection{Why the infinite endpoint needs a uniform proof}
+
+For each fixed processing-time vector, the finite-$u$ offline lengths
+$q_u(p)$ eventually equal $1+p$.  Nevertheless, a competitive-ratio proof
+cannot blindly send $u$ to infinity: the worst instance may choose
+$p\approx u$, the algorithm may depend on $u$, and the hidden constant in an
+$O_u(n)$ estimate may diverge.  We avoid every such interchange.  The lower
+bound uses one bounded harmonic core, which embeds in all sufficiently large
+finite caps.  The high-$u$ upper bound uses one $u$-independent adaptive
+algorithm and one absolute linear remainder.  Consequently the endpoint
+$u=\infty$ and the finite plateau are certified by the same witnesses.
+
+The linear remainder is lower order because
+$\OPT\ge n(n+1)/2$ at $u=\infty$ and, for fixed $u$, the analogous finite
+bound is also quadratic.  It implies an endpoint coefficient
+$\Rstar+\eps$ with a fixed additive constant for every $\eps>0$.  We do
+\emph{not} prove the stronger statement
+$\ALG\le\Rstar\OPT+B$ with one fixed $B$, nor the unrelaxed inequality
+$\ALG\le\Rstar\OPT$ on every finite instance.
+
+\subsection{How to read the proofs}
+
+After the literature review and common model, \cref{sec:obligatory} begins
+with the cap-free endpoint.  Its lower subsection gives the harmonic
+adversary and a reusable scaled-core lemma.  Its upper subsection formally
+states the adaptive algorithm and proves the ordinary four-endpoint bank.
+These are matching and may still be read independently.
+
+\Cref{sec:optional} then treats finite caps.  The binary stopping game and
+the two simple policies prove the first four branches.  The capped-prefix
+lower construction reuses the harmonic core, while the middle/high upper
+bound reuses the ordinary bank and analyzes only the new cap endpoint and
+its reserve.  At $u=\zstar$ both cap corrections vanish.
+\Cref{app:finite-checkpoint,app:cap-bubbling} contain an exact rational
+checkpoint for the cap-free lower construction and an independent
+cap-bubbling certificate.
+
+\section{Related work}\label{sec:related}
+
+Scheduling with testing belongs to the broader framework of optimization with
+explorable uncertainty, where uncertain data can be queried at a cost; the
+query model goes back at least to Kahan~\cite{Kahan1991}.  In the stochastic
+scheduling model of Levi, Magnanti, and Shaposhnik, testing diagnoses random
+job attributes and the scheduler trades the information gained against the
+delay caused by diagnosis~\cite{LeviMagnantiShaposhnik2019}.  Their later work
+treats heterogeneous distributions and job priorities
+\cite{LeviMagnantiShaposhnik2024}.  Those policies exploit distributional
+information.  The present paper instead uses worst-case processing times and
+competitive analysis.
+
+Dürr, Erlebach, Megow, and Meißner introduced the adversarial model now
+usually called scheduling with testing~\cite{DurrErlebachMegowMeissner2020}.
+A job has a known upper bound and may either be executed untested for that
+bound or tested for one unit to reveal a possibly smaller processing time.
+For total completion time on one machine they proved a deterministic lower
+bound of $1.8546\ldots$ and an upper bound of $2$.  When all upper bounds are
+the same, they retained the lower bound and obtained the asymptotic upper
+bound $1.9338\ldots$; on the further restriction $p\in\{0,u\}$, their UTE
+algorithm achieves $1.8668\ldots$.  Our finite-cap theorem closes the
+common-upper gap for arbitrary $p\in[0,u]$, determines the dependence on the
+fixed parameter $u$, and shows that the UTE constant is exactly the maximum
+of the resulting curve.
+
+A related binary-information model is the processing-time-oracle problem of
+Dufossé et al.~\cite{DufosseEtAl2022}.  There, every job has one of two known
+possible processing times and an untested execution lasts for the true
+processing time; optimal adaptive and nonadaptive two-phase policies can be
+computed.  This differs from our raw mode, whose duration is the declared
+upper bound regardless of the hidden value.  Other variants alter a different
+part of the model.  Nonuniform test times were introduced by Albers and
+Eckl~\cite{AlbersEckl2021}; the competitive guarantees for that setting were
+subsequently sharpened by Liu et al.~\cite{LiuLiuWongZhang2023} and, most
+recently, by Krekelberg et al.~\cite{KrekelbergEtAl2026}.  Damerius et
+al.~\cite{DameriusEtAl2023} place job-dependent testing costs under an
+external budget, rather than charging test time directly to every unfinished
+job.  Multiprocessor extensions for total completion time were studied by
+Gong, Chen, and Hayashi~\cite{GongChenHayashi2024}.  Buld and
+Schulz~\cite{BuldSchulz2026} recently obtained the first constant guarantees
+for weighted total completion time in the adversarial optional-testing model.
+These variants do not specialize to the common-upper single-machine game
+solved here, but they delimit which assumptions make an exact curve possible.
+
+Dogeas, Erlebach, and Liang introduced obligatory-test scheduling for total
+completion time~\cite{DogeasErlebachLiang2024}.  For arbitrary test times,
+their 1-SORT algorithm is $1.861$-competitive.  For uniform unit tests, their
+fixed-threshold algorithm SIDLE processes a sufficiently short revealed job
+immediately and sends longer jobs to a shortest-processing-time tail.  They
+proved the upper bound $1.58451\ldots$, exhibited matching instances for
+their analysis of SIDLE, and gave a $\sqrt2$ deterministic lower bound.
+Liang and Liang then developed a completion-threshold framework on identical
+machines; their dyadic construction improves the single-machine lower bound
+to $3/2$~\cite{LiangLiang2026}.  Our harmonic multilevel construction raises
+that lower bound to $\Rstar$, while the adaptive-threshold algorithm lowers
+the upper bound to the same value.  Unlike SIDLE, its threshold depends on
+both the number of positive outcomes observed and the number deferred.
+
+Our pair representation is related to the delay accounting of Dogeas et
+al.~\cite{DogeasErlebachLiang2024}, but the certificate is different.  Once
+the immediate/deferred decisions are fixed, coordinatewise convexity reduces
+the obligatory upper bound to four boundary outcomes.  A state-dependent bank
+then certifies those outcomes.  The distinction between $0$ and $0^+$ forces
+an extra state variable; in the finite-cap model, the endpoint $p=u$ creates
+a fifth outcome because the offline optimum may skip the test.  The reserve
+in \cref{sec:optional-upper} pays precisely for this cap endpoint.
+
+For context, if processing times are revealed only when jobs finish and no
+tests are available, one obtains the classical nonclairvoyant model of
+Motwani, Phillips, and Torng~\cite{MotwaniPhillipsTorng1994}.  Lindermayr et
+al.~\cite{LindermayrEtAl2026} instead consider online arrivals, preemption,
+and total flow time when a job's operations are revealed successively.  For
+their uniform two-operation specialization, operation-level SRPT is
+$2$-competitive and this is tight.  That result is not directly comparable
+with ours because release dates, preemption, and the flow-time benchmark all
+differ.  Finally, the offline shortest-processing-time rule used below is the
+unweighted special case of Smith's rule~\cite{Smith1956}.
+
+\section{Unified model and preliminaries}\label{sec:model}
+
+There are $n$ jobs, all available at time zero, and one machine.  Operations
+are nonpreemptive, and at most one operation can run at a time.  A unit test
+of job $j$ reveals its processing time $p_j\ge0$.
+
+The family is indexed by $u\in(0,\infty]$.  For finite $u$, all jobs share
+this known upper limit, $p_j\in[0,u]$, and either of two modes completes a
+job: execute it untested for time $u$, or test it for one unit and
+subsequently process it for time $p_j$.  An untested execution reveals no
+value and needs no later test.  At the endpoint $u=\infty$, processing times
+are arbitrary finite nonnegative numbers and raw execution is unavailable.
+Thus every job consists of its test and a later, not necessarily immediate,
+processing operation of length $p_j$.  This is exactly obligatory testing.
+
+The completion time $C_j$ is the completion time of the processing operation;
+in tested mode, when $p_j=0$, this is the instant immediately after the test.
+The objective is $\sum_j C_j$.  The number $n$ and the parameter $u$ are
+known to the online algorithm.
+
+We write $\ALG_{\mathcal A}(I)$ for the objective value of an online algorithm
+$\mathcal A$ on an instance $I$, and $\OPT(I)$ for the value of an offline
+optimum that knows all processing times.  We omit subscripts and arguments
+when they are clear.
+
+\subsection{One offline optimum for the whole family}
+
+Define the clairvoyant effective length by
+\begin{equation}\label{eq:optional-effective-length}
+ q_u(p)\defeq
+ \begin{cases}
+  \min\{u,1+p\},&u<\infty,\\
+  1+p,&u=\infty.
+ \end{cases}
+\end{equation}
+
+\begin{lemma}[Unified offline order]
+\label{lem:offline}\label{lem:optional-offline}
+Let $q_i=q_u(p_i)$ and let $q_{(1)}\le\cdots\le q_{(n)}$.  For every
+$u\in(0,\infty]$, an offline optimum completes the jobs in nondecreasing
+order of $q_i$ and has value
+\begin{align}
+ \OPT_u
+ &=\sum_{k=1}^n\sum_{i=1}^kq_{(i)},
+ \label{eq:unified-opt-prefix}\\
+ &=\sum_iq_i+\sum_{i<j}\min\{q_i,q_j\}.
+ \label{eq:optional-opt-pair}
+\end{align}
+For finite $u$, it uses raw mode when $u\le1+p_j$ and tested mode otherwise.
+At $u=\infty$, it tests every job and processes the jobs in nondecreasing
+$p_j$ order.
+\end{lemma}
+
+\begin{proof}
+Let $C_{[1]}\le\cdots\le C_{[n]}$ be the completion times of any feasible
+schedule.  Completing job $j$ consumes at least $q_j$ units: for finite $u$
+this is the shorter of its two modes, and for $u=\infty$ it is its compulsory
+test--process length.  By time $C_{[k]}$ the machine has completed some $k$
+jobs, so
+\[
+ C_{[k]}\ge\sum_{i=1}^kq_{(i)}.
+\]
+The schedule that takes the shorter available mode for every job and executes
+the resulting blocks in nondecreasing $q_i$ order attains every inequality.
+Summing and expanding the prefix sums gives both formulas.
+\end{proof}
+
+At the cap-free endpoint, the pair formula specializes to
+\begin{align}
+ \OPT_\infty
+ &=\sum_{k=1}^n\left(k+\sum_{i=1}^kp_{(i)}\right),
+ \label{eq:opt-prefix}\\
+ &=\sum_i(1+p_i)+\sum_{i<j}\bigl(1+\min\{p_i,p_j\}\bigr).
+ \label{eq:opt-pair}
+\end{align}
+In particular,
+\begin{equation}\label{eq:opt-n2}
+ \OPT_\infty\ge\frac{n(n+1)}2.
+\end{equation}
+For finite $u$, $q_j\ge\min\{u,1\}$ gives
+\begin{equation}\label{eq:optional-opt-n2}
+ \OPT_u\ge\min\{u,1\}\frac{n(n+1)}2.
+\end{equation}
+
+\subsection{Competitive-ratio conventions}
+
+The ordinary competitive ratio of $\mathcal A$ is
+\[
+  \CR(\mathcal A)=\sup_I\frac{\ALG_{\mathcal A}(I)}{\OPT(I)}.
+\]
+For the result of this paper, the relevant size-asymptotic ratio is
+\begin{equation}\label{eq:cr-infty}
+  \CR_\infty(\mathcal A)
+  =\limsup_{n\to\infty}\ \sup_{|I|=n}
+       \frac{\ALG_{\mathcal A}(I)}{\OPT(I)}.
+\end{equation}
+The additive-constant convention calls a coefficient $c$ admissible for
+$\mathcal A$ if there exists $B<\infty$ such that
+\[
+  \ALG_{\mathcal A}(I)\le c\OPT(I)+B
+  \qquad\text{for every }I.
+\]
+We write
+\begin{equation}\label{eq:cr-add}
+  \CR_{\rm add}(\mathcal A)
+  =\inf\{c:\text{$c$ is admissible for $\mathcal A$}\}.
+\end{equation}
+The optimal deterministic values in the two conventions are obtained by
+taking the infimum of $\CR_\infty(\mathcal A)$ and
+$\CR_{\rm add}(\mathcal A)$, respectively, over deterministic algorithms.
+For any fixed $u$, an estimate $\ALG\le c\OPT+O_u(n)$ fixes
+\cref{eq:cr-infty} at most $c$ and, by
+\cref{eq:opt-n2,eq:optional-opt-n2}, makes every coefficient $c+\eps$
+admissible.  It need not make the endpoint coefficient $c$ admissible.
+
+\begin{remark}[No hidden interchange of limits]\label{rem:no-limit-swap}
+The notation $u=\infty$ identifies one model exactly.  We never infer an
+endpoint upper bound merely by taking $u\to\infty$ in an estimate whose
+algorithm or additive term may depend on $u$.  The endpoint estimate is
+proved directly in \cref{sec:upper}; \cref{sec:optional-upper} then verifies
+that the same algorithm and certificate work uniformly for every finite
+$u\ge\zstar$.
+\end{remark}
+
+\subsection{Test-order adversaries}
+
+The lower bound will assign processing times according to the order in which
+tests finish.  This is only a proof device.
+
+\begin{lemma}[Replay]\label{lem:replay}
+Fix a deterministic online algorithm.  Suppose all untested jobs have the
+same known parameters, and an adversary assigns processing times
+deterministically from the transcript and test-completion order.  The
+resulting interaction is reproduced by a fixed input instance.
+\end{lemma}
+
+\begin{proof}
+Run the interaction once and record the value revealed for every tested job
+label.  Assign those values to the corresponding labels in advance.  An
+induction over operation completions shows that the deterministic algorithm
+chooses the same tests, processing operations, and idle intervals on the fixed
+instance.  If the algorithm fails to test or complete some job forever, its
+competitive ratio is already infinite; otherwise every relevant label is
+recorded.
+\end{proof}
+
+\section{The cap-free endpoint \texorpdfstring{$u=\infty$}{u=infinity}}
+\label{sec:obligatory}
+
+This section contains the two estimates needed for the cap-free endpoint
+theorem and isolates the harmonic and four-endpoint cores reused later.
+The first subsection applies to an arbitrary deterministic online algorithm;
+the second analyzes one explicit algorithm.  Each restates the local notation
+it uses.
+
+\input{obligatory_lower}
+
+\input{obligatory_upper}
+
+\begin{corollary}[Exact asymptotic values]\label{cor:asymptotic}
+The optimal deterministic size-asymptotic value and the optimal deterministic
+additive-constant infimum both equal $\Rstar$.
+Moreover, for every $\eps>0$, the Adaptive-Threshold algorithm satisfies
+\begin{equation}\label{eq:additive-eps}
+  \ALG(I)\le(\Rstar+\eps)\OPT(I)+B_\eps
+\end{equation}
+for all instances, with $B_\eps$ independent of $I$.
+\end{corollary}
+
+\begin{proof}
+The upper bound and \cref{eq:opt-n2} imply
+\[
+  \frac{\ALG}{\OPT}
+  \le\Rstar+\frac{2C}{n+1},
+\]
+so the size-asymptotic ratio is at most $\Rstar$.  The lower bound is
+\cref{thm:lower}.  For the additive statement, Young's inequality and
+\cref{eq:opt-n2} give
+\[
+  Cn\le\frac\eps2n^2+\frac{C^2}{2\eps}
+      \le\eps\OPT+\frac{C^2}{2\eps}.
+\]
+Thus one can take $B_\eps=C^2/(2\eps)$, proving that every coefficient above
+$\Rstar$ is admissible for this algorithm.  Conversely, fix $c<\Rstar$.
+By \cref{thm:lower}, every deterministic algorithm has a sequence of instances
+with $\OPT\to\infty$ and $\ALG/\OPT>c+\delta$ for some $\delta>0$.  The
+inequality $\ALG\le c\OPT+B$ would then force
+$\delta\le B/\OPT\to0$, a contradiction.  This proves the additive-constant
+claim.
+\end{proof}
+
+\input{optional_lower_and_curve}
+
+\input{optional_upper}
+
+
+\section{Discussion and open questions}\label{sec:discussion}
+
+The curve identifies the leading quadratic constants of the deterministic
+games for every $u\in(0,\infty]$.  Its scope is deliberately precise: one
+machine, all release dates zero, unit tests, nonpreemptive operations, total
+completion time, and one common upper limit when the cap is finite.  Every
+upper proof loses at most a constant on each of the $n$ discrete transitions.
+This loss is asymptotically negligible, but it is not a fixed additive
+constant over the whole instance.  On $u\in[\zstar,\infty]$ the
+per-transition constant is uniform in $u$.
+
+\begin{conjecture}[Endpoint additive competitiveness]\label{conj:endpoint}
+There exist a deterministic online algorithm and a constant $B<\infty$ such
+that every instance at the cap-free endpoint satisfies
+\[
+  \ALG(I)\le \Rstar\OPT(I)+B.
+\]
+\end{conjecture}
+
+The present Adaptive-Threshold algorithm is the natural first candidate.
+In \cref{eq:upper-exact-I,eq:upper-exact-Q} the exact local contributions
+contain favorable negative terms that are intentionally discarded before the
+bank-account calculation.  A discrete potential that retains those terms
+might prove \cref{conj:endpoint}; alternatively, a finite-instance
+obstruction might show that a different policy is needed.  The current lower
+bound does not distinguish these possibilities.  In particular, our result
+neither proves nor claims the stronger ordinary inequality with \(B=0\).
+
+The analogous endpoint-additive question is open for each nontrivial finite-cap
+branch as well: our claims concern $\CR_\infty$ and the infimum of admissible
+additive coefficients.  Also open are heterogeneous upper limits, nonuniform
+test times in the exact-ratio regime, randomization, and more than one
+machine.  The common-upper curve shows why a direct extension is unlikely to
+have one universal threshold: already in the uniform case the optimal policy
+changes form at five analytically distinct junctions.
+
+The lower construction also suggests a structural principle for future
+lower bounds: hard instances reveal many decreasing positive levels, with
+continuum increment \(dp=ds/(1+s)\), and postpone zero jobs to the end.  Our
+argument proves that this pattern is sufficient.  It remains open whether
+every asymptotically extremal construction must have this form.
+
+\section{Conclusion}
+
+The family has one common cap-free core.  At $u=\infty$, matching harmonic
+and adaptive-threshold arguments meet at
+\[
+  \Rstar=1+\frac{2}{\zstar-1}
+  =1.570574096649395\ldots,\qquad \zstar-3=\log\zstar.
+\]
+For finite common upper limit $u$, binary stopping games,
+forced-prefix and zero-prefix UTE policies, a capped--harmonic mixture, and a
+cap-reserve extension of the same adaptive threshold meet on all six pieces
+of \eqref{eq:intro-optional-curve}.  In particular, the worst common-upper
+value is $\udiam=1.866760399173862\ldots$, while every $u\ge\zstar$ has exactly
+the cap-free value.  Proof-theoretically, finite $u$ adds one capped endpoint
+to the ordinary four-endpoint bank, and the reserve used to pay it vanishes
+at $\zstar$.  The principal remaining
+questions are finite and nonuniform: endpoint additive constants, different
+upper limits or test times, and randomized algorithms.
+
+\appendix
+\input{finite_checkpoint}
+\capbubblingappendix
+\input{lean_formalization}
+
+\bibliographystyle{alphaurl}
+\bibliography{references}
+
+\end{document}

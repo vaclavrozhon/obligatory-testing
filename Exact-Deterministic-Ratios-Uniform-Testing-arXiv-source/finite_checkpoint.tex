@@ -1,0 +1,75 @@
+\section{Finite rational checkpoint for the cap-free lower bound}
+\label{app:finite-checkpoint}
+
+The lower bound at $u=\infty$ takes two limits: first the scaling
+\(H\to\infty\), and
+then the number \(K\) of positive levels tends to infinity.  This appendix is
+not needed for that proof.  It gives one exact finite instance showing that
+the leading-term calculation already predicts the true ratio accurately.
+
+Take
+\[
+ K=1000,\qquad
+ \alpha=\frac98,\qquad
+ \gamma=\frac{679}{1000},\qquad
+ \xi=\frac K\alpha=\frac{8000}{9},\qquad
+ H=9000.
+\]
+There are \(H\) jobs at each positive level and \(\xi H\) zero jobs.  All
+multiplicities are integral, and all processing times defined by
+\cref{eq:lower-harmonic} are rational.
+
+Using exact rational arithmetic in
+\cref{eq:lower-P-exact,eq:lower-CP,eq:lower-QK,eq:lower-DK} gives the
+leading-coefficient comparison
+\[
+  \frac{Q_K}{D_K}
+  =1.5705287442294085\ldots>1.5705.
+\]
+The displayed decimal is only for orientation; all comparisons below are
+between integers or rational numbers.
+
+For the offline schedule, retaining the terms that are linear in \(H\) gives
+\begin{equation}\label{eq:checkpoint-opt-exact}
+  \OPT_H=H^2D_K+HL_{\rm off},
+\end{equation}
+where
+\begin{align}
+ L_{\rm off}
+ &=\frac12\left(\xi+\sum_{i=0}^{K-1}(1+p_i)\right)\nonumber\\
+ &=\frac12\left(
+     \xi+2K+\frac{K\gamma}{\xi}
+     +\sum_{s=1}^{K-1}\frac{K-s}{\xi+s}
+   \right)
+ =1656.440800628232\ldots .
+ \label{eq:checkpoint-Loff}
+\end{align}
+Again, the middle expression is the exact rational value used in the
+comparison.
+
+The discrete shortest-prefix calculation behind
+\cref{eq:lower-accounting} also retains favorable diagonal terms that vanish
+after division by \(H^2\).  Before dropping them it gives
+\[
+  \ALG_H\geq
+  H^2Q_K+\frac H2
+  \left(\xi+\sum_{i=0}^{K-1}p_i+\sum_{i=0}^{K-1}s_i\right)
+  \geq H^2Q_K.
+\]
+Here the \(s_i\)'s are the nonnegative completion fractions from the lower
+proof.  Exact rational arithmetic verifies
+\begin{equation}\label{eq:checkpoint-exact-inequality}
+  2000H^2Q_K
+  >3141\bigl(H^2D_K+HL_{\rm off}\bigr).
+\end{equation}
+Consequently, the fixed instance obtained by the replay argument in
+\cref{sec:lower} satisfies
+\[
+  \frac{\ALG_H}{\OPT_H}
+  \geq
+  \frac{H^2Q_K}{H^2D_K+HL_{\rm off}}
+  =1.5705286254871234\ldots
+  >\frac{3141}{2000}=1.5705.
+\]
+Thus the checkpoint includes the finite-\(H\) correction; it is not merely a
+comparison of the two leading coefficients.

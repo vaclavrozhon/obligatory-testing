@@ -1,0 +1,397 @@
+\subsection{Harmonic core and matching lower bound}
+\label{sec:lower}
+
+This subsection proves the lower bound in one self-contained calculation.
+Its notation is local to this subsection.  The construction
+has many equally large groups of positive jobs, revealed from longest to
+shortest, followed by one large group of zero jobs.  The only design choice is
+the gap between two consecutive positive processing times.  Choosing these
+gaps harmonically will make all decisions of the online algorithm disappear
+from the leading term.
+
+\begin{theorem}[Lower bound]
+\label{thm:lower}
+For every deterministic online algorithm $\mathcal B$ and every $\eps>0$,
+there are arbitrarily large fixed instances $I$ with unit tests and rational
+processing times such that
+\[
+  \ALG_{\mathcal B}(I)\ge (\Rstar-\eps)\OPT(I).
+\]
+\end{theorem}
+
+\paragraph{The revelation experiment.}
+Fix an integer $K$, a rational number $\xi>0$, and a rational slack
+$\gamma\in(0,1)$; one may keep $\gamma=1/2$ throughout.  For a large scaling
+integer $H$, the instance will contain $H$ jobs of each of $K$ positive types
+$0,1,\ldots,K-1$ and $\xi H$ zero jobs.  We choose $H$ to clear all
+denominators.
+
+The adversary assigns processing times according to the order in which tests
+are started.  The first $H$ tested jobs receive processing time $p_0$, the
+next $H$ receive $p_1$, and so on; after the $K$ positive blocks, every
+remaining job receives processing time zero.  Thus
+\[
+  p_0>p_1>\cdots>p_{K-1}>1,
+\]
+so the algorithm sees the positive types from longest to shortest and learns
+about the zero jobs only at the end.
+
+This adaptive description is only a convenient way to construct the input.
+After running the interaction against a fixed deterministic algorithm, assign
+to every job label the value revealed when that label was tested.  Replaying
+the algorithm on this fixed assignment produces exactly the same transcript.
+If the algorithm never tests or completes some job, its cost is infinite and
+the lower bound is immediate; otherwise every job label is recorded.
+Hence it is enough to lower-bound the cost in the revelation experiment.
+
+\paragraph{Why each phase can be relaxed to shortest processing time.}
+Let $T_\ell$ be the start of the first test in positive block $\ell$, and let
+$T_K$ be the start of the first test in the zero block.  Phase $\ell$ contains
+the completions in $(T_\ell,T_{\ell+1}]$; a completion exactly at $T_\ell$
+belongs to the preceding phase.  Each $T_\ell$ is the boundary between two
+nonpreemptive operations.  Consequently, a previously tested job that is
+unfinished at $T_\ell$ has not started processing and still needs its entire
+processing time.
+
+We repeatedly use the following elementary observation.  Suppose jobs with
+remaining work $v_1,\ldots,v_m$ complete after some time $T$.  If their
+completion order is $q_1,\ldots,q_m$, then the $r$th relative completion time
+is at least $\sum_{h\le r}v_{q_h}$.  Summing these prefix inequalities shows
+that their total relative completion time is minimized by arranging the
+$v_i$ in nondecreasing order.  This is merely a lower bound; the online
+algorithm need not actually use that order.
+
+For normalized group masses $q_1,\ldots,q_m$ and remaining lengths
+$v_1\le\cdots\le v_m$, this shortest-first bound has leading coefficient
+\begin{equation}
+ \mathcal S((q_g,v_g)_{g=1}^m)
+ =\sum_{g=1}^m
+   \left(\frac{v_gq_g^2}{2}
+    +q_g\sum_{h<g}v_hq_h\right).
+ \label{eq:lower-S}
+\end{equation}
+More precisely, the corresponding contribution for groups of size $q_gH$
+is $H^2\mathcal S+O(H)$.  The quadratic term is simply the familiar sum
+$v_g(1+\cdots+q_gH)$ inside one group; the cross term is the waiting caused
+by all shorter groups.
+
+We shall ensure that
+\begin{equation}
+  p_0-p_{K-1}<1.
+  \label{eq:lower-span}
+\end{equation}
+In phase $\ell$, an unfinished job of an older type $j<\ell$ therefore has
+remaining length $p_j$, whereas a type-$\ell$ job completed in its own phase
+needs both its test and processing, of total length $1+p_\ell$.  Their order
+in the shortest-first relaxation is
+\[
+  p_{\ell-1}<p_{\ell-2}<\cdots<p_0<1+p_\ell.
+\]
+At $T_K$, an untested zero job has remaining length $1$, so the relaxed tail
+starts with all zero jobs and then uses the positive types from shortest to
+longest.  These are the only two places where
+\cref{eq:lower-span} is used.
+
+\paragraph{The finite accounting identity.}
+We now record the online algorithm's possible behavior.  Normalize all job
+counts by $H$.  Let
+\begin{itemize}
+\item $s_j\in[0,1]$ be the mass of type-$j$ jobs completed in their own
+      phase;
+\item $d_{j,\ell}\ge0$ be the mass of type-$j$ jobs completed in the later
+      phase $\ell>j$; and
+\item
+\[
+  X_{j,\ell}=s_j+\sum_{r=j+1}^{\ell-1}d_{j,r}\le1
+  \qquad(\ell>j)
+\]
+be the mass of type $j$ completed before phase $\ell$.  Thus
+$X_{j,\ell+1}$ is the mass completed by the end of phase $\ell$.
+\end{itemize}
+At time $T_\ell$, the machine has already performed the tests of the $\ell H$
+jobs in earlier positive blocks and has processed every earlier job that has
+completed.  Thus
+\begin{equation}
+  \frac{T_\ell}{H}
+  \ge \ell+\sum_{j<\ell}p_jX_{j,\ell}.
+  \label{eq:lower-start}
+\end{equation}
+For each phase, charge its completions their common start time from
+\cref{eq:lower-start}, and charge their relative completion times using
+\cref{eq:lower-S}.  Do the same at $T_K$ for the remaining positive jobs
+and the $\xi H$ zero jobs.  Expanding and collecting equal variables gives
+\begin{align}
+ \frac{\ALG}{H^2}
+ \ge{}& C_K
+ +\sum_{j=0}^{K-1}\left(\frac{s_j^2}{2}-\theta_js_j\right)
+ \nonumber\\
+ &+\sum_{j<\ell}d_{j,\ell}
+ \left[
+   \ell-j-\theta_j
+   -\sum_{j<k<\ell}(p_j-p_k)X_{k,\ell+1}
+ \right]-O(1/H),
+ \label{eq:lower-accounting}
+\end{align}
+where $K,\xi,\gamma$ are fixed while $H\to\infty$, and
+\begin{align}
+ \theta_j
+   &=1-\xi(p_j-1)-\sum_{k>j}(p_j-p_k-1),
+   \label{eq:lower-theta}\\
+ C_K
+   &=\frac{\xi^2}{2}+2\xi K+K^2+P_K,
+ &
+ P_K&=\sum_{j=0}^{K-1}\left(j+\frac12\right)p_j.
+ \label{eq:lower-CP}
+\end{align}
+
+For completeness, here is how to audit
+\cref{eq:lower-accounting} without guessing its origin.  In phase $\ell$,
+the masses in the shortest-first relaxation are
+\[
+ d_{\ell-1,\ell},d_{\ell-2,\ell},\ldots,d_{0,\ell},s_\ell
+\]
+with respective lengths
+\[
+ p_{\ell-1},p_{\ell-2},\ldots,p_0,1+p_\ell.
+\]
+Multiply their total mass by the right-hand side of
+\cref{eq:lower-start} and add the functional
+\cref{eq:lower-S}.  In the final phase use masses
+\[
+ \xi,\ 1-X_{K-1,K},\ldots,1-X_{0,K}
+\]
+and lengths $1,p_{K-1},\ldots,p_0$.  The constant terms sum to $C_K$.
+The terms containing only $s_j$ are $s_j^2/2-\theta_js_j$; the coefficient
+of each $d_{j,\ell}$ is precisely the bracket in
+\cref{eq:lower-accounting}.  Thus the displayed identity is just the
+phasewise shortest-first bound with the phase start times retained.  No
+optimality assumption about the online schedule is hidden in it.
+
+The meaning of the expression is useful.  Completing an $s_j$ fraction of a
+type in its own phase creates a quadratic completion cost but saves later
+waiting cost, producing $s_j^2/2-\theta_js_j$.  A completion postponed to a
+later positive phase is represented by $d_{j,\ell}$ and its bracket.  We next
+choose the processing times so that every such bracket is nonnegative and all
+$\theta_j$ are equal.
+
+\paragraph{The harmonic choice and its telescoping cancellation.}
+Set
+\begin{equation}
+  p_{K-1}=1+\frac{\gamma}{\xi},
+  \qquad
+  p_i=p_{i+1}+\frac1{\xi+K-1-i}
+  \quad(0\le i<K-1).
+  \label{eq:lower-harmonic}
+\end{equation}
+In other words, measured upward from the shortest type, the consecutive gaps
+are
+\[
+  \frac1{\xi+1},\frac1{\xi+2},\ldots,\frac1{\xi+K-1}.
+\]
+This is the key design choice.  If $m=K-1-j$, then
+\begin{align*}
+ p_j-1
+   &=\frac\gamma \xi+\sum_{r=1}^m\frac1{\xi+r},\\
+ \sum_{k>j}(p_j-p_k)
+   &=\sum_{r=1}^m\frac{r}{\xi+r}.
+\end{align*}
+Adding the first line multiplied by $\xi$ to the second line makes each
+denominator cancel:
+\begin{equation}
+ \xi(p_j-1)+\sum_{k>j}(p_j-p_k)
+ =\gamma+\sum_{r=1}^m\frac{\xi+r}{\xi+r}
+ =\gamma+m.
+ \label{eq:lower-telescope}
+\end{equation}
+Substitution in \cref{eq:lower-theta} gives the same value for every type,
+\begin{equation}
+  \theta_j=1-\gamma.
+  \label{eq:lower-theta-constant}
+\end{equation}
+This is why the increments in \cref{eq:lower-harmonic} are harmonic: the
+factor $\xi$ coming from the zero block and the multiplicity $r$ coming from the
+$r$ shorter positive types add up to the denominator $\xi+r$.
+
+The delayed-completion terms are now harmless as well.  Since
+$X_{k,\ell+1}\le1$, their brackets are at least
+\begin{align*}
+ &\ell-j-(1-\gamma)
+   -\sum_{j<k<\ell}(p_j-p_k)\\
+ &\hspace{20mm}
+ =\gamma+\sum_{j<k<\ell}\bigl(1-(p_j-p_k)\bigr)>0,
+\end{align*}
+where the final inequality follows from
+\cref{eq:lower-span}.  We may therefore drop every term containing
+$d_{j,\ell}$.  The remaining minimization is not a multivariable optimization
+problem: complete one square for each $j$,
+\[
+  \frac{s_j^2}{2}-(1-\gamma)s_j
+  =\frac12\bigl(s_j-(1-\gamma)\bigr)^2
+   -\frac12(1-\gamma)^2.
+\]
+Because $1-\gamma\in(0,1)$, this minimum is feasible for
+$s_j\in[0,1]$.  Hence every online algorithm obeys
+\begin{equation}
+ \liminf_{H\to\infty}\frac{\ALG}{H^2}
+ \ge Q_K
+ \defeq C_K-\frac K2(1-\gamma)^2.
+ \label{eq:lower-QK}
+\end{equation}
+
+It remains to compute the offline benchmark.  Knowing all processing times,
+the optimum runs the zero jobs first and the positive types from shortest to
+longest.  Equivalently, the pairwise contribution of two jobs is
+$1+\min\{p_i,p_j\}$.  Its leading coefficient is
+\begin{equation}
+  D_K=\frac{\xi^2}{2}+\xi K+\frac{K^2}{2}+P_K,
+  \qquad
+  \lim_{H\to\infty}\frac{\OPT}{H^2}=D_K.
+  \label{eq:lower-DK}
+\end{equation}
+The four terms respectively account for zero--zero pairs, zero--positive
+pairs, the unit-test part of positive--positive pairs, and the processing
+part of positive--positive pairs.  Thus the finite-$K$ lower-bound
+certificate is simply $Q_K/D_K$.
+
+\paragraph{Passing to a smooth curve.}
+Write
+\[
+  \alpha=\frac K\xi
+\]
+for the ratio of positive mass to zero mass, and keep $\alpha$ fixed while
+$K\to\infty$.  We restrict to $0<\alpha<e-1$.  Then
+\[
+ p_0-p_{K-1}
+ =\sum_{r=1}^{K-1}\frac1{\xi+r}
+ <\log\!\left(1+\frac K\xi\right)
+ =\log(1+\alpha)<1,
+\]
+which verifies \cref{eq:lower-span}.
+
+The processing contribution $P_K$ has the exact form
+\begin{equation}
+ P_K
+ =\frac{K^2}{2}\left(1+\frac\gamma \xi\right)
+  +\frac12\sum_{h=1}^{K-1}\frac{(K-h)^2}{\xi+h}.
+ \label{eq:lower-P-exact}
+\end{equation}
+Indeed, the common baseline $1+\gamma/\xi$ contributes the first term, and
+swapping the order of summation shows that the increment $1/(\xi+h)$ receives
+total weight $(K-h)^2/2$.  After division by $\xi^2$, the sum becomes a
+Riemann integral:
+\begin{align}
+ \frac{P_K}{\xi^2}&\longrightarrow I(\alpha)
+   =\frac{\alpha^2}{2}
+    +\frac12\int_0^\alpha\frac{(\alpha-t)^2}{1+t}\,dt
+   \nonumber\\
+ &=\int_0^\alpha(\alpha-t)\bigl(1+\log(1+t)\bigr)\,dt
+   \nonumber\\
+ &=\frac12(1+\alpha)^2\log(1+\alpha)
+   -\frac\alpha2-\frac{\alpha^2}{4}.
+ \label{eq:lower-I}
+\end{align}
+The second integral form follows either by integration by parts or by summing
+the limiting processing-time curve $1+\log(1+t)$ against the remaining
+positive mass $\alpha-t$.
+The subtraction in \cref{eq:lower-QK} is only $O(K)$, whereas
+$C_K,D_K=\Theta(K^2)$.  Since $C_K-D_K=\xi K+K^2/2$, we obtain
+\begin{equation}
+ R(\alpha)
+ \defeq\lim_{K\to\infty}\frac{Q_K}{D_K}
+ =1+
+ \frac{\alpha+\alpha^2/2}
+ {\frac12+\frac\alpha2+\frac{\alpha^2}{4}
+  +\frac12(1+\alpha)^2\log(1+\alpha)}.
+ \label{eq:lower-Ralpha}
+\end{equation}
+
+This last one-variable maximization is where the constant in the theorem
+comes from.  Put $z=(1+\alpha)^2$.  Then
+\begin{equation}
+  R(z)=1+\frac{2(z-1)}{1+z+z\log z}.
+  \label{eq:lower-Rz}
+\end{equation}
+The derivative of the fraction has the sign of
+\[
+  3-z+\log z.
+\]
+For $z>1$ this expression is strictly decreasing, is positive at $z=1$, and
+tends to $-\infty$.  Hence it has one zero $\zstar$, characterized by
+\[
+  \zstar-3=\log\zstar.
+\]
+The derivative is positive before $\zstar$ and negative afterward, so this is
+the global maximum.  At the root,
+\[
+  1+\zstar+\zstar\log\zstar=(\zstar-1)^2,
+\]
+and therefore
+\[
+  R(\zstar)=1+\frac{2}{\zstar-1}=\Rstar.
+\]
+Moreover, $\sqrt{\zstar}-1=1.12255\ldots<e-1$, so the maximizer lies in the
+range where \cref{eq:lower-span} holds.
+
+\begin{proof}[Proof of \cref{thm:lower}]
+Choose a rational $\alpha$ sufficiently close to
+$\alpha_\star=\sqrt{\zstar}-1$, and choose any rational
+$\gamma\in(0,1)$.  For a sufficiently large $K$, set $\xi=K/\alpha$ and use
+\cref{eq:lower-harmonic}; then $Q_K/D_K>\Rstar-\eps/2$.
+All parameters are rational.  Let $H$ tend to infinity through multiples of
+their common denominators.  \Cref{eq:lower-QK,eq:lower-DK} make the actual ratio exceed
+$\Rstar-\eps$ for all sufficiently large $H$.  Finally, the replay argument
+at the beginning of the proof converts the revelation experiment into a fixed
+instance for the given deterministic algorithm.
+\end{proof}
+
+\begin{lemma}[Scaled harmonic core]
+\label{lem:opt:harmonic-block}
+Fix a total normalized mass $s>0$ and a parameter $t\in[1,e)$.  Against
+every deterministic algorithm for the cap-free endpoint, there are scales
+$M_\nu\to\infty$ and finite rational multilevel instances with
+$sM_\nu+o(M_\nu)$ jobs such that
+\begin{equation}
+ \frac{\OPT}{M_\nu^2}\longrightarrow
+ O_0=\frac{s^2}{4}(1+t^{-2}+2\log t),
+ \qquad
+ \liminf_{\nu\to\infty}\frac{\ALG}{M_\nu^2}
+ \ge A_0^{\rm lb}
+ \defeq O_0+\frac{s^2}{2}(1-t^{-2}).
+ \label{eq:opt:harmonic-coefficients}
+\end{equation}
+Their normalized total positive processing mass converges to
+\begin{equation}
+ \frac1{M_\nu}\sum_{j:p_j>0}p_j\longrightarrow L=s\log t,
+ \label{eq:opt:harmonic-processing-mass}
+\end{equation}
+and their largest processing time converges to $1+\log t<2$.
+The adaptive revelation is converted by replay into a fixed instance.
+\end{lemma}
+
+\begin{proof}
+The case $t=1$ is obtained by continuity from instances with vanishing
+positive mass, so suppose $1<t<e$.  In the construction above set
+$\alpha=t-1=K/\xi$.  Before rescaling, the total normalized mass is
+$K+\xi=\xi t$.  Give every unit of normalized mass the common factor
+$s/(\xi t)$.
+
+The phase accounting, harmonic cancellation, and completion of squares in
+\cref{eq:lower-accounting,eq:lower-telescope,eq:lower-QK} are homogeneous of
+degree two in the job masses.  The Riemann-sum limit
+\cref{eq:lower-I} substituted into \cref{eq:lower-DK} therefore gives
+\[
+ O_0=\frac{s^2}{4}(1+t^{-2}+2\log t).
+\]
+Likewise $C_K-D_K=\xi K+K^2/2$, while the $O(K)$ square-completion loss in
+\cref{eq:lower-QK} disappears after division by the quadratic scale.  After
+the same rescaling this gives the guaranteed lower benchmark
+\[
+ A_0^{\rm lb}-O_0=\frac{s^2}{2}(1-t^{-2}).
+\]
+Finally, summing the limiting processing-time curve
+$1+\log(1+x)$ over the positive mass gives $L=s\log t$, and
+\cref{eq:lower-harmonic} gives $p_0\to1+\log t$.  Rational approximation,
+clearing denominators, and the replay argument used in the theorem produce a
+diagonal sequence of arbitrarily large fixed rational instances with the
+stated limit and liminf bounds.
+\end{proof}

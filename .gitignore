@@ -1,0 +1,8 @@
+/.lake/
+/.cache/
+
+# LaTeX build intermediates (keep paper.pdf and paper.bbl).
+*.aux
+*.blg
+*.log
+*.out

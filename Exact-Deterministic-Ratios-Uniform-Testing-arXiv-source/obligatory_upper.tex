@@ -1,0 +1,564 @@
+\subsection{Upper bound: a self-contained proof}
+\label{sec:upper}
+
+We prove the following statement from scratch in this subsection.
+
+\begin{theorem}[Upper bound]
+\label{thm:upper}
+Let $z>1$ be the solution of $z-3=\log z$, and set
+\[
+ R=1+\rho,
+ \qquad
+ \rho=\frac{2}{z-1}=0.5705740966\ldots .
+\]
+There is a deterministic online algorithm and an absolute constant $C$ such
+that every instance with $n$ jobs satisfies
+\[
+  \ALG\le R\OPT+Cn.
+\]
+\end{theorem}
+
+The proof has three ingredients.  First, pairwise accounting gives an exact
+formula for the cost of a schedule.  Second, a simple convexity argument says
+that it is enough to consider four boundary outcomes for every test.  Third,
+we give a nonnegative \emph{bank balance} $W$: whenever a boundary outcome
+creates positive excess cost, the balance drops by at least that amount, up
+to a constant rounding loss.  Thus the proof below uses derivatives only as
+shorthand for the first-order change of this bank balance; no optimization
+background is needed.
+
+\paragraph{The algorithm.}
+For a parameter $c>0$, the formal procedure
+\textsc{AdaptiveThreshold}$(c)$ is given in
+\cref{alg:adaptive-threshold}.  Immediately before a test, let
+\begin{itemize}
+\item $x$ be the number of jobs not yet tested, including the job about to be
+      tested;
+\item $N$ be the number of earlier tests that revealed a strictly positive
+      processing time; and
+\item $D$ be the number of these $N$ jobs that the algorithm deferred.
+\end{itemize}
+Define the normalized state
+\begin{equation}
+\label{eq:upper-y}
+ y=\frac{D-RN}{x}.
+\end{equation}
+Because $D\le N$ and $R>1$, we always have $y\le0$.  For later reuse define
+the parameterized threshold
+\begin{equation}
+\label{eq:upper-A}
+ a_c(y)=
+ \begin{cases}
+  1, & y\le-1,\\[1mm]
+  \displaystyle
+  1+\frac12\log\!\left(\frac{c+2}{c-2y}\right),
+       & -1\le y\le0.
+ \end{cases}
+\end{equation}
+The theorem uses $c=\rho$; throughout this subsection we abbreviate
+$A(y)=a_\rho(y)$ and $R=1+\rho$.
+The defining equation for $z=(\rho+2)/\rho$ says
+\begin{equation}
+\label{eq:upper-root-rho}
+ \log\frac{\rho+2}{\rho}=\frac2\rho-2.
+\end{equation}
+Consequently, $A$ is continuous at $-1$, increases from $A(-1)=1$ to
+$A(0)=1/\rho=1.7526207478\ldots$, and
+\begin{equation}
+\label{eq:upper-A-prime}
+ A'(y)=\frac{1}{\rho-2y}
+ \qquad (-1<y<0).
+\end{equation}
+
+\begin{algorithm}[H]
+\caption{\textsc{AdaptiveThreshold}$(J,c)$}
+\label{alg:adaptive-threshold}
+\begin{algorithmic}
+\Statex \textbf{Input:} jobs $J$ and parameter $c>0$.
+\State Fix an arbitrary test order $j_1,\ldots,j_n$.
+\State Set $N\gets0$, $D\gets0$, and $Q\gets\varnothing$.
+\State \textbf{For} $i=1,\ldots,n$ \textbf{do}:
+\State \quad Set $x\gets n-i+1$ and $y\gets(D-(1+c)N)/x$.
+\State \quad Set $a\gets a_c(y)$ according to \cref{eq:upper-A}.
+\State \quad Test $j_i$ for one unit and observe $p_{j_i}$.
+\State \quad \textbf{If} $p_{j_i}\le a$, process $j_i$ immediately.
+\State \quad \textbf{Otherwise}, add $j_i$ to $Q$ and set $D\gets D+1$.
+\State \quad \textbf{If} $p_{j_i}>0$, set $N\gets N+1$.
+\State Process the jobs of $Q$ in nondecreasing order of their revealed
+       processing times.
+\end{algorithmic}
+\end{algorithm}
+
+For $c=\rho$, the state in the pseudocode is exactly
+\eqref{eq:upper-y}.  A genuine zero increments neither counter and completes
+at the end of its test.  The procedure never uses raw execution; the same
+pseudocode will therefore apply to the large finite-$u$ regimes.
+
+The numerator $D-RN$ in \eqref{eq:upper-y} is best viewed as a balance,
+not as an estimate of a processing time.  Every revealed positive job reduces
+the balance by $R$; deferring it returns one unit, because every later unit
+test will also delay that deferred job.  Dividing by $x$ spreads this balance
+over the tests that remain.  A state close to $0$ can afford a threshold
+larger than one.  Once the normalized balance falls below $-1$, the proof can
+only support the conservative threshold one, so $A$ becomes flat.
+
+We will later derive \eqref{eq:upper-A}, rather than asking the reader to
+guess why this particular logarithm appears.
+
+\paragraph{Pairwise accounting.}
+For two jobs $i<j$ in test order, charge to their unordered pair the duration
+of operations of either job performed while the other job is unfinished.  If
+job $i$ is processed immediately, this charge in the algorithm is $1+p_i$.
+If $i$ is deferred and $j$ is immediate, it is $2+p_j$.  If both are
+deferred, it is $2+\min\{p_i,p_j\}$.  Hence
+\begin{equation}
+\label{eq:upper-alg-pair}
+ \ALG=\sum_i(1+p_i)+\sum_{i<j}g_{ij},
+ \qquad
+ g_{ij}=
+ \begin{cases}
+  1+p_i, & i\text{ immediate},\\
+  2+p_j, & i\text{ deferred},\ j\text{ immediate},\\
+  2+\min\{p_i,p_j\}, & i,j\text{ deferred}.
+ \end{cases}
+\end{equation}
+The offline optimum tests and immediately processes jobs in nondecreasing
+order of $p_i$, and therefore
+\begin{equation}
+\label{eq:upper-opt-pair}
+ \OPT=\sum_i(1+p_i)
+       +\sum_{i<j}\bigl(1+\min\{p_i,p_j\}\bigr).
+\end{equation}
+For completeness, the latter claim follows because the $k$th completed job
+cannot finish before the machine has performed $k$ tests and the processing
+of the $k$ shortest jobs.  The shortest-first schedule attains all these
+lower bounds simultaneously.
+
+We shall bound the excess
+\[
+ F=\ALG-R\OPT.
+\]
+
+\paragraph{Why four boundary outcomes suffice.}
+Fix only the symbolic decisions made along a run: for each job, specify
+whether its value is zero, positive and immediate, or positive and deferred.
+This fixes all later counters and thresholds.  The allowed values of a
+coordinate are then, respectively,
+\[
+ \{0\},\qquad (0,A(y)],\qquad (A(y),\infty).
+\]
+If all processing times except $p_i$ are fixed inside such a symbolic run,
+\eqref{eq:upper-alg-pair}--\eqref{eq:upper-opt-pair} express $F$ as an
+affine function of $p_i$ plus negative multiples of
+$\min\{p_i,h\}$.  Since $p\mapsto\min\{p,h\}$ is concave, $F$ is convex in
+$p_i$.  A convex function on $(0,A(y)]$ has its supremum at one of the two
+ends.  On $(A(y),\infty)$, the eventual slope is $1-R=-\rho<0$; convexity
+then implies that every earlier slope is also negative, so the supremum is at
+the lower end.
+
+It is therefore enough to consider the following four formal outcomes.
+\begin{center}
+\begin{tabular}{ccll}
+\toprule
+type & limiting value & algorithmic decision & counter update\\
+\midrule
+$\mathsf Z$ & $0$ & immediate & none\\
+$\mathsf E$ & $0^+$ & immediate & $N\leftarrow N+1$\\
+$\mathsf I$ & $A(y)$ & immediate & $N\leftarrow N+1$\\
+$\mathsf Q$ & $A(y)^+$ & deferred
+             & $N\leftarrow N+1$, $D\leftarrow D+1$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Here $0^+$ is not a new processing time.  It means that a positive immediate
+value tends to zero \emph{after its symbolic decision has been fixed}.
+Although its processing contribution vanishes, it still increments $N$ and
+therefore changes all future thresholds.  This is why $0$ and $0^+$ cannot be
+identified.  Similarly, $A(y)^+$ approaches the threshold from the deferred
+side.  Applying the one-coordinate argument successively shows that a uniform
+bound on all formal four-type words implies the same bound on all genuine
+instances.  Because $F$ is a finite sum of affine and minimum terms on a fixed
+symbolic path, the simultaneous one-sided limit at every formal vertex exists
+and is independent of the rates at which its open coordinates approach their
+endpoints.
+
+One more elementary property will simplify every minimum in the pairwise
+formulas.  Put $u=D-RN\le0$.  After an outcome of type $\mathsf Z$,
+$\mathsf E$ or $\mathsf I$, or $\mathsf Q$, respectively, the pair $(u,x)$
+changes as follows:
+\[
+ (u,x-1),\qquad (u-R,x-1),\qquad (u-R,x-1),\qquad
+ (u-\rho,x-1).
+\]
+Whenever $x\ge2$, the new quotient is at most $u/x$.  Thus the states, and
+hence the thresholds, seen by successive tests never increase.  When $x=1$
+there is no next test and therefore no next threshold to compare.  The
+nonzero boundary values $A(y)$ consequently arrive in nonincreasing order.
+In particular, the minimum of the current nonzero boundary value and any
+earlier one is always the current value.
+
+\paragraph{The proof state and the local excess.}
+The algorithm needs only $(x,N,D)$.  The analysis splits $N$ into two kinds.
+Among earlier formal outcomes, let
+\begin{itemize}
+\item $S$ be the number of \emph{substantive} positive outcomes
+      $\mathsf I,\mathsf Q$;
+\item $e$ be the number of infinitesimal outcomes $\mathsf E$; and
+\item $d$ be the number of deferred outcomes $\mathsf Q$.
+\end{itemize}
+Thus $N=S+e$ and $D=d$.  Define
+\begin{equation}
+\label{eq:upper-eta-b}
+ \eta=\frac{d-RS}{x},
+ \qquad
+ b=\frac e x,
+ \qquad
+ y=\eta-Rb.
+\end{equation}
+We have $d\le S$, hence $\eta\le0$.  The variable $b$ records exactly the
+part of the algorithmic state that is invisible to limiting processing-cost
+minima: an infinitesimal value affects $N$, but its minimum with every other
+processing time tends to zero.
+
+Consider the current boundary outcome at a pre-state $(x,S,e,d)$, and write
+$a=A(y)$.  Pairwise accounting gives
+\begin{equation}
+\label{eq:upper-exact-decomposition}
+ F=-\rho\frac{n(n+1)}2+\sum_i\widetilde\ell_i,
+\end{equation}
+where the exact contribution of the current outcome is
+\begin{align}
+ \widetilde\ell_{\mathsf Z}
+ =\widetilde\ell_{\mathsf E}&=d,\label{eq:upper-exact-ZE}\\
+ \widetilde\ell_{\mathsf I}
+ &=d+a[x+d-RS-R],\label{eq:upper-exact-I}\\
+ \widetilde\ell_{\mathsf Q}
+ &=d+a[d-RS-\rho].\label{eq:upper-exact-Q}
+\end{align}
+Here is a quick derivation.  The current unit test gives one extra unit of
+algorithmic pair cost for each earlier deferred job, producing $d$.  Its own
+test and its pairs with all earlier jobs give a universal excess
+$-\rho(i+1)$ at step $i$; summing this term produces the first term in
+\eqref{eq:upper-exact-decomposition}.  For an $\mathsf I$ outcome, the
+current processing operation contributes $a(x+d)$ to the algorithm and
+$Ra(S+1)$ to the scaled optimum.  For a $\mathsf Q$ outcome, the corresponding
+quantities are $a(d+1)$ and $Ra(S+1)$.  Monotonicity of the thresholds justifies
+using the current $a$ in every earlier processing-time minimum.
+
+For the potential calculation it is convenient to discard the two favorable
+diagonal terms $-Ra$ and $-\rho a$.  Define the relaxed local rewards
+\begin{align}
+ \ell_{\mathsf Z}=\ell_{\mathsf E}&=d,\label{eq:upper-ell-ZE}\\
+ \ell_{\mathsf I}&=d+a(x+d-RS)
+                  =d+ax(1+\eta),\label{eq:upper-ell-I}\\
+ \ell_{\mathsf Q}&=d+a(d-RS)
+                  =d+ax\eta.\label{eq:upper-ell-Q}
+\end{align}
+Then $\widetilde\ell_c\le\ell_c$ for all four types, and
+\begin{equation}
+\label{eq:upper-F-relaxed}
+ F\le-\rho\frac{n(n+1)}2+\sum_i\ell_i.
+\end{equation}
+
+\paragraph{How the logarithmic threshold is found.}
+Before giving the full bank balance, it is useful to see where the formula
+comes from.  Ignore $0^+$ outcomes for a moment, so $b=0$, and look in the
+range $-1\le y\le0$.  Suppose the nonlinear part of the balance has the form
+$x^2f(y)$.  Asking the immediate boundary $\mathsf I$ and the deferred
+boundary $\mathsf Q$ to be exactly paid by the first-order decrease of this
+balance gives
+\begin{align}
+ -2f+(y-R)f'+A(1+y)&=0,\label{eq:upper-design-I}\\
+ 1-2f+(y-\rho)f'+Ay&=0.\label{eq:upper-design-Q}
+\end{align}
+Subtracting the equations gives $f'=A-1$.  Differentiating either equation
+then gives
+\[
+ 1+(2y-\rho)A'(y)=0.
+\]
+With the natural joining condition $A(-1)=1$, this is exactly
+\eqref{eq:upper-A}--\eqref{eq:upper-A-prime}.
+
+The universal negative term in \eqref{eq:upper-F-relaxed} has leading
+part $-\rho n^2/2$.  The initial balance will be $n^2f(0)$, so exact
+cancellation requires $f(0)=\rho/2$.  Since
+\begin{equation}
+\label{eq:upper-f-definition}
+ f(y)=\int_{-1}^{y}(A(t)-1)\,dt,
+\end{equation}
+direct integration gives
+\[
+ f(0)=\frac12-\frac{\rho}{4}
+       \log\!\left(\frac{\rho+2}{\rho}\right).
+\]
+Thus $f(0)=\rho/2$ is equivalent to
+\eqref{eq:upper-root-rho}, or, after setting $z=(\rho+2)/\rho$, to
+$z-3=\log z$.  Thus both the threshold and the constant $R$ are forced by
+two local balance equations and the initial accounting; they are not the
+output of an unexplained numerical optimization.
+
+\paragraph{The bank balance.}
+For $-1\le y\le0$, put
+\begin{equation}
+\label{eq:upper-fh}
+ f(y)=\int_{-1}^{y}(A(t)-1)\,dt,
+ \qquad
+ h(y)=A(y)(1+y).
+\end{equation}
+The term $x d$ in the balance below pays for the fact that each of the $x$
+remaining tests will delay each of the $d$ already deferred jobs.  The
+$x^2f(y)$ term handles substantive outcomes.  Finally, the terms involving
+$b$ repair the discontinuity between a genuine zero and $0^+$.
+
+Define
+\begin{equation}
+\label{eq:upper-W}
+ W(x,S,e,d)=x d+x^2G(y,b),
+\end{equation}
+using two formulas for $G$:
+\begin{equation}
+\label{eq:upper-G}
+ G(y,b)=
+ \begin{cases}
+  \displaystyle f(y)+b h(y)+\frac R2b^2,
+       & y\ge-1,\\[2mm]
+  \displaystyle g(\eta),\qquad
+       g(\eta)=\frac{(1+\eta)_+^2}{2R},
+       & y\le-1,
+ \end{cases}
+ \qquad \eta=y+Rb.
+\end{equation}
+The first formula is used while the threshold is changing.  The second is
+used once the threshold has saturated at one.  In that flat region the
+limiting processing-cost terms depend on the substantive balance $\eta$, not
+on the number of $0^+$ outcomes separately, which explains why $g$ contains
+no $b$.
+
+This piecewise definition is smooth enough for a first-order argument.  At
+$y=-1$, feasibility gives $0\le b\le1/R$ and $\eta=-1+Rb$.  Since
+\[
+ f(-1)=h(-1)=0,
+ \qquad h'(-1)=1,
+\]
+the first formula in \eqref{eq:upper-G} has value $Rb^2/2$ and derivatives
+$G_y=b$, $G_b=Rb$.  The second formula has exactly the same value and
+derivatives.  This also checks the derivative in the raw $x$ coordinate:
+at fixed $(S,e,d)$,
+\[
+ \partial_x\!\left[x^2G(y,b)\right]
+ =x\left(2G-yG_y-bG_b\right),
+\]
+which agrees on the two sides because $G$, $G_y$, and $G_b$ agree.  The
+remaining raw derivatives are linear combinations of $G_y$ and $G_b$.  The
+internal join of $(1+\eta)_+^2$ at $\eta=-1$ also has a continuous first
+derivative.  Hence $W$ is continuously differentiable.
+Moreover, $W\ge0$: in the first region $f\ge0$, $h\ge0$, and $b,d\ge0$; in
+the second this is immediate from \eqref{eq:upper-G}.
+
+The choice $h=A(1+y)$ also has a direct interpretation.  At $b=0$, it makes
+the first infinitesimal outcome $0^+$ exactly neutral in the local balance.
+The quadratic correction $Rb^2/2$ then maintains the balance for all $b$ and
+is precisely what makes the two regions meet smoothly.
+
+\paragraph{Four local balance checks.}
+We now verify that every formal outcome can be paid from the bank.  In raw
+coordinate order $(x,S,e,d)$, the four unit-step directions are
+\begin{equation}
+\label{eq:upper-directions}
+ v_{\mathsf Z}=(-1,0,0,0),\quad
+ v_{\mathsf E}=(-1,0,1,0),\quad
+ v_{\mathsf I}=(-1,1,0,0),\quad
+ v_{\mathsf Q}=(-1,1,0,1).
+\end{equation}
+For an endpoint type $q\in\{\mathsf Z,\mathsf E,\mathsf I,\mathsf Q\}$,
+define its first-order balance
+\begin{equation}
+\label{eq:upper-drift}
+ J_q=\ell_q+\nabla W\cdot v_q.
+\end{equation}
+The inequality $J_q\le0$ simply says: local reward plus first-order change in
+the bank balance is nonpositive.
+
+We need only a few one-variable identities.  On $-1\le y\le0$,
+\begin{align}
+ f'&=A-1, & f(-1)&=0, & f(0)&=\frac\rho2,
+                                                        \label{eq:upper-canonical-1}\\
+ -2f+(y-R)f'+A(1+y)&=0,                 \label{eq:upper-canonical-I}\\
+ 1-2f+(y-\rho)f'+Ay&=0,                 \label{eq:upper-canonical-Q}\\
+ -2f+yf'&=A(\rho-y)-R\le0,              \label{eq:upper-canonical-Z}\\
+ h+(\rho-y)h'&=AR+(\rho-y)(1+y)A'\ge AR.
+                                                        \label{eq:upper-canonical-h}
+\end{align}
+The first line follows from the definition and
+\eqref{eq:upper-root-rho}.  For
+\eqref{eq:upper-canonical-I}--\eqref{eq:upper-canonical-Q}, differentiate
+the left-hand sides and use $A'=1/(\rho-2y)$; both derivatives vanish, and
+both expressions equal zero at $y=-1$.  Equation
+\eqref{eq:upper-canonical-Z} follows from
+\eqref{eq:upper-canonical-I}.  Its right-hand side is zero at $-1$ and
+decreases afterward, because
+\[
+ \frac{d}{dy}\bigl[A(y)(\rho-y)\bigr]
+ =\frac{\rho-y}{\rho-2y}-A(y)\le0.
+\]
+Indeed, $y\le0$ gives $(\rho-y)/(\rho-2y)\le1$, while
+$A(y)\ge1$.
+Finally, \eqref{eq:upper-canonical-h} is obtained by differentiating
+$h=A(1+y)$.  Notice also that $h,h'\ge0$.
+
+In the changing-threshold region $y\ge-1$, direct differentiation of
+\eqref{eq:upper-W} first gives, for an arbitrary $G(y,b)$,
+\begin{align}
+ J_{\mathsf Z}/x
+   &=-2G+yG_y+bG_b,\label{eq:upper-drift-general-Z}\\
+ J_{\mathsf E}/x
+   &=-2G+(y-R)G_y+(b+1)G_b,\label{eq:upper-drift-general-E}\\
+ J_{\mathsf I}/x
+   &=-2G+(y-R)G_y+bG_b+A(1+y+Rb),
+                                      \label{eq:upper-drift-general-I}\\
+ J_{\mathsf Q}/x
+   &=1-2G+(y-\rho)G_y+bG_b+A(y+Rb).
+                                      \label{eq:upper-drift-general-Q}
+\end{align}
+Substituting $G=f+bh+Rb^2/2$ and using
+\eqref{eq:upper-canonical-I}--\eqref{eq:upper-canonical-Q} reduces the
+four expressions to
+\begin{align}
+ J_{\mathsf Z}/x
+   &=(-2f+yf')+b(-h+yh'),\label{eq:upper-drift-active-Z}\\
+ J_{\mathsf E}/x
+   &=b[-h+(y-R)h'+R],\label{eq:upper-drift-active-E}\\
+ J_{\mathsf I}/x
+   &=b[-h+(y-R)h'+AR],\label{eq:upper-drift-active-I}\\
+ J_{\mathsf Q}/x
+   &=b[-h+(y-\rho)h'+AR].\label{eq:upper-drift-active-Q}
+\end{align}
+Now the signs are transparent.  The $\mathsf Z$ line is nonpositive by
+\eqref{eq:upper-canonical-Z}, $h,h'\ge0$, and $y\le0$.  The $\mathsf Q$
+line is nonpositive by \eqref{eq:upper-canonical-h}.  The
+$\mathsf I$ line is no larger because $y-R<y-\rho$ and $h'\ge0$; the
+$\mathsf E$ line is no larger again because $A\ge1$.  Thus all four checks
+hold in the changing-threshold region.
+
+In the flat region $y\le-1$, we have $A=1$ and $G=g(\eta)$.  The four checks
+become
+\begin{align}
+ J_{\mathsf Z}/x=J_{\mathsf E}/x
+   &=-2g+\eta g',\label{eq:upper-drift-flat-ZE}\\
+ J_{\mathsf I}/x
+   &=-2g+(\eta-R)g'+1+\eta,\label{eq:upper-drift-flat-I}\\
+ J_{\mathsf Q}/x
+   &=1-2g+(\eta-\rho)g'+\eta.\label{eq:upper-drift-flat-Q}
+\end{align}
+If $\eta\le-1$, then $g=g'=0$, and these expressions are $0$, $1+\eta$,
+and $1+\eta$.  If $-1\le\eta\le0$, then $g'=(1+\eta)/R$, and they are,
+respectively,
+\[
+ -\frac{1+\eta}{R},\qquad
+ -\frac{1+\eta}{R},\qquad
+ 0.
+\]
+They are therefore nonpositive in both cases.  We have proved
+\begin{equation}
+\label{eq:upper-all-drift}
+ J_{\mathsf Z},J_{\mathsf E},J_{\mathsf I},J_{\mathsf Q}\le0
+\end{equation}
+at every feasible state.
+
+\paragraph{From infinitesimal checks to unit steps.}
+Equation \eqref{eq:upper-all-drift} compares a local reward with the
+\emph{derivative} of $W$, whereas one job changes the integer counters by one.
+This loses only a constant per job.  More precisely, there is an absolute
+constant $C_0$ such that every admissible transition satisfies
+\begin{equation}
+\label{eq:upper-Taylor}
+ W(s+v_q)-W(s)\le \nabla W(s)\cdot v_q+C_0.
+\end{equation}
+We include the bounded-curvature argument because it is what makes the
+$O(n)$ term uniform over all instances.
+
+Suppose first that $x\ge2$ and linearly interpolate the unit transition.  The
+numerators of both $y$ and $\eta$ have the form $u-\kappa t$, where $u\le0$
+and $\kappa\ge0$, while the denominator is $x-t$.  Their derivatives are
+therefore nonpositive, so the segment crosses each joining surface at most
+once.  In the changing-threshold region, $y\ge-1$ implies
+\[
+ R(S+e)-d
+   =\rho S+(S-d)+Re\le x.
+\]
+Consequently,
+\[
+ 0\le \frac Sx\le\frac1\rho,
+ \qquad
+ 0\le \frac ex\le\frac1R,
+ \qquad
+ 0\le \frac dx\le\frac1\rho.
+\]
+After normalizing by $x$, all reachable states in this region thus lie in a
+fixed compact set.  The balance $W$ is homogeneous of degree two, so its
+second derivatives in the raw coordinates are homogeneous of degree zero and
+are uniformly bounded on this normalized set.
+
+In the flat region the formula is even simpler:
+\begin{equation}
+\label{eq:upper-W-flat-explicit}
+ W=x d+\frac{(x+d-RS)_+^2}{2R}.
+\end{equation}
+Its gradient is globally Lipschitz.  Because the two regional formulas have
+the same first derivative at their interface, an interpolated unit step has a
+uniformly bounded second derivative except at finitely many harmless joining
+points.  More explicitly, let $\phi(t)=W(s+t v_q)$.  The preceding bounds and
+the $C^1$ gluing make $\phi'$ Lipschitz with one uniform constant $L$ along
+the whole segment, so
+\[
+ \left|\phi(1)-\phi(0)-\phi'(0)\right|
+ \le \int_0^1\left|\phi'(t)-\phi'(0)\right|\,dt
+ \le \int_0^1 Lt\,dt=\frac L2.
+\]
+This proves \eqref{eq:upper-Taylor} for $x\ge2$.  When $x=1$, the
+changing-threshold pre-states lie in the same compact normalized set, while
+\eqref{eq:upper-W-flat-explicit} applies globally in the flat region.  At
+$x=0$ we define $W=0$; this agrees with
+\eqref{eq:upper-W-flat-explicit}, since terminal feasibility gives
+$d\le S$ and hence $d-RS\le0$.
+
+Combining \eqref{eq:upper-drift}--\eqref{eq:upper-Taylor} gives the actual
+one-step bank inequality
+\begin{equation}
+\label{eq:upper-one-step}
+ \ell_i+W(s_{i+1})-W(s_i)\le C_0.
+\end{equation}
+
+\paragraph{Telescoping the account.}
+Initially $S=e=d=0$, $x=n$, and $y=0$.  Therefore
+\begin{equation}
+\label{eq:upper-W-initial}
+ W(s_0)=n^2f(0)=\frac\rho2n^2.
+\end{equation}
+The terminal balance is zero.  Summing
+\eqref{eq:upper-one-step} over all $n$ jobs yields
+\[
+ \sum_i\ell_i\le \frac\rho2n^2+C_0n.
+\]
+Substitution into \eqref{eq:upper-F-relaxed} gives
+\[
+ \ALG-R\OPT=F
+ \le
+ -\rho\frac{n(n+1)}2+\frac\rho2n^2+C_0n
+ =\left(C_0-\frac\rho2\right)n.
+\]
+The constant is independent of the four-type word.  Taking
+$C=\max\{0,C_0-\rho/2\}$, the boundary reduction therefore extends the same
+estimate to every vector of nonnegative processing times, proving
+\cref{thm:upper}.
+
+Finally, $\OPT\ge n(n+1)/2$, so the additive $O(n)$ term is lower order and
+\[
+ \frac{\ALG}{\OPT}\le R+O(1/n).
+\]
+This proves the desired size-asymptotic upper bound.  Notice exactly where the
+remaining finite-instance loss enters: it is only the uniform Taylor
+remainder in \eqref{eq:upper-Taylor} (together with the deliberately
+discarded favorable diagonal terms), not any unproved limiting step in the
+endpoint reduction.  In particular, this argument proves a linear additive
+term; it does not prove one fixed additive constant at the endpoint $R$.

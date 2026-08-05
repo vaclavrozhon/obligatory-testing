@@ -1,0 +1,147 @@
+\newcommand{\etalchar}[1]{$^{#1}$}
+\begin{thebibliography}{DEMM20}
+
+\bibitem[AE21]{AlbersEckl2021}
+Susanne Albers and Alexander Eckl.
+\newblock Explorable uncertainty in scheduling with non-uniform testing times.
+\newblock In Christos Kaklamanis and Asaf Levin, editors, {\em Approximation
+  and Online Algorithms: 18th International Workshop, WAOA 2020, Revised
+  Selected Papers}, volume 12806 of {\em Lecture Notes in Computer Science},
+  pages 127--142. Springer, 2021.
+\newblock \href {https://doi.org/10.1007/978-3-030-80879-2_9}
+  {\path{doi:10.1007/978-3-030-80879-2_9}}.
+
+\bibitem[BS26]{BuldSchulz2026}
+Felix Buld and Andreas~S. Schulz.
+\newblock Scheduling with testing: Competitive algorithms for minimizing the
+  total weighted completion time in the adversarial model, 2026.
+\newblock \href {https://arxiv.org/abs/2606.25166} {\path{arXiv:2606.25166}}.
+
+\bibitem[DDN{\etalchar{+}}22]{DufosseEtAl2022}
+Fanny Dufoss{\'e}, Christoph D{\"u}rr, No{\"e}l Nadal, Denis Trystram, and
+  {\'O}scar~C. V{\'a}squez.
+\newblock Scheduling with a processing time oracle.
+\newblock {\em Applied Mathematical Modelling}, 104:701--720, 2022.
+\newblock \href {https://doi.org/10.1016/j.apm.2021.12.020}
+  {\path{doi:10.1016/j.apm.2021.12.020}}.
+
+\bibitem[DEL24]{DogeasErlebachLiang2024}
+Konstantinos Dogeas, Thomas Erlebach, and Ya-Chun Liang.
+\newblock Scheduling with obligatory tests.
+\newblock In Timothy Chan, Johannes Fischer, John Iacono, and Grzegorz Herman,
+  editors, {\em 32nd Annual European Symposium on Algorithms (ESA 2024)},
+  volume 308 of {\em Leibniz International Proceedings in Informatics
+  (LIPIcs)}, pages 48:1--48:14, Dagstuhl, Germany, 2024. Schloss Dagstuhl --
+  Leibniz-Zentrum f{\"u}r Informatik.
+\newblock \href {https://doi.org/10.4230/LIPIcs.ESA.2024.48}
+  {\path{doi:10.4230/LIPIcs.ESA.2024.48}}.
+
+\bibitem[DEMM20]{DurrErlebachMegowMeissner2020}
+Christoph D{\"u}rr, Thomas Erlebach, Nicole Megow, and Julie Mei{\ss}ner.
+\newblock An adversarial model for scheduling with testing.
+\newblock {\em Algorithmica}, 82(12):3630--3675, 2020.
+\newblock \href {https://doi.org/10.1007/s00453-020-00742-2}
+  {\path{doi:10.1007/s00453-020-00742-2}}.
+
+\bibitem[DKL{\etalchar{+}}23]{DameriusEtAl2023}
+Christoph Damerius, Peter Kling, Minming Li, Chenyang Xu, and Ruilong Zhang.
+\newblock Scheduling with a limited testing budget: Tight results for the
+  offline and oblivious settings.
+\newblock In {\em 31st Annual European Symposium on Algorithms (ESA 2023)},
+  volume 274 of {\em Leibniz International Proceedings in Informatics
+  (LIPIcs)}, pages 38:1--38:15. Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r
+  Informatik, 2023.
+\newblock \href {https://doi.org/10.4230/LIPIcs.ESA.2023.38}
+  {\path{doi:10.4230/LIPIcs.ESA.2023.38}}.
+
+\bibitem[dMU21]{DeMouraUllrich2021}
+Leonardo de~Moura and Sebastian Ullrich.
+\newblock The {Lean 4} theorem prover and programming language.
+\newblock In {\em Automated Deduction -- CADE 28}, volume 12699 of {\em Lecture
+  Notes in Computer Science}, pages 625--635. Springer, 2021.
+\newblock \href {https://doi.org/10.1007/978-3-030-79876-5_37}
+  {\path{doi:10.1007/978-3-030-79876-5_37}}.
+
+\bibitem[GCH24]{GongChenHayashi2024}
+Mingyang Gong, Zhi-Zhong Chen, and Kuniteru Hayashi.
+\newblock Approximation algorithms for multiprocessor scheduling with testing
+  to minimize the total job completion time.
+\newblock {\em Algorithmica}, 86(5):1400--1427, 2024.
+\newblock \href {https://doi.org/10.1007/s00453-023-01198-w}
+  {\path{doi:10.1007/s00453-023-01198-w}}.
+
+\bibitem[Kah91]{Kahan1991}
+Simon Kahan.
+\newblock A model for data in motion.
+\newblock In {\em Proceedings of the 23rd Annual ACM Symposium on Theory of
+  Computing (STOC 1991)}, pages 265--277. Association for Computing Machinery,
+  1991.
+\newblock \href {https://doi.org/10.1145/103418.103449}
+  {\path{doi:10.1145/103418.103449}}.
+
+\bibitem[KLL{\etalchar{+}}26]{KrekelbergEtAl2026}
+Bob Krekelberg, Alison Hsiang-Hsuan Liu, Fu-Hong Liu, Prudence W.~H. Wong, and
+  Xiao-Ou Zhang.
+\newblock The power of amortization on minimizing total completion time with
+  explorable uncertainty, 2026.
+\newblock Version 2, revised 8 May 2026.
+\newblock \href {https://arxiv.org/abs/2503.13357} {\path{arXiv:2503.13357}}.
+
+\bibitem[LL26]{LiangLiang2026}
+Kao-Chuan Liang and Ya-Chun Liang.
+\newblock Hardness of obligatory-test scheduling on multiple machines, 2026.
+\newblock Version 2, revised 14 July 2026.
+\newblock \href {https://arxiv.org/abs/2606.02029} {\path{arXiv:2606.02029}}.
+
+\bibitem[LLWZ23]{LiuLiuWongZhang2023}
+Alison Hsiang-Hsuan Liu, Fu-Hong Liu, Prudence W.~H. Wong, and Xiao-Ou Zhang.
+\newblock The power of amortization on scheduling with explorable uncertainty.
+\newblock In Jaroslaw Byrka and Andreas Wiese, editors, {\em Approximation and
+  Online Algorithms: 21st International Workshop, WAOA 2023}, volume 14297 of
+  {\em Lecture Notes in Computer Science}, pages 90--103. Springer, 2023.
+\newblock \href {https://doi.org/10.1007/978-3-031-49815-2_7}
+  {\path{doi:10.1007/978-3-031-49815-2_7}}.
+
+\bibitem[LMS19]{LeviMagnantiShaposhnik2019}
+Retsef Levi, Thomas~L. Magnanti, and Yaron Shaposhnik.
+\newblock Scheduling with testing.
+\newblock {\em Management Science}, 65(2):776--793, 2019.
+\newblock \href {https://doi.org/10.1287/mnsc.2017.2973}
+  {\path{doi:10.1287/mnsc.2017.2973}}.
+
+\bibitem[LMS24]{LeviMagnantiShaposhnik2024}
+Retsef Levi, Thomas~L. Magnanti, and Yaron Shaposhnik.
+\newblock Scheduling with testing of heterogeneous jobs.
+\newblock {\em Management Science}, 70(5):2934--2953, 2024.
+\newblock \href {https://doi.org/10.1287/mnsc.2023.4833}
+  {\path{doi:10.1287/mnsc.2023.4833}}.
+
+\bibitem[LSSS26]{LindermayrEtAl2026}
+Alexander Lindermayr, Guido Sch{\"a}fer, Jens Schl{\"o}ter, and Leen Stougie.
+\newblock Online flow time minimization with gradually revealed jobs, 2026.
+\newblock \href {https://arxiv.org/abs/2602.12716} {\path{arXiv:2602.12716}}.
+
+\bibitem[MPT94]{MotwaniPhillipsTorng1994}
+Rajeev Motwani, Steven~J. Phillips, and Eric Torng.
+\newblock Nonclairvoyant scheduling.
+\newblock {\em Theoretical Computer Science}, 130(1):17--47, 1994.
+\newblock \href {https://doi.org/10.1016/0304-3975(94)90151-1}
+  {\path{doi:10.1016/0304-3975(94)90151-1}}.
+
+\bibitem[Smi56]{Smith1956}
+Wayne~E. Smith.
+\newblock Various optimizers for single-stage production.
+\newblock {\em Naval Research Logistics Quarterly}, 3(1--2):59--66, 1956.
+\newblock \href {https://doi.org/10.1002/nav.3800030106}
+  {\path{doi:10.1002/nav.3800030106}}.
+
+\bibitem[{The}20]{Mathlib2020}
+{The mathlib Community}.
+\newblock The {Lean} mathematical library.
+\newblock In {\em Proceedings of the 9th ACM SIGPLAN International Conference
+  on Certified Programs and Proofs (CPP 2020)}, pages 367--381. Association for
+  Computing Machinery, 2020.
+\newblock \href {https://doi.org/10.1145/3372885.3373824}
+  {\path{doi:10.1145/3372885.3373824}}.
+
+\end{thebibliography}
