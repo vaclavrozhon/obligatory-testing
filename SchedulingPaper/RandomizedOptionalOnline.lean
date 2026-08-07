@@ -379,6 +379,8 @@ structure HistoryInvariant
   startedNodup : config.transcript.startedLabels.Nodup
   untouchedNotStarted : ∀ job, config.jobs job = .untouched →
     job ∉ config.transcript.startedLabels
+  notStartedUntouched : ∀ job,
+    job ∉ config.transcript.startedLabels → config.jobs job = .untouched
   processedNodup : config.transcript.processedLabels.Nodup
   testedRecorded : ∀ job p, config.jobs job = .tested p →
     (job, p) ∈ config.transcript.testResults
@@ -422,6 +424,14 @@ theorem HistoryInvariant.step
             · have hold := hgood.untouchedNotStarted job
                 (by simpa [Function.update, heq] using hjob)
               simpa [heq] using hold
+          · intro job hnotStarted
+            have hne : job ≠ testedJob := by
+              intro heq
+              subst job
+              simp at hnotStarted
+            have hold : config.jobs job = .untouched :=
+              hgood.notStartedUntouched job (by simpa [hne] using hnotStarted)
+            simpa [Function.update, hne] using hold
           · simpa using hgood.processedNodup
           · intro job p hjob
             by_cases heq : job = testedJob
@@ -480,6 +490,13 @@ theorem HistoryInvariant.step
               simp [Function.update] at hjob
             · simpa only [Transcript.startedLabels_append_process] using
                 hold (by simpa [Function.update, heq] using hjob)
+          · intro job hnotStarted
+            have hold := hgood.notStartedUntouched job (by simpa using hnotStarted)
+            by_cases heq : job = processedJob
+            · subst job
+              rw [hstate] at hold
+              contradiction
+            · simpa [Function.update, heq] using hold
           · simpa only [Transcript.processedLabels_append_process,
                 List.concat_eq_append] using
               List.Nodup.concat hnotProcessed hgood.processedNodup
@@ -530,6 +547,14 @@ theorem HistoryInvariant.step
             · have hold := hgood.untouchedNotStarted job
                 (by simpa [Function.update, heq] using hjob)
               simpa [heq] using hold
+          · intro job hnotStarted
+            have hne : job ≠ blindJob := by
+              intro heq
+              subst job
+              simp at hnotStarted
+            have hold : config.jobs job = .untouched :=
+              hgood.notStartedUntouched job (by simpa [hne] using hnotStarted)
+            simpa [Function.update, hne] using hold
           · simpa using hgood.processedNodup
           · intro job p hjob
             by_cases heq : job = blindJob
@@ -587,6 +612,30 @@ theorem run_historyInvariant
   exact runFuel_historyInvariant processing strategy fuel (Config.initial n)
     (Config.initial_historyInvariant processing)
 
+/-- A completed reachable run has touched every public label exactly once.
+This turns its `startedLabels` list into a permutation without adding a
+second execution semantics. -/
+theorem HistoryInvariant.startedLabels_length_eq_n_of_done
+    {processing : Label n → ℝ} {config : Config n}
+    (hgood : HistoryInvariant processing config)
+    (hdone : ∀ job, config.jobs job = .done) :
+    config.transcript.startedLabels.length = n := by
+  classical
+  have hmem : ∀ job : Label n,
+      job ∈ config.transcript.startedLabels := by
+    intro job
+    by_contra hnot
+    have huntouched := hgood.notStartedUntouched job hnot
+    rw [hdone job] at huntouched
+    contradiction
+  have hset : config.transcript.startedLabels.toFinset = Finset.univ := by
+    exact Finset.eq_univ_of_forall fun job ↦ List.mem_toFinset.mpr (hmem job)
+  calc
+    config.transcript.startedLabels.length =
+        config.transcript.startedLabels.toFinset.card :=
+      (List.toFinset_card_of_nodup hgood.startedNodup).symm
+    _ = n := by rw [hset]; simp
+
 /-! Every successful optional action strictly consumes a finite lifecycle
 rank.  Thus `2n+1` fuel always settles, independently of processing times and
 of the strategy's adaptive use of observed blind durations. -/
@@ -605,10 +654,6 @@ private theorem remainingWork_update_test
     (∑ i, (Function.update jobs job (.tested p) i).work) + 1 =
       ∑ i, (jobs i).work := by
   classical
-  rw [← Finset.sum_erase_add _ _ (Finset.mem_univ job)]
-  rw [← Finset.sum_erase_add (Finset.univ : Finset (Label n))
-    (fun i => (Function.update jobs job (.tested p) i).work)
-    (Finset.mem_univ job)]
   have hrest :
       (∑ i ∈ (Finset.univ : Finset (Label n)).erase job,
         (Function.update jobs job (.tested p) i).work) =
@@ -616,8 +661,18 @@ private theorem remainingWork_update_test
     apply Finset.sum_congr rfl
     intro i hi
     simp [Function.update, (Finset.mem_erase.mp hi).1]
-  rw [hrest]
-  simp [Function.update, hjob, JobState.work]
+  calc
+    (∑ i, (Function.update jobs job (.tested p) i).work) + 1 =
+        ((∑ i ∈ (Finset.univ : Finset (Label n)).erase job,
+            (Function.update jobs job (.tested p) i).work) +
+          (Function.update jobs job (.tested p) job).work) + 1 := by
+            rw [Finset.sum_erase_add _ _ (Finset.mem_univ job)]
+    _ = ((∑ i ∈ (Finset.univ : Finset (Label n)).erase job,
+            (jobs i).work) + (jobs job).work) := by
+          rw [hrest]
+          simp [Function.update, hjob, JobState.work]
+    _ = ∑ i, (jobs i).work :=
+      Finset.sum_erase_add _ _ (Finset.mem_univ job)
 
 private theorem remainingWork_update_process
     (jobs : Label n → JobState) (job : Label n) (p : ℝ)
@@ -625,10 +680,6 @@ private theorem remainingWork_update_process
     (∑ i, (Function.update jobs job .done i).work) + 1 =
       ∑ i, (jobs i).work := by
   classical
-  rw [← Finset.sum_erase_add _ _ (Finset.mem_univ job)]
-  rw [← Finset.sum_erase_add (Finset.univ : Finset (Label n))
-    (fun i => (Function.update jobs job .done i).work)
-    (Finset.mem_univ job)]
   have hrest :
       (∑ i ∈ (Finset.univ : Finset (Label n)).erase job,
         (Function.update jobs job .done i).work) =
@@ -636,8 +687,18 @@ private theorem remainingWork_update_process
     apply Finset.sum_congr rfl
     intro i hi
     simp [Function.update, (Finset.mem_erase.mp hi).1]
-  rw [hrest]
-  simp [Function.update, hjob, JobState.work]
+  calc
+    (∑ i, (Function.update jobs job .done i).work) + 1 =
+        ((∑ i ∈ (Finset.univ : Finset (Label n)).erase job,
+            (Function.update jobs job .done i).work) +
+          (Function.update jobs job .done job).work) + 1 := by
+            rw [Finset.sum_erase_add _ _ (Finset.mem_univ job)]
+    _ = ((∑ i ∈ (Finset.univ : Finset (Label n)).erase job,
+            (jobs i).work) + (jobs job).work) := by
+          rw [hrest]
+          simp [Function.update, hjob, JobState.work]
+    _ = ∑ i, (jobs i).work :=
+      Finset.sum_erase_add _ _ (Finset.mem_univ job)
 
 private theorem remainingWork_update_blind
     (jobs : Label n → JobState) (job : Label n)
@@ -645,10 +706,6 @@ private theorem remainingWork_update_blind
     (∑ i, (Function.update jobs job .done i).work) + 2 =
       ∑ i, (jobs i).work := by
   classical
-  rw [← Finset.sum_erase_add _ _ (Finset.mem_univ job)]
-  rw [← Finset.sum_erase_add (Finset.univ : Finset (Label n))
-    (fun i => (Function.update jobs job .done i).work)
-    (Finset.mem_univ job)]
   have hrest :
       (∑ i ∈ (Finset.univ : Finset (Label n)).erase job,
         (Function.update jobs job .done i).work) =
@@ -656,8 +713,18 @@ private theorem remainingWork_update_blind
     apply Finset.sum_congr rfl
     intro i hi
     simp [Function.update, (Finset.mem_erase.mp hi).1]
-  rw [hrest]
-  simp [Function.update, hjob, JobState.work]
+  calc
+    (∑ i, (Function.update jobs job .done i).work) + 2 =
+        ((∑ i ∈ (Finset.univ : Finset (Label n)).erase job,
+            (Function.update jobs job .done i).work) +
+          (Function.update jobs job .done job).work) + 2 := by
+            rw [Finset.sum_erase_add _ _ (Finset.mem_univ job)]
+    _ = ((∑ i ∈ (Finset.univ : Finset (Label n)).erase job,
+            (jobs i).work) + (jobs job).work) := by
+          rw [hrest]
+          simp [Function.update, hjob, JobState.work]
+    _ = ∑ i, (jobs i).work :=
+      Finset.sum_erase_add _ _ (Finset.mem_univ job)
 
 theorem Config.remainingWork_step_lt
     {processing : Label n → ℝ} {config next : Config n} {action : Action n}
@@ -671,7 +738,8 @@ theorem Config.remainingWork_step_lt
           subst next
           have hdrop := remainingWork_update_test config.jobs job
             (processing job) hjob
-          unfold Config.remainingWork
+          change (∑ i, (Function.update config.jobs job
+            (.tested (processing job)) i).work) < ∑ i, (config.jobs i).work
           omega
       | tested p => simp [Config.step, hjob] at hstep
       | done => simp [Config.step, hjob] at hstep
@@ -682,7 +750,8 @@ theorem Config.remainingWork_step_lt
           simp [Config.step, hjob] at hstep
           subst next
           have hdrop := remainingWork_update_process config.jobs job p hjob
-          unfold Config.remainingWork
+          change (∑ i, (Function.update config.jobs job .done i).work) <
+            ∑ i, (config.jobs i).work
           omega
       | done => simp [Config.step, hjob] at hstep
   | blind job =>
@@ -691,7 +760,8 @@ theorem Config.remainingWork_step_lt
           simp [Config.step, hjob] at hstep
           subst next
           have hdrop := remainingWork_update_blind config.jobs job hjob
-          unfold Config.remainingWork
+          change (∑ i, (Function.update config.jobs job .done i).work) <
+            ∑ i, (config.jobs i).work
           omega
       | tested p => simp [Config.step, hjob] at hstep
       | done => simp [Config.step, hjob] at hstep
@@ -706,11 +776,13 @@ theorem runFuel_reason_ne_outOfFuel_of_remainingWork_lt
   | succ fuel ih =>
       simp only [runFuel]
       cases haction : strategy config.transcript with
-      | none => simp
+      | none => simp [haction]
       | some action =>
+          simp only
           cases hstep : config.step processing action with
           | none => simp
           | some next =>
+              simp only
               have hdrop := Config.remainingWork_step_lt hstep
               apply ih next
               omega

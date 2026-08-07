@@ -1572,15 +1572,21 @@ canonical four-block policy there.  This richer semantics is the one used for
 the arbitrary-policy announced lower bound; the older runtime is only a
 restricted-policy convenience layer.
 
-The permutation formalization also proves that one arbitrary
-prefix-measurable choice from the remaining labels is an invertible suffix
-swap of a uniform permutation, and closes this under finite composition.  The
-remaining policy compiler has to instantiate these swaps and the associated
-test/blind selectors from every reachable observed transcript.
+`SchedulingPaper/RandomizedOptionalTraceBijection.lean` and
+`SchedulingPaper/RandomizedOptionalObservedTrace.lean` now give the simpler
+global compiler.  Distinct occurrences turn a placement into a permutation;
+the operational `startedLabels` list is the permutation of public labels in
+first-touch order.  A lockstep theorem proves that equal exposed-value
+prefixes force the same next label and `test`/`blind` action, including after
+observed blind durations.  Consequently the adaptive reveal map is a
+bijection of the finite placement space, uniform averages reindex exactly,
+and the compiled test selector is predictable.  The selected-class and
+blind-work sums are identified pathwise.  No suffix-swap composition or
+conditional-probability semantics is used in this compiler.
 
-The main missing formal layer is now the global operation-prefix-to-envelope
-assembly (including arbitrary adaptive touch choices for the announced lower
-bound), the specialization of the generic finite-kernel theorem to the
+The main missing formal layer is now the physical-operation-prefix-to-envelope
+assembly after the completed adaptive-touch compiler, the specialization of
+the generic finite-kernel theorem to the
 concrete canonical transcript, and the final minimax/Yao plus pilot-learning
 wrappers.
 

@@ -114,20 +114,26 @@ four-block policy in this richer model.  The distinction matters for the
 announced lower bound, whose arbitrary comparison policy may learn from blind
 durations.
 
-The permutation layer additionally proves that a prefix-measurable adaptive
-choice of any still-unrevealed label is a measure-preserving suffix swap, and
-that every finite composition of such choices preserves the uniform
-permutation law.  This is the measure-theoretic core needed to compile
-arbitrary adaptive touch orders to the predictable-selector concentration
-theorems.
+`RandomizedOptionalTraceBijection` and
+`RandomizedOptionalObservedTrace` now close the arbitrary adaptive-touch
+compiler without conditional probabilities.  Occurrences are distinguished,
+the completed operational transcript is converted to its permutation of
+first-touched public labels, and a lockstep theorem proves prefix causality
+even when later decisions use observed blind durations.  The induced hidden
+reveal order is an injective self-map of the finite placement space and hence
+a bijection.  Reindexing by this bijection preserves the uniform average
+exactly and produces a predictable `0/1` test selector.  Lean also checks the
+pathwise selected-class and blind-work sum identities.  The older suffix-swap
+lemmas remain available but are not used by this compiler.
 
 This is not yet a formal proof of the full adaptive theorem.  The remaining
 major layer is to connect the operational schedule, and an arbitrary
 announced-multiset policy for the lower bound, to the complete fluid envelope
-at every physical-time prefix and realized stopping fraction.  In particular,
-the remaining compiler must extract the successive adaptive suffix choices
-and test/blind selectors from an arbitrary observed transcript policy. The concrete
-canonical transcript must still be decomposed into the already verified
+at every physical-time prefix and realized stopping fraction.  The adaptive
+first-touch order and predictable test/blind selector are now fully compiled;
+the remaining bridge must translate every operation-time prefix into the
+already checked repaired completion envelope. The concrete canonical
+transcript must still be decomposed into the already verified
 generic finite kernels; the final announced-minimax/Yao wrapper and the
 pilot-plus-main unknown-multiset strategy must then be assembled.
 The detailed analytic proof is in `OPTIONAL_TWO_PHASE_PROOF.md`; this map

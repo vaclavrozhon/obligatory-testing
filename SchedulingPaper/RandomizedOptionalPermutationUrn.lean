@@ -144,6 +144,9 @@ def adaptiveSuffixSwapEquiv {n : ℕ} (j : Fin n)
         omega
       simp [Equiv.Perm.mul_apply,
         Equiv.swap_apply_of_ne_of_ne hij hir]
+    change
+      (σ * Equiv.swap j (choose σ)) *
+          Equiv.swap j (choose (σ * Equiv.swap j (choose σ))) = σ
     rw [hchoice]
     ext i
     simp [Equiv.Perm.mul_apply]
@@ -163,6 +166,9 @@ def adaptiveSuffixSwapEquiv {n : ℕ} (j : Fin n)
         omega
       simp [Equiv.Perm.mul_apply,
         Equiv.swap_apply_of_ne_of_ne hij hir]
+    change
+      (σ * Equiv.swap j (choose σ)) *
+          Equiv.swap j (choose (σ * Equiv.swap j (choose σ))) = σ
     rw [hchoice]
     ext i
     simp [Equiv.Perm.mul_apply]

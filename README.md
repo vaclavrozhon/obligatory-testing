@@ -93,7 +93,10 @@ orthogonality/Chebyshev/checkpoint argument, with an explicit checked
 whose joint failure and aggregate repair error both vanish.  Lean also has the correct actual-processing-time semantics for blind
 jobs, including a separate full-information optional runtime in which blind
 completion reveals the elapsed processing time, its relabelling/cost
-accounting, and a literal randomized four-block transcript-only strategy. The full
+accounting, and a literal randomized four-block transcript-only strategy.
+The arbitrary adaptive first-touch order is now compiled by a finite trace
+bijection into the predictable selector required by the urn bounds, including
+policies that react to observed blind durations. The full physical-time
 operation-prefix/envelope and minimax assembly remain active formalization
 work.  The supplementary
 announced proof has its fluid certificate checked.
