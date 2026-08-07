@@ -2,6 +2,137 @@
 
 ## Fully checked components
 
+### Randomized obligatory testing and the `4/3` proof
+
+The mathematical core of `RANDOMIZED_UNKNOWN_MULTISET_PROOF.md` is now split
+into small checked modules. `RandomizedStationaryCost` proves the exact
+uniform-random-order stationary cost identity. `RandomizedDensityOptimizer`
+constructs a finite maximum-density optimizer, while
+`RandomizedThresholdClosure` proves that closing it by `q <= theta` preserves
+the density identity even for sample-empty bins. `RandomizedQuantization`,
+`RandomizedHistogramTransfer`, and `RandomizedLearnedThreshold` implement the
+literal cutoff-32 histogram and transfer the learned threshold to the true
+population. `RandomizedGoodLearned` then proves the complete robust finite
+fluid certificate for a good learned sample.
+
+`RandomPermutation`, `RandomizedHypergeometric`, `RandomizedHistogram`,
+`RandomizedHistogramL1`, and `RandomizedHistogramConcentration` prove the
+finite-sampling chain through
+`E[histogram L1 error] <= sqrt(D/k)`. `RandomizedObligatoryUpper` checks the
+robust `4/3+(2/3)s` inequality, good fallback, bad-event excess accounting,
+sample-first overhead, and the explicit coefficient `20378`.
+`RandomizedFiniteObjective` identifies the normalized formula with the actual
+clairvoyant SPT objective on effective lengths `1+p`.
+
+`RandomizedOperationalStrategy` defines the sampled learn/fallback policy as
+an actual public-transcript strategy, including permutation relabelling. Lean
+proves that the empirical learner supplies the closed-threshold density and
+mass certificates and that the policy stops normally with every job completed
+within `2n+1` operations. `RandomizedOperationalAnalytic` identifies the
+literal transcript cost with the stationary/sample-first formulas and proves
+all deterministic good-learned, good-fallback, and bad-sample bounds.
+`RandomizedOperationalExpected` performs the conditional and outer
+permutation averages. `RandomizedParameterChoice` verifies the actual floor
+choices `d=floor(n^(1/4))`, `k=floor(n^(3/4))`, and `eta=32/d`, including all
+positivity and square-root estimates.
+
+`RandomizedIidBinaryLower` gives a slightly cleaner matching lower bound than
+the balanced-bridge proof in the note: independent fair `0/2` inputs yield
+coefficient `4n/(3n+5) -> 4/3`. `RandomizedOnlineBinaryCompiler` unfolds an
+arbitrary terminating public-transcript `Online.Strategy` into the adaptive
+fair binary tree, proves exact equality with its literal completion cost, and
+then applies finite Yao selection to obtain one fixed oblivious input. The
+offline expression is proved equal to the literal finite `OPT`.
+
+`RandomizedFourThirds` is the public assembly module. The operational upper
+theorem has no assumed good/bad schedule inequalities. For
+`R=fourthRoot n >= 12`, the concrete floor-parameter strategy satisfies
+`E ALG <= 4 OPT/3 + 20378 R^7`, hence
+`E ALG <= (4/3 + 40756/R) OPT`. Its public operational lower theorem quantifies
+over arbitrary finite families of terminating `Online.Strategy` seeds and
+returns a fixed `0/2` input with ratio `4n/(3n+5)`. These two statements give
+the sharp asymptotic randomized ratio `4/3` entirely inside Lean. The
+small-`n` test-all convention used only to make the paper's displayed additive
+bound literally uniform over every `n` is not needed for the asymptotic theorem
+and is not packaged as a separate piecewise Lean strategy.
+
+### Randomized optional-testing structure
+
+`RandomizedOptionalFluid` checks the exact fractional full-module replacement,
+the finite fractional-knapsack supporting certificate, and the pointwise
+completion-envelope dominance theorem.  It also proves the long-test density
+and area lower bounds, the simultaneous class-by-class grid repair, its
+composition with the completion envelope (the deterministic core of (36)),
+and the horizontal/vertical integral-shift estimate (38).  The canonical
+test/medium/YOLO/high area formula, its quadratic normal form, both optimizer
+cases, and the three-point witness are checked in the same file.
+`RandomizedOptionalGridBridge` strengthens (36) to the form needed by an
+actual urn prefix: it repairs every positive class, accounts separately for
+the zero-class discrepancy, rebuilds the low test module from repaired
+counts, and proves the pointwise envelope bound with exactly
+`(numberOfPositiveClasses+1)*gamma` vertical slack.
+
+`RandomizedOptionalKernel` proves the one-draw and two-draw histogram
+Lipschitz estimates, the exact without-replacement/product-law correction,
+the fixed-template cost bound with constant `12(L+1)`, and both deterministic
+and expected empirical-minimizer sandwiches.
+`RandomizedOptionalFiniteKernel` proves the uniform finite implementation
+lemma (27a) for arbitrary position-dependent bounded one-job and ordered
+two-job kernels: replacing the random-permutation pair law by the empirical
+product law costs at most `(Bsingle+2*Bpair)/n`, independently of the grid
+and the fixed template. `RandomizedOptionalLearning`
+combines this with the finite histogram theorem to obtain the explicit
+`2 C sqrt(K/k)` pilot-learning loss. `RandomizedOptionalUrn` proves the
+pathwise predictable-selection decomposition, remaining-urn drift bound, and
+the transfer of a centered-increment estimate to the adaptively selected test
+and blind subsequences. `RandomizedOptionalPermutationUrn` then supplies the
+missing probabilistic input directly in the project's finite uniform-average
+semantics: suffix-symmetry, pairwise orthogonality of arbitrary predictable
+increments, fixed-suffix variance, Chebyshev concentration, checkpoint
+interpolation, and policy-uniform selected-count and selected-work bounds.
+`RandomizedOptionalRates` instantiates these inequalities with literal finite
+parameters: for `n=R^8`, adaptively selected category counts have error at
+most `4R^7`, and blind work in `[0,L]` has error at most `4LR^7`, except with
+probability at most `5/R` per category.  It also performs the finite union
+bound: for at most `S` positive grid classes with `S^2<=R`, the joint
+count/work failure is at most `10/S` and the aggregate normalized revelation
+repair is at most `8/S`.  This gives a fully checked, slower vanishing mesh;
+the draft's sharper `n^(-1/6)*sqrt(log n)` rate still relies on its
+exponential Azuma estimate. `RandomizedOptionalOperational` gives blind
+execution its actual processing time (without changing the older finite-cap
+semantics), proves exact completion-area and work decompositions, reachable
+prefix invariants, relabelling invariance, and the classwise operational
+revelation constraint. `RandomizedOptionalStrategy` defines the literal
+transcript-only test/low/medium/blind/high policy for that restricted public
+transcript. `RandomizedOptionalOnline` supplies the full intended optional
+information model: a blind completion reveals its elapsed processing time to
+later decisions, with exact cost/area/work accounting, reachable-prefix
+truthfulness and classwise revelation invariants, a strategy-independent
+`2n+1` settling rank, and cost-preserving private relabeling.
+`RandomizedOptionalObservedStrategy` defines the same canonical
+four-block policy in this richer model.  The distinction matters for the
+announced lower bound, whose arbitrary comparison policy may learn from blind
+durations.
+
+The permutation layer additionally proves that a prefix-measurable adaptive
+choice of any still-unrevealed label is a measure-preserving suffix swap, and
+that every finite composition of such choices preserves the uniform
+permutation law.  This is the measure-theoretic core needed to compile
+arbitrary adaptive touch orders to the predictable-selector concentration
+theorems.
+
+This is not yet a formal proof of the full adaptive theorem.  The remaining
+major layer is to connect the operational schedule, and an arbitrary
+announced-multiset policy for the lower bound, to the complete fluid envelope
+at every physical-time prefix and realized stopping fraction.  In particular,
+the remaining compiler must extract the successive adaptive suffix choices
+and test/blind selectors from an arbitrary observed transcript policy. The concrete
+canonical transcript must still be decomposed into the already verified
+generic finite kernels; the final announced-minimax/Yao wrapper and the
+pilot-plus-main unknown-multiset strategy must then be assembled.
+The detailed analytic proof is in `OPTIONAL_TWO_PHASE_PROOF.md`; this map
+reports only what Lean currently checks.
+
 ### Model, optimum, and asymptotics
 
 `Model`, `OfflineOptimal`, and `UnifiedOffline` formalize both cap models,

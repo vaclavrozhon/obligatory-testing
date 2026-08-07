@@ -17,6 +17,14 @@ The project now checks substantially more than the initial static model:
   and ForcedPrefixUTE constructions;
 - all constants and algebraic identities defining the six-branch exact curve,
   including joins, continuity, and its global maximum;
+- the maximum-density stationary threshold and sharp `4/3` fluid
+  worst-case certificate for randomized obligatory testing, the cutoff-32
+  sample learner with threshold closure, finite histogram concentration,
+  good/fallback/bad-event accounting, and the explicit `20378` coefficient;
+- a concrete transcript-only sampled learn/fallback strategy with a proved
+  `2n+1` completion bound, a fully discharged operational expected-cost bound,
+  and a finite Yao lower bound on actual `0/2` instances whose coefficient
+  `4n/(3n+5)` tends to `4/3`;
 - the binary stopping scalar game, Zero-prefix interpolation, the full UTE
   endpoint game, and reduction from arbitrary feasible endpoint masses;
 - harmonic finite sums and their limiting optimization;
@@ -36,6 +44,59 @@ records are filled by `VerifiedLowerBoundFinalAssembly` and
 `UpperBoundFinalAssembly`; they are not premises of the theorem.
 
 The source contains no `sorry`, `admit`, or project-defined `axiom`.
+
+## Randomized analyses and proof status
+
+The three randomized analyses are developed analytically before their Lean
+formalization:
+
+- `RANDOMIZED_UNKNOWN_MULTISET_PROOF.md` gives a completed self-contained
+  proof of the exact asymptotic `4/3` ratio for obligatory testing against an
+  oblivious adversary, without an announced multiset and without a bound on
+  processing times. Its explicit finite guarantee is
+  `E ALG <= 4OPT/3+20378 n^(7/4)`, equivalently
+  `E ALG <= (4/3+40756 n^(-1/4))OPT`; the matching fixed binary instances give
+  `4/3-O(n^(-1/2))`.
+- `OPTIONAL_TWO_PHASE_PROOF.md` proves the fixed-tested-fraction fluid
+  envelope and develops the bounded optional-testing candidate theorem at the
+  `n^2` scale: blind pilot, threshold-testing prefix, monotone tested medium
+  block, YOLO block, and monotone tested high tail.  The arbitrary-support
+  and unannounced-multiset statements remain explicitly marked as candidate
+  theorems pending audit of their finite grid transfer.
+- `STATIONARY_THRESHOLD_PROOF.md` is a supplementary stronger result for the
+  announced obligatory model: its lower transfer is mean-sensitive and needs
+  no bounded-support assumption, and the stationary policy is exactly
+  finite `4/3`-competitive.  The universal unknown-multiset `4/3` proof does
+  not depend on its general lower-transfer theorem.
+
+The obligatory analytic proof is complete. Lean checks its exact and
+robust fluid certificates, maximum-density optimizer and sample-empty-bin
+closure, quantization and histogram concentration, fallback and bad-event
+analysis, explicit constants, a terminating transcript-only implementation,
+the conditional and outer permutation averages, the concrete floor and
+fourth-root parameters, and a matching finite Yao lower bound whose offline
+expression is proved equal to the literal clairvoyant objective.
+`RandomizedFourThirds.lean` exposes unconditional operational upper and lower
+theorems; the lower theorem includes the generic compiler from every
+terminating public-transcript `Online.Strategy` to its fair binary tree. Thus
+Lean proves the exact asymptotic randomized ratio `4/3`.  For the optional
+proof Lean now checks the pointwise fractional-knapsack envelope, the
+long-test area bound, classwise grid repair and integral-shift transfer,
+one-/two-job finite kernel corrections, a `12(L+1)` histogram stability bound,
+the uniform `O_L(n)` fixed-operation-word/product-law lemma (27a), and the
+sampled empirical-minimization wrapper.  The finite
+random-permutation development also proves policy-uniform predictable-urn
+concentration for adaptive selected counts and bounded selected work via an
+orthogonality/Chebyshev/checkpoint argument, with an explicit checked
+`n=R^8` instantiation giving `4R^7` error and failure probability at most
+`5/R` per category, plus a checked all-grid union regime `K<=S`, `S^2<=R`
+whose joint failure and aggregate repair error both vanish.  Lean also has the correct actual-processing-time semantics for blind
+jobs, including a separate full-information optional runtime in which blind
+completion reveals the elapsed processing time, its relabelling/cost
+accounting, and a literal randomized four-block transcript-only strategy. The full
+operation-prefix/envelope and minimax assembly remain active formalization
+work.  The supplementary
+announced proof has its fluid certificate checked.
 
 ## Build
 

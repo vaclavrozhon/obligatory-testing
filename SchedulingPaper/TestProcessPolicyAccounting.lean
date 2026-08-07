@@ -639,7 +639,7 @@ private theorem pairProjection_test_process_infix_right
   rw [hprojection]
   exact List.infix_append _ _ _
 
-private theorem pairProjection_before_rightProcess
+theorem pairProjection_before_rightProcess
     {transcript before after : Transcript n}
     {left right : Label n} (hne : left ≠ right) (p q : ℝ)
     (hdecomp :
@@ -661,7 +661,7 @@ private theorem pairProjection_before_rightProcess
     (by simp) (by simp)
     (by simpa using hne.symm) heq
 
-private theorem pairProjection_after_leftProcess_oneTest
+theorem pairProjection_after_leftProcess_oneTest
     {transcript before after : Transcript n}
     {left right : Label n} (hne : left ≠ right) (p q : ℝ)
     (hdecomp :
@@ -684,7 +684,7 @@ private theorem pairProjection_after_leftProcess_oneTest
       (by simp) (by simp)
       (by simpa using hne) heq).2
 
-private theorem pairProjection_before_leftProcess
+theorem pairProjection_before_leftProcess
     {transcript before after : Transcript n}
     {left right : Label n} (hne : left ≠ right) (p q : ℝ)
     (hdecomp :
@@ -706,7 +706,7 @@ private theorem pairProjection_before_leftProcess
     (by simp) (by simp)
     (by simpa using hne) heq
 
-private theorem left_remaining_of_pairProjection_tests
+theorem left_remaining_of_pairProjection_tests
     {before : Transcript n} {left right : Label n}
     (hne : left ≠ right) (p q : ℝ)
     (hprojection :
@@ -737,7 +737,7 @@ private theorem left_remaining_of_pairProjection_tests
     rw [hprojection] at hmem
     simp at hmem
 
-private theorem right_remaining_of_pairProjection_tests
+theorem right_remaining_of_pairProjection_tests
     {before : Transcript n} {left right : Label n}
     (hne : left ≠ right) (p q : ℝ)
     (hprojection :
