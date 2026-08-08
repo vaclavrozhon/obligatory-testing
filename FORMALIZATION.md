@@ -126,15 +126,27 @@ exactly and produces a predictable `0/1` test selector.  Lean also checks the
 pathwise selected-class and blind-work sum identities.  The older suffix-swap
 lemmas remain available but are not used by this compiler.
 
+`RandomizedOptionalSimultaneousUrn` upgrades the fixed-horizon martingale
+estimate to one event controlling every first-touch prefix and every grid
+class, using coarse checkpoints and deterministic interpolation.  The event
+is reindexed through the trace bijection back to the original hidden
+placement.  `RandomizedOptionalObservedTrace` additionally identifies every
+fuel-truncated operational test-class count, blind count, and blind-work total
+with the corresponding predictable prefix sums.  Finally,
+`RandomizedOptionalObservedEnvelope` converts those literal operational
+quantities into the normalized fluid variables, proves `t <= q`, the blind
+capacity, every repaired revelation constraint, and the exact work and
+completion decompositions, and applies the all-class grid envelope to an
+arbitrary adaptive policy prefix.  Thus the adaptive policy-tree/urn/grid
+bridge is now checked end to end at the pointwise-envelope level.
+
 The English instance-optimality proof is complete, but this is not yet a
 formal proof of the full adaptive theorem.  The remaining
-major layer is to connect the operational schedule, and an arbitrary
-announced-multiset policy for the lower bound, to the complete fluid envelope
-at every physical-time prefix and realized stopping fraction.  The adaptive
-first-touch order and predictable test/blind selector are now fully compiled;
-the remaining bridge must translate every operation-time prefix into the
-already checked repaired completion envelope. The concrete canonical
-transcript must still be decomposed into the already verified
+major lower-bound layer is global rather than scheduler-causal: construct the
+canonical greedy envelope as a physical-time function, integrate the checked
+pointwise comparison, and identify its area with `canonicalFluidCost` for the
+realized stopping fraction. The concrete canonical transcript must still be
+decomposed into the already verified
 generic finite kernels; the final announced-minimax/Yao wrapper and the
 pilot-plus-main unknown-multiset strategy must then be assembled.
 The detailed analytic proof is in `OPTIONAL_TWO_PHASE_PROOF.md`; this map

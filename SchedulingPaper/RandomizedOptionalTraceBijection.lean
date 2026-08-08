@@ -205,6 +205,25 @@ theorem compiled_test_selection_identity {n : ℕ}
   unfold revealOrder
   split <;> simp_all
 
+/-- Prefix form of `compiled_test_selection_identity`.  Restricting to
+`positionsThrough cutoff` is exactly restricting the operational trace to
+the first `cutoff.val + 1` first touches. -/
+theorem compiled_test_selection_prefix_identity {n : ℕ}
+    (p : Occurrence n → ℝ)
+    (trace : Placement n → TouchTrace n) (hcausal : Causal p trace)
+    (value : Occurrence n → ℝ) (σ : Placement n) (cutoff : Fin n) :
+    (∑ k ∈ positionsThrough cutoff,
+        compiledTestSelector p trace hcausal k (revealOrder trace σ) *
+          value (revealOrder trace σ k)) =
+      ∑ k ∈ positionsThrough cutoff,
+        if (trace σ).kind k = .test then
+          value (σ ((trace σ).label k)) else 0 := by
+  apply Finset.sum_congr rfl
+  intro k hk
+  rw [compiledTestSelector_on_revealOrder]
+  unfold revealOrder
+  split <;> simp_all
+
 /-- Exact pathwise blind-work identity.  In particular, taking `value=p`
 recovers the total processing work of blindly completed first touches. -/
 theorem compiled_blind_selection_identity {n : ℕ}
@@ -215,6 +234,23 @@ theorem compiled_blind_selection_identity {n : ℕ}
         (revealOrder trace σ)) * value (revealOrder trace σ k)) =
       ∑ k, if (trace σ).kind k = .blind then
         value (σ ((trace σ).label k)) else 0 := by
+  apply Finset.sum_congr rfl
+  intro k hk
+  rw [compiledTestSelector_on_revealOrder]
+  cases hkind : (trace σ).kind k <;>
+    simp [revealOrder, hkind]
+
+/-- Prefix form of `compiled_blind_selection_identity`. -/
+theorem compiled_blind_selection_prefix_identity {n : ℕ}
+    (p : Occurrence n → ℝ)
+    (trace : Placement n → TouchTrace n) (hcausal : Causal p trace)
+    (value : Occurrence n → ℝ) (σ : Placement n) (cutoff : Fin n) :
+    (∑ k ∈ positionsThrough cutoff,
+        (1 - compiledTestSelector p trace hcausal k
+          (revealOrder trace σ)) * value (revealOrder trace σ k)) =
+      ∑ k ∈ positionsThrough cutoff,
+        if (trace σ).kind k = .blind then
+          value (σ ((trace σ).label k)) else 0 := by
   apply Finset.sum_congr rfl
   intro k hk
   rw [compiledTestSelector_on_revealOrder]
