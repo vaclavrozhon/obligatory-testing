@@ -175,6 +175,340 @@ theorem pairChargeAutomaton_eq
           hne, Ne.symm hne, ih] <;>
         split <;> simp_all [ih] <;> aesop <;> ring
 
+/-- Pair-kernel/word identity after the testing quota, when both labels are
+blind.  This is the first of the three quota-position blocks. -/
+theorem canonicalPairKernel_symm_eq_pairAutomaton_blind_blind
+    {n q : ℕ} (processing : Label n → ℝ)
+    (low medium : ℝ → Bool) {i j : Fin n}
+    (hij : i.val < j.val) (hqi : q ≤ i.val) :
+    canonicalPairKernel q processing low medium (canonicalHigh low medium)
+        ⟨(i, j), Fin.ne_of_lt hij⟩ i j +
+      canonicalPairKernel q processing low medium (canonicalHigh low medium)
+        ⟨(j, i), Ne.symm (Fin.ne_of_lt hij)⟩ j i =
+      pairChargeAutomaton processing i j true true
+        (canonicalPairWordOrdered q processing low medium i j) := by
+  have hqj : q ≤ j.val := le_trans hqi hij.le
+  have hti : ¬i.val < q := Nat.not_lt_of_ge hqi
+  have htj : ¬j.val < q := Nat.not_lt_of_ge hqj
+  have hfin : i < j := hij
+  have hne : i ≠ j := ne_of_lt hfin
+  have hne' : j ≠ i := Ne.symm hne
+  have hjfin : ¬j < i := not_lt_of_ge hfin.le
+  simp [canonicalPairKernel, canonicalHigh, testedPosition,
+    beforePosition, canonicalPairWordOrdered, canonicalTestLowWord,
+    canonicalProcessPair, canonicalMediumEligible, canonicalHighEligible,
+    canonicalBlindWord, boolWeight, pairChargeAutomaton,
+    Observation.ownerLabel, Observation.actualDuration,
+    Observation.completionLabel, hti, htj, hqi, hqj, hfin, hjfin,
+    hne, hne']
+
+private theorem canonicalClass_cases (low medium : ℝ → Bool)
+    (hdisjoint : ∀ x, low x = true → medium x = false) (x : ℝ) :
+    (low x = true ∧ medium x = false) ∨
+      (low x = false ∧ medium x = true) ∨
+      (low x = false ∧ medium x = false) := by
+  cases hl : low x <;> cases hm : medium x <;> simp_all
+
+theorem canonicalPairWordOrdered_tested_blind
+    {n q : ℕ} (processing : Label n → ℝ)
+    (low medium : ℝ → Bool) {i j : Fin n}
+    (hti : i.val < q) (hqj : q ≤ j.val) :
+    canonicalPairWordOrdered q processing low medium i j =
+      [.testResult i (processing i)] ++
+        (if low (processing i) then [.processed i] else []) ++
+        (if !low (processing i) && medium (processing i) then
+          [.processed i] else []) ++
+        [.blindCompleted j (processing j)] ++
+        (if !low (processing i) && !medium (processing i) then
+          [.processed i] else []) := by
+  have hqi : ¬q ≤ i.val := Nat.not_le_of_lt hti
+  have htj : ¬j.val < q := Nat.not_lt_of_ge hqj
+  simp [canonicalPairWordOrdered, canonicalTestLowWord,
+    canonicalProcessPair, canonicalMediumEligible, canonicalHighEligible,
+    canonicalBlindWord, hti, htj, hqi, hqj]
+
+/-- Pair-kernel/word identity across the quota boundary. -/
+theorem canonicalPairKernel_symm_eq_pairAutomaton_tested_blind
+    {n q : ℕ} (processing : Label n → ℝ)
+    (low medium : ℝ → Bool)
+    (hdisjoint : ∀ x, low x = true → medium x = false)
+    (hzeroLow : ∀ i, processing i = 0 → low (processing i) = true)
+    {i j : Fin n} (hij : i.val < j.val)
+    (hti : i.val < q) (hqj : q ≤ j.val) :
+    canonicalPairKernel q processing low medium (canonicalHigh low medium)
+        ⟨(i, j), Fin.ne_of_lt hij⟩ i j +
+      canonicalPairKernel q processing low medium (canonicalHigh low medium)
+        ⟨(j, i), Ne.symm (Fin.ne_of_lt hij)⟩ j i =
+      pairChargeAutomaton processing i j true true
+        (canonicalPairWordOrdered q processing low medium i j) := by
+  have hqi : ¬q ≤ i.val := Nat.not_le_of_lt hti
+  have htj : ¬j.val < q := Nat.not_lt_of_ge hqj
+  have hfin : i < j := hij
+  have hne : i ≠ j := ne_of_lt hfin
+  have hne' : j ≠ i := Ne.symm hne
+  have hjfin : ¬j < i := not_lt_of_ge hfin.le
+  rw [canonicalPairWordOrdered_tested_blind processing low medium hti hqj]
+  rcases canonicalClass_cases low medium hdisjoint (processing i) with
+      ⟨hli, hmi⟩ | ⟨hli, hmi⟩ | ⟨hli, hmi⟩
+  · by_cases hpzi : processing i = 0
+    · have hl0 : low 0 = true := by simpa [hpzi] using hli
+      simp [canonicalPairKernel, canonicalHigh, testedPosition,
+        beforePosition, boolWeight, pairChargeAutomaton,
+        Observation.ownerLabel, Observation.actualDuration,
+        Observation.completionLabel, hti, htj, hqi, hqj, hfin, hjfin,
+        hne, hne', hli, hmi, hpzi, hl0]
+    · simp [canonicalPairKernel, canonicalHigh, testedPosition,
+        beforePosition, boolWeight, pairChargeAutomaton,
+        Observation.ownerLabel, Observation.actualDuration,
+        Observation.completionLabel, hti, htj, hqi, hqj, hfin, hjfin,
+        hne, hne', hli, hmi, hpzi] <;> ring
+  · have hpzi : processing i ≠ 0 := by
+      intro hz
+      rw [hzeroLow i hz] at hli
+      contradiction
+    simp [canonicalPairKernel, canonicalHigh, testedPosition,
+      beforePosition, boolWeight, pairChargeAutomaton,
+      Observation.ownerLabel, Observation.actualDuration,
+      Observation.completionLabel, hti, htj, hqi, hqj, hfin, hjfin,
+      hne, hne', hli, hmi, hpzi] <;> ring
+  · have hpzi : processing i ≠ 0 := by
+      intro hz
+      rw [hzeroLow i hz] at hli
+      contradiction
+    simp [canonicalPairKernel, canonicalHigh, testedPosition,
+      beforePosition, boolWeight, pairChargeAutomaton,
+      Observation.ownerLabel, Observation.actualDuration,
+      Observation.completionLabel, hti, htj, hqi, hqj, hfin, hjfin,
+      hne, hne', hli, hmi, hpzi] <;> ring
+
+theorem canonicalPairWordOrdered_tested_tested
+    {n q : ℕ} (processing : Label n → ℝ)
+    (low medium : ℝ → Bool) {i j : Fin n}
+    (hti : i.val < q) (htj : j.val < q) :
+    canonicalPairWordOrdered q processing low medium i j =
+      [.testResult i (processing i)] ++
+        (if low (processing i) then [.processed i] else []) ++
+        [.testResult j (processing j)] ++
+        (if low (processing j) then [.processed j] else []) ++
+        canonicalProcessPair processing
+          (canonicalMediumEligible q processing low medium) i j ++
+        canonicalProcessPair processing
+          (canonicalHighEligible q processing low medium) i j := by
+  have hqi : ¬q ≤ i.val := Nat.not_le_of_lt hti
+  have hqj : ¬q ≤ j.val := Nat.not_le_of_lt htj
+  simp [canonicalPairWordOrdered, canonicalTestLowWord,
+    canonicalBlindWord, hti, htj, hqi, hqj]
+
+/-- Pair-kernel/word identity inside the testing quota.  The class split is
+finite; the only remaining order decision is SPT inside one residual block. -/
+theorem canonicalPairKernel_symm_eq_pairAutomaton_tested_tested
+    {n q : ℕ} (processing : Label n → ℝ)
+    (low medium : ℝ → Bool)
+    (hdisjoint : ∀ x, low x = true → medium x = false)
+    (hzeroLow : ∀ i, processing i = 0 → low (processing i) = true)
+    {i j : Fin n} (hij : i.val < j.val)
+    (hti : i.val < q) (htj : j.val < q) :
+    canonicalPairKernel q processing low medium (canonicalHigh low medium)
+        ⟨(i, j), Fin.ne_of_lt hij⟩ i j +
+      canonicalPairKernel q processing low medium (canonicalHigh low medium)
+        ⟨(j, i), Ne.symm (Fin.ne_of_lt hij)⟩ j i =
+      pairChargeAutomaton processing i j true true
+        (canonicalPairWordOrdered q processing low medium i j) := by
+  have hqi : ¬q ≤ i.val := Nat.not_le_of_lt hti
+  have hqj : ¬q ≤ j.val := Nat.not_le_of_lt htj
+  have hfin : i < j := hij
+  have hne : i ≠ j := ne_of_lt hfin
+  have hne' : j ≠ i := Ne.symm hne
+  have hjfin : ¬j < i := not_lt_of_ge hfin.le
+  rw [canonicalPairWordOrdered_tested_tested processing low medium hti htj]
+  rcases canonicalClass_cases low medium hdisjoint (processing i) with
+      hiL | hiM | hiH
+  · rcases canonicalClass_cases low medium hdisjoint (processing j) with
+        hjL | hjM | hjH
+    · rcases hiL with ⟨hli, hmi⟩
+      rcases hjL with ⟨hlj, hmj⟩
+      by_cases hpzi : processing i = 0 <;>
+        by_cases hpzj : processing j = 0 <;>
+        simp_all [canonicalPairKernel, canonicalHigh, testedPosition,
+          beforePosition, boolWeight, canonicalProcessPair,
+          canonicalMediumEligible, canonicalHighEligible,
+          pairChargeAutomaton, Observation.ownerLabel,
+          Observation.actualDuration, Observation.completionLabel,
+          hti, htj, hqi, hqj, hfin, hjfin, hne, hne',
+          hli, hmi, hlj, hmj, hpzi, hpzj] <;> ring
+    · rcases hiL with ⟨hli, hmi⟩
+      rcases hjM with ⟨hlj, hmj⟩
+      have hpzj : processing j ≠ 0 := by
+        intro hz
+        rw [hzeroLow j hz] at hlj
+        contradiction
+      by_cases hpzi : processing i = 0 <;>
+        simp_all [canonicalPairKernel, canonicalHigh, testedPosition,
+          beforePosition, boolWeight, canonicalProcessPair,
+          canonicalMediumEligible, canonicalHighEligible,
+          pairChargeAutomaton, Observation.ownerLabel,
+          Observation.actualDuration, Observation.completionLabel,
+          hti, htj, hqi, hqj, hfin, hjfin, hne, hne',
+          hli, hmi, hlj, hmj, hpzi, hpzj] <;> ring
+    · rcases hiL with ⟨hli, hmi⟩
+      rcases hjH with ⟨hlj, hmj⟩
+      have hpzj : processing j ≠ 0 := by
+        intro hz
+        rw [hzeroLow j hz] at hlj
+        contradiction
+      by_cases hpzi : processing i = 0 <;>
+        simp_all [canonicalPairKernel, canonicalHigh, testedPosition,
+          beforePosition, boolWeight, canonicalProcessPair,
+          canonicalMediumEligible, canonicalHighEligible,
+          pairChargeAutomaton, Observation.ownerLabel,
+          Observation.actualDuration, Observation.completionLabel,
+          hti, htj, hqi, hqj, hfin, hjfin, hne, hne',
+          hli, hmi, hlj, hmj, hpzi, hpzj] <;> ring
+  · rcases hiM with ⟨hli, hmi⟩
+    have hpzi : processing i ≠ 0 := by
+      intro hz
+      rw [hzeroLow i hz] at hli
+      contradiction
+    rcases canonicalClass_cases low medium hdisjoint (processing j) with
+        hjL | hjM | hjH
+    · rcases hjL with ⟨hlj, hmj⟩
+      by_cases hpzj : processing j = 0 <;>
+        simp_all [canonicalPairKernel, canonicalHigh, testedPosition,
+          beforePosition, boolWeight, canonicalProcessPair,
+          canonicalMediumEligible, canonicalHighEligible,
+          pairChargeAutomaton, Observation.ownerLabel,
+          Observation.actualDuration, Observation.completionLabel,
+          hti, htj, hqi, hqj, hfin, hjfin, hne, hne',
+          hli, hmi, hlj, hmj, hpzi, hpzj] <;> ring
+    · rcases hjM with ⟨hlj, hmj⟩
+      have hpzj : processing j ≠ 0 := by
+        intro hz
+        rw [hzeroLow j hz] at hlj
+        contradiction
+      by_cases hpord : processing i ≤ processing j
+      · simp_all [canonicalPairKernel, canonicalHigh, testedPosition,
+          beforePosition, boolWeight, canonicalProcessPair,
+          canonicalMediumEligible, canonicalHighEligible,
+          pairChargeAutomaton, Observation.ownerLabel,
+          Observation.actualDuration, Observation.completionLabel,
+          hti, htj, hqi, hqj, hfin, hjfin, hne, hne', hli, hmi,
+          hlj, hmj, hpzi, hpzj, hpord, min_eq_left] <;> ring
+      · have hrev : processing j ≤ processing i := le_of_not_ge hpord
+        simp [canonicalPairKernel, canonicalHigh, testedPosition,
+          beforePosition, boolWeight, canonicalProcessPair,
+          canonicalMediumEligible, canonicalHighEligible,
+          pairChargeAutomaton, Observation.ownerLabel,
+          Observation.actualDuration, Observation.completionLabel,
+          hti, htj, hqi, hqj, hfin, hjfin, hne, hne', hli, hmi,
+          hlj, hmj, hpzi, hpzj, hpord, hrev, min_eq_right] <;> ring
+
+    · rcases hjH with ⟨hlj, hmj⟩
+      have hpzj : processing j ≠ 0 := by
+        intro hz
+        rw [hzeroLow j hz] at hlj
+        contradiction
+      simp_all [canonicalPairKernel, canonicalHigh, testedPosition,
+        beforePosition, boolWeight, canonicalProcessPair,
+        canonicalMediumEligible, canonicalHighEligible,
+        pairChargeAutomaton, Observation.ownerLabel,
+        Observation.actualDuration, Observation.completionLabel,
+        hti, htj, hqi, hqj, hfin, hjfin, hne, hne', hli, hmi,
+        hlj, hmj, hpzi, hpzj] <;> ring
+  · rcases hiH with ⟨hli, hmi⟩
+    have hpzi : processing i ≠ 0 := by
+      intro hz
+      rw [hzeroLow i hz] at hli
+      contradiction
+    rcases canonicalClass_cases low medium hdisjoint (processing j) with
+        hjL | hjM | hjH
+    · rcases hjL with ⟨hlj, hmj⟩
+      by_cases hpzj : processing j = 0 <;>
+        simp_all [canonicalPairKernel, canonicalHigh, testedPosition,
+          beforePosition, boolWeight, canonicalProcessPair,
+          canonicalMediumEligible, canonicalHighEligible,
+          pairChargeAutomaton, Observation.ownerLabel,
+          Observation.actualDuration, Observation.completionLabel,
+          hti, htj, hqi, hqj, hfin, hjfin, hne, hne',
+          hli, hmi, hlj, hmj, hpzi, hpzj] <;> ring
+    · rcases hjM with ⟨hlj, hmj⟩
+      have hpzj : processing j ≠ 0 := by
+        intro hz
+        rw [hzeroLow j hz] at hlj
+        contradiction
+      simp_all [canonicalPairKernel, canonicalHigh, testedPosition,
+        beforePosition, boolWeight, canonicalProcessPair,
+        canonicalMediumEligible, canonicalHighEligible,
+        pairChargeAutomaton, Observation.ownerLabel,
+        Observation.actualDuration, Observation.completionLabel,
+        hti, htj, hqi, hqj, hfin, hjfin, hne, hne', hli, hmi,
+        hlj, hmj, hpzi, hpzj] <;> ring
+    · rcases hjH with ⟨hlj, hmj⟩
+      have hpzj : processing j ≠ 0 := by
+        intro hz
+        rw [hzeroLow j hz] at hlj
+        contradiction
+      by_cases hpord : processing i ≤ processing j
+      · simp_all [canonicalPairKernel, canonicalHigh, testedPosition,
+          beforePosition, boolWeight, canonicalProcessPair,
+          canonicalMediumEligible, canonicalHighEligible,
+          pairChargeAutomaton, Observation.ownerLabel,
+          Observation.actualDuration, Observation.completionLabel,
+          hti, htj, hqi, hqj, hfin, hjfin, hne, hne', hli, hmi,
+          hlj, hmj, hpzi, hpzj, hpord, min_eq_left] <;> ring
+      · have hrev : processing j ≤ processing i := le_of_not_ge hpord
+        simp [canonicalPairKernel, canonicalHigh, testedPosition,
+          beforePosition, boolWeight, canonicalProcessPair,
+          canonicalMediumEligible, canonicalHighEligible,
+          pairChargeAutomaton, Observation.ownerLabel,
+          Observation.actualDuration, Observation.completionLabel,
+          hti, htj, hqi, hqj, hfin, hjfin, hne, hne', hli, hmi,
+          hlj, hmj, hpzi, hpzj, hpord, hrev, min_eq_right] <;> ring
+
+/-- The three quota-position calculations cover every ordered pair of
+distinct virtual positions. -/
+theorem canonicalPairKernel_symm_eq_pairAutomaton_ordered
+    {n q : ℕ} (processing : Label n → ℝ)
+    (low medium : ℝ → Bool)
+    (hdisjoint : ∀ x, low x = true → medium x = false)
+    (hzeroLow : ∀ i, processing i = 0 → low (processing i) = true)
+    {i j : Fin n} (hij : i.val < j.val) :
+    canonicalPairKernel q processing low medium (canonicalHigh low medium)
+        ⟨(i, j), Fin.ne_of_lt hij⟩ i j +
+      canonicalPairKernel q processing low medium (canonicalHigh low medium)
+        ⟨(j, i), Ne.symm (Fin.ne_of_lt hij)⟩ j i =
+      pairChargeAutomaton processing i j true true
+        (canonicalPairWordOrdered q processing low medium i j) := by
+  by_cases hti : i.val < q
+  · by_cases htj : j.val < q
+    · exact canonicalPairKernel_symm_eq_pairAutomaton_tested_tested
+        processing low medium hdisjoint hzeroLow hij hti htj
+    · exact canonicalPairKernel_symm_eq_pairAutomaton_tested_blind
+        processing low medium hdisjoint hzeroLow hij hti
+          (Nat.le_of_not_gt htj)
+  · exact canonicalPairKernel_symm_eq_pairAutomaton_blind_blind
+      processing low medium hij (Nat.le_of_not_gt hti)
+
+/-- Equivalently, the symmetrized pair kernel is exactly the two oriented
+completion charges of the canonical two-label word. -/
+theorem canonicalPairKernel_symm_eq_pairWordCharges_ordered
+    {n q : ℕ} (processing : Label n → ℝ)
+    (low medium : ℝ → Bool)
+    (hdisjoint : ∀ x, low x = true → medium x = false)
+    (hzeroLow : ∀ i, processing i = 0 → low (processing i) = true)
+    {i j : Fin n} (hij : i.val < j.val) :
+    canonicalPairKernel q processing low medium (canonicalHigh low medium)
+        ⟨(i, j), Fin.ne_of_lt hij⟩ i j +
+      canonicalPairKernel q processing low medium (canonicalHigh low medium)
+        ⟨(j, i), Ne.symm (Fin.ne_of_lt hij)⟩ j i =
+      observedTraceOrientedCharge processing
+          (canonicalPairWordOrdered q processing low medium i j) i j +
+        observedTraceOrientedCharge processing
+          (canonicalPairWordOrdered q processing low medium i j) j i := by
+  rw [canonicalPairKernel_symm_eq_pairAutomaton_ordered
+    processing low medium hdisjoint hzeroLow hij]
+  rw [pairChargeAutomaton_eq processing (Fin.ne_of_lt hij) true true]
+  simp [add_comm]
+
 end
 
 end ObservedOnline
