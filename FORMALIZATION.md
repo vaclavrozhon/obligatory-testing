@@ -138,17 +138,28 @@ quantities into the normalized fluid variables, proves `t <= q`, the blind
 capacity, every repaired revelation constraint, and the exact work and
 completion decompositions, and applies the all-class grid envelope to an
 arbitrary adaptive policy prefix.  Thus the adaptive policy-tree/urn/grid
-bridge is now checked end to end at the pointwise-envelope level.
+bridge is now checked end to end.
 
-The English instance-optimality proof is complete, but this is not yet a
-formal proof of the full adaptive theorem.  The remaining
-major lower-bound layer is global rather than scheduler-causal: construct the
-canonical greedy envelope as a physical-time function, integrate the checked
-pointwise comparison, and identify its area with `canonicalFluidCost` for the
-realized stopping fraction. The concrete canonical transcript must still be
-decomposed into the already verified
-generic finite kernels; the final announced-minimax/Yao wrapper and the
-pilot-plus-main unknown-multiset strategy must then be assembled.
+`RandomizedOptionalObservedAreaLower` integrates that envelope, constructs
+the maximum-density empirical module and the minimizing tested fraction, and
+proves the closed finite announced lower bound on an exact support.
+`RandomizedOptionalRoundedGrid`, `RandomizedOptionalRoundedObservedEnvelope`,
+and `RandomizedOptionalRoundedObservedAreaLower` extend the same theorem to
+zero-preserving upward rounding: rounded known and blind work cost only one
+mesh horizontally, including the terminal-work mismatch.
+`RandomizedOptionalRoundedBenchmark` constructs the rounded empirical
+threshold and `q*`; `RandomizedOptionalRoundedAnnouncedLower` combines this
+with the trace-reindexed simultaneous concentration and bad-event averaging.
+Finally, `RandomizedOptionalUniformRoundedGrid` constructs the concrete
+uniform positive grid and proves the pointwise `[p,p+mesh]` guarantee.
+
+The English instance-optimality proof is complete, but the full unknown-
+multiset theorem is not yet assembled in Lean.  The remaining formal layer is
+the upper side: specialize the generic finite-kernel theorem to the executable
+canonical transcript, compose it with the pilot empirical optimizer, and add
+the final private-relabeling/minimax wrapper.  On the lower side only the
+explicit vanishing parameter sequence and the zero-mean boundary case remain
+to be packaged around the now-closed finite rounded theorem.
 The detailed analytic proof is in `OPTIONAL_TWO_PHASE_PROOF.md`; this map
 reports only what Lean currently checks.
 
