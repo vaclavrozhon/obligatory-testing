@@ -49,6 +49,44 @@ def fluidBlocksArea : List FluidBlock → ℝ
       homogeneousBlockArea b.cost b.mass (fluidBlocksMass rest) +
         fluidBlocksArea rest
 
+/-- If the mass of every block varies continuously with a parameter while
+its cost stays fixed, then the total block mass varies continuously.  This
+is the small topological lemma needed to choose an optimal tested fraction
+on the compact interval `[0,1]`. -/
+theorem continuous_fluidBlocksMass_map {α : Type*}
+    (items : List α) (cost : α → ℝ) (mass : α → ℝ → ℝ)
+    (hmass : ∀ i ∈ items, Continuous (mass i)) :
+    Continuous (fun q =>
+      fluidBlocksMass (items.map fun i => ⟨cost i, mass i q⟩)) := by
+  induction items with
+  | nil => simpa [fluidBlocksMass] using (continuous_const : Continuous (fun _ : ℝ => (0 : ℝ)))
+  | cons i rest ih =>
+      have hi : Continuous (mass i) := hmass i (by simp)
+      have hrest : ∀ j ∈ rest, Continuous (mass j) := by
+        intro j hj
+        exact hmass j (by simp [hj])
+      simpa [fluidBlocksMass] using hi.add (ih hrest)
+
+/-- Continuity of the exact remaining-mass area for a finite family of
+homogeneous blocks with fixed costs and continuously varying masses. -/
+theorem continuous_fluidBlocksArea_map {α : Type*}
+    (items : List α) (cost : α → ℝ) (mass : α → ℝ → ℝ)
+    (hmass : ∀ i ∈ items, Continuous (mass i)) :
+    Continuous (fun q =>
+      fluidBlocksArea (items.map fun i => ⟨cost i, mass i q⟩)) := by
+  induction items with
+  | nil => simpa [fluidBlocksArea] using (continuous_const : Continuous (fun _ : ℝ => (0 : ℝ)))
+  | cons i rest ih =>
+      have hi : Continuous (mass i) := hmass i (by simp)
+      have hrest : ∀ j ∈ rest, Continuous (mass j) := by
+        intro j hj
+        exact hmass j (by simp [hj])
+      have hrestMass := continuous_fluidBlocksMass_map rest cost mass hrest
+      have hrestArea := ih hrest
+      simp only [List.map_cons, fluidBlocksArea]
+      unfold homogeneousBlockArea
+      fun_prop
+
 def fluidBlocksMinPair (blocks : List FluidBlock) : ℝ :=
   (blocks.map fun b =>
     (blocks.map fun c => min b.cost c.cost * b.mass * c.mass).sum).sum
@@ -110,6 +148,83 @@ theorem fluidBlocksArea_eq_half_minPair
         map_min_right_sum_of_forall_le b rest hhead]
       unfold homogeneousBlockArea
       ring
+
+theorem fluidBlocksMass_nonneg_weak (blocks : List FluidBlock)
+    (hmass : ∀ b ∈ blocks, 0 ≤ b.mass) :
+    0 ≤ fluidBlocksMass blocks := by
+  induction blocks with
+  | nil => simp [fluidBlocksMass]
+  | cons b rest ih =>
+      simp only [fluidBlocksMass]
+      exact add_nonneg (hmass b (by simp))
+        (ih fun c hc => hmass c (by simp [hc]))
+
+theorem fluidBlocksWork_nonneg_weak (blocks : List FluidBlock)
+    (hcost : ∀ b ∈ blocks, 0 ≤ b.cost)
+    (hmass : ∀ b ∈ blocks, 0 ≤ b.mass) :
+    0 ≤ fluidBlocksWork blocks := by
+  induction blocks with
+  | nil => simp [fluidBlocksWork]
+  | cons b rest ih =>
+      simp only [fluidBlocksWork]
+      exact add_nonneg
+        (mul_nonneg (hcost b (by simp)) (hmass b (by simp)))
+        (ih (fun c hc => hcost c (by simp [hc]))
+          (fun c hc => hmass c (by simp [hc])))
+
+/-- Nonnegative costs and masses give nonnegative exact remaining area. -/
+theorem fluidBlocksArea_nonneg
+    (blocks : List FluidBlock)
+    (hcost : ∀ b ∈ blocks, 0 ≤ b.cost)
+    (hmass : ∀ b ∈ blocks, 0 ≤ b.mass) :
+    0 ≤ fluidBlocksArea blocks := by
+  induction blocks with
+  | nil => simp [fluidBlocksArea]
+  | cons b rest ih =>
+      have hbCost := hcost b (by simp)
+      have hbMass := hmass b (by simp)
+      have hrestCost : ∀ c ∈ rest, 0 ≤ c.cost := by
+        intro c hc
+        exact hcost c (by simp [hc])
+      have hrestMass : ∀ c ∈ rest, 0 ≤ c.mass := by
+        intro c hc
+        exact hmass c (by simp [hc])
+      have hrestTotal : 0 ≤ fluidBlocksMass rest :=
+        fluidBlocksMass_nonneg_weak rest hrestMass
+      simp only [fluidBlocksArea]
+      unfold homogeneousBlockArea
+      exact add_nonneg
+        (mul_nonneg hbCost (add_nonneg (mul_nonneg hbMass hrestTotal)
+          (div_nonneg (sq_nonneg _) (by norm_num))))
+        (ih hrestCost hrestMass)
+
+/-- The remaining-mass area of nonnegative blocks is at most total work
+times total mass.  This deliberately coarse estimate is uniform and is used
+only on the bad concentration event. -/
+theorem fluidBlocksArea_le_work_mul_mass
+    (blocks : List FluidBlock)
+    (hcost : ∀ b ∈ blocks, 0 ≤ b.cost)
+    (hmass : ∀ b ∈ blocks, 0 ≤ b.mass) :
+    fluidBlocksArea blocks ≤ fluidBlocksWork blocks * fluidBlocksMass blocks := by
+  induction blocks with
+  | nil => simp [fluidBlocksArea, fluidBlocksWork, fluidBlocksMass]
+  | cons b rest ih =>
+      have hbCost := hcost b (by simp)
+      have hbMass := hmass b (by simp)
+      have hrestCost : ∀ c ∈ rest, 0 ≤ c.cost := by
+        intro c hc
+        exact hcost c (by simp [hc])
+      have hrestMass : ∀ c ∈ rest, 0 ≤ c.mass := by
+        intro c hc
+        exact hmass c (by simp [hc])
+      have hrestTotal : 0 ≤ fluidBlocksMass rest :=
+        fluidBlocksMass_nonneg_weak rest hrestMass
+      have hrestWork : 0 ≤ fluidBlocksWork rest :=
+        fluidBlocksWork_nonneg_weak rest hrestCost hrestMass
+      have hrestArea := ih hrestCost hrestMass
+      simp only [fluidBlocksArea, fluidBlocksWork, fluidBlocksMass]
+      unfold homogeneousBlockArea FluidBlock.work
+      nlinarith [sq_nonneg b.mass]
 
 def scaledClassBlocks {ι : Type*} (q : ℝ) (p D : ι → ℝ)
     (items : List ι) : List FluidBlock :=

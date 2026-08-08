@@ -44,6 +44,39 @@ def optionalSortedResidual {ι : Type*} [Fintype ι] [DecidableEq ι]
     (q a τ μ x : ℝ) (p residualMass : ι → ℝ) (i : ι) : ℝ :=
   optionalSortedAllocation q a τ μ x p residualMass (some (some i))
 
+/-- For fixed class data, the exact greedy-envelope area depends
+continuously on the tested fraction. -/
+theorem continuous_optionalSortedBlocks_area
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (a τ μ : ℝ) (p residualMass : ι → ℝ) :
+    Continuous (fun q =>
+      fluidBlocksArea (optionalSortedBlocks q a τ μ p residualMass)) := by
+  change Continuous (fun q => fluidBlocksArea
+    ((optionalSortedItems τ μ p).map fun item =>
+      ⟨optionalItemCost τ μ p item,
+        optionalItemCapacity q a residualMass item⟩))
+  apply continuous_fluidBlocksArea_map
+  intro item hitem
+  rcases item with _ | (_ | i) <;>
+    simp only [optionalItemCapacity] <;> fun_prop
+
+/-- The one-dimensional fluid optimization always attains its minimum on
+`[0,1]`.  This removes the formerly implicit `argmin` assumption from the
+finite announced benchmark. -/
+theorem exists_optionalSortedBlocks_area_minimizer
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (a τ μ : ℝ) (p residualMass : ι → ℝ) :
+    ∃ qStar : ℝ, 0 ≤ qStar ∧ qStar ≤ 1 ∧
+      ∀ q : ℝ, 0 ≤ q → q ≤ 1 →
+        fluidBlocksArea (optionalSortedBlocks qStar a τ μ p residualMass) ≤
+          fluidBlocksArea (optionalSortedBlocks q a τ μ p residualMass) := by
+  let f : ℝ → ℝ := fun q =>
+    fluidBlocksArea (optionalSortedBlocks q a τ μ p residualMass)
+  have hf : Continuous f := continuous_optionalSortedBlocks_area a τ μ p residualMass
+  obtain ⟨qStar, hqStar, hmin⟩ := isCompact_Icc.exists_isMinOn
+    (Set.nonempty_Icc.mpr zero_le_one) hf.continuousOn
+  exact ⟨qStar, hqStar.1, hqStar.2, fun q hq0 hq1 => hmin ⟨hq0, hq1⟩⟩
+
 theorem optionalItemAllocation_sorted_components
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (q a τ μ x : ℝ) (p residualMass : ι → ℝ) :
