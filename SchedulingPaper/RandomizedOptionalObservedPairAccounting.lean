@@ -375,6 +375,11 @@ theorem Observation.ownerLabel_eq_of_completionLabel_eq
       simpa [Observation.completionLabel, Observation.ownerLabel] using
         Option.some.inj hcompletion
 
+def Transcript.ownerProjection
+    (owner target : Label n) (transcript : Transcript n) : Transcript n :=
+  transcript.filter fun observation =>
+    observation.ownerLabel = owner ∨ observation.ownerLabel = target
+
 def ownedDurationUntilCompletion
     (processing : Label n → ℝ) (target owner : Label n) :
     Transcript n → ℝ
@@ -384,6 +389,41 @@ def ownedDurationUntilCompletion
         then observation.actualDuration processing else 0) +
       if observation.completionLabel processing = some target then 0
       else ownedDurationUntilCompletion processing target owner rest
+
+theorem ownedDurationUntilCompletion_ownerProjection
+    (processing : Label n → ℝ) (owner target : Label n)
+    (transcript : Transcript n) :
+    ownedDurationUntilCompletion processing target owner
+        (transcript.ownerProjection owner target) =
+      ownedDurationUntilCompletion processing target owner transcript := by
+  induction transcript with
+  | nil => simp [Transcript.ownerProjection, ownedDurationUntilCompletion]
+  | cons observation rest ih =>
+      by_cases hrel : observation.ownerLabel = owner ∨
+          observation.ownerLabel = target
+      · simp only [Transcript.ownerProjection, List.filter_cons]
+        have hdec : decide (observation.ownerLabel = owner ∨
+            observation.ownerLabel = target) = true := by simp [hrel]
+        rw [if_pos hdec]
+        simp only [ownedDurationUntilCompletion]
+        rw [show (List.filter (fun observation =>
+            decide (observation.ownerLabel = owner ∨
+              observation.ownerLabel = target)) rest) =
+            Transcript.ownerProjection owner target rest by rfl, ih]
+      · have howner : observation.ownerLabel ≠ owner :=
+          fun h => hrel (Or.inl h)
+        have hcompletion :
+            observation.completionLabel processing ≠ some target := by
+          intro h
+          exact hrel (Or.inr
+            (observation.ownerLabel_eq_of_completionLabel_eq h))
+        simp only [Transcript.ownerProjection, List.filter_cons]
+        have hdec : decide (observation.ownerLabel = owner ∨
+            observation.ownerLabel = target) ≠ true := by simp [hrel]
+        rw [if_neg hdec]
+        simp only [ownedDurationUntilCompletion, howner, ↓reduceIte,
+          hcompletion]
+        simpa [Transcript.ownerProjection] using ih
 
 theorem timeUntilCompletion_eq_sum_owned
     (processing : Label n → ℝ) (target : Label n)
