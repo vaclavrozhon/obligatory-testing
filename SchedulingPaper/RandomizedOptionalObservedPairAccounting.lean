@@ -1,4 +1,5 @@
 import SchedulingPaper.RandomizedOptionalCanonicalKernel
+import SchedulingPaper.RandomizedOptionalCompletionInvariant
 import Mathlib.Tactic
 
 /-!
@@ -18,10 +19,6 @@ open Randomized
 
 noncomputable section
 
-def Transcript.completionLabels
-    (processing : Label n → ℝ) (transcript : Transcript n) : List (Label n) :=
-  transcript.filterMap fun observation => observation.completionLabel processing
-
 @[simp] theorem Transcript.completionLabels_nil
     (processing : Label n → ℝ) :
     Transcript.completionLabels processing [] = [] := rfl
@@ -35,194 +32,6 @@ def Transcript.completionLabels
       | none => Transcript.completionLabels processing rest := by
   cases h : observation.completionLabel processing <;>
     simp [Transcript.completionLabels, h]
-
-@[simp] theorem Transcript.completionLabels_append_test
-    (processing : Label n → ℝ) (transcript : Transcript n)
-    (job : Label n) (p : ℝ) :
-    Transcript.completionLabels processing
-        (transcript ++ [.testResult job p]) =
-      Transcript.completionLabels processing transcript ++
-        if p = 0 then [job] else [] := by
-  by_cases hp : p = 0 <;>
-    simp [Transcript.completionLabels, Observation.completionLabel, hp]
-
-@[simp] theorem Transcript.completionLabels_append_process
-    (processing : Label n → ℝ) (transcript : Transcript n)
-    (job : Label n) :
-    Transcript.completionLabels processing
-        (transcript ++ [.processed job]) =
-      Transcript.completionLabels processing transcript ++
-        if processing job = 0 then [] else [job] := by
-  by_cases hp : processing job = 0 <;>
-    simp [Transcript.completionLabels, Observation.completionLabel, hp]
-
-@[simp] theorem Transcript.completionLabels_append_blind
-    (processing : Label n → ℝ) (transcript : Transcript n)
-    (job : Label n) (p : ℝ) :
-    Transcript.completionLabels processing
-        (transcript ++ [.blindCompleted job p]) =
-      Transcript.completionLabels processing transcript ++ [job] := by
-  simp [Transcript.completionLabels, Observation.completionLabel]
-
-/-! ## Logical-completion invariant -/
-
-def Config.LogicallyComplete (config : Config n) (job : Label n) : Prop :=
-  config.jobs job = .done ∨ config.jobs job = .tested 0
-
-structure CompletionInvariant
-    (processing : Label n → ℝ) (config : Config n) : Prop where
-  nodup : (Transcript.completionLabels processing config.transcript).Nodup
-  mem_iff : ∀ job,
-    job ∈ Transcript.completionLabels processing config.transcript ↔
-      config.LogicallyComplete job
-
-theorem Config.initial_completionInvariant (processing : Label n → ℝ) :
-    CompletionInvariant processing (Config.initial n) := by
-  constructor
-  · exact List.nodup_nil
-  · intro job
-    simp [Config.LogicallyComplete, Config.initial]
-
-theorem CompletionInvariant.step
-    {processing : Label n → ℝ} {config next : Config n}
-    (hinv : CompletionInvariant processing config)
-    (hhistory : HistoryInvariant processing config) {action : Action n}
-    (hstep : config.step processing action = some next) :
-    CompletionInvariant processing next := by
-  cases action with
-  | test job =>
-      cases hstate : config.jobs job with
-      | tested p => simp [Config.step, hstate] at hstep
-      | done => simp [Config.step, hstate] at hstep
-      | untouched =>
-          simp [Config.step, hstate] at hstep
-          subst next
-          have hnotmem : job ∉
-              Transcript.completionLabels processing config.transcript := by
-            intro hmem
-            have hlogical := (hinv.mem_iff job).mp hmem
-            rcases hlogical with hdone | htested
-            · rw [hstate] at hdone
-              contradiction
-            · rw [hstate] at htested
-              contradiction
-          by_cases hp : processing job = 0
-          · constructor
-            · simpa [hp] using hinv.nodup.concat hnotmem
-            · intro other
-              by_cases heq : other = job
-              · subst other
-                simp [hp, Config.LogicallyComplete, Function.update]
-              · simp [hp, Config.LogicallyComplete, Function.update, heq,
-                  hinv.mem_iff other]
-          · constructor
-            · simpa [hp] using hinv.nodup
-            · intro other
-              by_cases heq : other = job
-              · subst other
-                simp [hp, Config.LogicallyComplete, Function.update, hnotmem]
-              · simp [hp, Config.LogicallyComplete, Function.update, heq,
-                  hinv.mem_iff other]
-  | process job =>
-      cases hstate : config.jobs job with
-      | untouched => simp [Config.step, hstate] at hstep
-      | done => simp [Config.step, hstate] at hstep
-      | tested p =>
-          simp [Config.step, hstate] at hstep
-          subst next
-          have hp : processing job = p := by
-            have hrecord := hhistory.testedRecorded job p hstate
-            exact (hhistory.revealsMatch job p
-              (Transcript.mem_revealedResults_of_mem_testResults hrecord)).symm
-          by_cases hp0 : processing job = 0
-          · have hmem : job ∈
-                Transcript.completionLabels processing config.transcript := by
-              apply (hinv.mem_iff job).mpr
-              right
-              rw [hstate]
-              have : p = 0 := by linarith [hp]
-              rw [this]
-            constructor
-            · simpa [hp0] using hinv.nodup
-            · intro other
-              by_cases heq : other = job
-              · subst other
-                simp [hp0, Config.LogicallyComplete, Function.update, hmem]
-              · simp [hp0, Config.LogicallyComplete, Function.update, heq,
-                  hinv.mem_iff other]
-          · have hnotmem : job ∉
-                Transcript.completionLabels processing config.transcript := by
-              intro hmem
-              have hlogical := (hinv.mem_iff job).mp hmem
-              rcases hlogical with hdone | hzero
-              · rw [hstate] at hdone
-                contradiction
-              · rw [hstate] at hzero
-                have : p = 0 := by simpa using JobState.tested.inj hzero
-                apply hp0
-                simpa [hp] using this
-            constructor
-            · simpa [hp0] using hinv.nodup.concat hnotmem
-            · intro other
-              by_cases heq : other = job
-              · subst other
-                simp [hp0, Config.LogicallyComplete, Function.update]
-              · simp [hp0, Config.LogicallyComplete, Function.update, heq,
-                  hinv.mem_iff other]
-  | blind job =>
-      cases hstate : config.jobs job with
-      | tested p => simp [Config.step, hstate] at hstep
-      | done => simp [Config.step, hstate] at hstep
-      | untouched =>
-          simp [Config.step, hstate] at hstep
-          subst next
-          have hnotmem : job ∉
-              Transcript.completionLabels processing config.transcript := by
-            intro hmem
-            have hlogical := (hinv.mem_iff job).mp hmem
-            rcases hlogical with hdone | htested
-            · rw [hstate] at hdone
-              contradiction
-            · rw [hstate] at htested
-              contradiction
-          constructor
-          · simpa using hinv.nodup.concat hnotmem
-          · intro other
-            by_cases heq : other = job
-            · subst other
-              simp [Config.LogicallyComplete, Function.update]
-            · simp [Config.LogicallyComplete, Function.update, heq,
-                hinv.mem_iff other]
-
-theorem runFuel_completionInvariant
-    (processing : Label n → ℝ) (strategy : Strategy n)
-    (fuel : ℕ) (config : Config n)
-    (hcompletion : CompletionInvariant processing config)
-    (hhistory : HistoryInvariant processing config) :
-    CompletionInvariant processing
-      (runFuel processing strategy fuel config).config := by
-  induction fuel generalizing config with
-  | zero => exact hcompletion
-  | succ fuel ih =>
-      simp only [runFuel]
-      cases haction : strategy config.transcript with
-      | none => simp [haction, hcompletion]
-      | some action =>
-          cases hstep : config.step processing action with
-          | none => simp [haction, hstep, hcompletion]
-          | some next =>
-              simp only [haction, hstep]
-              exact ih next (hcompletion.step hhistory hstep)
-                (hhistory.step hstep)
-
-theorem run_completionInvariant
-    (processing : Label n → ℝ) (strategy : Strategy n) (fuel : ℕ) :
-    CompletionInvariant processing
-      (run processing strategy fuel).config := by
-  unfold run
-  exact runFuel_completionInvariant processing strategy fuel
-    (Config.initial n) (Config.initial_completionInvariant processing)
-    (Config.initial_historyInvariant processing)
 
 theorem CompletionInvariant.completionLabels_perm_of_done
     {processing : Label n → ℝ} {config : Config n}
@@ -253,14 +62,8 @@ theorem run_completionLabels_perm_of_done
 theorem completionCount_eq_completionLabels_length
     (processing : Label n → ℝ) (transcript : Transcript n) :
     completionCount processing transcript =
-      (Transcript.completionLabels processing transcript).length := by
-  induction transcript with
-  | nil => rfl
-  | cons observation rest ih =>
-      rw [completionCount, Transcript.completionLabels_cons]
-      cases h : observation.completionLabel processing with
-      | none => simp [h, ih]
-      | some job => simp [h, ih]; omega
+      (Transcript.completionLabels processing transcript).length :=
+  (Transcript.completionLabels_length processing transcript).symm
 
 def timeUntilCompletion
     (processing : Label n → ℝ) (job : Label n) : Transcript n → ℝ
