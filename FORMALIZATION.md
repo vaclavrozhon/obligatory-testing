@@ -126,7 +126,8 @@ exactly and produces a predictable `0/1` test selector.  Lean also checks the
 pathwise selected-class and blind-work sum identities.  The older suffix-swap
 lemmas remain available but are not used by this compiler.
 
-This is not yet a formal proof of the full adaptive theorem.  The remaining
+The English instance-optimality proof is complete, but this is not yet a
+formal proof of the full adaptive theorem.  The remaining
 major layer is to connect the operational schedule, and an arbitrary
 announced-multiset policy for the lower bound, to the complete fluid envelope
 at every physical-time prefix and realized stopping fraction.  The adaptive

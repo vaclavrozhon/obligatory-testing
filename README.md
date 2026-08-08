@@ -57,12 +57,15 @@ formalization:
   `E ALG <= 4OPT/3+20378 n^(7/4)`, equivalently
   `E ALG <= (4/3+40756 n^(-1/4))OPT`; the matching fixed binary instances give
   `4/3-O(n^(-1/2))`.
-- `OPTIONAL_TWO_PHASE_PROOF.md` proves the fixed-tested-fraction fluid
-  envelope and develops the bounded optional-testing candidate theorem at the
-  `n^2` scale: blind pilot, threshold-testing prefix, monotone tested medium
-  block, YOLO block, and monotone tested high tail.  The arbitrary-support
-  and unannounced-multiset statements remain explicitly marked as candidate
-  theorems pending audit of their finite grid transfer.
+- `OPTIONAL_TWO_PHASE_PROOF.md` gives a completed self-contained proof of the
+  bounded optional-testing instance-optimality theorem at the `n^2` scale:
+  blind pilot, threshold-testing prefix, monotone tested medium block, YOLO
+  block, and monotone tested high tail.  It includes the adaptive
+  first-touch trace bijection, simultaneous predictable-urn bound, finite
+  growing-grid transfer for arbitrary bounded multisets, matching finite
+  implementation, empirical optimization, and the fixed-oblivious-labelling
+  Yao wrapper.  Its uniform error is
+  `O_L(n^(-1/6)*sqrt(log(n+2)))` after normalization by `n^2`.
 - `STATIONARY_THRESHOLD_PROOF.md` is a supplementary stronger result for the
   announced obligatory model: its lower transfer is mean-sensitive and needs
   no bounded-support assumption, and the stationary policy is exactly
