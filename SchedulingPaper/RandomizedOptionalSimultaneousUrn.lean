@@ -322,6 +322,77 @@ theorem selected_prefix_discrepancy_abs_le
   rw [sum_selectorThrough_mul, sum_selectorThrough] at hraw
   exact hraw.trans (by linarith)
 
+theorem populationMean_mem_Icc {n : ℕ} (hn : 0 < n)
+    (value : Fin n → ℝ)
+    (hvalue0 : ∀ i, 0 ≤ value i) (hvalue1 : ∀ i, value i ≤ 1) :
+    populationMean value ∈ Set.Icc (0 : ℝ) 1 := by
+  unfold populationMean
+  simp only [Fintype.card_fin]
+  have hnR : (0 : ℝ) < n := by exact_mod_cast hn
+  have hsum0 : 0 ≤ ∑ i, value i :=
+    Finset.sum_nonneg fun i _ => hvalue0 i
+  have hsum1 : (∑ i, value i) ≤ (n : ℝ) := by
+    calc
+      (∑ i, value i) ≤ ∑ _i : Fin n, (1 : ℝ) :=
+        Finset.sum_le_sum fun i _ => hvalue1 i
+      _ = n := by simp
+  exact ⟨div_nonneg hsum0 hnR.le, (div_le_one hnR).mpr hsum1⟩
+
+/-- Extending a predictable selected prefix by `d` more reveal positions can
+increase its population-centered discrepancy by at most `d`. -/
+theorem selected_prefix_discrepancy_extension
+    {n : ℕ} (hn : 0 < n) (value : Fin n → ℝ)
+    (select : Fin n → Equiv.Perm (Fin n) → ℝ)
+    (hvalue0 : ∀ i, 0 ≤ value i) (hvalue1 : ∀ i, value i ≤ 1)
+    (hselect0 : ∀ j σ, 0 ≤ select j σ)
+    (hselect1 : ∀ j σ, select j σ ≤ 1)
+    {i j : Fin n} (hij : i.val ≤ j.val) (σ : Equiv.Perm (Fin n)) :
+    |((∑ k ∈ positionsThrough j, select k σ * value (σ k)) -
+          populationMean value * ∑ k ∈ positionsThrough j, select k σ) -
+        ((∑ k ∈ positionsThrough i, select k σ * value (σ k)) -
+          populationMean value * ∑ k ∈ positionsThrough i, select k σ)| ≤
+      (positionsThrough j \ positionsThrough i).card := by
+  let small := positionsThrough i
+  let large := positionsThrough j
+  let extra := large \ small
+  have hsubset : small ⊆ large := positionsThrough_mono hij
+  have hmean := populationMean_mem_Icc hn value hvalue0 hvalue1
+  have hterm : ∀ k,
+      |select k σ * (value (σ k) - populationMean value)| ≤ 1 := by
+    intro k
+    have hdiff : |value (σ k) - populationMean value| ≤ 1 := by
+      rw [abs_le]
+      constructor <;> linarith [hvalue0 (σ k), hvalue1 (σ k), hmean.1, hmean.2]
+    rw [abs_mul, abs_of_nonneg (hselect0 k σ)]
+    exact (mul_le_mul (hselect1 k σ) hdiff (abs_nonneg _)
+      (by norm_num)).trans (by norm_num)
+  have hcentered (S : Finset (Fin n)) :
+      (∑ k ∈ S, select k σ * value (σ k)) -
+          populationMean value * ∑ k ∈ S, select k σ =
+        ∑ k ∈ S, select k σ * (value (σ k) - populationMean value) := by
+    rw [Finset.mul_sum, ← Finset.sum_sub_distrib]
+    apply Finset.sum_congr rfl
+    intro k hk
+    ring
+  have hsplit := Finset.sum_sdiff hsubset
+    (f := fun k => select k σ * (value (σ k) - populationMean value))
+  rw [hcentered, hcentered]
+  have hrewrite :
+      (∑ k ∈ large, select k σ * (value (σ k) - populationMean value)) -
+          ∑ k ∈ small, select k σ * (value (σ k) - populationMean value) =
+        ∑ k ∈ extra, select k σ * (value (σ k) - populationMean value) := by
+    dsimp [small, large, extra] at hsplit ⊢
+    linarith
+  rw [hrewrite]
+  calc
+    |∑ k ∈ extra, select k σ * (value (σ k) - populationMean value)| ≤
+        ∑ k ∈ extra, |select k σ *
+          (value (σ k) - populationMean value)| :=
+      Finset.abs_sum_le_sum_abs _ _
+    _ ≤ ∑ _k ∈ extra, (1 : ℝ) :=
+      Finset.sum_le_sum fun k _ => hterm k
+    _ = extra.card := by simp
+
 /-- One event controls the adaptively selected discrepancy at every relevant
 first-touch prefix.  The first checkpoint family controls centered sums; the
 second controls all remaining-urn means. -/
@@ -487,6 +558,98 @@ theorem predictable_selected_all_prefix_regular_probability_le
       martingaleCheckpoints suffixCheckpoints hMartingaleCover hPredictable
       hvalue0 hvalue1 hselect0 hselect1 he hK hr hSuffixCard hSuffixCover
 
+/-- The regulated-prefix good event automatically controls every later
+prefix at the cost of the unregulated suffix size. -/
+theorem predictable_selected_global_prefix_regular_probability_le
+    {n : ℕ} (hn : 1 < n)
+    (value : Fin n → ℝ)
+    (select : Fin n → Equiv.Perm (Fin n) → ℝ)
+    (cutoff : Fin n) {martingaleStep suffixStep : ℕ}
+    (hMartingaleStep : 0 < martingaleStep)
+    (hSuffixStep : 0 < suffixStep)
+    (hPredictable : PredictableSelector select)
+    (hvalue0 : ∀ i, 0 ≤ value i)
+    (hvalue1 : ∀ i, value i ≤ 1)
+    (hselect0 : ∀ j σ, 0 ≤ select j σ)
+    (hselect1 : ∀ j σ, select j σ ≤ 1)
+    {e r : ℝ} (he : 0 < e) (hr : 0 < r) :
+    uniformProbability (fun σ => ∃ j : Fin n,
+      e + martingaleStep +
+          (r + 2 * suffixStep /
+            (suffixPositions cutoff).card) * n +
+          (suffixPositions cutoff).card <
+        |(∑ k ∈ positionsThrough j, select k σ * value (σ k)) -
+          populationMean value *
+            ∑ k ∈ positionsThrough j, select k σ|) ≤
+      (backwardCheckpoints martingaleStep cutoff).card * (n / e ^ 2) +
+        (backwardCheckpoints suffixStep cutoff).card *
+          ((2 / (suffixPositions cutoff).card) / r ^ 2) := by
+  let threshold := e + martingaleStep +
+    (r + 2 * suffixStep / (suffixPositions cutoff).card) * n
+  let regulatedBad : Equiv.Perm (Fin n) → Prop := fun σ =>
+    ∃ j ∈ positionsThrough cutoff,
+      threshold <
+        |(∑ k ∈ positionsThrough j, select k σ * value (σ k)) -
+          populationMean value *
+            ∑ k ∈ positionsThrough j, select k σ|
+  have hregulated : uniformProbability regulatedBad ≤
+      (backwardCheckpoints martingaleStep cutoff).card * (n / e ^ 2) +
+        (backwardCheckpoints suffixStep cutoff).card *
+          ((2 / (suffixPositions cutoff).card) / r ^ 2) := by
+    simpa [regulatedBad, threshold] using
+      predictable_selected_all_prefix_regular_probability_le hn value select
+        cutoff hMartingaleStep hSuffixStep hPredictable hvalue0 hvalue1
+          hselect0 hselect1 he hr
+  have hcontain : ∀ σ,
+      (∃ j : Fin n,
+        threshold + (suffixPositions cutoff).card <
+          |(∑ k ∈ positionsThrough j, select k σ * value (σ k)) -
+            populationMean value *
+              ∑ k ∈ positionsThrough j, select k σ|) →
+      regulatedBad σ := by
+    intro σ hbad
+    by_contra hnot
+    have hcutoff :
+        |(∑ k ∈ positionsThrough cutoff, select k σ * value (σ k)) -
+          populationMean value *
+            ∑ k ∈ positionsThrough cutoff, select k σ| ≤ threshold := by
+      exact le_of_not_gt fun h => hnot ⟨cutoff, by simp, h⟩
+    obtain ⟨j, hj⟩ := hbad
+    by_cases hjc : j.val ≤ cutoff.val
+    · have hjmem : j ∈ positionsThrough cutoff :=
+        mem_positionsThrough.mpr hjc
+      have hjgood :
+          |(∑ k ∈ positionsThrough j, select k σ * value (σ k)) -
+            populationMean value *
+              ∑ k ∈ positionsThrough j, select k σ| ≤ threshold := by
+        exact le_of_not_gt fun h => hnot ⟨j, hjmem, h⟩
+      have hsuffix0 : (0 : ℝ) ≤ (suffixPositions cutoff).card := by positivity
+      linarith
+    · have hcj : cutoff.val ≤ j.val := by omega
+      have hextend := selected_prefix_discrepancy_extension
+        (by omega : 0 < n) value select hvalue0 hvalue1 hselect0 hselect1
+          hcj σ
+      have hcard :
+          ((positionsThrough j \ positionsThrough cutoff).card : ℝ) ≤
+            (suffixPositions cutoff).card := by
+        rw [Finset.card_sdiff, Finset.inter_eq_left.mpr
+          (positionsThrough_mono hcj), positionsThrough_card,
+          positionsThrough_card, suffixPositions_card]
+        exact_mod_cast (by omega : j.val + 1 - (cutoff.val + 1) ≤ n - cutoff.val)
+      let Dj := (∑ k ∈ positionsThrough j, select k σ * value (σ k)) -
+        populationMean value * ∑ k ∈ positionsThrough j, select k σ
+      let Dc := (∑ k ∈ positionsThrough cutoff,
+          select k σ * value (σ k)) -
+        populationMean value *
+          ∑ k ∈ positionsThrough cutoff, select k σ
+      have htriangle : |Dj| ≤ |Dj - Dc| + |Dc| := by
+        calc
+          |Dj| = |(Dj - Dc) + Dc| := by ring_nf
+          _ ≤ |Dj - Dc| + |Dc| := abs_add_le _ _
+      dsimp [Dj, Dc] at htriangle
+      linarith
+  exact (uniformProbability_mono hcontain).trans hregulated
+
 /-- Union of the simultaneous-prefix estimate over every class of a finite
 grid. -/
 theorem predictable_selected_all_categories_prefix_regular_probability_le
@@ -529,6 +692,54 @@ theorem predictable_selected_all_categories_prefix_regular_probability_le
           ((2 / (suffixPositions cutoff).card) / r ^ 2) := by
     intro c
     exact predictable_selected_all_prefix_regular_probability_le
+      hn (value c) select cutoff hMartingaleStep hSuffixStep hPredictable
+        (hvalue0 c) (hvalue1 c) hselect0 hselect1 he hr
+  have hunion := uniformProbability_exists_le_card_mul P hpoint
+  simpa [P] using hunion
+
+/-- Union of the global-prefix estimate over every grid class. -/
+theorem predictable_selected_all_categories_global_prefix_regular_probability_le
+    {n : ℕ} {κ : Type*} [Fintype κ]
+    (hn : 1 < n) (value : κ → Fin n → ℝ)
+    (select : Fin n → Equiv.Perm (Fin n) → ℝ)
+    (cutoff : Fin n) {martingaleStep suffixStep : ℕ}
+    (hMartingaleStep : 0 < martingaleStep)
+    (hSuffixStep : 0 < suffixStep)
+    (hPredictable : PredictableSelector select)
+    (hvalue0 : ∀ c i, 0 ≤ value c i)
+    (hvalue1 : ∀ c i, value c i ≤ 1)
+    (hselect0 : ∀ j σ, 0 ≤ select j σ)
+    (hselect1 : ∀ j σ, select j σ ≤ 1)
+    {e r : ℝ} (he : 0 < e) (hr : 0 < r) :
+    uniformProbability (fun σ => ∃ c, ∃ j : Fin n,
+      e + martingaleStep +
+          (r + 2 * suffixStep /
+            (suffixPositions cutoff).card) * n +
+          (suffixPositions cutoff).card <
+        |(∑ k ∈ positionsThrough j,
+            select k σ * value c (σ k)) -
+          populationMean (value c) *
+            ∑ k ∈ positionsThrough j, select k σ|) ≤
+      Fintype.card κ *
+        ((backwardCheckpoints martingaleStep cutoff).card * (n / e ^ 2) +
+          (backwardCheckpoints suffixStep cutoff).card *
+            ((2 / (suffixPositions cutoff).card) / r ^ 2)) := by
+  let P : κ → Equiv.Perm (Fin n) → Prop := fun c σ =>
+    ∃ j : Fin n,
+      e + martingaleStep +
+          (r + 2 * suffixStep /
+            (suffixPositions cutoff).card) * n +
+          (suffixPositions cutoff).card <
+        |(∑ k ∈ positionsThrough j,
+            select k σ * value c (σ k)) -
+          populationMean (value c) *
+            ∑ k ∈ positionsThrough j, select k σ|
+  have hpoint : ∀ c, uniformProbability (P c) ≤
+      (backwardCheckpoints martingaleStep cutoff).card * (n / e ^ 2) +
+        (backwardCheckpoints suffixStep cutoff).card *
+          ((2 / (suffixPositions cutoff).card) / r ^ 2) := by
+    intro c
+    exact predictable_selected_global_prefix_regular_probability_le
       hn (value c) select cutoff hMartingaleStep hSuffixStep hPredictable
         (hvalue0 c) (hvalue1 c) hselect0 hselect1 he hr
   have hunion := uniformProbability_exists_le_card_mul P hpoint

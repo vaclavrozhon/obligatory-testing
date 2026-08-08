@@ -17,6 +17,7 @@ namespace ObservedTrace
 
 open TraceBijection
 open ObservedOnline
+open Randomized
 
 noncomputable section
 
@@ -247,6 +248,53 @@ theorem runWord_prefix_of_le {n : ℕ}
   | succ fuel' hle ih =>
       exact ih.trans (runWord_prefix_succ processing strategy fuel' config)
 
+theorem runWord_length_le_fuel {n : ℕ}
+    (processing : ObservedOnline.Label n → ℝ)
+    (strategy : ObservedOnline.Strategy n) (fuel : ℕ)
+    (config : ObservedOnline.Config n) :
+    (runWord processing strategy fuel config).length ≤ fuel := by
+  induction fuel generalizing config with
+  | zero => rfl
+  | succ fuel ih =>
+      simp only [runWord]
+      cases haction : strategy config.transcript with
+      | none => simp
+      | some action =>
+          simp only
+          cases hstep : config.step processing action with
+          | none => simp
+          | some next =>
+              simp only [List.length_cons]
+              exact Nat.succ_le_succ (ih next)
+
+/-- If a later run contains at least `fuel` successful observations, then the
+`fuel`-truncated run contains exactly its full fuel budget.  In particular a
+completed later run cannot hide an early stop or invalid action. -/
+theorem runWord_length_eq_fuel_of_le_later {n : ℕ}
+    (processing : ObservedOnline.Label n → ℝ)
+    (strategy : ObservedOnline.Strategy n) {fuel later : ℕ}
+    (hfuel : fuel ≤ later) (config : ObservedOnline.Config n)
+    (hlength : fuel ≤ (runWord processing strategy later config).length) :
+    (runWord processing strategy fuel config).length = fuel := by
+  induction fuel generalizing later config with
+  | zero => rfl
+  | succ fuel ih =>
+      cases later with
+      | zero => omega
+      | succ later =>
+          have hfuel' : fuel ≤ later := by omega
+          simp only [runWord] at hlength ⊢
+          cases haction : strategy config.transcript with
+          | none => simp [haction] at hlength
+          | some action =>
+              simp only [haction] at hlength ⊢
+              cases hstep : config.step processing action with
+              | none => simp [hstep] at hlength
+              | some next =>
+                  simp only [hstep, List.length_cons] at hlength ⊢
+                  exact congrArg Nat.succ
+                    (ih hfuel' next (by omega))
+
 theorem step_transcript_eq_append_observation {n : ℕ}
     {processing : ObservedOnline.Label n → ℝ}
     {config next : ObservedOnline.Config n} {action : ObservedOnline.Action n}
@@ -309,6 +357,28 @@ theorem run_transcript_prefix_of_le {n : ℕ}
   rw [run_transcript_eq_runWord, run_transcript_eq_runWord]
   exact runWord_prefix_of_le processing strategy hfuel
     (ObservedOnline.Config.initial n)
+
+/-- Every operation prefix of a later run is reproduced exactly by choosing
+fuel equal to the prefix length. -/
+theorem run_transcript_eq_take_of_le_length {n : ℕ}
+    (processing : ObservedOnline.Label n → ℝ)
+    (strategy : ObservedOnline.Strategy n) {fuel later : ℕ}
+    (hfuel : fuel ≤ later)
+    (hlength : fuel ≤
+      (ObservedOnline.run processing strategy later).config.transcript.length) :
+    (ObservedOnline.run processing strategy fuel).config.transcript =
+      (ObservedOnline.run processing strategy later).config.transcript.take fuel := by
+  have hprefix := run_transcript_prefix_of_le processing strategy hfuel
+  have hlen :
+      (ObservedOnline.run processing strategy fuel).config.transcript.length =
+        fuel := by
+    rw [run_transcript_eq_runWord]
+    rw [run_transcript_eq_runWord] at hlength
+    exact runWord_length_eq_fuel_of_le_later processing strategy hfuel
+      (ObservedOnline.Config.initial n) hlength
+  have heq := List.prefix_iff_eq_take.mp hprefix
+  rw [hlen] at heq
+  exact heq
 
 theorem list_eq_take_of_prefix {X : Type*} {left right : List X}
     (h : left <+: right) : left = right.take left.length := by
@@ -692,6 +762,22 @@ def compiledTestSelector {n : ℕ} (p : Fin n → ℝ)
   TraceBijection.compiledTestSelector p (touchTrace p policy)
     (touchTrace_causal p policy)
 
+theorem compiledTestSelector_nonneg {n : ℕ} (p : Fin n → ℝ)
+    (policy : CompletePolicy p) :
+    ∀ k reveal, 0 ≤ compiledTestSelector p policy k reveal := by
+  intro k reveal
+  simpa [compiledTestSelector] using
+    TraceBijection.compiledTestSelector_nonneg p
+      (touchTrace p policy) (touchTrace_causal p policy) k reveal
+
+theorem compiledTestSelector_le_one {n : ℕ} (p : Fin n → ℝ)
+    (policy : CompletePolicy p) :
+    ∀ k reveal, compiledTestSelector p policy k reveal ≤ 1 := by
+  intro k reveal
+  simpa [compiledTestSelector] using
+    TraceBijection.compiledTestSelector_le_one p
+      (touchTrace p policy) (touchTrace_causal p policy) k reveal
+
 def compiledBlindSelector {n : ℕ} (p : Fin n → ℝ)
     (policy : CompletePolicy p) :
     Fin n → Equiv.Perm (Fin n) → ℝ :=
@@ -702,23 +788,34 @@ theorem compiledBlindSelector_predictable {n : ℕ} (p : Fin n → ℝ)
     PredictableSelector (compiledBlindSelector p policy) := by
   intro k reveal reveal' hpref
   unfold compiledBlindSelector
-  rw [compiledTestSelector_predictable p policy k reveal reveal' hpref]
+  apply congrArg (fun z : ℝ => 1 - z)
+  change TraceBijection.compiledTestSelector p (touchTrace p policy)
+      (touchTrace_causal p policy) k reveal =
+    TraceBijection.compiledTestSelector p (touchTrace p policy)
+      (touchTrace_causal p policy) k reveal'
+  exact TraceBijection.compiledTestSelector_predictable p
+    (touchTrace p policy) (touchTrace_causal p policy)
+      k reveal reveal' hpref
 
 theorem compiledBlindSelector_nonneg {n : ℕ} (p : Fin n → ℝ)
     (policy : CompletePolicy p) :
     ∀ k reveal, 0 ≤ compiledBlindSelector p policy k reveal := by
   intro k reveal
   unfold compiledBlindSelector
-  linarith [TraceBijection.compiledTestSelector_le_one p
-    (touchTrace p policy) (touchTrace_causal p policy) k reveal]
+  exact sub_nonneg.mpr (by
+    simpa [compiledTestSelector] using
+      TraceBijection.compiledTestSelector_le_one p
+        (touchTrace p policy) (touchTrace_causal p policy) k reveal)
 
 theorem compiledBlindSelector_le_one {n : ℕ} (p : Fin n → ℝ)
     (policy : CompletePolicy p) :
     ∀ k reveal, compiledBlindSelector p policy k reveal ≤ 1 := by
   intro k reveal
   unfold compiledBlindSelector
-  linarith [TraceBijection.compiledTestSelector_nonneg p
-    (touchTrace p policy) (touchTrace_causal p policy) k reveal]
+  linarith [show 0 ≤ compiledTestSelector p policy k reveal by
+    simpa [compiledTestSelector] using
+      TraceBijection.compiledTestSelector_nonneg p
+        (touchTrace p policy) (touchTrace_causal p policy) k reveal]
 
 theorem compiledTestSelector_predictable {n : ℕ} (p : Fin n → ℝ)
     (policy : CompletePolicy p) :
@@ -734,6 +831,18 @@ theorem uniformAverage_adaptive_revealOrder {n : ℕ}
         Randomized.uniformAverage f :=
   TraceBijection.uniformAverage_revealOrder p (touchTrace p policy)
     (touchTrace_causal p policy) f
+
+theorem uniformProbability_adaptive_revealOrder {n : ℕ}
+    (p : Fin n → ℝ) (policy : CompletePolicy p)
+    (P : Equiv.Perm (Fin n) → Prop) [DecidablePred P] :
+    Randomized.uniformProbability (fun σ =>
+      P (TraceBijection.revealOrder (touchTrace p policy) σ)) =
+        Randomized.uniformProbability P := by
+  unfold Randomized.uniformProbability
+  simpa [Function.comp_def] using
+    TraceBijection.uniformAverage_revealOrder p (touchTrace p policy)
+      (touchTrace_causal p policy)
+      (fun reveal => if P reveal then (1 : ℝ) else 0)
 
 /-- The all-categories/all-prefix predictable-urn event, reindexed back from
 the canonical reveal permutation to the original hidden placement of an

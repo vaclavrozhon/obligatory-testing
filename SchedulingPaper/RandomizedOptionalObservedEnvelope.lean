@@ -18,6 +18,7 @@ namespace ObservedEnvelope
 open ObservedOnline
 open ObservedTrace
 open TraceBijection
+open Randomized
 
 noncomputable section
 
@@ -89,7 +90,8 @@ theorem ExactPositiveGrid.sum_price_indicator
       intro htrue
       have := G.category_positive i job htrue
       linarith
-    simp [hfalse]
+    have hfalse0 : G.category i 0 = false := by simpa [hz] using hfalse
+    simp [hfalse0]
   · have hp : 0 < processing job := lt_of_le_of_ne
       (G.processing_nonneg job) (Ne.symm hz)
     obtain ⟨i, hi, hunique⟩ := G.category_unique job hp
@@ -107,64 +109,99 @@ theorem sum_processedClassCount_eq_positiveProcessedCount
     {n : ℕ} {ι : Type*} [Fintype ι]
     {processing : Fin n → ℝ} (G : ExactPositiveGrid ι processing)
     (transcript : Transcript n) :
-    (∑ i, (processedClassCount processing G.category[i]
+    (∑ i, (ObservedOnline.processedClassCount processing (G.category i)
       transcript : ℝ)) = positiveProcessedCount processing transcript := by
   induction transcript with
-  | nil => simp [processedClassCount, positiveProcessedCount]
+  | nil => simp [ObservedOnline.processedClassCount, positiveProcessedCount]
   | cons observation rest ih =>
       cases observation with
       | testResult job p =>
-          simpa [processedClassCount, Transcript.processedLabels,
+          simpa [ObservedOnline.processedClassCount, Transcript.processedLabels,
             positiveProcessedCount] using ih
       | blindCompleted job p =>
-          simpa [processedClassCount, Transcript.processedLabels,
+          simpa [ObservedOnline.processedClassCount, Transcript.processedLabels,
             positiveProcessedCount] using ih
       | processed job =>
-          simp only [processedClassCount, Transcript.processedLabels,
-            List.filter_cons, List.length_cons, Nat.cast_add, Nat.cast_one,
-            positiveProcessedCount]
-          rw [Finset.sum_add_distrib, ih,
-            G.sum_category_indicator job]
-          by_cases hz : processing job = 0 <;> simp [hz]
+          have hstep : ∀ i,
+              (ObservedOnline.processedClassCount processing (G.category i)
+                (.processed job :: rest) : ℝ) =
+                (if G.category i (processing job) then 1 else 0) +
+                  ObservedOnline.processedClassCount processing
+                    (G.category i) rest := by
+            intro i
+            by_cases hi : G.category i (processing job) = true <;>
+              simp [ObservedOnline.processedClassCount,
+                Transcript.processedLabels, hi] <;> ring
+          rw [show (∑ i,
+              (ObservedOnline.processedClassCount processing (G.category i)
+                (.processed job :: rest) : ℝ)) =
+              ∑ i, ((if G.category i (processing job) then (1 : ℝ) else 0) +
+                (ObservedOnline.processedClassCount processing
+                  (G.category i) rest : ℝ)) by
+              exact Finset.sum_congr rfl fun i _ => hstep i,
+            Finset.sum_add_distrib, G.sum_category_indicator job, ih]
+          by_cases hz : processing job = 0 <;>
+            simp [positiveProcessedCount, hz] <;> ring
 
 theorem sum_price_processedClassCount_eq_processedWork
     {n : ℕ} {ι : Type*} [Fintype ι]
     {processing : Fin n → ℝ} (G : ExactPositiveGrid ι processing)
     (transcript : Transcript n) :
     (∑ i, G.price i *
-      (processedClassCount processing G.category[i] transcript : ℝ)) =
+      (ObservedOnline.processedClassCount processing (G.category i) transcript : ℝ)) =
       processedWork processing transcript := by
   induction transcript with
-  | nil => simp [processedClassCount, processedWork]
+  | nil => simp [ObservedOnline.processedClassCount, processedWork]
   | cons observation rest ih =>
       cases observation with
       | testResult job p =>
-          simpa [processedClassCount, Transcript.processedLabels,
+          simpa [ObservedOnline.processedClassCount, Transcript.processedLabels,
             processedWork] using ih
       | blindCompleted job p =>
-          simpa [processedClassCount, Transcript.processedLabels,
+          simpa [ObservedOnline.processedClassCount, Transcript.processedLabels,
             processedWork] using ih
       | processed job =>
-          simp only [processedClassCount, Transcript.processedLabels,
-            List.filter_cons, List.length_cons, Nat.cast_add, Nat.cast_one,
-            processedWork]
-          rw [Finset.sum_add_distrib]
-          have hhead := G.sum_price_indicator job
+          have hstep : ∀ i,
+              (ObservedOnline.processedClassCount processing (G.category i)
+                (.processed job :: rest) : ℝ) =
+                (if G.category i (processing job) then 1 else 0) +
+                  ObservedOnline.processedClassCount processing
+                    (G.category i) rest := by
+            intro i
+            by_cases hi : G.category i (processing job) = true <;>
+              simp [ObservedOnline.processedClassCount,
+                Transcript.processedLabels, hi] <;> ring
           rw [show (∑ i, G.price i *
-              (if G.category i (processing job) then 1 else 0)) =
-                processing job from hhead]
-          simpa [ih, mul_add] using congrArg
-            (fun x => processing job + x) ih
+              (ObservedOnline.processedClassCount processing (G.category i)
+                (.processed job :: rest) : ℝ)) =
+              ∑ i, (G.price i *
+                  (if G.category i (processing job) then 1 else 0) +
+                G.price i * ObservedOnline.processedClassCount processing
+                  (G.category i) rest) by
+              apply Finset.sum_congr rfl
+              intro i hi
+              rw [hstep i]
+              ring,
+            Finset.sum_add_distrib, G.sum_price_indicator job, ih]
+          rfl
 
 theorem zeroTestCount_eq_testClassCount_zero
     {n : ℕ} (transcript : Transcript n) :
-    zeroTestCount transcript = testClassCount zeroCategory transcript := by
+    zeroTestCount transcript = ObservedOnline.testClassCount zeroCategory transcript := by
   induction transcript with
   | nil => rfl
   | cons observation rest ih =>
-      cases observation <;>
-        simp [zeroTestCount, testClassCount, Transcript.testResults,
-          zeroCategory, ih]
+      cases observation with
+      | testResult job value =>
+          by_cases hz : value = 0 <;>
+            simp [zeroTestCount, ObservedOnline.testClassCount,
+              Transcript.testResults, zeroCategory, hz, ih] <;> omega
+      | processed job =>
+          simpa [zeroTestCount, ObservedOnline.testClassCount,
+            Transcript.testResults] using ih
+      | blindCompleted job value =>
+          simpa [zeroTestCount, ObservedOnline.testClassCount,
+            Transcript.testResults] using ih
 
 theorem touchChoices_length_eq_test_add_blind
     {n : ℕ} (transcript : Transcript n) :
@@ -188,7 +225,8 @@ The greedy variables describe the ideal fractional knapsack at the prefix's
 inflated physical work. -/
 theorem operational_prefix_completion_le_greedy
     {n : ℕ} (hn : 0 < n) {ι : Type*} [Fintype ι]
-    (p : Fin n → ℝ) (policy : CompletePolicy p) (σ : Placement n)
+    (p : Fin n → ℝ) (policy : CompletePolicy p)
+    (σ : ObservedTrace.Placement n)
     (G : ExactPositiveGrid ι p) {fuel : ℕ}
     (hfuel : fuel ≤ 2 * n + 1) (cutoff : Fin n)
     (hlength :
@@ -280,14 +318,15 @@ theorem operational_prefix_completion_le_greedy
   let q := totalTest / n
   let b := prefixBlind / n
   let c : ι → ℝ := fun i =>
-    processedClassCount (placedProcessing p σ) G.category[i] transcript / n
+    ObservedOnline.processedClassCount (placedProcessing p σ)
+      (G.category i) transcript / n
   let z : ℝ := zeroTestCount transcript / n
   let actual : ℝ := completionCount (placedProcessing p σ) transcript / n
   have hnR : (0 : ℝ) < n := by exact_mod_cast hn
   have htest0 : ∀ k reveal, 0 ≤ compiledTestSelector p policy k reveal :=
-    fun k r => compiledTestSelector_nonneg p policy k r
+    fun k r => ObservedTrace.compiledTestSelector_nonneg p policy k r
   have htest1 : ∀ k reveal, compiledTestSelector p policy k reveal ≤ 1 :=
-    fun k r => compiledTestSelector_le_one p policy k r
+    fun k r => ObservedTrace.compiledTestSelector_le_one p policy k r
   have hblind0 := compiledBlindSelector_nonneg p policy
   have hblind1 := compiledBlindSelector_le_one p policy
   have htestOperational := compiled_test_class_prefix_sum_eq_operational
@@ -301,10 +340,10 @@ theorem operational_prefix_completion_le_greedy
       (∑ k ∈ positionsThrough cutoff,
           selectTest k reveal *
             (if G.category i (p (reveal k)) then 1 else 0)) =
-        testClassCount G.category[i] transcript := by
+        ObservedOnline.testClassCount (G.category i) transcript := by
     intro i
     exact compiled_test_class_prefix_sum_eq_operational
-      p policy σ G.category[i] hfuel cutoff hlength
+      p policy σ (G.category i) hfuel cutoff hlength
   have hzeroOperational :
       (∑ k ∈ positionsThrough cutoff,
           selectTest k reveal *
@@ -312,7 +351,7 @@ theorem operational_prefix_completion_le_greedy
         zeroTestCount transcript := by
     rw [compiled_test_class_prefix_sum_eq_operational
       p policy σ zeroCategory hfuel cutoff hlength]
-    exact (zeroTestCount_eq_testClassCount_zero transcript).symm
+    exact_mod_cast (zeroTestCount_eq_testClassCount_zero transcript).symm
   have ht0 : 0 ≤ t := by
     exact div_nonneg (Finset.sum_nonneg fun k _ => htest0 k reveal) hnR.le
   have hprefixTestLe : prefixTest ≤ totalTest := by
@@ -329,18 +368,31 @@ theorem operational_prefix_completion_le_greedy
     exact Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ _)
       (fun k _hk _hnot => hblind0 k reveal)
   have hbCap : b ≤ 1 - q := by
-    dsimp [b, q, prefixBlind]
-    rw [hSumBlind := hsumBlind]
-    field_simp [hnR.ne']
-    exact hprefixBlindLe
+    calc
+      b ≤ (n - totalTest) / n := by
+        dsimp [b]
+        exact div_le_div_of_nonneg_right
+          (hprefixBlindLe.trans_eq hsumBlind) hnR.le
+      _ = 1 - q := by
+        dsimp [q]
+        field_simp [hnR.ne']
   have hmass0 : ∀ i, 0 ≤ mass i := by
     intro i
     rw [hmassDef i]
-    exact populationMean_nonneg (fun occurrence => by
-      split <;> norm_num)
+    exact (populationMean_mem_Icc hn
+      (fun occurrence => if G.category i (p occurrence) then 1 else 0)
+      (fun occurrence => by
+        by_cases h : G.category i (p occurrence) = true <;> simp [h])
+      (fun occurrence => by
+        by_cases h : G.category i (p occurrence) = true <;> simp [h])).1
   have hzeroMass0 : 0 ≤ zeroMass := by
     rw [hzeroMassDef]
-    exact populationMean_nonneg (fun occurrence => by split <;> norm_num)
+    exact (populationMean_mem_Icc hn
+      (fun occurrence => if zeroCategory (p occurrence) then 1 else 0)
+      (fun occurrence => by
+        by_cases h : zeroCategory (p occurrence) = true <;> simp [h])
+      (fun occurrence => by
+        by_cases h : zeroCategory (p occurrence) = true <;> simp [h])).1
   have hc0 : ∀ i, 0 ≤ c i := by
     intro i
     exact div_nonneg (Nat.cast_nonneg _) hnR.le
@@ -350,35 +402,42 @@ theorem operational_prefix_completion_le_greedy
     rw [hclassOperational i] at hupper
     have htestEq : prefixTest = transcript.testResults.length := by
       simpa [prefixTest, selectTest, reveal, transcript] using htestOperational
+    change (ObservedOnline.testClassCount (G.category i) transcript : ℝ) -
+      mass i * prefixTest ≤ γ * n at hupper
+    have hprocessedLe :
+        (ObservedOnline.processedClassCount (placedProcessing p σ)
+            (G.category i) transcript : ℝ) ≤
+          ObservedOnline.testClassCount (G.category i) transcript := by
+      exact_mod_cast ObservedOnline.processedClassCount_le_testClassCount
+        (run_historyInvariant (placedProcessing p σ) policy.strategy fuel)
+          (G.category i)
+    have hbound :
+        (ObservedOnline.processedClassCount (placedProcessing p σ)
+            (G.category i) transcript : ℝ) ≤
+          mass i * prefixTest + γ * n := by
+      linarith
     dsimp [c, t]
-    rw [htestEq]
-    have hopen := add_le_add_right hupper (γ * n)
-    rw [sub_add_cancel] at hopen
     rw [div_le_iff₀ hnR]
     calc
-      (processedClassCount (placedProcessing p σ) G.category[i] transcript : ℝ) ≤
-          testClassCount G.category[i] transcript := by
-        exact_mod_cast processedClassCount_le_testClassCount
-          (run_historyInvariant (placedProcessing p σ) policy.strategy fuel)
-            G.category[i]
-      _ ≤ mass i * transcript.testResults.length + γ * n := by
-        simpa [mul_comm] using hopen
-      _ = (mass i * ((transcript.testResults.length : ℝ) / n) + γ) * n := by
+      (ObservedOnline.processedClassCount (placedProcessing p σ)
+          (G.category i) transcript : ℝ) ≤
+          mass i * prefixTest + γ * n := hbound
+      _ = (mass i * (prefixTest / n) + γ) * n := by
         field_simp [hnR.ne']
   have hzApprox : z ≤ zeroMass * t + γ := by
     have hupper := (abs_le.mp hzeroGood).2
     rw [hzeroOperational] at hupper
-    have htestEq : prefixTest = transcript.testResults.length := by
-      simpa [prefixTest, selectTest, reveal, transcript] using htestOperational
-    dsimp [z, t]
-    rw [htestEq, div_le_iff₀ hnR]
-    have hopen : (zeroTestCount transcript : ℝ) ≤
-        zeroMass * transcript.testResults.length + γ * n := by
+    change (zeroTestCount transcript : ℝ) - zeroMass * prefixTest ≤
+      γ * n at hupper
+    have hbound : (zeroTestCount transcript : ℝ) ≤
+        zeroMass * prefixTest + γ * n := by
       linarith
+    dsimp [z, t]
+    rw [div_le_iff₀ hnR]
     calc
       (zeroTestCount transcript : ℝ) ≤
-          zeroMass * transcript.testResults.length + γ * n := hopen
-      _ = (zeroMass * ((transcript.testResults.length : ℝ) / n) + γ) * n := by
+          zeroMass * prefixTest + γ * n := hbound
+      _ = (zeroMass * (prefixTest / n) + γ) * n := by
         field_simp [hnR.ne']
   have hactual : actual ≤ z + b + ∑ i, c i := by
     have hcount := completionCount_eq_operation_counts
@@ -394,25 +453,46 @@ theorem operational_prefix_completion_le_greedy
           category_price := fun i job h => by
             simpa [placedProcessing] using G.category_price i (σ job) h
           category_unique := fun job h => G.category_unique (σ job) h }) transcript
-    dsimp [actual, z, b, c]
-    have hblindEq : prefixBlind = blindCount transcript := by
-      simpa [prefixBlind, selectBlind, reveal, transcript] using
-        hblindCountOperational
-    rw [hblindEq, ← hclasses]
-    exact_mod_cast congrArg (fun x : ℕ => x) hcount.le
+    have hblindEq : prefixBlind = (blindCount transcript : ℝ) := by
+      change (∑ k ∈ positionsThrough cutoff,
+          compiledBlindSelector p policy k
+            (revealOrder (touchTrace p policy) σ)) =
+        (blindCount transcript : ℝ)
+      simpa only [compiledBlindSelector] using hblindCountOperational
+    change (∑ i,
+        (ObservedOnline.processedClassCount (placedProcessing p σ)
+          (G.category i) transcript : ℝ)) =
+        (positiveProcessedCount (placedProcessing p σ) transcript : ℝ) at hclasses
+    change (completionCount (placedProcessing p σ) transcript : ℝ) / n ≤
+      (zeroTestCount transcript : ℝ) / n + prefixBlind / n +
+        ∑ i, (ObservedOnline.processedClassCount (placedProcessing p σ)
+          (G.category i) transcript : ℝ) / n
+    rw [← Finset.sum_div, hclasses, hblindEq, hcount]
+    push_cast
+    simp only [add_div]
+    linarith
   have hphysical :
       t + μ * b + ∑ i, G.price i * c i ≤
         elapsed (placedProcessing p σ) transcript / n + blindError := by
     have hblindUpper := (abs_le.mp hblindGood).1
-    have hblindEq : prefixBlind = blindCount transcript := by
-      simpa [prefixBlind, selectBlind, reveal, transcript] using
-        hblindCountOperational
+    have hblindEq : prefixBlind = (blindCount transcript : ℝ) := by
+      change (∑ k ∈ positionsThrough cutoff,
+          compiledBlindSelector p policy k
+            (revealOrder (touchTrace p policy) σ)) =
+        (blindCount transcript : ℝ)
+      simpa only [compiledBlindSelector] using hblindCountOperational
     have hblindWorkEq :
         (∑ k ∈ positionsThrough cutoff,
             selectBlind k reveal * p (reveal k)) = blindWork transcript := by
-      simpa [selectBlind, reveal, transcript, compiledBlindSelector] using
-        hblindWorkOperational
-    rw [hblindEq, hblindWorkEq] at hblindUpper
+      change (∑ k ∈ positionsThrough cutoff,
+          compiledBlindSelector p policy k
+              (revealOrder (touchTrace p policy) σ) *
+            p (revealOrder (touchTrace p policy) σ k)) =
+        blindWork transcript
+      simpa [transcript] using hblindWorkOperational
+    rw [hblindWorkEq] at hblindUpper
+    change -(blindError * n) ≤ blindWork transcript - μ * prefixBlind at hblindUpper
+    rw [hblindEq] at hblindUpper
     have hwork := sum_price_processedClassCount_eq_processedWork
       (processing := placedProcessing p σ) (by
         exact {
@@ -424,13 +504,24 @@ theorem operational_prefix_completion_le_greedy
           category_price := fun i job h => by
             simpa [placedProcessing] using G.category_price i (σ job) h
           category_unique := fun job h => G.category_unique (σ job) h }) transcript
+    change (∑ i, G.price i *
+        (ObservedOnline.processedClassCount (placedProcessing p σ)
+          (G.category i) transcript : ℝ)) =
+      processedWork (placedProcessing p σ) transcript at hwork
     have htestEq : prefixTest = transcript.testResults.length := by
       simpa [prefixTest, selectTest, reveal, transcript] using htestOperational
     rw [elapsed_eq_test_add_processed_add_blind]
-    dsimp [t, b, c]
-    rw [htestEq, hwork]
-    rw [div_add_div, div_add_div]
-    rw [div_le_iff₀ hnR]
+    change prefixTest / n + μ * (prefixBlind / n) +
+        ∑ i, G.price i *
+          ((ObservedOnline.processedClassCount (placedProcessing p σ)
+            (G.category i) transcript : ℝ) / n) ≤
+      ((transcript.testResults.length : ℝ) +
+          processedWork (placedProcessing p σ) transcript +
+          blindWork transcript) / n + blindError
+    rw [htestEq, hblindEq]
+    simp_rw [← mul_div_assoc]
+    rw [← Finset.sum_div, hwork]
+    field_simp [hnR.ne']
     nlinarith
   have hactualDef : actual =
       (completionCount (placedProcessing p σ) transcript : ℝ) / n := rfl
