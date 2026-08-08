@@ -129,6 +129,97 @@ def uniformRoundedGrid
     intro job hp
     exact exists_unique_uniformGridCategory hK hmesh hp (hpUpper job)
 
+/-- The canonical uniform upward grid on `[0,L]`, with mesh `L/K`. -/
+def boundedUniformRoundedGrid
+    {n K : ℕ} (hK : 0 < K) {L : ℝ} (hL : 0 < L)
+    (p : Fin n → ℝ) (hp0 : ∀ job, 0 ≤ p job)
+    (hpL : ∀ job, p job ≤ L) :
+    RoundedPositiveGrid (Fin K) p := by
+  let mesh : ℝ := L / K
+  have hKR : (0 : ℝ) < K := by exact_mod_cast hK
+  have hmesh : 0 < mesh := div_pos hL hKR
+  apply uniformRoundedGrid hK p hmesh hp0
+  intro job
+  dsimp [mesh]
+  rw [mul_div_cancel₀ L hKR.ne']
+  exact hpL job
+
+@[simp] theorem boundedUniformRoundedGrid_mesh
+    {n K : ℕ} (hK : 0 < K) {L : ℝ} (hL : 0 < L)
+    (p : Fin n → ℝ) (hp0 : ∀ job, 0 ≤ p job)
+    (hpL : ∀ job, p job ≤ L) :
+    (boundedUniformRoundedGrid hK hL p hp0 hpL).mesh = L / K := rfl
+
+@[simp] theorem boundedUniformRoundedGrid_price
+    {n K : ℕ} (hK : 0 < K) {L : ℝ} (hL : 0 < L)
+    (p : Fin n → ℝ) (hp0 : ∀ job, 0 ≤ p job)
+    (hpL : ∀ job, p job ≤ L) (i : Fin K) :
+    (boundedUniformRoundedGrid hK hL p hp0 hpL).price i =
+      uniformGridPrice (L / K) i := rfl
+
+/-- A rounded value on the bounded uniform grid is at most one mesh above
+the original global bound.  This deliberately avoids any endpoint
+arithmetic in downstream concentration theorems. -/
+theorem boundedUniformRoundedGrid_roundedProcessing_le
+    {n K : ℕ} (hK : 0 < K) {L : ℝ} (hL : 0 < L)
+    (p : Fin n → ℝ) (hp0 : ∀ job, 0 ≤ p job)
+    (hpL : ∀ job, p job ≤ L) (job : Fin n) :
+    (boundedUniformRoundedGrid hK hL p hp0 hpL).roundedProcessing job ≤
+      L + L / K := by
+  have hround :=
+    (boundedUniformRoundedGrid hK hL p hp0 hpL).roundedProcessing_le job
+  rw [boundedUniformRoundedGrid_mesh] at hround
+  linarith [hpL job]
+
+/-- Closed announced lower bound for an arbitrary positive-mean population
+in `[0,L]`.  The theorem constructs both the uniform upward grid and its
+empirical optimum internally; the only remaining choices are the explicit
+checkpoint parameters. -/
+theorem exists_boundedUniformBenchmark_uniformAverage_lower
+    {n K : ℕ} (hn : 1 < n) (hK : 0 < K) {L : ℝ} (hL : 0 < L)
+    (p : Fin n → ℝ) (hp0 : ∀ job, 0 ≤ p job)
+    (hpL : ∀ job, p job ≤ L) (hmean : 0 < Randomized.populationMean p)
+    (policy : ObservedTrace.CompletePolicy p) (cutoff : Fin n)
+    {martingaleStep suffixStep : ℕ}
+    (hMartingaleStep : 0 < martingaleStep)
+    (hSuffixStep : 0 < suffixStep)
+    {e r : ℝ} (he : 0 < e) (hr : 0 < r) :
+    let G := boundedUniformRoundedGrid hK hL p hp0 hpL
+    let scale := L + L / K
+    let threshold := e + martingaleStep +
+      (r + 2 * suffixStep / (suffixPositions cutoff).card) * n +
+      (suffixPositions cutoff).card
+    let γ := threshold / n
+    let base :=
+      (backwardCheckpoints martingaleStep cutoff).card * (n / e ^ 2) +
+        (backwardCheckpoints suffixStep cutoff).card *
+          ((2 / (suffixPositions cutoff).card) / r ^ 2)
+    ∃ B : BenchmarkData p G,
+      B.value - (scale * γ + L / K) -
+          (K + 1) * γ * (1 + B.mean) -
+          (1 + scale) * ((K + 2) * base) ≤
+        Randomized.uniformAverage (normalizedCost p policy) := by
+  dsimp
+  let G := boundedUniformRoundedGrid hK hL p hp0 hpL
+  let scale : ℝ := L + L / K
+  have hKR : (0 : ℝ) < K := by exact_mod_cast hK
+  have hmesh : 0 < L / (K : ℝ) := div_pos hL hKR
+  have hscale : 0 < scale := by dsimp [scale]; linarith
+  have hroundedScale : ∀ job, G.roundedProcessing job ≤ scale := by
+    intro job
+    exact boundedUniformRoundedGrid_roundedProcessing_le
+      hK hL p hp0 hpL job
+  have hprice : ∀ i, 0 < G.price i := by
+    intro i
+    exact uniformGridPrice_pos hmesh i
+  have hn0 : 0 < n := lt_trans Nat.zero_lt_one hn
+  have hroundedMean : 0 < Randomized.populationMean G.roundedProcessing :=
+    lt_of_lt_of_le hmean (G.populationMean_le_roundedProcessing hn0)
+  have hbound := exists_empiricalBenchmark_uniformAverage_lower_scaled
+    hn p hscale policy G hroundedScale hprice hroundedMean cutoff
+      hMartingaleStep hSuffixStep he hr
+  simpa [G, scale] using hbound
+
 @[simp] theorem uniformRoundedGrid_price
     {n K : ℕ} (hK : 0 < K) (p : Fin n → ℝ) {mesh : ℝ}
     (hmesh : 0 < mesh) (hp0 : ∀ job, 0 ≤ p job)
