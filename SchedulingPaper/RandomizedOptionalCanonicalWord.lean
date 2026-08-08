@@ -128,6 +128,53 @@ theorem canonicalSingleKernel_eq_selfWord
   · rw [ownedDuration_canonicalSelfWord]
     simp [canonicalSingleKernel, testedPosition, ht]
 
+def pairChargeAutomaton
+    {n : ℕ} (processing : Label n → ℝ) (left right : Label n) :
+    Bool → Bool → Transcript n → ℝ
+  | _, _, [] => 0
+  | leftActive, rightActive, observation :: rest =>
+      (if rightActive && observation.ownerLabel = left then
+          observation.actualDuration processing else 0) +
+        (if leftActive && observation.ownerLabel = right then
+          observation.actualDuration processing else 0) +
+        pairChargeAutomaton processing left right
+          (leftActive &&
+            observation.completionLabel processing ≠ some left)
+          (rightActive &&
+            observation.completionLabel processing ≠ some right) rest
+
+@[simp] theorem pairChargeAutomaton_false_false
+    {n : ℕ} (processing : Label n → ℝ) (left right : Label n)
+    (transcript : Transcript n) :
+    pairChargeAutomaton processing left right false false transcript = 0 := by
+  induction transcript with
+  | nil => rfl
+  | cons observation rest tail_ih =>
+      simpa [pairChargeAutomaton] using tail_ih
+
+/-- The two-active-state automaton is the symmetric pair charge.  This
+forward formulation avoids repeatedly reducing two recursive scans of a
+symbolic transcript. -/
+theorem pairChargeAutomaton_eq
+    {n : ℕ} (processing : Label n → ℝ) {left right : Label n}
+    (hne : left ≠ right) (leftActive rightActive : Bool)
+    (transcript : Transcript n) :
+    pairChargeAutomaton processing left right leftActive rightActive transcript =
+      (if leftActive then
+        observedTraceOrientedCharge processing transcript right left else 0) +
+      (if rightActive then
+        observedTraceOrientedCharge processing transcript left right else 0) := by
+  induction transcript generalizing leftActive rightActive with
+  | nil => simp [pairChargeAutomaton, observedTraceOrientedCharge,
+      ownedDurationUntilCompletion]
+  | cons observation rest ih =>
+      cases leftActive <;> cases rightActive <;> cases observation <;>
+        simp [pairChargeAutomaton, observedTraceOrientedCharge,
+          ownedDurationUntilCompletion, Observation.ownerLabel,
+          Observation.actualDuration, Observation.completionLabel,
+          hne, Ne.symm hne, ih] <;>
+        split <;> simp_all [ih] <;> aesop <;> ring
+
 end
 
 end ObservedOnline
