@@ -787,6 +787,240 @@ theorem exists_boundedUniformBenchmark_canonicalPlacedRunCost_le
     (fun job => boundedUniformRoundedGrid_roundedProcessing_le
       hK hL p hp0 hpL job)
 
+/-! ## The long-test branch -/
+
+/-- If every positive-mass block costs at least `base`, its remaining-mass
+area is at least the area of one homogeneous block of that cost.  Zero-mass
+items are allowed to have arbitrary costs; this is important for residual
+grid cells excluded by the density threshold. -/
+theorem fluidBlocksArea_ge_base_half_sq
+    (blocks : List FluidBlock) {base : ℝ} (hbase : 0 ≤ base)
+    (hmass : ∀ b ∈ blocks, 0 ≤ b.mass)
+    (hcost : ∀ b ∈ blocks, b.mass = 0 ∨ base ≤ b.cost) :
+    base * fluidBlocksMass blocks ^ 2 / 2 ≤ fluidBlocksArea blocks := by
+  induction blocks with
+  | nil => simp [fluidBlocksMass, fluidBlocksArea]
+  | cons b rest ih =>
+      have hbMass : 0 ≤ b.mass := hmass b (by simp)
+      have hrestMass : ∀ c ∈ rest, 0 ≤ c.mass := by
+        intro c hc
+        exact hmass c (by simp [hc])
+      have hrestCost : ∀ c ∈ rest, c.mass = 0 ∨ base ≤ c.cost := by
+        intro c hc
+        exact hcost c (by simp [hc])
+      have hrestTotal : 0 ≤ fluidBlocksMass rest :=
+        fluidBlocksMass_nonneg_weak rest hrestMass
+      have hrest := ih hrestMass hrestCost
+      rcases hcost b (by simp) with hbZero | hbCost
+      · simp only [fluidBlocksMass, fluidBlocksArea]
+        rw [hbZero]
+        simpa [homogeneousBlockArea] using hrest
+      · have hfactor :
+            0 ≤ b.mass * fluidBlocksMass rest + b.mass ^ 2 / 2 := by
+          positivity
+        have hhead := mul_le_mul_of_nonneg_right hbCost hfactor
+        simp only [fluidBlocksMass, fluidBlocksArea]
+        unfold homogeneousBlockArea
+        calc
+          base * (b.mass + fluidBlocksMass rest) ^ 2 / 2 =
+              base * (b.mass * fluidBlocksMass rest + b.mass ^ 2 / 2) +
+                base * fluidBlocksMass rest ^ 2 / 2 := by ring
+          _ ≤ b.cost * (b.mass * fluidBlocksMass rest + b.mass ^ 2 / 2) +
+                fluidBlocksArea rest := add_le_add hhead hrest
+
+/-- When the best test module is no denser than blind execution, the
+empirical benchmark value is exactly the all-blind area `mean/2`. -/
+theorem benchmarkData_value_eq_mean_half_of_mean_le_tau
+    {n : ℕ} (hn : 0 < n)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {p : Fin n → ℝ} {G : RoundedPositiveGrid ι p}
+    (B : BenchmarkData p G) (hmeanTau : B.mean ≤ B.tau) :
+    B.value = B.mean / 2 := by
+  let selectedMass := selectedPart B.selected B.mass
+  let residualMass := residualPart B.selected B.mass
+  let a := RandomizedAnnounced.discoveryMass B.zeroMass selectedMass
+  let blocks := optionalSortedBlocks B.qStar a B.tau B.mean G.price residualMass
+  have hvalid := benchmarkGridFluidData_valid hn B
+  have ha0 : 0 ≤ a := by
+    dsimp [a, selectedMass, RandomizedAnnounced.discoveryMass]
+    exact add_nonneg hvalid.zero_nonneg
+      (Finset.sum_nonneg fun i _ => hvalid.selected_nonneg i)
+  have hresidual0 : ∀ i, 0 ≤ residualMass i := by
+    intro i
+    exact residualPart_nonneg hvalid.mass_nonneg i
+  have hmassPartition : a + ∑ i, residualMass i = 1 := by
+    dsimp [a, selectedMass, residualMass, RandomizedAnnounced.discoveryMass]
+    have hsplit := sum_selectedPart_add_sum_residualPart B.selected B.mass
+    linarith [B.population_mass]
+  have hblocksMass : fluidBlocksMass blocks = 1 := by
+    dsimp [blocks]
+    exact optionalSortedBlocks_mass_eq_one B.qStar a B.tau B.mean
+      G.price residualMass hmassPartition
+  have hblockMass0 : ∀ b ∈ blocks, 0 ≤ b.mass := by
+    dsimp [blocks]
+    exact optionalSortedBlocks_mass_nonneg B.qStar_nonneg B.qStar_le_one
+      ha0 hresidual0
+  have hblockCost : ∀ b ∈ blocks, b.mass = 0 ∨ B.mean ≤ b.cost := by
+    intro b hb
+    dsimp [blocks] at hb
+    unfold optionalSortedBlocks knapsackBlocks at hb
+    obtain ⟨item, _hitem, rfl⟩ := List.mem_map.mp hb
+    rcases item with _ | (_ | i)
+    · exact Or.inr hmeanTau
+    · exact Or.inr le_rfl
+    · rcases benchmarkData_residual_eq_zero_or_tau_le_price hn B i with
+        hzero | hprice
+      · left
+        simp [optionalItemCapacity, residualMass, hzero]
+      · exact Or.inr (hmeanTau.trans hprice)
+  have hlower : B.mean / 2 ≤ B.value := by
+    have harea := fluidBlocksArea_ge_base_half_sq blocks B.mean_pos.le
+      hblockMass0 hblockCost
+    rw [hblocksMass] at harea
+    simpa [BenchmarkData.value, blocks] using harea
+  have hzeroArea :
+      fluidBlocksArea (optionalSortedBlocks 0 a B.tau B.mean
+        G.price residualMass) = B.mean / 2 := by
+    rw [optionalSortedBlocks_area_eq_half_minPair,
+      optionalSortedBlocks_minPair_eq_fintype]
+    simp [optionalItemCapacity, optionalItemCost]
+  have hupper : B.value ≤ B.mean / 2 := by
+    have hmin := B.minimizes 0 (by norm_num) (by norm_num)
+    rw [hzeroArea] at hmin
+    exact hmin
+  exact le_antisymm hupper hlower
+
+/-- In the long-test regime the executable canonical policy with quota zero
+is pure blind processing, and implements the benchmark up to the same finite
+kernel error. -/
+theorem canonicalPlacedRunCost_zero_le_benchmark
+    {n : ℕ} (hn : 1 < n)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {p : Fin n → ℝ} {G : RoundedPositiveGrid ι p}
+    (B : BenchmarkData p G) (hmeanTau : B.mean ≤ B.tau)
+    (hprice : Function.Injective G.price)
+    {L : ℝ} (hroundedL : ∀ job, G.roundedProcessing job ≤ L) :
+    uniformAverage (canonicalPlacedRunCost (q := 0) G.roundedProcessing
+      (benchmarkLowSelector B) (benchmarkMediumSelector B)) /
+        (n : ℝ) ^ 2 ≤ B.value + (5 + 18 * L) / n := by
+  have hkernel := canonicalKernelCost_fluid_normalized hn
+    (show 0 ≤ n by omega) G.roundedProcessing
+      (benchmarkLowSelector B) (benchmarkMediumSelector B)
+      (canonicalHigh (benchmarkLowSelector B) (benchmarkMediumSelector B))
+      G.roundedProcessing_nonneg hroundedL
+  have hcost :
+      canonicalPlacedRunCost (q := 0) G.roundedProcessing
+          (benchmarkLowSelector B) (benchmarkMediumSelector B) =
+        canonicalKernelCost 0 G.roundedProcessing
+          (benchmarkLowSelector B) (benchmarkMediumSelector B)
+          (canonicalHigh (benchmarkLowSelector B) (benchmarkMediumSelector B)) := by
+    funext σ
+    exact canonicalPlacedRunCost_eq_kernel (show 0 ≤ n by omega)
+      G.roundedProcessing (benchmarkLowSelector B) (benchmarkMediumSelector B)
+      (benchmarkSelectors_disjoint_of_injective B hprice)
+      (fun job hzero => benchmarkLowSelector_zero_of_rounded B hzero) σ
+  have hfluid :
+      canonicalFluidCost
+          (canonicalEmpiricalMoments G.roundedProcessing
+            (benchmarkLowSelector B) (benchmarkMediumSelector B)
+            (canonicalHigh (benchmarkLowSelector B) (benchmarkMediumSelector B))) 0 =
+        B.value := by
+    calc
+      canonicalFluidCost
+          (canonicalEmpiricalMoments G.roundedProcessing
+            (benchmarkLowSelector B) (benchmarkMediumSelector B)
+            (canonicalHigh (benchmarkLowSelector B) (benchmarkMediumSelector B))) 0 =
+          empiricalSingleAverage G.roundedProcessing / 2 := by
+        simp [canonicalFluidCost, testLowArea, mediumArea, blindArea,
+          highArea, canonicalEmpiricalMoments]
+        ring
+      _ = B.mean / 2 := by
+        rw [B.mean_def]
+        rfl
+      _ = B.value :=
+        (benchmarkData_value_eq_mean_half_of_mean_le_tau
+          (show 0 < n by omega) B hmeanTau).symm
+  rw [hcost]
+  have hupper := (abs_le.mp hkernel).2
+  norm_num at hupper
+  rw [hfluid] at hupper
+  linarith
+
+/-- Uniform-grid long-test specialization. -/
+theorem boundedUniformBenchmark_canonicalPlacedRunCost_zero_le
+    {n K : ℕ} (hn : 1 < n) (hK : 0 < K)
+    {L : ℝ} (hL : 0 < L)
+    (p : Fin n → ℝ) (hp0 : ∀ job, 0 ≤ p job)
+    (hpL : ∀ job, p job ≤ L)
+    (B : BenchmarkData p (boundedUniformRoundedGrid hK hL p hp0 hpL))
+    (hmeanTau : B.mean ≤ B.tau) :
+    let G := boundedUniformRoundedGrid hK hL p hp0 hpL
+    uniformAverage (canonicalPlacedRunCost (q := 0) G.roundedProcessing
+      (benchmarkLowSelector B) (benchmarkMediumSelector B)) /
+        (n : ℝ) ^ 2 ≤
+      B.value + (5 + 18 * (L + L / K)) / n := by
+  dsimp
+  let G := boundedUniformRoundedGrid hK hL p hp0 hpL
+  have hKR : (0 : ℝ) < K := by exact_mod_cast hK
+  have hmesh : 0 < L / (K : ℝ) := div_pos hL hKR
+  have hprice : Function.Injective G.price := by
+    dsimp [G]
+    exact uniformGridPrice_injective hmesh
+  exact canonicalPlacedRunCost_zero_le_benchmark hn B hmeanTau hprice
+    (fun job => boundedUniformRoundedGrid_roundedProcessing_le
+      hK hL p hp0 hpL job)
+
+/-- One finite announced upper theorem covering both testing regimes.  The
+quota is the rounded optimizer in the short regime and zero in the long
+regime. -/
+theorem exists_canonicalPlacedRunCost_le_benchmark_all_regimes
+    {n : ℕ} (hn : 1 < n)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {p : Fin n → ℝ} {G : RoundedPositiveGrid ι p}
+    (B : BenchmarkData p G) (hprice : Function.Injective G.price)
+    {L : ℝ} (hroundedL : ∀ job, G.roundedProcessing job ≤ L) :
+    ∃ q : ℕ, q ≤ n ∧
+      uniformAverage (canonicalPlacedRunCost (q := q) G.roundedProcessing
+        (benchmarkLowSelector B) (benchmarkMediumSelector B)) /
+          (n : ℝ) ^ 2 ≤ B.value + (7 + 27 * L) / n := by
+  rcases le_total B.tau B.mean with hshort | hlong
+  · exact exists_canonicalPlacedRunCost_le_benchmark hn B hshort hprice
+      hroundedL
+  · refine ⟨0, by omega, ?_⟩
+    have hzero := canonicalPlacedRunCost_zero_le_benchmark hn B hlong hprice
+      hroundedL
+    have hL0 : 0 ≤ L :=
+      (G.roundedProcessing_nonneg ⟨0, by omega⟩).trans
+        (hroundedL ⟨0, by omega⟩)
+    have hnR : (0 : ℝ) < n := by exact_mod_cast (show 0 < n by omega)
+    have herr : (5 + 18 * L) / (n : ℝ) ≤ (7 + 27 * L) / n := by
+      exact div_le_div_of_nonneg_right (by linarith) hnR.le
+    linarith
+
+/-- Bounded uniform-grid specialization of the all-regimes theorem. -/
+theorem exists_boundedUniformBenchmark_canonicalPlacedRunCost_le_all_regimes
+    {n K : ℕ} (hn : 1 < n) (hK : 0 < K)
+    {L : ℝ} (hL : 0 < L)
+    (p : Fin n → ℝ) (hp0 : ∀ job, 0 ≤ p job)
+    (hpL : ∀ job, p job ≤ L)
+    (B : BenchmarkData p (boundedUniformRoundedGrid hK hL p hp0 hpL)) :
+    let G := boundedUniformRoundedGrid hK hL p hp0 hpL
+    ∃ q : ℕ, q ≤ n ∧
+      uniformAverage (canonicalPlacedRunCost (q := q) G.roundedProcessing
+        (benchmarkLowSelector B) (benchmarkMediumSelector B)) /
+          (n : ℝ) ^ 2 ≤
+        B.value + (7 + 27 * (L + L / K)) / n := by
+  dsimp
+  let G := boundedUniformRoundedGrid hK hL p hp0 hpL
+  have hKR : (0 : ℝ) < K := by exact_mod_cast hK
+  have hmesh : 0 < L / (K : ℝ) := div_pos hL hKR
+  have hprice : Function.Injective G.price := by
+    dsimp [G]
+    exact uniformGridPrice_injective hmesh
+  exact exists_canonicalPlacedRunCost_le_benchmark_all_regimes hn B hprice
+    (fun job => boundedUniformRoundedGrid_roundedProcessing_le
+      hK hL p hp0 hpL job)
+
 end
 
 end RandomizedOptional
