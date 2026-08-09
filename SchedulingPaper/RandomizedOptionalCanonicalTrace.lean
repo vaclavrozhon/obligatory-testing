@@ -127,6 +127,41 @@ theorem canonical_blind_job_ge_quota
   have htestLe := before.testResults_length_le_startedLabels_length
   omega
 
+/-- A revealed low job is literally the next operation of the canonical
+run, not merely an eventually early job. -/
+theorem canonical_low_test_immediately_processed
+    {n q : ℕ} (processing : Label n → ℝ)
+    (low medium : ℝ → Bool)
+    {before after : Transcript n} {job : Label n} {value : ℝ}
+    {observation : Observation n}
+    (hdecomp :
+      (canonicalRun q processing low medium).config.transcript =
+        before ++ Observation.testResult job value :: observation :: after)
+    (hlow : low value = true) :
+    observation = Observation.processed job := by
+  let touchPrefix : Transcript n :=
+    before ++ [Observation.testResult job value]
+  have hprefixLow : lastLowPending? low touchPrefix = some job := by
+    simp [touchPrefix, lastLowPending?, hlow]
+  have hchosen : canonicalStrategy n q low medium touchPrefix =
+      some (.process job) :=
+    canonicalStrategy_processes_last_low hprefixLow
+  have hdecomp' :
+      (canonicalRun q processing low medium).config.transcript =
+        touchPrefix ++ observation :: after := by
+    simpa [touchPrefix, List.append_assoc] using hdecomp
+  have haction :=
+    (canonicalRun_followsStrategy processing low medium).action_at hdecomp'
+  rw [hchosen] at haction
+  cases observation with
+  | testResult other p => simp [Observation.requestedAction] at haction
+  | processed other =>
+      simp only [Observation.requestedAction, Option.some.injEq,
+        Action.process.injEq] at haction
+      subst other
+      rfl
+  | blindCompleted other p => simp [Observation.requestedAction] at haction
+
 /-- The owner-only projection of a completed canonical run is precisely the
 single-position word used by `canonicalSingleKernel`. -/
 theorem canonicalRun_ownerProjection_eq_selfWord

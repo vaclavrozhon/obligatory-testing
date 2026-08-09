@@ -165,6 +165,85 @@ theorem canonicalStrategy_processes_last_low
     canonicalStrategy n q low medium transcript = some (.process job) := by
   simp [canonicalStrategy, hlow]
 
+/-- A blind execution starts only after the known medium stock has been
+drained.  This is the operational separation between the medium and YOLO
+blocks. -/
+theorem canonicalStrategy_blind_implies_no_medium
+    {n q : ℕ} {low medium : ℝ → Bool}
+    {transcript : Transcript n} {job : Label n}
+    (haction : canonicalStrategy n q low medium transcript =
+      some (.blind job)) :
+    shortestClassPending? medium transcript = none := by
+  unfold canonicalStrategy at haction
+  split at haction
+  · simp at haction
+  · split at haction
+    · cases hnext : nextCanonicalTouch? n transcript <;>
+        simp [hnext] at haction
+    · split at haction
+      · simp at haction
+      · assumption
+
+/-- Every processing action belongs to exactly one of the three processing
+branches of the four-block strategy: immediate low, known medium, or final
+SPT tail. -/
+theorem canonicalStrategy_process_cases
+    {n q : ℕ} {low medium : ℝ → Bool}
+    {transcript : Transcript n} {job : Label n}
+    (haction : canonicalStrategy n q low medium transcript =
+      some (.process job)) :
+    lastLowPending? low transcript = some job ∨
+      (lastLowPending? low transcript = none ∧
+        q ≤ transcript.testResults.length ∧
+        shortestClassPending? medium transcript = some job) ∨
+      (lastLowPending? low transcript = none ∧
+        q ≤ transcript.testResults.length ∧
+        shortestClassPending? medium transcript = none ∧
+        nextCanonicalTouch? n transcript = none ∧
+        ∃ value, shortestResult? transcript.remainingTestResults =
+          some (job, value)) := by
+  unfold canonicalStrategy at haction
+  cases hlow : lastLowPending? low transcript with
+  | some lowJob =>
+      simp only [hlow] at haction
+      have hjob : lowJob = job := Action.process.inj
+        (Option.some.inj haction)
+      subst lowJob
+      exact Or.inl rfl
+  | none =>
+      simp only [hlow] at haction
+      by_cases htest : transcript.testResults.length < q
+      · simp [htest] at haction
+      · have hreached : q ≤ transcript.testResults.length :=
+          Nat.le_of_not_gt htest
+        simp only [if_neg htest] at haction
+        cases hmedium : shortestClassPending? medium transcript with
+        | some mediumJob =>
+            simp only [hmedium] at haction
+            have hjob : mediumJob = job := Action.process.inj
+              (Option.some.inj haction)
+            subst mediumJob
+            exact Or.inr (Or.inl ⟨rfl, hreached, rfl⟩)
+        | none =>
+            simp only [hmedium] at haction
+            cases hnext : nextCanonicalTouch? n transcript with
+            | some next => simp [hnext] at haction
+            | none =>
+                simp only [hnext] at haction
+                cases htail : shortestResult?
+                    transcript.remainingTestResults with
+                | none => simp [htail] at haction
+                | some result =>
+                    simp only [htail, Option.map_some,
+                      Option.some.injEq, Action.process.injEq] at haction
+                    rcases result with ⟨tailJob, value⟩
+                    have hjob : tailJob = job :=
+                      Action.process.inj haction
+                    subst tailJob
+                    refine Or.inr (Or.inr
+                      ⟨rfl, hreached, rfl, rfl, ?_⟩)
+                    exact ⟨value, rfl⟩
+
 end
 
 end ObservedOnline

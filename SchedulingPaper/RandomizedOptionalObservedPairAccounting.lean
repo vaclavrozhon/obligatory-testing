@@ -183,6 +183,65 @@ def Transcript.ownerProjection
   transcript.filter fun observation =>
     observation.ownerLabel = owner ∨ observation.ownerLabel = target
 
+/-- For distinct labels the pair projection is the disjoint shuffle of the
+two owner-only projections. -/
+theorem Transcript.ownerProjection_perm_self_append
+    {left right : Label n} (hne : left ≠ right)
+    (transcript : Transcript n) :
+    (transcript.ownerProjection left right).Perm
+      (transcript.ownerProjection left left ++
+        transcript.ownerProjection right right) := by
+  induction transcript with
+  | nil => simp [Transcript.ownerProjection]
+  | cons observation rest ih =>
+      by_cases hl : observation.ownerLabel = left
+      · have hr : observation.ownerLabel ≠ right := by
+          intro hright
+          exact hne (hl.symm.trans hright)
+        have hpair :
+            Transcript.ownerProjection left right (observation :: rest) =
+              observation :: Transcript.ownerProjection left right rest := by
+          simp [Transcript.ownerProjection, hl]
+        have hleft :
+            Transcript.ownerProjection left left (observation :: rest) =
+              observation :: Transcript.ownerProjection left left rest := by
+          simp [Transcript.ownerProjection, hl]
+        have hright :
+            Transcript.ownerProjection right right (observation :: rest) =
+              Transcript.ownerProjection right right rest := by
+          simp [Transcript.ownerProjection, hr]
+        rw [hpair, hleft, hright]
+        exact ih.cons observation
+      · by_cases hr : observation.ownerLabel = right
+        · have hpair :
+              Transcript.ownerProjection left right (observation :: rest) =
+                observation :: Transcript.ownerProjection left right rest := by
+            simp [Transcript.ownerProjection, hr]
+          have hleft :
+              Transcript.ownerProjection left left (observation :: rest) =
+                Transcript.ownerProjection left left rest := by
+            simp [Transcript.ownerProjection, hl]
+          have hright :
+              Transcript.ownerProjection right right (observation :: rest) =
+                observation :: Transcript.ownerProjection right right rest := by
+            simp [Transcript.ownerProjection, hr]
+          rw [hpair, hleft, hright]
+          exact (ih.cons observation).trans List.perm_middle.symm
+        · have hpair :
+              Transcript.ownerProjection left right (observation :: rest) =
+                Transcript.ownerProjection left right rest := by
+            simp [Transcript.ownerProjection, hl, hr]
+          have hleft :
+              Transcript.ownerProjection left left (observation :: rest) =
+                Transcript.ownerProjection left left rest := by
+            simp [Transcript.ownerProjection, hl]
+          have hright :
+              Transcript.ownerProjection right right (observation :: rest) =
+                Transcript.ownerProjection right right rest := by
+            simp [Transcript.ownerProjection, hr]
+          rw [hpair, hleft, hright]
+          exact ih
+
 def ownedDurationUntilCompletion
     (processing : Label n → ℝ) (target owner : Label n) :
     Transcript n → ℝ
