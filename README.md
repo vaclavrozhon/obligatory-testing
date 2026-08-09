@@ -99,9 +99,21 @@ completion reveals the elapsed processing time, its relabelling/cost
 accounting, and a literal randomized four-block transcript-only strategy.
 The arbitrary adaptive first-touch order is now compiled by a finite trace
 bijection into the predictable selector required by the urn bounds, including
-policies that react to observed blind durations. The full physical-time
-operation-prefix/envelope and minimax assembly remain active formalization
-work.  The supplementary
+policies that react to observed blind durations.  The optional proof now also
+contains a common finite grid-template family, empirical minimization from a
+uniform blind pilot, the actual-time finite canonical kernel, and a physical
+blind-pilot compiler which deletes already completed pilot jobs from an
+independent canonical word. `RandomizedOptionalUnknownInstanceOptimal` joins
+this construction to the arbitrary-adaptive announced lower bound and proves
+a finite unknown-multiset instance-optimal comparison with every error term
+explicit. `RandomizedOptionalUnknownRates` instantiates all seven errors for
+every `n >= m^16`: with `m` grid cells and inverse-power pilot, suffix, and
+checkpoint parameters, the universal blind-pilot schedule is within
+`7830 (L+1)^2/m` of every complete announced policy after normalization by
+`n^2`. It separately discharges the zero-mean case for the same learned
+algorithm, then sets `m=floor(n^(1/16))` and formally proves that the resulting
+error tends to zero. Thus the full bounded unknown-multiset theorem now has a
+literal input-size-only vanishing parameter family in Lean. The supplementary
 announced proof has its fluid certificate checked.
 
 ## Build

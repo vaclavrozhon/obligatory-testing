@@ -171,14 +171,24 @@ and kernel error explicit.  A second theorem packages the asymptotic
 arithmetic: if five scalar errors are at most `delta`, the canonical policy is
 within `(32+77*scale)*delta` of every complete announced policy.
 
-The full **unknown-multiset** theorem is not yet assembled in Lean.  The
-remaining formal layer is now specifically the blind-pilot compiler: construct
-the histogram-dependent canonical template inside the operational strategy,
-specialize `RandomizedOptionalLearning` to it on the untouched population,
-and add the pilot-placement and final seedwise minimax/Yao wrappers.  The
-announced finite instance-optimal theorem, including actual-time execution,
-is closed.  Packaging a literal vanishing parameter sequence for arbitrary
-`n` and the zero-mean boundary case also remains.
+The finite **unknown-multiset** theorem is assembled in Lean.
+`RandomizedOptionalGridTemplate`, `RandomizedOptionalPilotKernel`, and
+`RandomizedOptionalPilotLearningUpper` prove distribution-independent finite
+template optimization and its sampled actual-time upper bound.
+`RandomizedOptionalBlindPilot` prepends the observed blind pilot, removes all
+pilot-owned operations from the learned canonical word, proves that deletion
+cannot increase cost, and charges at most `2 L n k` for pilot placement.
+`RandomizedOptionalUnknownInstanceOptimal` eliminates the empirical benchmark
+against every complete adaptive announced policy.  Its compact theorem says
+that once the seven displayed scalar errors are at most `delta`, the universal
+schedule is within `(59+101*scale) delta` after normalization by `n^2`.
+`RandomizedOptionalUnknownRates` supplies a literal parameter sequence for
+every `n >= m^16` and proves the explicit comparison error
+`7830 (L+1)^2/m`. The zero-mean branch is proved for the same learned compiler:
+nonnegativity makes every job zero, and the pure-YOLO target has value zero.
+The file then instantiates `m=floor(n^(1/16))` and proves in Lean that this
+concrete error tends to zero. Hence the full bounded finite and asymptotic
+instance-optimal scheduling/probability chain is closed.
 The detailed analytic proof is in `OPTIONAL_TWO_PHASE_PROOF.md`; this map
 reports only what Lean currently checks.
 
