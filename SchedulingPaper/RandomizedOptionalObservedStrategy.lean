@@ -93,6 +93,27 @@ theorem canonicalStrategy_test_implies_below_quota
             cases htail : shortestResult? transcript.remainingTestResults <;>
               simp [hnext, htail] at haction
 
+theorem canonicalStrategy_test_implies_nextTouch
+    {n q : ℕ} {low medium : ℝ → Bool}
+    {transcript : Transcript n} {job : Label n}
+    (haction : canonicalStrategy n q low medium transcript =
+      some (.test job)) :
+    nextCanonicalTouch? n transcript = some job := by
+  unfold canonicalStrategy at haction
+  split at haction
+  · simp at haction
+  · split at haction
+    · cases hnext : nextCanonicalTouch? n transcript <;>
+        simp [hnext] at haction ⊢
+      exact haction
+    · split at haction
+      · simp at haction
+      · cases hnext : nextCanonicalTouch? n transcript with
+        | some next => simp [hnext] at haction
+        | none =>
+            cases htail : shortestResult? transcript.remainingTestResults <;>
+              simp [hnext, htail] at haction
+
 theorem canonicalStrategy_blind_implies_quota_reached
     {n q : ℕ} {low medium : ℝ → Bool}
     {transcript : Transcript n} {job : Label n}
@@ -111,6 +132,28 @@ theorem canonicalStrategy_blind_implies_quota_reached
       · simp at haction
       · cases hnext : nextCanonicalTouch? n transcript with
         | some next => exact hquota
+        | none =>
+            cases htail : shortestResult? transcript.remainingTestResults <;>
+              simp [hnext, htail] at haction
+
+theorem canonicalStrategy_blind_implies_nextTouch
+    {n q : ℕ} {low medium : ℝ → Bool}
+    {transcript : Transcript n} {job : Label n}
+    (haction : canonicalStrategy n q low medium transcript =
+      some (.blind job)) :
+    nextCanonicalTouch? n transcript = some job := by
+  unfold canonicalStrategy at haction
+  split at haction
+  · simp at haction
+  · split at haction
+    · cases hnext : nextCanonicalTouch? n transcript <;>
+        simp [hnext] at haction
+    · split at haction
+      · simp at haction
+      · cases hnext : nextCanonicalTouch? n transcript with
+        | some next =>
+            simp [hnext] at haction
+            exact congrArg some haction
         | none =>
             cases htail : shortestResult? transcript.remainingTestResults <;>
               simp [hnext, htail] at haction

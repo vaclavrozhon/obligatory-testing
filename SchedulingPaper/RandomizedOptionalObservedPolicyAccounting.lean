@@ -362,6 +362,62 @@ theorem run_ownerProjectionInvariant
   exact runFuel_ownerProjectionInvariant processing strategy fuel
     (Config.initial n) (Config.initial_ownerProjectionInvariant processing)
 
+/-! ## Canonical prefixes stay inside the certified invariant -/
+
+theorem Config.CanonicalGood.step_canonical
+    {n q : ℕ} (hq : q ≤ n) {processing : Label n → ℝ}
+    {low medium : ℝ → Bool} {config next : Config n}
+    (hgood : config.CanonicalGood processing q) {action : Action n}
+    (hchosen : canonicalStrategy n q low medium config.transcript = some action)
+    (hstep : config.step processing action = some next) :
+    next.CanonicalGood processing q := by
+  by_cases hzero : config.remainingWork = 0
+  · have hstop := canonicalStrategy_stop_of_zero hq hgood hzero low medium
+    rw [hstop] at hchosen
+    contradiction
+  · have hpos : 0 < config.remainingWork := Nat.pos_of_ne_zero hzero
+    obtain ⟨certified⟩ := canonicalStrategy_progress hq hgood hpos low medium
+    have haction : action = certified.action :=
+      Option.some.inj (hchosen.symm.trans certified.chosen)
+    subst action
+    have hnext : next = certified.next :=
+      Option.some.inj (hstep.symm.trans certified.legal)
+    subst next
+    exact certified.good
+
+theorem runFuel_canonicalGood
+    {n q : ℕ} (hq : q ≤ n) (processing : Label n → ℝ)
+    (low medium : ℝ → Bool) (fuel : ℕ) (config : Config n)
+    (hgood : config.CanonicalGood processing q) :
+    (runFuel processing (canonicalStrategy n q low medium) fuel config).config
+      |>.CanonicalGood processing q := by
+  induction fuel generalizing config with
+  | zero => exact hgood
+  | succ fuel ih =>
+      simp only [runFuel]
+      cases hchosen : canonicalStrategy n q low medium config.transcript with
+      | none =>
+          simp only
+          exact hgood
+      | some action =>
+          simp only
+          cases hstep : config.step processing action with
+          | none =>
+              simp only
+              exact hgood
+          | some next =>
+              simp only
+              exact ih next (hgood.step_canonical hq hchosen hstep)
+
+theorem run_canonicalGood
+    {n q : ℕ} (hq : q ≤ n) (processing : Label n → ℝ)
+    (low medium : ℝ → Bool) (fuel : ℕ) :
+    (run processing (canonicalStrategy n q low medium) fuel).config
+      |>.CanonicalGood processing q := by
+  unfold run
+  exact runFuel_canonicalGood hq processing low medium fuel (Config.initial n)
+    (Config.initial_canonicalGood processing q)
+
 end
 
 end ObservedOnline
