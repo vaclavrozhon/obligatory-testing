@@ -153,13 +153,32 @@ with the trace-reindexed simultaneous concentration and bad-event averaging.
 Finally, `RandomizedOptionalUniformRoundedGrid` constructs the concrete
 uniform positive grid and proves the pointwise `[p,p+mesh]` guarantee.
 
-The English instance-optimality proof is complete, but the full unknown-
-multiset theorem is not yet assembled in Lean.  The remaining formal layer is
-the upper side: specialize the generic finite-kernel theorem to the executable
-canonical transcript, compose it with the pilot empirical optimizer, and add
-the final private-relabeling/minimax wrapper.  On the lower side only the
-explicit vanishing parameter sequence and the zero-mean boundary case remain
-to be packaged around the now-closed finite rounded theorem.
+`RandomizedOptionalCanonicalWord`, `RandomizedOptionalCanonicalTrace`, and
+`RandomizedOptionalCanonicalBenchmark` now specialize the generic finite
+kernel to the literal executable four-block transcript.  The completion cost
+of every hidden placement is exactly its canonical kernel cost, all seven
+empirical moments are identified with the rounded benchmark (including both
+SPT minimum-pair terms), and both the short-test and pure-YOLO long-test
+regimes are covered.  `RandomizedOptionalRoundingUpper` pulls the rounded
+decisions back to actual observed values and proves the componentwise
+one-mesh perturbation bound, so its upper policy physically runs for the
+original processing times rather than simulated rounded durations.
+
+`RandomizedOptionalInstanceOptimal` joins this operational upper bound to the
+arbitrary-adaptive-policy announced lower bound around the same empirical
+benchmark.  Its finite theorem has every checkpoint, grid, bad-event, mesh,
+and kernel error explicit.  A second theorem packages the asymptotic
+arithmetic: if five scalar errors are at most `delta`, the canonical policy is
+within `(32+77*scale)*delta` of every complete announced policy.
+
+The full **unknown-multiset** theorem is not yet assembled in Lean.  The
+remaining formal layer is now specifically the blind-pilot compiler: construct
+the histogram-dependent canonical template inside the operational strategy,
+specialize `RandomizedOptionalLearning` to it on the untouched population,
+and add the pilot-placement and final seedwise minimax/Yao wrappers.  The
+announced finite instance-optimal theorem, including actual-time execution,
+is closed.  Packaging a literal vanishing parameter sequence for arbitrary
+`n` and the zero-mean boundary case also remains.
 The detailed analytic proof is in `OPTIONAL_TWO_PHASE_PROOF.md`; this map
 reports only what Lean currently checks.
 
