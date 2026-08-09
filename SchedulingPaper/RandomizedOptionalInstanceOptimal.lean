@@ -207,7 +207,8 @@ theorem boundedUniform_canonical_le_every_policy_of_error_bounds
   have hfiniteTerm : (17 + 63 * scale) / (n : ℝ) ≤
       (17 + 63 * scale) * δ := by
     rw [div_eq_mul_inv]
-    exact mul_le_mul_of_nonneg_left hInverse (by linarith)
+    exact mul_le_mul_of_nonneg_left (by simpa [one_div] using hInverse)
+      (by linarith)
   have hmeshTerm : 12 * (scale + 1) * (L / (K : ℝ)) ≤
       12 * (scale + 1) * δ :=
     mul_le_mul_of_nonneg_left hMesh (by positivity)
