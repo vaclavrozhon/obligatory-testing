@@ -1,6 +1,7 @@
 import SchedulingPaper.RandomizedOptionalRoundedBenchmark
 import SchedulingPaper.RandomizedOptionalCanonicalKernel
 import SchedulingPaper.RandomizedOptionalGridBlocks
+import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Tactic
 
 /-!
@@ -518,6 +519,85 @@ theorem canonicalKernelCost_le_benchmark
   rw [hmoments, hfraction, ← benchmarkData_value_eq_canonicalFluidCost
     (show 0 < n by omega) B htauMean] at hkernel
   linarith [(abs_le.mp hkernel).2]
+
+/-- The benchmark fraction always has a legal integral quota.  Rounding
+`n q*` down adds only another uniform `O_L(n)` term to the finite expected
+cost, so the upper implementation no longer assumes that `q*` is exactly
+representable with denominator `n`. -/
+theorem exists_canonicalKernelCost_le_benchmark
+    {n : ℕ} (hn : 1 < n)
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {p : Fin n → ℝ} {G : RoundedPositiveGrid ι p}
+    (B : BenchmarkData p G) (htauMean : B.tau ≤ B.mean)
+    (processing : Fin n → ℝ) (low medium high : ℝ → Bool)
+    {L : ℝ} (hp0 : ∀ x, 0 ≤ processing x)
+    (hpL : ∀ x, processing x ≤ L)
+    (hmoments : canonicalEmpiricalMoments processing low medium high =
+      (benchmarkGridFluidData B).moments) :
+    ∃ q : ℕ, q ≤ n ∧
+      uniformAverage (canonicalKernelCost q processing low medium high) /
+          (n : ℝ) ^ 2 ≤
+        B.value + (7 + 27 * L) / n := by
+  let q : ℕ := ⌊B.qStar * (n : ℝ)⌋₊
+  have hnPos : 0 < n := by omega
+  have hnR : (0 : ℝ) < n := by exact_mod_cast hnPos
+  have hL : 0 ≤ L :=
+    (hp0 ⟨0, hnPos⟩).trans (hpL ⟨0, hnPos⟩)
+  have hscale0 : 0 ≤ B.qStar * (n : ℝ) :=
+    mul_nonneg B.qStar_nonneg hnR.le
+  have hqCastLe : (q : ℝ) ≤ B.qStar * (n : ℝ) := by
+    dsimp [q]
+    exact Nat.floor_le hscale0
+  have hqCastN : (q : ℝ) ≤ n := by
+    calc
+      (q : ℝ) ≤ B.qStar * (n : ℝ) := hqCastLe
+      _ ≤ 1 * (n : ℝ) :=
+        mul_le_mul_of_nonneg_right B.qStar_le_one hnR.le
+      _ = n := one_mul _
+  have hq : q ≤ n := by exact_mod_cast hqCastN
+  have hqFrac0 : (0 : ℝ) ≤ (q : ℝ) / n := by positivity
+  have hqFrac1 : (q : ℝ) / n ≤ 1 := by
+    exact (div_le_iff₀ hnR).2 (by simpa using hqCastN)
+  have hqFracLe : (q : ℝ) / n ≤ B.qStar := by
+    exact (div_le_iff₀ hnR).2 (by simpa [mul_comm] using hqCastLe)
+  have hscaleLt : B.qStar * (n : ℝ) < (q : ℝ) + 1 := by
+    dsimp [q]
+    exact Nat.lt_floor_add_one _
+  have hqStarLt : B.qStar < (q : ℝ) / n + 1 / n := by
+    have hdiv : B.qStar < ((q : ℝ) + 1) / n :=
+      (lt_div_iff₀ hnR).2 (by simpa [mul_comm] using hscaleLt)
+    convert hdiv using 1 <;> field_simp
+  have hfrac : |(q : ℝ) / n - B.qStar| ≤ 1 / n := by
+    rw [abs_of_nonpos (sub_nonpos.mpr hqFracLe)]
+    linarith
+  let M := canonicalEmpiricalMoments processing low medium high
+  have hM : M.InBox L := by
+    dsimp [M]
+    exact canonicalEmpiricalMoments_inBox hnPos processing low medium high hp0 hpL
+  have hlip := canonicalFluidCost_fraction_lipschitz hL hM
+    hqFrac0 hqFrac1 B.qStar_nonneg B.qStar_le_one
+  have hfluid :
+      canonicalFluidCost M ((q : ℝ) / n) ≤
+        canonicalFluidCost M B.qStar + (2 + 9 * L) / n := by
+    have hmul := mul_le_mul_of_nonneg_left hfrac (by nlinarith : 0 ≤ 2 + 9 * L)
+    have hmulForm : (2 + 9 * L) * (1 / (n : ℝ)) = (2 + 9 * L) / n := by
+      ring
+    rw [hmulForm] at hmul
+    have habsUpper := (abs_le.mp hlip).2
+    nlinarith
+  have hkernel := canonicalKernelCost_fluid_normalized hn hq processing
+    low medium high hp0 hpL
+  have hkernelUpper := (abs_le.mp hkernel).2
+  have hvalue : canonicalFluidCost M B.qStar = B.value := by
+    dsimp [M]
+    rw [hmoments]
+    exact (benchmarkData_value_eq_canonicalFluidCost hnPos B htauMean).symm
+  refine ⟨q, hq, ?_⟩
+  rw [← hvalue]
+  dsimp [M] at hkernelUpper hfluid ⊢
+  have herr : (5 + 18 * L) / (n : ℝ) + (2 + 9 * L) / n =
+      (7 + 27 * L) / n := by ring
+  nlinarith
 
 end
 

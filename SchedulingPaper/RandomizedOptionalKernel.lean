@@ -809,6 +809,147 @@ theorem canonicalFluidCost_stable
     ((canonicalQuadraticCoeff M - canonicalQuadraticCoeff N) * q ^ 2)
   nlinarith [mul_nonneg hL hδ]
 
+/-- Rounding a tested fraction to the nearest finite quota costs only its
+fractional displacement.  The constant is uniform over every moment vector
+coming from processing times in `[0,L]`. -/
+theorem canonicalFluidCost_fraction_lipschitz
+    {M : FluidMoments} {L q r : ℝ}
+    (hL : 0 ≤ L) (hM : M.InBox L)
+    (hq0 : 0 ≤ q) (hq1 : q ≤ 1)
+    (hr0 : 0 ≤ r) (hr1 : r ≤ 1) :
+    |canonicalFluidCost M q - canonicalFluidCost M r| ≤
+      (2 + 9 * L) * |q - r| := by
+  have hhighShift : |M.highMass - 1| ≤ 1 := by
+    rw [abs_le]
+    constructor <;> linarith [hM.highMass_nonneg, hM.highMass_le_one]
+  have hhalfShift : |1 / 2 - M.highMass| ≤ 1 / 2 := by
+    rw [abs_le]
+    constructor <;> linarith [hM.highMass_nonneg, hM.highMass_le_one]
+  have habsLow : |M.lowMoment| ≤ L := by
+    rw [abs_of_nonneg hM.lowMoment_nonneg]
+    exact hM.lowMoment_le
+  have habsMedium : |M.mediumMoment| ≤ L := by
+    rw [abs_of_nonneg hM.mediumMoment_nonneg]
+    exact hM.mediumMoment_le
+  have habsMean : |M.mean| ≤ L := by
+    rw [abs_of_nonneg hM.mean_nonneg]
+    exact hM.mean_le
+  have habsLowMass : |M.lowMass| ≤ 1 := by
+    rw [abs_of_nonneg hM.lowMass_nonneg]
+    exact hM.lowMass_le_one
+  have habsMediumPair : |M.mediumMinPair| ≤ L := by
+    rw [abs_of_nonneg hM.mediumMinPair_nonneg]
+    exact hM.mediumMinPair_le
+  have habsHighPair : |M.highMinPair| ≤ L := by
+    rw [abs_of_nonneg hM.highMinPair_nonneg]
+    exact hM.highMinPair_le
+  have hlinear : |canonicalLinearCoeff M| ≤ 1 + 3 * L := by
+    unfold canonicalLinearCoeff
+    have hmeanHigh : |M.mean| * |M.highMass - 1| ≤ L := by
+      calc
+        |M.mean| * |M.highMass - 1| ≤ L * 1 :=
+          mul_le_mul habsMean hhighShift (abs_nonneg _) hL
+        _ = L := mul_one L
+    calc
+      |1 + M.lowMoment + M.mediumMoment +
+          M.mean * (M.highMass - 1)| ≤
+          |1 + M.lowMoment + M.mediumMoment| +
+            |M.mean * (M.highMass - 1)| :=
+        abs_add_le _ _
+      _ ≤ (|1 + M.lowMoment| + |M.mediumMoment|) +
+            |M.mean * (M.highMass - 1)| := by
+        gcongr
+        exact abs_add_le _ _
+      _ ≤ ((|1| + |M.lowMoment|) + |M.mediumMoment|) +
+            |M.mean * (M.highMass - 1)| := by
+        gcongr
+        exact abs_add_le _ _
+      _ = |1| + |M.lowMoment| + |M.mediumMoment| +
+            |M.mean| * |M.highMass - 1| := by rw [abs_mul]
+      _ ≤ 1 + 3 * L := by
+        rw [abs_one]
+        nlinarith
+  have hquadratic : |canonicalQuadraticCoeff M| ≤ (1 + 6 * L) / 2 := by
+    unfold canonicalQuadraticCoeff
+    have hlowOne : |1 + M.lowMoment| ≤ 1 + L := by
+      rw [abs_of_nonneg (by linarith [hM.lowMoment_nonneg])]
+      simpa [add_comm] using add_le_add_left hM.lowMoment_le 1
+    have hlowProduct := mul_le_mul hlowOne habsLowMass
+      (abs_nonneg _) (by positivity)
+    have hmediumProduct := mul_le_mul habsMedium hhighShift
+      (abs_nonneg _) (by positivity)
+    have hmeanProduct := mul_le_mul habsMean hhalfShift
+      (abs_nonneg _) (by positivity)
+    have hlowTerm : |-(1 + M.lowMoment) * M.lowMass / 2| ≤
+        (1 + L) / 2 := by
+      rw [abs_div, abs_mul, abs_neg,
+        abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 2)]
+      exact div_le_div_of_nonneg_right (by simpa using hlowProduct) (by norm_num)
+    have hmediumTerm : |M.mediumMoment * (M.highMass - 1)| ≤ L := by
+      rw [abs_mul]
+      nlinarith
+    have hmediumPairTerm : |M.mediumMinPair / 2| ≤ L / 2 := by
+      rw [abs_div, abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 2)]
+      exact div_le_div_of_nonneg_right habsMediumPair (by norm_num)
+    have hmeanTerm : |M.mean * (1 / 2 - M.highMass)| ≤ L / 2 := by
+      rw [abs_mul]
+      nlinarith
+    have hhighPairTerm : |M.highMinPair / 2| ≤ L / 2 := by
+      rw [abs_div, abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 2)]
+      exact div_le_div_of_nonneg_right habsHighPair (by norm_num)
+    calc
+      |-(1 + M.lowMoment) * M.lowMass / 2 +
+          M.mediumMoment * (M.highMass - 1) + M.mediumMinPair / 2 +
+          M.mean * (1 / 2 - M.highMass) + M.highMinPair / 2| ≤
+          |-(1 + M.lowMoment) * M.lowMass / 2 +
+              M.mediumMoment * (M.highMass - 1) + M.mediumMinPair / 2 +
+              M.mean * (1 / 2 - M.highMass)| + |M.highMinPair / 2| :=
+        abs_add_le _ _
+      _ ≤ (|-(1 + M.lowMoment) * M.lowMass / 2 +
+              M.mediumMoment * (M.highMass - 1) + M.mediumMinPair / 2| +
+              |M.mean * (1 / 2 - M.highMass)|) + |M.highMinPair / 2| := by
+        gcongr
+        exact abs_add_le _ _
+      _ ≤ ((|-(1 + M.lowMoment) * M.lowMass / 2 +
+              M.mediumMoment * (M.highMass - 1)| + |M.mediumMinPair / 2|) +
+              |M.mean * (1 / 2 - M.highMass)|) + |M.highMinPair / 2| := by
+        gcongr
+        exact abs_add_le _ _
+      _ ≤ (((|-(1 + M.lowMoment) * M.lowMass / 2| +
+              |M.mediumMoment * (M.highMass - 1)|) + |M.mediumMinPair / 2|) +
+              |M.mean * (1 / 2 - M.highMass)|) + |M.highMinPair / 2| := by
+        gcongr
+        exact abs_add_le _ _
+      _ ≤ (1 + 6 * L) / 2 := by nlinarith
+  have hqsum : |q + r| ≤ 2 := by
+    rw [abs_of_nonneg (add_nonneg hq0 hr0)]
+    linarith
+  rw [canonicalFluidCost_quadratic, canonicalFluidCost_quadratic]
+  have hid :
+      M.mean / 2 + canonicalLinearCoeff M * q +
+          canonicalQuadraticCoeff M * q ^ 2 -
+        (M.mean / 2 + canonicalLinearCoeff M * r +
+          canonicalQuadraticCoeff M * r ^ 2) =
+      (q - r) *
+        (canonicalLinearCoeff M + canonicalQuadraticCoeff M * (q + r)) := by
+    ring
+  rw [hid, abs_mul]
+  have hbracket :
+      |canonicalLinearCoeff M + canonicalQuadraticCoeff M * (q + r)| ≤
+        2 + 9 * L := by
+    calc
+      |canonicalLinearCoeff M + canonicalQuadraticCoeff M * (q + r)| ≤
+          |canonicalLinearCoeff M| +
+            |canonicalQuadraticCoeff M| * |q + r| := by
+        simpa [abs_mul] using abs_add_le (canonicalLinearCoeff M)
+          (canonicalQuadraticCoeff M * (q + r))
+      _ ≤ 2 + 9 * L := by
+        have hmul := mul_le_mul hquadratic hqsum
+          (abs_nonneg _) (by positivity)
+        nlinarith
+  simpa [mul_comm] using
+    (mul_le_mul_of_nonneg_left hbracket (abs_nonneg (q - r)))
+
 /-- Histogram Lipschitz lemma for every fixed grid template.  This is the
 formal version of (47), with constant `12(L+1)` instead of the draft's
 `20(L+1)`. -/
