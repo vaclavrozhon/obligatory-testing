@@ -93,6 +93,42 @@ def canonicalSelfWord
     [.testResult job (processing job), .processed job]
   else [.blindCompleted job (processing job)]
 
+/-- The ordered two-label specification contains exactly the two lifecycle
+words, merely interleaved according to the four canonical phases. -/
+theorem canonicalPairWordOrdered_perm_self_append
+    {n q : ℕ} (processing : Label n → ℝ)
+    (low medium : ℝ → Bool) {i j : Fin n} (hij : i.val < j.val) :
+    (canonicalPairWordOrdered q processing low medium i j).Perm
+      (canonicalSelfWord q processing i ++ canonicalSelfWord q processing j) := by
+  classical
+  rw [List.perm_iff_count]
+  intro observation
+  by_cases hti : i.val < q
+  · have hqi : ¬q ≤ i.val := Nat.not_le_of_lt hti
+    by_cases htj : j.val < q
+    · have hqj : ¬q ≤ j.val := Nat.not_le_of_lt htj
+      cases hli : low (processing i) <;> cases hmi : medium (processing i) <;>
+      cases hlj : low (processing j) <;> cases hmj : medium (processing j) <;>
+      simp [canonicalPairWordOrdered, canonicalTestLowWord, canonicalProcessPair,
+        canonicalMediumEligible, canonicalHighEligible, canonicalBlindWord,
+        canonicalSelfWord, hti, htj, hqi, hqj, hli, hmi, hlj, hmj,
+        List.count_cons, List.count_nil] <;> (try split) <;>
+        simp_all [List.count_cons, List.count_nil] <;> try ac_rfl
+    · have hqj : q ≤ j.val := Nat.le_of_not_gt htj
+      cases hli : low (processing i) <;> cases hmi : medium (processing i) <;>
+      cases hlj : low (processing j) <;> cases hmj : medium (processing j) <;>
+      simp [canonicalPairWordOrdered, canonicalTestLowWord, canonicalProcessPair,
+        canonicalMediumEligible, canonicalHighEligible, canonicalBlindWord,
+        canonicalSelfWord, hti, htj, hqi, hqj, hli, hmi, hlj, hmj,
+        List.count_cons, List.count_nil] <;> (try split) <;>
+        simp_all [List.count_cons, List.count_nil] <;> try ac_rfl
+  · have hqi : q ≤ i.val := Nat.le_of_not_gt hti
+    have htj : ¬j.val < q := by omega
+    have hqj : q ≤ j.val := by omega
+    simp [canonicalPairWordOrdered, canonicalTestLowWord, canonicalProcessPair,
+      canonicalMediumEligible, canonicalHighEligible, canonicalBlindWord,
+      canonicalSelfWord, hti, htj, hqi, hqj]
+
 theorem ownedDuration_canonicalSelfWord
     {n q : ℕ} (processing : Label n → ℝ) (job : Label n) :
     ownedDurationUntilCompletion processing job job

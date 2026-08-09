@@ -41,6 +41,44 @@ theorem canonicalRun_followsStrategy
   simpa [canonicalRun] using run_followsStrategy processing
     (canonicalStrategy n q low medium) (2 * n + 1)
 
+/-- The completed canonical run first touches the virtual labels in literal
+`Fin` order. -/
+theorem canonicalRun_startedLabels_eq_ofFn
+    {n q : ℕ} (hq : q ≤ n) (processing : Label n → ℝ)
+    (low medium : ℝ → Bool) :
+    (canonicalRun q processing low medium).config.transcript.startedLabels =
+      List.ofFn id := by
+  let result := canonicalRun q processing low medium
+  have hcompleted := canonicalRun_completed hq processing low medium
+  have horder := hcompleted.2.1.2.1.touchOrder
+  have hlength : result.config.transcript.startedLabels.length = n :=
+    hcompleted.2.1.1.startedLabels_length_eq_n_of_done hcompleted.2.2
+  have hright : (List.ofFn id : List (Fin n)).map Fin.val = List.range n := by
+    rw [List.map_ofFn]
+    simp [List.ofFn_eq_pmap]
+  apply (List.map_injective_iff.mpr Fin.val_injective)
+  simpa [result, hlength, hright] using horder
+
+theorem touchChoices_mem_test_iff
+    {transcript : Transcript n} {job : Label n} :
+    (job, TraceBijection.TouchKind.test) ∈ ObservedTrace.touchChoices transcript ↔
+      ∃ value, Observation.testResult job value ∈ transcript := by
+  induction transcript with
+  | nil => simp [ObservedTrace.touchChoices]
+  | cons observation rest ih =>
+      cases observation <;> simp [ObservedTrace.touchChoices,
+        ObservedTrace.observationTouchChoice?, ih] <;> aesop
+
+theorem touchChoices_mem_blind_iff
+    {transcript : Transcript n} {job : Label n} :
+    (job, TraceBijection.TouchKind.blind) ∈ ObservedTrace.touchChoices transcript ↔
+      ∃ value, Observation.blindCompleted job value ∈ transcript := by
+  induction transcript with
+  | nil => simp [ObservedTrace.touchChoices]
+  | cons observation rest ih =>
+      cases observation <;> simp [ObservedTrace.touchChoices,
+        ObservedTrace.observationTouchChoice?, ih] <;> aesop
+
 theorem Transcript.testResults_length_le_startedLabels_length
     (transcript : Transcript n) :
     transcript.testResults.length ≤ transcript.startedLabels.length := by
@@ -127,6 +165,69 @@ theorem canonical_blind_job_ge_quota
   have htestLe := before.testResults_length_le_startedLabels_length
   omega
 
+/-- Both the label and the test/blind kind of every first touch are fixed by
+the virtual position and the integral quota. -/
+theorem canonicalRun_touchChoices_eq
+    {n q : ℕ} (hq : q ≤ n) (processing : Label n → ℝ)
+    (low medium : ℝ → Bool) :
+    ObservedTrace.touchChoices
+        (canonicalRun q processing low medium).config.transcript =
+      List.ofFn fun job : Fin n =>
+        (job, if job.val < q then TraceBijection.TouchKind.test
+          else TraceBijection.TouchKind.blind) := by
+  let choices := ObservedTrace.touchChoices
+    (canonicalRun q processing low medium).config.transcript
+  have hkind : ∀ choice ∈ choices,
+      choice.2 = if choice.1.val < q then TraceBijection.TouchKind.test
+        else TraceBijection.TouchKind.blind := by
+    intro choice hmem
+    rcases choice with ⟨job, kind⟩
+    cases kind with
+    | test =>
+        have hobs := touchChoices_mem_test_iff.mp hmem
+        obtain ⟨value, hvalue⟩ := hobs
+        obtain ⟨before, after, hdecomp⟩ := List.mem_iff_append.mp hvalue
+        have hlt := canonical_test_job_lt_quota hq processing low medium
+          (by simpa [choices] using hdecomp)
+        simp [hlt]
+    | blind =>
+        have hobs := touchChoices_mem_blind_iff.mp hmem
+        obtain ⟨value, hvalue⟩ := hobs
+        obtain ⟨before, after, hdecomp⟩ := List.mem_iff_append.mp hvalue
+        have hge := canonical_blind_job_ge_quota hq processing low medium
+          (by simpa [choices] using hdecomp)
+        simp [Nat.not_lt_of_ge hge]
+  calc
+    choices = choices.map (fun choice =>
+        (choice.1, if choice.1.val < q then TraceBijection.TouchKind.test
+          else TraceBijection.TouchKind.blind)) := by
+      symm
+      calc
+        choices.map (fun choice =>
+            (choice.1, if choice.1.val < q then TraceBijection.TouchKind.test
+              else TraceBijection.TouchKind.blind)) =
+            choices.map id := by
+          apply List.map_congr_left
+          intro choice hmem
+          apply Prod.ext
+          · rfl
+          · exact (hkind choice hmem).symm
+        _ = choices := List.map_id _
+    _ = (choices.map Prod.fst).map (fun job =>
+        (job, if job.val < q then TraceBijection.TouchKind.test
+          else TraceBijection.TouchKind.blind)) := by
+      rw [List.map_map]
+      apply List.map_congr_left
+      intro choice _
+      rfl
+    _ = List.ofFn fun job : Fin n =>
+        (job, if job.val < q then TraceBijection.TouchKind.test
+          else TraceBijection.TouchKind.blind) := by
+      rw [ObservedTrace.touchChoices_map_fst,
+        canonicalRun_startedLabels_eq_ofFn hq processing low medium,
+        List.map_ofFn]
+      rfl
+
 /-- A revealed low job is literally the next operation of the canonical
 run, not merely an eventually early job. -/
 theorem canonical_low_test_immediately_processed
@@ -210,6 +311,22 @@ theorem canonicalRun_ownerProjection_eq_selfWord
       have hlt := canonical_test_job_lt_quota hq processing low medium
         (by simpa [result] using hdecomp)
       exact (ht hlt).elim
+
+/-- The operational two-label projection already has exactly the multiset
+of observations prescribed by the canonical four-block word.  The remaining
+bridge is purely an ordering statement. -/
+theorem canonicalRun_ownerProjection_perm_pairWordOrdered
+    {n q : ℕ} (hq : q ≤ n) (processing : Label n → ℝ)
+    (low medium : ℝ → Bool) {i j : Fin n} (hij : i.val < j.val) :
+    ((canonicalRun q processing low medium).config.transcript.ownerProjection i j).Perm
+      (canonicalPairWordOrdered q processing low medium i j) := by
+  have hne : i ≠ j := Fin.ne_of_lt hij
+  have hactual := Transcript.ownerProjection_perm_self_append hne
+    (canonicalRun q processing low medium).config.transcript
+  rw [canonicalRun_ownerProjection_eq_selfWord hq processing low medium i,
+    canonicalRun_ownerProjection_eq_selfWord hq processing low medium j] at hactual
+  exact hactual.trans
+    (canonicalPairWordOrdered_perm_self_append processing low medium hij).symm
 
 end
 
