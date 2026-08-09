@@ -228,6 +228,31 @@ theorem canonicalRun_touchChoices_eq
         List.map_ofFn]
       rfl
 
+/-- In the physical transcript, any two first-touch observations that occur
+in chronological order have strictly increasing virtual labels.  Processing
+observations between them are ignored. -/
+theorem canonicalRun_pairwise_touch_order
+    {n q : ℕ} (hq : q ≤ n) (processing : Label n → ℝ)
+    (low medium : ℝ → Bool) :
+    (canonicalRun q processing low medium).config.transcript.Pairwise
+      (fun first second =>
+        ∀ firstChoice,
+          ObservedTrace.observationTouchChoice? first = some firstChoice →
+        ∀ secondChoice,
+          ObservedTrace.observationTouchChoice? second = some secondChoice →
+          firstChoice.1.val < secondChoice.1.val) := by
+  have hchoices :
+      (ObservedTrace.touchChoices
+        (canonicalRun q processing low medium).config.transcript).Pairwise
+          (fun first second => first.1.val < second.1.val) := by
+    rw [canonicalRun_touchChoices_eq hq processing low medium,
+      List.pairwise_ofFn]
+    intro i j hij
+    simpa using hij
+  rw [ObservedTrace.touchChoices_eq_filterMap,
+    List.pairwise_filterMap] at hchoices
+  exact hchoices
+
 /-- A revealed low job is literally the next operation of the canonical
 run, not merely an eventually early job. -/
 theorem canonical_low_test_immediately_processed

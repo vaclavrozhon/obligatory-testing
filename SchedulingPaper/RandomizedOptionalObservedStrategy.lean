@@ -16,13 +16,18 @@ namespace RandomizedOptional
 namespace ObservedOnline
 
 noncomputable section
+attribute [local instance] Classical.propDecidable
+
+def resultBefore (candidate best : Label n × ℝ) : Prop :=
+  candidate.2 < best.2 ∨
+    (candidate.2 = best.2 ∧ candidate.1.val < best.1.val)
 
 def shortestResult? : List (Label n × ℝ) → Option (Label n × ℝ)
   | [] => none
   | result :: rest =>
       some <| rest.foldl
         (fun best candidate =>
-          if candidate.2 < best.2 then candidate else best)
+          if resultBefore candidate best then candidate else best)
         result
 
 def Transcript.remainingTestResults (transcript : Transcript n) :

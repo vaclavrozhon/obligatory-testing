@@ -16,6 +16,7 @@ namespace RandomizedOptional
 namespace ObservedOnline
 
 noncomputable section
+attribute [local instance] Classical.propDecidable
 
 def Observation.requestedAction : Observation n → Action n
   | .testResult job _ => .test job
@@ -150,16 +151,20 @@ private theorem shortestFold_minimal
     (best : Label n × ℝ) (rest : List (Label n × ℝ)) :
     let chosen := rest.foldl
       (fun current candidate =>
-        if candidate.2 < current.2 then candidate else current) best
+        if resultBefore candidate current then candidate else current) best
     chosen.2 ≤ best.2 ∧ ∀ candidate ∈ rest, chosen.2 ≤ candidate.2 := by
   induction rest generalizing best with
   | nil => simp
   | cons candidate rest ih =>
       simp only [List.foldl_cons]
-      by_cases hlt : candidate.2 < best.2
+      by_cases hlt : resultBefore candidate best
       · simp only [if_pos hlt]
         have htail := ih candidate
-        refine ⟨htail.1.trans hlt.le, ?_⟩
+        have hvalue : candidate.2 ≤ best.2 := by
+          rcases hlt with hlt | ⟨heq, _⟩
+          · exact hlt.le
+          · exact heq.le
+        refine ⟨htail.1.trans hvalue, ?_⟩
         intro other hmem
         rcases List.mem_cons.mp hmem with rfl | htailMem
         · exact htail.1
@@ -169,7 +174,8 @@ private theorem shortestFold_minimal
         refine ⟨htail.1, ?_⟩
         intro other hmem
         rcases List.mem_cons.mp hmem with rfl | htailMem
-        · exact htail.1.trans (le_of_not_gt hlt)
+        · exact htail.1.trans (le_of_not_gt fun hcandidate =>
+            hlt (Or.inl hcandidate))
         · exact htail.2 other htailMem
 
 theorem shortestResult?_processing_le
@@ -186,6 +192,108 @@ theorem shortestResult?_processing_le
       rcases List.mem_cons.mp hcandidate with rfl | htail
       · exact hminimal.1
       · exact hminimal.2 candidate htail
+
+def resultAtMost (left right : Label n × ℝ) : Prop :=
+  left.2 < right.2 ∨
+    (left.2 = right.2 ∧ left.1.val ≤ right.1.val)
+
+private theorem resultAtMost_refl (result : Label n × ℝ) :
+    resultAtMost result result := by
+  exact Or.inr ⟨rfl, le_rfl⟩
+
+private theorem resultAtMost_trans
+    {first second third : Label n × ℝ}
+    (hfirst : resultAtMost first second)
+    (hsecond : resultAtMost second third) :
+    resultAtMost first third := by
+  rcases hfirst with hlt | ⟨heq, hlabel⟩ <;>
+    rcases hsecond with hlt' | ⟨heq', hlabel'⟩
+  · exact Or.inl (hlt.trans hlt')
+  · exact Or.inl (hlt.trans_le heq'.le)
+  · exact Or.inl (heq.le.trans_lt hlt')
+  · exact Or.inr ⟨heq.trans heq', hlabel.trans hlabel'⟩
+
+private theorem resultAtMost_of_resultBefore
+    {candidate best : Label n × ℝ}
+    (hbefore : resultBefore candidate best) :
+    resultAtMost candidate best := by
+  rcases hbefore with hlt | ⟨heq, hlabel⟩
+  · exact Or.inl hlt
+  · exact Or.inr ⟨heq, hlabel.le⟩
+
+private theorem resultAtMost_of_not_resultBefore
+    {candidate best : Label n × ℝ}
+    (hbefore : ¬resultBefore candidate best) :
+    resultAtMost best candidate := by
+  by_cases hlt : best.2 < candidate.2
+  · exact Or.inl hlt
+  · have hle : candidate.2 ≤ best.2 := le_of_not_gt hlt
+    have hnotReverse : ¬candidate.2 < best.2 := fun h =>
+      hbefore (Or.inl h)
+    have heq : best.2 = candidate.2 :=
+      le_antisymm (le_of_not_gt hnotReverse) hle
+    have hlabel : best.1.val ≤ candidate.1.val := by
+      by_contra hnot
+      exact hbefore (Or.inr ⟨heq.symm, Nat.lt_of_not_ge hnot⟩)
+    exact Or.inr ⟨heq, hlabel⟩
+
+private theorem shortestFold_lex_minimal
+    (best : Label n × ℝ) (rest : List (Label n × ℝ)) :
+    let chosen := rest.foldl
+      (fun current candidate =>
+        if resultBefore candidate current then candidate else current) best
+    resultAtMost chosen best ∧
+      ∀ candidate ∈ rest, resultAtMost chosen candidate := by
+  induction rest generalizing best with
+  | nil => simp [resultAtMost_refl]
+  | cons candidate rest ih =>
+      simp only [List.foldl_cons]
+      by_cases hbefore : resultBefore candidate best
+      · simp only [if_pos hbefore]
+        have htail := ih candidate
+        refine ⟨resultAtMost_trans htail.1
+            (resultAtMost_of_resultBefore hbefore), ?_⟩
+        intro other hmem
+        rcases List.mem_cons.mp hmem with rfl | hrest
+        · exact htail.1
+        · exact htail.2 other hrest
+      · simp only [if_neg hbefore]
+        have htail := ih best
+        refine ⟨htail.1, ?_⟩
+        intro other hmem
+        rcases List.mem_cons.mp hmem with rfl | hrest
+        · exact resultAtMost_trans htail.1
+            (resultAtMost_of_not_resultBefore hbefore)
+        · exact htail.2 other hrest
+
+/-- The deterministic SPT selector breaks equal processing-time ties by
+virtual label. -/
+theorem shortestResult?_resultAtMost
+    {results : List (Label n × ℝ)} {chosen candidate : Label n × ℝ}
+    (hchosen : shortestResult? results = some chosen)
+    (hcandidate : candidate ∈ results) :
+    resultAtMost chosen candidate := by
+  cases results with
+  | nil => simp [shortestResult?] at hchosen
+  | cons best rest =>
+      simp only [shortestResult?, Option.some.injEq] at hchosen
+      subst chosen
+      have hminimal := shortestFold_lex_minimal best rest
+      rcases List.mem_cons.mp hcandidate with rfl | htail
+      · exact hminimal.1
+      · exact hminimal.2 candidate htail
+
+theorem shortestResult?_label_le_of_processing_eq
+    {results : List (Label n × ℝ)} {chosen candidate : Label n × ℝ}
+    (hchosen : shortestResult? results = some chosen)
+    (hcandidate : candidate ∈ results)
+    (heq : chosen.2 = candidate.2) :
+    chosen.1.val ≤ candidate.1.val := by
+  rcases shortestResult?_resultAtMost hchosen hcandidate with
+      hlt | ⟨_, hlabel⟩
+  · rw [heq] at hlt
+    exact (lt_irrefl _ hlt).elim
+  · exact hlabel
 
 /-! ## One-label lifecycle projections -/
 

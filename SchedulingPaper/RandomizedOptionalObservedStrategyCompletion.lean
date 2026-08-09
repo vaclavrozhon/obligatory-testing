@@ -17,6 +17,7 @@ namespace RandomizedOptional
 namespace ObservedOnline
 
 noncomputable section
+attribute [local instance] Classical.propDecidable
 
 structure Config.CanonicalInvariant (config : Config n) : Prop where
   touchOrder :
@@ -188,13 +189,13 @@ private theorem shortestFold_mem
     (best : Label n × ℝ) (rest : List (Label n × ℝ)) :
     rest.foldl
         (fun best candidate =>
-          if candidate.2 < best.2 then candidate else best)
+          if resultBefore candidate best then candidate else best)
         best ∈ best :: rest := by
   induction rest generalizing best with
   | nil => simp
   | cons candidate rest ih =>
       simp only [List.foldl_cons]
-      by_cases hlt : candidate.2 < best.2
+      by_cases hlt : resultBefore candidate best
       · have hmem := ih candidate
         simp only [if_pos hlt] at hmem ⊢
         exact List.mem_cons_of_mem best hmem
