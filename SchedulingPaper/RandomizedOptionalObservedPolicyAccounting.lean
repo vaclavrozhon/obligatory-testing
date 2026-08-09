@@ -295,6 +295,73 @@ theorem shortestResult?_label_le_of_processing_eq
     exact (lt_irrefl _ hlt).elim
   · exact hlabel
 
+/-- A successful class selector exposes the complete selected result, not
+only its label.  In particular the selected result is still pending and
+belongs to the requested class. -/
+theorem shortestClassPending?_spec
+    {category : ℝ → Bool} {transcript : Transcript n}
+    {job : Label n}
+    (hshort : shortestClassPending? category transcript = some job) :
+    ∃ value,
+      shortestResult? (classRemainingResults category transcript) =
+          some (job, value) ∧
+        (job, value) ∈ transcript.remainingTestResults ∧
+        category value = true := by
+  unfold shortestClassPending? at hshort
+  cases hresult : shortestResult?
+      (classRemainingResults category transcript) with
+  | none => simp [hresult] at hshort
+  | some result =>
+      have hjob : result.1 = job := by simpa [hresult] using hshort
+      have hmem := shortestResult?_mem hresult
+      have hclass := List.mem_filter.mp hmem
+      rcases result with ⟨selectedJob, value⟩
+      simp only at hjob
+      subst job
+      exact ⟨value, rfl, hclass.1, by simpa using hclass.2⟩
+
+theorem shortestClassPending?_ne_none_of_mem
+    {category : ℝ → Bool} {transcript : Transcript n}
+    {result : Label n × ℝ}
+    (hmem : result ∈ classRemainingResults category transcript) :
+    shortestClassPending? category transcript ≠ none := by
+  unfold shortestClassPending?
+  cases hshort : shortestResult?
+      (classRemainingResults category transcript) with
+  | some selected => simp
+  | none =>
+      have hempty := (shortestResult?_eq_none_iff _).mp hshort
+      simpa [hempty] using hmem
+
+/-- Removing a processed job cannot create a new pending result: every
+result pending after the processing observation was already pending before
+it. -/
+theorem remainingTestResults_append_process_subset
+    (transcript : Transcript n) (job : Label n) :
+    ∀ result ∈
+        (transcript ++ [Observation.processed job]).remainingTestResults,
+      result ∈ transcript.remainingTestResults := by
+  intro result hresult
+  unfold Transcript.remainingTestResults at hresult ⊢
+  rw [Transcript.testResults_append_process,
+    Transcript.processedLabels_append_process] at hresult
+  have hfiltered := List.mem_filter.mp hresult
+  have hnot : result.1 ∉ transcript.processedLabels ++ [job] := by
+    simpa using hfiltered.2
+  exact List.mem_filter.mpr ⟨hfiltered.1, by
+    simpa using fun hmem => hnot (List.mem_append_left [job] hmem)⟩
+
+theorem classRemainingResults_append_process_subset
+    (category : ℝ → Bool) (transcript : Transcript n) (job : Label n) :
+    ∀ result ∈ classRemainingResults category
+        (transcript ++ [.processed job]),
+      result ∈ classRemainingResults category transcript := by
+  intro result hresult
+  have hfiltered := List.mem_filter.mp hresult
+  exact List.mem_filter.mpr
+    ⟨remainingTestResults_append_process_subset transcript job result
+      hfiltered.1, hfiltered.2⟩
+
 /-! ## One-label lifecycle projections -/
 
 /-- Reachability fixes the complete owner-only shape of every job. -/
