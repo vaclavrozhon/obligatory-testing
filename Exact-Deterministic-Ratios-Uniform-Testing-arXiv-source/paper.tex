@@ -18,8 +18,8 @@
 \usepackage[nameinlink,capitalise,noabbrev]{cleveref}
 
 \hypersetup{
-  pdftitle={Scheduling with Uniform Tests: Exact Ratios and Instance-Optimal Randomized Policies},
-  pdfauthor={Bolzano team},
+  pdftitle={Scheduling with Uniform Tests: Information and Optimization},
+  pdfauthor={Václav Rozhoň},
   pdfsubject={Online scheduling with testing under explorable uncertainty},
   pdfkeywords={scheduling with testing, explorable uncertainty, online algorithms,
     randomized algorithms, instance optimality, competitive analysis,
@@ -123,7 +123,7 @@
 \newcommand{\Phiopt}{\Phi}
 \newcommand{\Stat}{\mathrm{stat}}
 
-\title{On the Scheduling with Uniform Tests and Optimizations}
+\title{Scheduling with Uniform Tests: Information and Optimization}
 
 % Review this author block before submission.
 \author{Václav Rozhoň}
@@ -146,9 +146,10 @@ six-piece curve whose cap-free obligatory endpoint is
 $1.5705740966\ldots$ and whose global maximum is $1.8667603992\ldots$.
 Against an oblivious adversary, we prove the exact randomized finite-cap
 curve: it has four pieces, global maximum $1.6257523846\ldots$, and equals
-$4/3$ for every $u\ge25/4$.  A separate uniform argument proves the same
-sharp $4/3$ value for obligatory testing with unbounded, unannounced
-processing times.
+$4/3$ for every $u\ge25/4$.  The curve is the worst-case envelope of a
+stronger instance-optimal value for every processing-time multiset.  A
+separate uniform argument proves the same sharp $4/3$ value for obligatory
+testing with unbounded, unannounced processing times.
 
 For blind execution we prove a stronger instance-optimal statement at the
 quadratic scale.  A universal policy learns, from a sublinear pilot, the same
@@ -161,102 +162,323 @@ replacement.
 
 \tableofcontents
 
-[add acknowledgements, thank bolzano (cite the paper) for proving a preliminary result (improving upon lower bound by the two taiwanese people in obligatory testing) and say the most followup work was mostly gpt5.6. ]
-
 \section{Introduction and proof intuition}
+Suppose that several jobs are waiting for one machine.  A job can be
+\emph{tested} for one unit of time, after which its processing time becomes
+known.  Testing sounds helpful, but its cost is paid at the worst possible
+place: while the machine tests one job, every unfinished job waits.  Our
+question is how much information or speed-up is worth buying before the
+machine should simply start completing jobs.
 
-This paper is broadly about the following problem. [explain testing] In another version of the problem, we replace testing by \emph{optimization} -- we can [explain u to pi optimization-of-running-time-angle]. 
+There are two natural interpretations.  In the \emph{information} view, an
+untested job may be run blindly for its true duration; testing only tells us
+that duration before we commit to the job.  In the \emph{optimization} view,
+an unoptimized job takes a common time $u$, whereas a test unlocks an
+optimized duration $p_i\le u$.  Requiring every job to be tested is the clean
+common core: it isolates the conflict between learning the instance and
+finishing it.  Throughout the paper there is one nonpreemptive machine, all
+jobs are available at time zero, and the objective is total completion time.
 
-In both cases, we are fighting the same problem -- we can get something good (knowledge / speed-up) but it also costs us precious time.  How to deal with this conflict is the main point of this paper. 
+The three models differ only in what can be done before a test:
+\begin{center}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+model & untested action & role of a test \\
+\midrule
+obligatory & none & make the job available \\
+blind execution & run for the true $p_i$ & learn $p_i$ before running \\
+common upper $u$ & run for time $u$ & unlock processing at the revealed $p_i$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Our results give exact worst-case ratios in the obligatory and common-upper
+models.  They also give a stronger, instance-dependent answer for randomized
+algorithms: after a sublinear pilot sample, advance knowledge of the entire
+multiset is worth only $o(n^2)$.
 
-While both being able to guess running time of procedures and being able to optimize them is clearly important, our goal is to come up with a suitable "metaalgorithm". Ideally, we want a simple algorithm that is a "wrapper" that around guessing/optimization heuristics. 
+\subsection{The common core: obligatory testing}
 
-% Scheduling with testing separates information acquisition from productive
-% work.  A test reveals the unknown processing time of a job, but the test
-% itself occupies the machine and delays every unfinished job.  This makes a
-% locally cheap experiment globally expensive: one unit spent testing near the
-% beginning of a schedule can be counted in the completion time of almost every
-% job.
+We begin with the most constrained model.  Every job must first undergo its
+unit test.  A positive outcome $p_i$ then requires another operation of
+length $p_i$; a zero job completes with its test.  After seeing an outcome,
+the scheduler must decide whether to process it now or let it wait while more
+jobs are tested.
 
-\subsection{Warmpu -- obligatory testing}
+Competitive analysis compares the online cost with the clairvoyant optimum,
+which knows all processing times in advance.  We study the leading quadratic
+coefficient: an additive $o(n^2)$ loss is ignored.  For deterministic
+algorithms this is the usual adversarial game.  For randomized algorithms the
+input is fixed before the private random bits are drawn---an \emph{oblivious}
+adversary.
 
-We start with the following, simplest to understand, setting. [explain obligatory, mention nonpreemptive is for the whole paper]
+\begin{theorem}[Obligatory testing, informal]
+The exact size-asymptotic deterministic competitive ratio is
+$1.5705740966\ldots$.  Against an oblivious adversary, the exact randomized
+ratio is $4/3$, even when processing times are unbounded and their multiset is
+not announced.
+\end{theorem}
 
-[explain competitive analysis]
+The two optimal algorithms look rather different.  The deterministic
+algorithm tests jobs in a fixed order and uses a threshold that changes with
+the observed history.  Short outcomes are completed immediately; long ones
+are deferred and sorted in a final SPT tail.  The threshold remembers how
+many positive jobs have appeared and how much work has already been promised
+to the tail.  Its analysis uses a bank account that pays for every pair of
+jobs delayed in the wrong order.
 
-This model has been introduced by XX who proved XX. [explain what is known]
+The randomized algorithm first samples a sublinear number of jobs.  From the
+sample it learns the processing-time prefix with the best
+\emph{completion density}: completed mass divided by testing and immediate
+processing work.  It then tests the remaining jobs in random order, completes
+outcomes below the learned threshold immediately, and defers the rest.  A
+fixed cutoff prevents a missed enormous job from contaminating the discovery
+phase; if the learned density is too small, the algorithm safely falls back
+to testing everything and sorting afterwards.
 
-Our first contribution is settling the right competitive ratio in both deterministic and randomized model [some footnote about how adaptive adversary is basically the same as deterministic model ]. 
+The lower bounds explain why these choices are necessary.  Against a
+deterministic algorithm, decreasing positive levels are revealed from long
+to short and a large block of zeros is hidden until the end.  Harmonic gaps
+balance the cost of processing a positive job too early against the cost of
+deferring it.  Against a randomized algorithm, the hard multiset is much
+simpler: half the jobs have length zero and half have length two, with a
+uniformly random labelling.  Until many labels have been inspected, every
+unit of work completes only about half a job; integrating this completion
+envelope gives the factor $4/3$.  The precise statements and proofs appear in
+\cref{thm:main-intro,thm:random-obligatory-intro,sec:obligatory,sec:random-obligatory}.
 
-[formal statement of deterministic result, informal, tag it as "informal version of THm XX"]
+\subsection{Beyond a worst-case ratio: instance optimality}
 
-[the same for randomized]
+A single competitive ratio deliberately forgets the instance.  This can be
+misleading here.  On some multisets testing everything and sorting is nearly
+optimal; on others testing is almost useless.  An algorithm certified only
+as $1.5706$- or $4/3$-competitive does not say that it automatically adapts
+to these easy cases.
 
-[next to each other -- simplified/intuitively explained algorithms used in those two results]
+We therefore add a second comparison.  For a multiset $M$, imagine the best
+randomized online policy that is told $M$ but not its hidden labelling.  Its
+leading cost is an explicit fluid value $n^2\Phi(D_M)$, where $D_M$ is the
+empirical distribution.  We ask whether one universal policy, not told $M$,
+can attain the same value.  This is an ``outer'' version of online analysis:
+on each instance we compare not only with the offline optimum, but also with
+every other online policy, including policies given more information.
 
-Let us explain the two algorithms. [brief explanation here]. 
+\begin{theorem}[Randomized instance optimality, informal]
+For every fixed common upper bound $u$, there is an explicit benchmark
+$\Phi_u(D)$ and one randomized policy, not told the processing-time multiset,
+whose cost on every multiset $M\subseteq[0,u]$ is
+\[
+ n^2\Phi_u(D_M)+o_u(n^2).
+\]
+No randomized policy---even one told $M$---can improve the leading term under
+a uniformly hidden labelling; consequently some fixed oblivious labelling
+witnesses the same lower bound.
 
+The analogous statement holds in the blind-execution model for every fixed
+bound $p_i\le L$, with a different explicit benchmark
+$\Phi_{\rm blind}(D_M)$ and error $o_L(n^2)$.
+\end{theorem}
 
+Randomization is essential to the universal part of this statement.  A
+deterministic policy has a fixed pattern of labels from which it tries to
+learn, and an oblivious labelling can make that pattern unrepresentative.  A
+random pilot instead estimates the histogram of any fixed multiset.  Once
+the histogram is known approximately, the policy solves a one-dimensional
+quadratic optimization and executes the resulting threshold schedule.
 
-\subsection{Instance optimality}
+The boundedness qualifications in the two parts should not be confused with
+the obligatory theorem above.  The blind theorem assumes $p_i\le L$, and the
+common-upper theorem already has $p_i\le u$.  They use these bounds to make
+the pilot and grid errors uniformly $o(n^2)$.  Randomized obligatory testing,
+by contrast, allows arbitrary processing times and uses its cutoff/fallback
+argument instead.
 
-We still consider the same problem. 
+\subsection{The information view: blind execution}
 
-The result from previous section is still not satisfying. In practice, it is likely that many times, we will be in a very degenerate setting. E.g., the testing is so cheap that first testing everything and then sorting is essentially 1-competitive. Our algorithm is howerver still only proven to be 1.58 / 1.33 competitive. 
+We now drop the obligation to test.  An untouched job may be run blindly for
+its actual duration $p_i$; only after it finishes is that duration known.
+Thus a test does not make the job faster.  It buys the option to postpone a
+long outcome and to move a short outcome forward.
 
-I.o. comes to the rescue. [explain the concept] This is actually the same idea behind online algos themeselvees -- instead of measuring cost, we compare ourselves to offline optimum. But here, in the "outer loop" we compare ourselves also to all other online algorithms. 
+Here a worst-case ratio to the clairvoyant optimum can be infinite.  A
+zero-heavy multiset illustrates the obstruction.  The optimum puts all zero
+jobs first at no processing cost, whereas an online policy cannot identify
+those jobs without either testing many labels or occasionally running a
+positive job before many hidden zeros.  As the positive fraction tends to
+zero, the online leading cost can exceed the clairvoyant leading cost by an
+arbitrarily large factor.  Instance optimality remains meaningful: it asks
+for the best cost possible under the same hidden-labelling uncertainty,
+rather than dividing by a benchmark that may be subquadratic.
 
-[now explain why we cannot have i.o. in the deterministic setup]
+For a distribution $D$, write $\mu=\mathbb E P$ and choose the testing
+threshold $\tau$ from
+\[
+ \mathbb E(\tau-P)^+=1.
+\]
+Testing one unit of job mass and immediately completing outcomes below
+$\tau$ behaves like one divisible completion module.  For any fixed tested
+fraction $q$, all remaining work is optimally arranged by increasing cost per
+completion.  The resulting canonical policy is
+\[
+\begin{aligned}
+ \text{threshold tests}
+ &\longrightarrow \text{known values below $\mu$}
+ \longrightarrow \text{blind jobs}\\
+ &\longrightarrow \text{known values above $\mu$}.
+\end{aligned}
+\]
+Its normalized cost $F_D(q)$ is quadratic in $q$, and
+$\Phi_{\rm blind}(D)=\min_{0\le q\le1}F_D(q)$.  If the test module is no
+denser than blind execution, the minimizer is $q=0$ and the policy simply
+runs every job blindly.  Otherwise a genuine interior stopping fraction can
+be optimal.  A three-point example in \cref{sec:blind} shows that the known
+middle block cannot in general be omitted.
 
-But we can have i.o. in the randomized setup. We still need to be careful because very long job can screw us, so results are up to $o_L(n^2)$. 
+The universal policy learns this distributional schedule from a sublinear
+blind pilot.  Conversely, a completion-envelope argument rules out any
+better leading cost, even for an adaptive policy that knows the multiset.
+This is the blind part of the preceding informal theorem; its precise
+statement is \cref{thm:blind-instance-intro}.
 
-Our result is: 
+\subsection{The optimization view: a common upper bound}
 
-[result]
+In the second interpretation, raw execution of every untouched job takes a
+known common time $u$.  A unit test reveals an optimized time $p_i\le u$ and
+allows the scheduler to use it.  Small $u$ makes optimization unattractive;
+large $u$ makes raw execution expensive.  Letting $u$ grow recovers
+obligatory testing, but the finite values are not a monotone interpolation:
+at intermediate $u$, the offline optimum can exploit raw execution in ways
+that are particularly difficult to imitate online.
 
-the algorithm is: 
+\begin{theorem}[Common-upper curves, informal]
+For every fixed $u>0$, the exact size-asymptotic deterministic competitive
+ratio is a continuous six-piece function $V(u)$.  Its global maximum is
+$1.8667603992\ldots$, and for every $u$ beyond
+$4.5052\ldots$ it is already equal to the obligatory value
+$1.5705740966\ldots$.
 
-[simplified algo (inside algo environment)]
+Against an oblivious adversary, the exact randomized ratio is a continuous
+four-piece function $R_{\rm rand}(u)$.  Its global maximum is
+$1.6257523846\ldots$, and it is exactly $4/3$ for every $u\ge25/4$.
+\end{theorem}
 
-Tthe following graph where we plot the best competitive ratio achievable based on the upper bound L (or did we call it $u$)? 
+The deterministic curve is supported by three algorithmic shapes.  For
+small $u$, run every job raw.  For intermediate $u$, test jobs and combine a
+forced immediate prefix with a fixed short/long threshold.  For large $u$,
+use the history-dependent obligatory threshold, with a temporary reserve
+that pays for capped outcomes.  The matching adversaries move through binary
+zero/cap instances, capped versions of the harmonic construction, and
+finally the cap-free harmonic instance.  These changes of optimal policy and
+hard instance create the six branches.
 
+The randomized result is best understood through the stronger benchmark
+$\Phi_u$.  For a fixed empirical distribution, the optimal leading policy
+tests a fraction $q$, immediately completes outcomes below its density
+threshold, processes the tested residual stock in SPT order, and finally
+runs untouched jobs raw.  Dividing its value by the clairvoyant coefficient
+$\Omega_u(D)$ gives the instance-specific ratio
+\[
+ \alpha_u(D)=\frac{\Phi_u(D)}{\Omega_u(D)}.
+\]
+The exact oblivious curve is the outer maximization
+\[
+ R_{\rm rand}(u)=\sup_D\alpha_u(D).
+\]
+This infinite-dimensional optimization collapses to binary distributions.
+Different zero/cap mixtures give the two middle branches, and the balanced
+$\{0,2\}$ distribution gives the final $4/3$ plateau.  Thus the curve is not
+merely a worst-case calculation: it is the envelope of a per-multiset
+instance-optimal theorem.  Exact formulas are given in
+\cref{thm:optional-intro,thm:random-common-upper-intro}.
 
-\subsection{Dropping obligatority}
+\subsection{Techniques}
 
-When we think about testing, the assumption we have to test is not very satisfying -- in many scnarios, the tests will not reveal enough to speed stuff up anyway and they can substantially slow down execution. 
+Four ideas recur across the models.
 
-The problem is that without obligation to test, it is harder to prove results. [explain briefly why deterministic algos cannot work, write it down more carefully in some appendix and point to it]. For randomized algorithms, we have simiilar problem. 
+\paragraph{Pairwise delay accounting.}
+An operation contributes to the completion time of its own job and once
+more for every other job still unfinished.  The objective is therefore a sum
+of diagonal terms and one delay term per pair of jobs.  The diagonal is only
+$O(n)$ after normalization, while the $\Theta(n^2)$ pair terms determine the
+exact asymptotic constants.  Deterministic lower bounds make many pairs wait
+in the wrong order; deterministic upper bounds charge those errors to an
+offline pair through a bank potential.
 
-However, instance optimality comes to the rescue. We can still prove that there is an instance optimal algo. 
+\paragraph{Completion density and envelopes.}
+A test together with the outcomes completed immediately can be viewed as a
+module: it spends some work and completes some job mass.  Maximizing mass per
+unit work yields a threshold.  Once these modules, known processing classes,
+and raw or blind jobs are divisible, their best order is fractional
+knapsack.  The area below the unfinished-mass curve gives both the explicit
+quadratics $\Phi_u$ and $\Phi_{\rm blind}$ and a lower bound against arbitrary
+adaptive stopping rules.
 
-[statement]
+\paragraph{Random relabelling and learning.}
+The algorithm privately permutes labels and uses an $o(n)$ pilot to estimate
+the empirical distribution.  For lower bounds, first-touch causality gives a
+complementary fact: the adaptive order in which a deterministic policy first
+touches uniformly labelled occurrences is itself a uniform permutation.
+The test/raw decision is predictable from the earlier revealed values.  A
+single without-replacement concentration event can therefore control every
+prefix, after which the realized stopping fraction is inserted pathwise into
+the fluid envelope.
 
-[algorithm]
+\paragraph{From instance values to exact curves.}
+For randomized common-upper scheduling we first solve every empirical
+distribution, obtaining $\Phi_u(D)$.  Only then do we maximize
+$\Phi_u(D)/\Omega_u(D)$.  Survival-function flattening reduces the outer
+optimization to scalar binary families.  This separation between the inner
+algorithmic problem and the outer worst-case distribution is what makes the
+four-piece curve transparent.
 
-[explain something about it, e.g what happens when tests take very long time to be rendered useless]
+\subsection{Related work}\label{sec:related}
 
+Scheduling with tests is part of optimization with explorable uncertainty,
+where uncertain data can be queried at a cost; the query viewpoint goes back
+at least to Kahan~\cite{Kahan1991}.  Levi, Magnanti, and Shaposhnik study a
+stochastic scheduling model in which tests diagnose random job attributes
+and derive prefix-testing policies followed by expected-Smith-ratio
+order~\cite{LeviMagnantiShaposhnik2019,LeviMagnantiShaposhnik2024}.  Our
+four-block blind policy is a unit-weight fluid analogue, but our multiset is
+adversarial, need not converge, is not announced to the universal policy,
+and is hidden by an oblivious labelling.
 
+The adversarial common-upper model was introduced by Dürr et
+al.~\cite{DurrErlebachMegowMeissner2020}.  For one machine and total
+completion time they obtained deterministic bounds, including the
+$1.8668\ldots$ UTE guarantee for binary values under a common upper bound.
+Our deterministic theorem closes the common-upper gap for arbitrary
+$p_i\in[0,u]$ and every fixed $u$.  Our randomized theorem gives a separate
+exact four-piece curve against an oblivious adversary.  Related variants
+allow nonuniform test times~\cite{AlbersEckl2021,LiuLiuWongZhang2023,
+KrekelbergEtAl2026}.  Other work considers testing
+budgets~\cite{DameriusEtAl2023}, multiple
+machines~\cite{GongChenHayashi2024}, or weights~\cite{BuldSchulz2026}.
 
-\subsection{Optimalization}
+Dogeas, Erlebach, and Liang introduced obligatory-test scheduling for total
+completion time~\cite{DogeasErlebachLiang2024}.  For uniform tests they gave
+the SIDLE upper bound $1.58451\ldots$ and the deterministic lower bound
+$\sqrt2$.  Liang and Liang subsequently raised the single-machine lower
+bound to $3/2$ through a completion-threshold framework
+~\cite{LiangLiang2026}.  Our harmonic construction and adaptive threshold
+meet at $1.5705740966\ldots$, while our randomized result resolves the
+oblivious single-machine value at $4/3$.
 
-We can also think about "tests" as being about speeding up execution -- without them, jobs take some uniform long time $u$ to be processed. 
+The processing-time-oracle model of Dufoss{\'e} et
+al.~\cite{DufosseEtAl2022} is close to blind execution: an untested job takes
+its true duration, but only two possible durations are allowed.  We permit an
+arbitrary bounded multiset and obtain a distribution-sensitive benchmark and
+four-block policy.  If no tests are available and processing times are
+revealed only at completion, one obtains the classical nonclairvoyant model
+of Motwani, Phillips, and Torng~\cite{MotwaniPhillipsTorng1994}.  These
+semantics differ from common-upper raw execution, which always lasts the
+declared upper bound, regardless of the hidden optimized value.
 
-We want to get algorithm that works for whatever value of $u$ (we will assume it's known since in this simplification we anyway learn it by running a single job). We notice that this generalizes obligatoriy testing since for $u \to \infty$ we recover the setup from our warmup. 
-
-We get the following two curves for both det and rand algorithms. 
-
-[two pictures with curves, draw them nicely in tikz]
-
-you can notice the curves converge to 1.58 from thm XX and 1.33 from thm XX respectively. 
-
-[write the informal result, it says something like "the ratio is as in figure XX" instead of defining it]
-
-Some discussion about the algorithms here, put them again to algo environment and simplified. 
-
-
-
-
-
+The rest of the paper first fixes the models and offline benchmarks in
+\cref{sec:model}.  It then proves the deterministic obligatory endpoint and
+finite common-upper curve, the randomized common-upper and obligatory
+results, and the blind instance-optimal theorem.  The machine-checked scope
+is summarized in \cref{sec:formalization}.
 
 \section{OLD intro}
 % for now dont delete it so that we have comparioson. 
@@ -776,101 +998,6 @@ adaptive announced policies, and removes announcement by a blind pilot.
 correspondence for the deterministic theorem remains in
 \cref{app:lean-formalization}.
 
-\section{Related work}\label{sec:related}
-
-Scheduling with testing belongs to the broader framework of optimization with
-explorable uncertainty, where uncertain data can be queried at a cost; the
-query model goes back at least to Kahan~\cite{Kahan1991}.  In the stochastic
-scheduling model of Levi, Magnanti, and Shaposhnik, testing diagnoses random
-job attributes and the scheduler trades the information gained against the
-delay caused by diagnosis~\cite{LeviMagnantiShaposhnik2019}.  Their structural
-policy tests in a prefix and then orders pending tested and untested jobs by
-expected Smith ratio.  Their later work treats heterogeneous distributions
-and job priorities~\cite{LeviMagnantiShaposhnik2024}.  The four-block policy
-in our blind-execution theorem is the unit-weight fluid analogue of this
-stochastic structure.  Our result is different in quantifiers: the
-processing-time multiset is adversarial, need not converge to a distribution,
-is not announced to the universal policy, and the guarantee is uniform
-against every fixed oblivious labelling.  The completion-envelope proof also
-rules out arbitrary adaptive policies that are told the multiset.
-
-Dürr, Erlebach, Megow, and Meißner introduced the adversarial model now
-usually called scheduling with testing~\cite{DurrErlebachMegowMeissner2020}.
-A job has a known upper bound and may either be executed untested for that
-bound or tested for one unit to reveal a possibly smaller processing time.
-For total completion time on one machine they proved a deterministic lower
-bound of $1.8546\ldots$ and an upper bound of $2$.  When all upper bounds are
-the same, they retained the lower bound and obtained the asymptotic upper
-bound $1.9338\ldots$; on the further restriction $p\in\{0,u\}$, their UTE
-algorithm achieves $1.8668\ldots$.  Our finite-cap theorem closes the
-common-upper gap for arbitrary $p\in[0,u]$, determines the dependence on the
-fixed parameter $u$, and shows that the UTE constant is exactly the maximum
-of the resulting deterministic curve.  Against an oblivious adversary, our
-random-labelling analysis gives the separate exact four-piece curve
-\eqref{eq:intro-random-common-upper-curve}; its survival-function reduction
-shows that binary distributions already witness every worst branch.
-
-A related binary-information model is the processing-time-oracle problem of
-Dufossé et al.~\cite{DufosseEtAl2022}.  There, every job has one of two known
-possible processing times and an untested execution lasts for the true
-processing time; optimal adaptive and nonadaptive two-phase policies can be
-computed.  Its execution semantics are therefore close to our blind model,
-but our values may form an arbitrary bounded multiset and our benchmark and
-four-block theorem are distribution-sensitive.  It differs from our
-common-upper raw mode, whose duration is the declared upper bound regardless
-of the hidden value.  Other variants alter a different part of the model.
-Nonuniform test times were introduced by Albers and
-Eckl~\cite{AlbersEckl2021}; the competitive guarantees for that setting were
-subsequently sharpened by Liu et al.~\cite{LiuLiuWongZhang2023} and, most
-recently, by Krekelberg et al.~\cite{KrekelbergEtAl2026}.  Damerius et
-al.~\cite{DameriusEtAl2023} place job-dependent testing costs under an
-external budget, rather than charging test time directly to every unfinished
-job.  Multiprocessor extensions for total completion time were studied by
-Gong, Chen, and Hayashi~\cite{GongChenHayashi2024}.  Buld and
-Schulz~\cite{BuldSchulz2026} recently obtained the first constant guarantees
-for weighted total completion time in the adversarial optional-testing model.
-These variants do not specialize to the common-upper single-machine game
-solved here, but they delimit which assumptions make an exact curve possible.
-
-Dogeas, Erlebach, and Liang introduced obligatory-test scheduling for total
-completion time~\cite{DogeasErlebachLiang2024}.  For arbitrary test times,
-their 1-SORT algorithm is $1.861$-competitive.  For uniform unit tests, their
-fixed-threshold algorithm SIDLE processes a sufficiently short revealed job
-immediately and sends longer jobs to a shortest-processing-time tail.  They
-proved the upper bound $1.58451\ldots$, exhibited matching instances for
-their analysis of SIDLE, and gave a $\sqrt2$ deterministic lower bound.
-Liang and Liang then developed a completion-threshold framework on identical
-machines; their dyadic construction improves the single-machine lower bound
-to $3/2$~\cite{LiangLiang2026}.  Our harmonic multilevel construction raises
-that lower bound to $\Rstar$, while the adaptive-threshold algorithm lowers
-the upper bound to the same value.  Unlike SIDLE, its threshold depends on
-both the number of positive outcomes observed and the number deferred.
-The same line of work left randomized obligatory testing as a natural open
-direction.  Our sampled maximum-density policy and balanced binary Yao
-instance settle the uniform-test single-machine value at $4/3$ against an
-oblivious adversary.  The upper bound does not assume an announced multiset or
-bounded processing times.
-
-Our pair representation is related to the delay accounting of Dogeas et
-al.~\cite{DogeasErlebachLiang2024}, but the certificate is different.  Once
-the immediate/deferred decisions are fixed, coordinatewise convexity reduces
-the obligatory upper bound to four boundary outcomes.  A state-dependent bank
-then certifies those outcomes.  The distinction between $0$ and $0^+$ forces
-an extra state variable; in the finite-cap model, the endpoint $p=u$ creates
-a fifth outcome because the offline optimum may skip the test.  The reserve
-in \cref{sec:optional-upper} pays precisely for this cap endpoint.
-
-For context, if processing times are revealed only when jobs finish and no
-tests are available, one obtains the classical nonclairvoyant model of
-Motwani, Phillips, and Torng~\cite{MotwaniPhillipsTorng1994}.  Lindermayr et
-al.~\cite{LindermayrEtAl2026} instead consider online arrivals, preemption,
-and total flow time when a job's operations are revealed successively.  For
-their uniform two-operation specialization, operation-level SRPT is
-$2$-competitive and this is tight.  That result is not directly comparable
-with ours because release dates, preemption, and the flow-time benchmark all
-differ.  Finally, the offline shortest-processing-time rule used below is the
-unweighted special case of Smith's rule~\cite{Smith1956}.
-
 \section{Models, benchmarks, and common preliminaries}\label{sec:model}
 
 There are $n$ jobs, all available at time zero, and one machine.  Operations
@@ -1214,6 +1341,21 @@ stopping nor prior knowledge of the multiset improves its leading $n^2$
 coefficient.  Together, these results identify completion density and
 pairwise delay as the common organizing principles behind deterministic
 competitive ratios, randomized learning, and instance-optimal testing.
+
+\section*{Acknowledgements}
+\addcontentsline{toc}{section}{Acknowledgements}
+
+An initial improvement over the then-current deterministic lower bound for
+obligatory testing was obtained with the Bolzano open-source multi-agent
+research system~\cite{GrebikEtAl2026Bolzano}.  That preliminary result
+motivated the present project.  Most of the subsequent conjecture generation,
+proof development, counterexample search, exposition, and Lean formalization
+was carried out with substantial assistance from OpenAI's GPT-5.6 through
+interactive Codex sessions.  In particular, the randomized common-upper
+curve was developed in a separate model run and then integrated with the
+instance-optimal framework.  The author selected the research directions,
+reviewed and revised the arguments, and takes responsibility for the claims
+in this paper.
 
 \appendix
 \input{finite_checkpoint}

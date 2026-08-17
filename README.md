@@ -80,8 +80,9 @@ removes the announcement by a tested pilot sample, and identifies the
 instance-specific asymptotic ratio `Phi_u(D)/Omega_u(D)`.  It also solves the
 outer optimization over distributions, giving an explicit four-branch exact
 randomized curve with global maximum `1.6257523846...`.  The exact curve and
-its self-contained analytic proof are incorporated into the manuscript; the
-stronger instance-optimal statement remains in the standalone Markdown
+its self-contained analytic proof are incorporated into the manuscript.  The
+stronger instance-optimal statement is summarized informally in the new
+introduction, while its full proof remains in the standalone Markdown
 development and has not yet been added to Lean.
 
 The obligatory analytic proof is complete. Lean checks its exact and

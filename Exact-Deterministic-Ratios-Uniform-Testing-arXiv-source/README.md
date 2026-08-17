@@ -25,10 +25,11 @@ pdflatex -interaction=nonstopmode -halt-on-error paper.tex
 
 ## Submission metadata
 
-The source inherits the author name `Bolzano team` from the supplied
-cap-free/obligatory-testing manuscript.  Review that author block before
-submission.
-The bibliography already contains DOI/arXiv metadata for the cited literature.
+The manuscript title and PDF metadata are `Scheduling with Uniform Tests:
+Information and Optimization`; the current author block names Václav Rozhoň.
+The bibliography contains DOI/arXiv metadata for the cited literature, and the
+acknowledgements disclose the use of Bolzano and GPT-5.6 in developing the
+results and formalization.
 
 ## Exact scope of the claims
 
