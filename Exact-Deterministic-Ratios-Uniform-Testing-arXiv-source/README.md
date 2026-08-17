@@ -1,4 +1,4 @@
-# Exact deterministic ratios for uniform testing
+# Scheduling with Uniform Tests: Information and Optimization
 
 This directory is a self-contained arXiv source tree for the manuscript
 `paper.tex`.
@@ -12,9 +12,10 @@ latexmk -pdf paper.tex
 ```
 
 from this directory.  The build uses only standard LaTeX packages and the
-included vector figures `curve.pdf` and `curves_overview.pdf`.  The latter can
-be regenerated with `python3 plot_curves_overview.py`; regeneration requires
-NumPy, SciPy, and Matplotlib, but compiling the paper does not.
+included vector figures.  The introduction overview is native TikZ/pgfplots
+source in `curves_overview_tikz.tex`; the revealing/non-revealing comparison
+is regenerated with `python3 plot_blind_optimization_curve.py`.  Regeneration
+of that PDF requires NumPy and Matplotlib, but compiling the paper does not.
 
 If `latexmk` is unavailable, the equivalent manual build is
 
@@ -65,7 +66,9 @@ accompanied by an independent adjacent-exchange cross-check.
 
 The randomized results give the exact four-piece common-upper curve, the
 sharp unbounded obligatory ratio `4/3`, and instance-optimal leading values
-for the bounded blind-execution and common-upper models.  The blind theorem
-is formalized in Lean.  The common-upper instance-optimal proof is presently
-given in `../RANDOMIZED_COMMON_UPPER_INSTANCE_OPTIMAL_PROOF.md`; the exact
-curve derived from it is integrated into the manuscript.
+for the bounded blind-execution, common-upper, and blind-optimization models.
+The full common-upper instance-optimal proof is Section 5 of the manuscript;
+its outer worst-case optimization is the separate four-piece curve in
+Section 6.  The blind-execution theorem is formalized in Lean.  The
+blind-optimization theorem and its exact curve, which is unbounded as
+$u\to\infty$, are currently analytic only.

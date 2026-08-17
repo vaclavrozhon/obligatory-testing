@@ -72,18 +72,17 @@ formalization:
   finite `4/3`-competitive.  The universal unknown-multiset `4/3` proof does
   not depend on its general lower-transfer theorem.
 
-`RANDOMIZED_COMMON_UPPER_INSTANCE_OPTIMAL_PROOF.md` is a new standalone
+`RANDOMIZED_COMMON_UPPER_INSTANCE_OPTIMAL_PROOF.md` is the standalone
 analytic proof for the finite common-upper model with raw execution of length
 `u`.  It derives the explicit fixed-distribution quadratic benchmark,
 proves its announced-multiset lower envelope against every adaptive policy,
 removes the announcement by a tested pilot sample, and identifies the
 instance-specific asymptotic ratio `Phi_u(D)/Omega_u(D)`.  It also solves the
 outer optimization over distributions, giving an explicit four-branch exact
-randomized curve with global maximum `1.6257523846...`.  The exact curve and
-its self-contained analytic proof are incorporated into the manuscript.  The
-stronger instance-optimal statement is summarized informally in the new
-introduction, while its full proof remains in the standalone Markdown
-development and has not yet been added to Lean.
+randomized curve with global maximum `1.6257523846...`.  Both the
+instance-optimal theorem and the exact curve are now incorporated as separate
+main sections of the manuscript.  The common-upper result has not yet been
+added to Lean.
 
 The obligatory analytic proof is complete. Lean checks its exact and
 robust fluid certificates, maximum-density optimizer and sample-empty-bin
@@ -140,3 +139,10 @@ lake build
 ```
 
 The root module `SchedulingPaper.lean` imports the complete development.
+
+The manuscript additionally studies a fourth, currently non-formalized
+model in which a unit-time optimization changes a raw duration `u` to a
+hidden duration `p <= u` without revealing `p` before execution.  A universal
+mean-sampling policy is instance optimal up to `o(n^2)`, and the exact
+oblivious-randomized competitive curve is attained by binary `{0,u}`
+multisets and grows as `sqrt(u)/2`.

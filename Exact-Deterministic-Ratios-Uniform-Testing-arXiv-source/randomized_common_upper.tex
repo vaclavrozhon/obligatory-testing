@@ -4,13 +4,63 @@
 We return to the finite common-upper model and allow private randomization
 against an oblivious adversary.  The cap $u$ is fixed throughout this
 section, but the algorithm is not told the processing-time multiset.  This
-section proves \cref{thm:random-common-upper-intro}.  The proof has three
-parts.  First we analyze two policies for an announced distribution: run
-everything raw, or test everything using a maximum-density stationary
-threshold.  A survival-function argument shows that their worst
-distribution is binary.  We then learn the better policy from a sublinear
-pilot, and finally use random labellings and Yao's principle for the matching
-lower bounds.
+section proves \cref{thm:random-common-upper}, the rigorous randomized half
+of the informal curve theorem \cref{thm:intro-common-upper-curves}.  Let
+$\urand>1$ be the unique root of
+\begin{equation}
+ \urand^3-6\urand^2+5\urand-1=0,
+ \qquad
+ \urand=5.048917339522306\ldots .
+ \label{eq:intro-random-transition}
+\end{equation}
+
+\begin{theorem}[Randomized common-upper curve]
+\label{thm:random-common-upper}
+For every fixed $u>0$, the optimal randomized size-asymptotic competitive
+ratio against an oblivious adversary is
+\begin{equation}
+ \Rrand(u)=
+ \begin{cases}
+  1,&0<u\le1,\\[2pt]
+  \displaystyle\frac{u^3}{u^2+(u-1)^3},
+    &1\le u\le\urand,\\[8pt]
+  \displaystyle 1+\frac{1}{2(\sqrt u-1)},
+    &\urand\le u\le25/4,\\[8pt]
+  \displaystyle\frac43,&u\ge25/4.
+ \end{cases}
+ \label{eq:intro-random-common-upper-curve}
+\end{equation}
+More precisely, there are randomized nonanticipating algorithms
+$\mathcal A_{n,u}$ and numbers $\eps_u(n)\to0$ such that every fixed labelled
+vector $p\in[0,u]^n$ satisfies
+\begin{equation}
+ \EE\ALG_{\mathcal A_{n,u}}(p)
+ \le \Rrand(u)\OPT_u(p)+\eps_u(n)n^2.
+ \label{eq:intro-random-common-upper}
+\end{equation}
+Conversely, for every randomized online algorithm and every $\eps>0$, there
+are arbitrarily large $n$ and a fixed vector $p\in[0,u]^n$ for which
+\begin{equation}
+ \EE\ALG(p)\ge\bigl(\Rrand(u)-\eps\bigr)\OPT_u(p).
+ \label{eq:random-common-upper-lower}
+\end{equation}
+The curve is continuous and has global maximum
+\begin{equation}
+ \max_{u>0}\Rrand(u)
+ =\frac{27+6\sqrt3}{23}
+ =1.625752384583185\ldots,
+ \label{eq:intro-random-common-maximum}
+\end{equation}
+attained at $u=(3+\sqrt3)/2$.
+\end{theorem}
+
+The preceding instance-optimal theorem identifies the best policy on each
+bag.  Here we compare that value with the clairvoyant minimum kernel and
+maximize over all empirical distributions.  A survival-function flattening
+argument reduces the outer optimization to binary distributions.  Two
+scalar maximizations give the four branches above.  A sublinear pilot removes
+advance knowledge of the bag, and binary random labellings give matching Yao
+lower bounds.  The next subsection starts the formal calculation.
 
 \subsection{Offline and stationary fluid coefficients}
 
@@ -105,6 +155,20 @@ in the prefix and \eqref{eq:rcu-stationary-pair} equals $\tau/2$.  Raw
 execution has leading coefficient $u/2$, and division by
 \eqref{eq:rcu-offline-fluid} proves \eqref{eq:rcu-announced-ratio}.
 \end{proof}
+
+This is where the instance-optimal theorem enters the curve calculation.
+In \cref{eq:cui-F}, $q=0$ is the raw policy and $q=1$ is precisely the
+stationary maximum-density policy.  Hence
+\begin{equation}
+ 2\Phi_u(D)\le\min\{u,\mathcal T_u(D)\},
+ \label{eq:rcu-Phi-endpoint-upper}
+\end{equation}
+and \cref{eq:rcu-announced-ratio} is an upper bound on the
+instance-specific ratio $\Phi_u(D)/\Omega_u(D)$.  Interior values of $q$ can
+strictly improve individual bags; the point of the next two subsections is
+that the two endpoint policies already give the sharp value after maximizing
+over all $D$.  The binary lower bounds at the end apply to every policy, not
+only to these endpoints.
 
 \subsection{Flattening the survival function}
 
@@ -519,4 +583,4 @@ Equations \eqref{eq:rcu-lower-first-branch} and
 \cref{lem:rcu-zero-two-lower}, match \eqref{eq:rcu-final-upper} in every
 range.  For $0<u\le1$, raw execution is both an online and a clairvoyant
 optimum.  This completes the proof of the exact curve in
-\cref{thm:random-common-upper-intro}.
+\cref{thm:random-common-upper}.

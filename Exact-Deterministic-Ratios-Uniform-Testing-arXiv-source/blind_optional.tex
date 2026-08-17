@@ -5,7 +5,43 @@ We now turn to $\mathsf{BE}(L)$.  Running an untouched job blindly consumes
 its actual processing time and completes it; testing consumes one unit,
 reveals the value, and permits the processing operation to be delayed.  The
 adversary fixes an arbitrary labelled vector in $[0,L]^n$ before the private
-seed is drawn.  This section proves \cref{thm:blind-instance-intro}.
+seed is drawn.  The goal of this section is to prove
+\cref{thm:blind-instance}, the blind-execution part of the informal
+instance-optimality theorem \cref{thm:intro-instance-optimality}.
+
+\begin{theorem}[Blind-execution instance optimality]
+\label{thm:blind-instance}
+Fix $L<\infty$.  There are a randomized nonanticipating policy $\mathcal A^*$,
+which knows $n,L$ but not the processing-time multiset, and a deterministic
+sequence $\eps_L(n)\to0$ with the following properties.  For every multiset
+$M\subseteq[0,L]$ of size $n$ and every fixed labelling $\sigma$,
+\begin{equation}
+ \EE C_{\mathcal A^*}(\sigma(M))
+ \le n^2\Phiopt(D_M)+\eps_L(n)n^2.
+ \label{eq:intro-blind-upper}
+\end{equation}
+For every randomized policy $\mathcal A$, even one told $M$, some fixed
+oblivious labelling $\sigma$ satisfies
+\begin{equation}
+ \EE C_{\mathcal A}(\sigma(M))
+ \ge n^2\Phiopt(D_M)-\eps_L(n)n^2.
+ \label{eq:intro-blind-lower}
+\end{equation}
+The benchmark $\Phiopt$ is defined explicitly in
+\cref{sec:blind-benchmark}; it is the minimum of a one-variable quadratic.
+One may take
+$\eps_L(n)=O_L(n^{-1/6}\sqrt{\log(n+2)})$.
+\end{theorem}
+
+The proof first replaces a round of tests and its immediate short outcomes
+by one divisible completion module.  For a fixed tested fraction $q$, a
+fractional-knapsack envelope then forces the four-block order from the
+introduction and gives its exact quadratic cost.  To handle an arbitrary
+adaptive policy, we show that its first-touch order is a bijective
+relabeling of the occurrence permutation; predictable sampling controls all
+touch prefixes at once.  A growing grid extends the bound to arbitrary
+bounded multisets, and a blind pilot removes advance knowledge of the bag.
+The next subsection defines the benchmark and begins the formal proof.
 
 \subsection{The distributional benchmark}
 \label{sec:blind-benchmark}
@@ -215,6 +251,7 @@ each $x$.  Hence its area complement $F_D(q)$ is convex, proving $B\ge0$.
 \end{proof}
 
 \subsection{Adaptive first touches are a uniform urn}
+\label{sec:blind-adaptive-urn}
 
 The fluid proof fixed $q$, but an announced finite policy may choose whom to
 touch next and when to stop testing as arbitrary functions of its history.
@@ -288,6 +325,7 @@ argument with the predictable blind selector and bounded values proves
 eventual tested fraction.
 
 \subsection{The announced-multiset lower bound}
+\label{sec:blind-announced}
 
 Fix a policy seed.  Stop after $\lfloor(1-\delta)n\rfloor$ first touches and
 let $Q_{n,\delta}$ be the number of tests completed by then, divided by $n$.
@@ -484,7 +522,7 @@ uniform labelling.  The announced lower bound
 \cref{eq:blind-announced-lower} applies seedwise.  Some fixed labelling in
 the support has cost at least the average, which proves
 \cref{eq:intro-blind-lower}.  This completes the proof of
-\cref{thm:blind-instance-intro}.
+\cref{thm:blind-instance}.
 
 \subsection{Why the medium block is necessary}
 

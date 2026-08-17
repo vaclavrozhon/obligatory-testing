@@ -5,7 +5,42 @@
 We now keep obligatory tests but change the adversary.  It fixes the labelled
 vector $p\in[0,\infty)^n$ before the algorithm draws its random bits.  The
 multiset is not announced and no upper bound on the processing times is
-assumed.  This section proves \cref{thm:random-obligatory-intro}.
+assumed.  The goal of this section is to prove \cref{thm:rand-obligatory},
+the rigorous randomized part of the informal obligatory-testing result
+\cref{thm:intro-obligatory} from the introduction.
+
+\begin{theorem}[Randomized obligatory testing]
+\label{thm:rand-obligatory}
+There is a universal randomized nonanticipating algorithm, depending only on
+$n$, such that every fixed vector $p\in[0,\infty)^n$ satisfies
+\begin{equation}
+ \EE\ALG(p)
+ \le \frac43\OPT(p)+20378n^{7/4}
+ \le\left(\frac43+40756n^{-1/4}\right)\OPT(p).
+ \label{eq:rand-obligatory-upper}
+\end{equation}
+Conversely, for every randomized algorithm and every sufficiently large even
+$n$, some fixed labelling of $n/2$ zero jobs and $n/2$ jobs of processing
+time two satisfies
+\begin{equation}
+ \EE\ALG(p)\ge n^2-O(n^{3/2}),
+ \qquad
+ \OPT(p)=\frac34n^2+n.
+ \label{eq:rand-obligatory-lower}
+\end{equation}
+Hence the exact randomized size-asymptotic competitive ratio against an
+oblivious adversary is $4/3$.
+\end{theorem}
+
+For an announced multiset, the algorithmic core is the processing-time
+prefix with maximum completions per unit discovery work.  Testing jobs in a
+uniformly random order gives an exact pair identity and a $4/3$ algebraic
+certificate.  The universal algorithm learns an approximately separated
+prefix from a sublinear sample; a fixed cutoff and a fallback schedule
+protect it from unbounded values missed by the sample.  For the lower bound,
+we randomly label half zero and half length-two jobs.  A balanced-bridge
+discrepancy bound limits how fast any algorithm can complete them.  The next
+subsection begins the formal proof.
 
 \subsection{The normalized offline objective}
 
@@ -375,7 +410,7 @@ $k\le n^{3/4}$.  The right-hand side of
 \end{equation}
 For smaller $n$, test-all-then-SPT is covered by the same deliberately loose
 constant.  Finally $\OPT\ge n^2/2$ proves the multiplicative form in
-\cref{eq:intro-random-upper}.
+\cref{eq:rand-obligatory-upper}.
 
 \subsection{The balanced binary lower bound}
 
@@ -431,4 +466,4 @@ Conditioning a randomized algorithm on its private seed and averaging over
 the finite placement distribution shows that one fixed labelling attains at
 least this average.  That labelling is chosen before the private seed and is
 therefore an oblivious input.  Together with \cref{eq:rand-final-upper}, this
-completes the proof of \cref{thm:random-obligatory-intro}.
+completes the proof of \cref{thm:rand-obligatory}.

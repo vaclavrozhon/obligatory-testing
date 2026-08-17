@@ -1,0 +1,117 @@
+% The introduction curves as native pgfplots graphics.  All explicit
+% branches are plotted from their formulas.  The only tabulated branch is
+% C_mix, which is defined implicitly in Equation (intro-mixed-system).
+\begingroup
+% TeX Live 2023's pgfplots emits spurious nullfont diagnostics containing
+% ``0.01pt'' while sampling expressions; no text is actually lost.
+\tracinglostchars=0
+\pgfmathdeclarefunction{introRhoI}{1}{%
+  \pgfmathparse{%
+    (-(((#1-1)^3)+((#1-1)^2)+1)
+      +sqrt((((#1-1)^3)+((#1-1)^2)+1)^2
+        +4*(#1-1)*(((#1-1)^2)+(#1-1)+1)*((#1-1)+2)))
+      /(2*(#1-1))}%
+}
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=2 by 1,horizontal sep=1.15cm},
+  width=0.465\textwidth,
+  height=0.315\textwidth,
+  xmin=0.2,
+  xmax=7.3,
+  ymin=0.97,
+  ymax=1.91,
+  xlabel={raw execution time $u$},
+  xtick={1,2,3,4,5,6,7},
+  ytick={1,1.2,1.4,1.6,1.8},
+  tick label style={font=\scriptsize},
+  label style={font=\small},
+  title style={font=\small},
+  grid=major,
+  grid style={black!15},
+  axis line style={black!65},
+  tick style={black!65},
+  axis x line*=bottom,
+  axis y line*=left,
+  samples=90,
+  no markers,
+  clip=false,
+]
+
+\nextgroupplot[
+  title={deterministic},
+  ylabel={optimal competitive ratio},
+]
+\addplot[blue!72!black,very thick,domain=0.2:1] {1};
+\addplot[blue!72!black,very thick,domain=1:1.86676039917] {x};
+\addplot[blue!72!black,very thick,domain=1.86676039917:3.14789903570]
+  {introRhoI(x)};
+\addplot[blue!72!black,very thick,domain=3.14789903570:3.61803398875]
+  {1+1/sqrt(x-1)};
+\addplot[blue!72!black,very thick,smooth] coordinates {
+  (3.61803399,1.61803399)
+  (3.63837920,1.61566099)
+  (3.65923107,1.61328800)
+  (3.68063111,1.61091500)
+  (3.70262731,1.60854201)
+  (3.72527568,1.60616902)
+  (3.74864222,1.60379602)
+  (3.77280560,1.60142303)
+  (3.79786084,1.59905003)
+  (3.82392445,1.59667704)
+  (3.85114178,1.59430404)
+  (3.87969805,1.59193105)
+  (3.90983519,1.58955805)
+  (3.94187917,1.58718506)
+  (3.97628649,1.58481206)
+  (4.01372962,1.58243907)
+  (4.05526944,1.58006608)
+  (4.10275400,1.57769308)
+  (4.15995362,1.57532009)
+  (4.23729031,1.57294709)
+  (4.50524150,1.57057410)
+};
+\addplot[blue!72!black,very thick,domain=4.50524149579:7.3]
+  {1.57057409665};
+\addplot[black!45,densely dotted,thin] coordinates {(1,0.97) (1,1.91)};
+\addplot[black!45,densely dotted,thin]
+  coordinates {(1.86676039917,0.97) (1.86676039917,1.91)};
+\addplot[black!45,densely dotted,thin]
+  coordinates {(3.14789903570,0.97) (3.14789903570,1.91)};
+\addplot[black!45,densely dotted,thin]
+  coordinates {(3.61803398875,0.97) (3.61803398875,1.91)};
+\addplot[black!45,densely dotted,thin]
+  coordinates {(4.50524149579,0.97) (4.50524149579,1.91)};
+\addplot[only marks,mark=*,mark size=1.45pt,black]
+  coordinates {(1.86676039917,1.86676039917) (4.50524149579,1.57057409665)};
+\node[font=\scriptsize,anchor=west] at (axis cs:2.25,1.845)
+  {maximum $1.86676\ldots$};
+\draw[black!55,thin] (axis cs:2.21,1.85) -- (axis cs:1.89,1.86676);
+\node[font=\scriptsize,anchor=west] at (axis cs:5.05,1.605)
+  {$1.57057\ldots$};
+
+\nextgroupplot[title={randomized}]
+\addplot[orange!88!black,very thick,domain=0.2:1] {1};
+\addplot[orange!88!black,very thick,domain=1:5.04891733952]
+  {x^3/(x^2+(x-1)^3)};
+\addplot[orange!88!black,very thick,domain=5.04891733952:6.25]
+  {1+1/(2*(sqrt(x)-1))};
+\addplot[orange!88!black,very thick,domain=6.25:7.3] {4/3};
+\addplot[black!45,densely dotted,thin] coordinates {(1,0.97) (1,1.91)};
+\addplot[black!45,densely dotted,thin]
+  coordinates {(5.04891733952,0.97) (5.04891733952,1.91)};
+\addplot[black!45,densely dotted,thin]
+  coordinates {(6.25,0.97) (6.25,1.91)};
+\addplot[only marks,mark=*,mark size=1.45pt,black] coordinates {
+  (2.36602540378,1.62575238458)
+  (5.04891733952,1.39719767662)
+  (6.25,1.33333333333)
+};
+\node[font=\scriptsize,anchor=west] at (axis cs:2.88,1.65)
+  {maximum $1.62575\ldots$};
+\draw[black!55,thin] (axis cs:2.84,1.647) -- (axis cs:2.39,1.627);
+\node[font=\scriptsize,anchor=west] at (axis cs:6.53,1.375) {$4/3$};
+
+\end{groupplot}
+\end{tikzpicture}
+\endgroup

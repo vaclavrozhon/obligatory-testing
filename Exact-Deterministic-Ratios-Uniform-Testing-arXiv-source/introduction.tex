@@ -1,0 +1,422 @@
+\section{Introduction}
+
+Suppose that we have many jobs waiting for one machine.  The length of each
+job is written on a folded piece of paper.  If we knew all the lengths, the
+right schedule would be clear: we would simply run the jobs from shortest to
+longest.  But the papers are folded, and opening one of them takes one unit of
+machine time.
+
+Should we open another paper, or should we start working?
+
+Opening a paper may reveal a tiny job that we can finish immediately.  It may
+also reveal a huge job that is best left for the end.  On the other hand,
+looking has a cost.  If one hundred jobs are still unfinished, one unit spent
+opening a paper adds one hundred units to the sum of completion times.  Thus
+the machine has to balance two uses of its time: it can learn which jobs are
+short, or it can complete jobs that are already understood.
+
+This is the scheduling problem studied in this paper.  We start with its
+cleanest version, in which every paper has to be opened.  We then allow a job
+to be run without opening its paper.  Depending on what this means, we obtain
+three natural variants.  The same simple ideas---thresholds, random sampling,
+and shortest-first execution---give exact answers in all of them.
+
+\subsection{First example: every job has to be tested}
+
+There are $n$ jobs.  Testing job $i$ takes one unit of time and reveals a
+number $p_i\geq0$.  The job then needs another $p_i$ units of processing.  A
+job with $p_i=0$ is completed by its test.  For now, every job has to be
+tested.
+
+After a test, the scheduler faces one elementary decision.  Should the
+revealed job be finished now, or should it be put aside while another job is
+tested?  Short jobs should clearly be finished.  Long jobs should clearly
+wait.  This suggests a threshold algorithm.
+
+\begin{algorithm}[H]
+\caption{The shape of an optimal obligatory-testing algorithm}
+\label{alg:intro-obligatory}
+\begin{algorithmic}
+\State Test a job.
+\State If its revealed length is below the current threshold, finish it now.
+\State Otherwise put it aside and test another job.
+\State After all tests, finish the jobs put aside from shortest to longest.
+\end{algorithmic}
+\end{algorithm}
+
+The difficult part is choosing the threshold.  A deterministic algorithm has
+to update it from the history it has seen.  A randomized algorithm can first
+test a small random sample and use the sample to choose one threshold for the
+rest of the input.  Some safeguards are needed when job lengths are
+unbounded, but this is the whole algorithmic picture.
+
+We compare the online scheduler with the shortest-first schedule that knows
+all values $p_i$ in advance.  As usual, the competitive ratio is the online
+cost divided by this offline optimum.  We are interested in the asymptotic
+ratio: lower-order additive terms, of size $o(n^2)$, do not matter.
+
+The obligatory-testing model for total completion time was introduced by
+Dogeas, Erlebach, and Liang~\cite{DogeasErlebachLiang2024}.  Their work and a
+later lower bound of Liang and Liang~\cite{LiangLiang2026} left a gap between
+the best deterministic upper and lower bounds.  They also left the randomized
+problem open.  We close both gaps.
+
+\begin{theorem}[Obligatory testing, informal]
+\label{thm:intro-obligatory}
+The best deterministic asymptotic competitive ratio is
+$1.5705740966\ldots$.  Against an adversary that fixes the input before the
+algorithm draws its random bits, the best randomized ratio is $4/3$.
+
+The randomized algorithm is not told the multiset of job lengths, and its
+guarantee holds even when the lengths are unbounded.  This is the informal
+version of \cref{thm:det-obligatory,thm:rand-obligatory}.
+\end{theorem}
+
+Let us briefly describe why the two constants are different.  A hard input
+for a deterministic algorithm reveals positive jobs in decreasing levels and
+hides many zero jobs until the end.  If the algorithm finishes the positive
+jobs, it delays the zeros.  If it postpones them, it creates a costly tail.
+The levels can be chosen so that these two losses balance at
+$1.5705740966\ldots$.
+
+For randomized algorithms the hard input is simpler.  Half of the jobs have
+length zero and half have length two, and their labels are shuffled.  Until
+the shuffle is uncovered, one unit of work completes only about half a job.
+Counting the area under the number of unfinished jobs gives the lower bound
+$4/3$.  A threshold learned from a random sample attains the same value.
+
+\subsection{What if testing is optional?}
+
+We now change one rule: a job may be run without a test.  There are two
+separate questions to ask.
+
+First, how long does an untested job run?  It may run for its true but hidden
+length $p_i$.  Alternatively, every untested job may have the same known raw
+length $u$, while a test replaces $u$ by a smaller value $p_i\leq u$.
+
+Second, does the test reveal $p_i$?  If it does, the scheduler gains both a
+faster job and information about where the job belongs.  If it does not, the
+job becomes faster but remains unknown until it finishes.
+
+These choices give the following four models.  The table is a summary rather
+than four new sets of notation; in every row, testing costs one unit of
+machine time.
+
+\begin{center}
+\small
+\begin{tabular}{@{}L{0.20\linewidth}L{0.29\linewidth}L{0.40\linewidth}@{}}
+\toprule
+model & without a test & what a test does \\
+\midrule
+obligatory testing & the job cannot be run & reveals $p_i$ and gives access to the job \\
+blind execution & the job runs for hidden time $p_i$ & reveals $p_i$ before we run it \\
+common upper bound & the job runs for time $u$ & reveals and replaces $u$ by $p_i\leq u$ \\
+blind optimization & the job runs for time $u$ & replaces $u$ by a still-hidden $p_i\leq u$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The two middle rows separate the two benefits of a test.  Blind execution
+studies information without speedup.  Blind optimization studies speedup
+without advance information.  The common-upper model contains both.
+
+\subsection{One algorithm for every bag}
+
+Once testing becomes optional, a single worst-case ratio no longer tells the
+whole story.  Consider the input as a bag $M$ of $n$ job lengths.  On one bag
+it may be best to test almost every job.  On another bag it may be best to
+test none.  We would like the algorithm to make the right choice on each bag,
+not merely to survive the worst bag.
+
+There is an obvious difficulty: the algorithm is not told $M$.  Still, it can
+look at a small random sample.  Since the sample has size $o(n)$, it costs
+only $o(n^2)$ in the objective.  Since it is random, it gives an accurate
+picture of the whole bag.  The algorithm can then behave almost as if it had
+known $M$ from the beginning.
+
+This leads to a stronger goal than a competitive ratio.  For each bag $M$,
+let $n^2\Phi(M)$ denote the best leading-order cost of an online policy
+designed specifically for that bag.  We ask whether one policy, chosen before
+seeing $M$, can attain $n^2\Phi(M)$ for every $M$.
+
+\begin{theorem}[One algorithm for every bag, informal]
+\label{thm:intro-instance-optimality}
+Fix a bound on the job lengths.  In each of the three optional models there
+is one randomized algorithm, independent of $M$, whose cost on every bag $M$
+is
+\[
+                       n^2\Phi(M)+o(n^2).
+\]
+No online policy has a smaller leading cost on $M$, even if that competing
+policy is told the whole bag in advance.  The three models have different,
+explicit functions $\Phi$.
+
+This is the informal version of
+\cref{thm:common-upper-instance,thm:blind-instance,thm:bo-instance}.
+\end{theorem}
+
+The important point is the order of the quantifiers: the same algorithm
+works for every bag.  Telling the bag to the competing policy is only a
+convenient strengthening of the lower bound.  It is not extra information
+available to our algorithm.
+
+The randomization also has a simple role.  If jobs are presented under fixed
+labels, a private random shuffle makes the pilot representative.  In the
+equivalent random-bag picture, asking for a new job already returns a random
+remaining element of the bag, and no additional randomization is needed
+after the pilot.
+
+The rest of the introduction explains what $\Phi(M)$ and its optimal policy
+look like in the three models.  Bounded job lengths are needed for these
+uniform instance-optimal statements.  They are not needed for the
+randomized obligatory result above.
+
+\subsection{Information without speedup: blind execution}
+
+Suppose an untested job can simply be run until it finishes.  Its running
+time is its true hidden length $p_i$.  Testing does not make the job shorter;
+it only tells us $p_i$ before we decide when to run it.  We call this
+\emph{blind execution}.
+
+Why do we use the bag-dependent value $\Phi(M)$ here instead of the ordinary
+clairvoyant optimum?  Take a bag containing many zero jobs and a few positive
+jobs.  A scheduler that knows the bag's labelling completes all zeros at time
+zero.  An online scheduler has to search for them.  Its competitive ratio can
+therefore be arbitrarily large.  This does not mean that all online policies
+are equally bad.  The quantity $\Phi(M)$ captures the best cost that online
+information permits on this particular bag.
+
+Let $\mu$ be the mean job length.  A revealed job shorter than $\mu$ should
+be run before an untouched job; a longer one should be run after it.  When
+testing is useful, there is another threshold $\tau$ that decides which jobs
+are so short that they should interrupt the testing phase.  It is defined by
+\[
+                         \mathbb E(\tau-P)^+=1.
+\]
+The left-hand side is the expected saving obtained by moving outcomes below
+$\tau$ forward.  Thus the cutoff is chosen exactly where this saving balances
+the unit cost of a test.
+
+One number remains: the fraction $q$ of jobs to test.  Once the bag is known,
+the leading cost is an explicit quadratic in $q$, so the best value of $q$
+is obtained by minimizing a one-variable quadratic.
+
+\begin{algorithm}[H]
+\caption{Instance-optimal blind execution}
+\label{alg:intro-blind}
+\begin{algorithmic}
+\State Run a sublinear random pilot blindly and estimate the bag.
+\State From the estimate compute $\mu$, $\tau$, and the tested fraction $q$.
+\State Test a random $q$-fraction; finish every outcome below $\tau$ immediately.
+\State Finish the remaining tested jobs below $\mu$, shortest first.
+\State Run all untouched jobs blindly.
+\State Finish the remaining tested jobs, shortest first.
+\end{algorithmic}
+\end{algorithm}
+
+The block between testing and blind execution is important.  A job can be too
+long to interrupt the test phase and still be shorter than an untouched job
+on average.  Such a job waits until testing stops and is then processed before
+the blind block.
+
+A similar test-prefix structure is known in the Bayesian i.i.d. model of
+Levi, Magnanti, and Shaposhnik
+~\cite{LeviMagnantiShaposhnik2019,LeviMagnantiShaposhnik2024}.  Our input is
+instead one adversarial bag.  The closest earlier adversarial model is the
+processing-time oracle of Dufoss{\'e} et al.~\cite{DufosseEtAl2022}, where the
+hidden length has only two possible values.  Our bag may contain arbitrary
+bounded lengths.  The precise result is \cref{thm:blind-instance}.
+
+\subsection{Information and speedup: a common upper bound}
+
+We next assume that every untested job can be run for a known raw time $u$.
+A unit test reveals a value $p_i\leq u$ and replaces the raw execution by the
+shorter one.  Thus the test buys both information and speed.
+
+The two endpoints are easy to understand.  If $u\leq1$, the test alone costs
+at least as much as raw execution, so we should never test.  If $u$ is very
+large, raw execution is unattractive, so the problem approaches obligatory
+testing.  The interesting question is what happens between these endpoints.
+
+This common-upper model was introduced by D{"u}rr et
+al.~\cite{DurrErlebachMegowMeissner2020}.  Their results already showed that
+intermediate values of $u$ are the difficult ones.  We determine the exact
+answer for every $u$, for both deterministic and randomized algorithms.
+
+A deterministic algorithm uses three basic shapes.
+
+\begin{algorithm}[H]
+\caption{Deterministic common-upper policies, schematically}
+\label{alg:intro-common-upper-det}
+\begin{algorithmic}
+\State For small $u$, run every job raw.
+\State For intermediate $u$, test every job and use a fixed threshold.
+\State For large $u$, use the history-dependent obligatory-testing threshold.
+\State Whenever jobs are deferred, finish them shortest first.
+\end{algorithmic}
+\end{algorithm}
+
+For randomized algorithms we can say more.  On each fixed bag, the same
+sample-and-optimize principle from \cref{thm:intro-instance-optimality}
+finds the best threshold and the best tested fraction $q$.
+
+\begin{algorithm}[H]
+\caption{Instance-optimal common-upper policy}
+\label{alg:intro-common-upper}
+\begin{algorithmic}
+\State Test a sublinear random pilot and estimate the bag.
+\State Compute the best threshold and the best tested fraction $q$.
+\State Test a random $q$-fraction; finish outcomes below the threshold at once.
+\State Finish all other tested jobs, shortest first.
+\State Run every untouched job raw for time $u$.
+\end{algorithmic}
+\end{algorithm}
+
+For each bag, this policy attains its best online leading cost.  We obtain the
+competitive ratio by asking which bag maximizes the ratio between that cost
+and the clairvoyant optimum.  The worst bag can be reduced to two job
+lengths, leaving a one-variable optimization.
+
+\begin{theorem}[Common-upper curves, informal]
+\label{thm:intro-common-upper-curves}
+For every $u>0$, the exact deterministic and randomized asymptotic
+competitive ratios are the six-piece and four-piece curves in
+\cref{fig:intro-curves}.  The deterministic curve reaches
+$1.866760\ldots$ and then falls to the obligatory value
+$1.570574\ldots$.  The randomized curve reaches $1.625752\ldots$ and
+eventually becomes $4/3$.
+
+This is the informal version of
+\cref{thm:optional-curve,thm:random-common-upper}.
+\end{theorem}
+
+\begin{figure}[H]
+\centering
+\input{curves_overview_tikz}
+\caption{The exact asymptotic ratios as a function of the raw execution time
+$u$.  Testing is pointless on the left.  On the right, both curves reach
+their obligatory-testing values.}
+\label{fig:intro-curves}
+\end{figure}
+
+The curves are not monotone.  This is not a contradiction: increasing $u$
+changes both players' options.  For intermediate $u$, the clairvoyant
+scheduler makes especially good use of the choice between raw execution and
+testing.  When $u$ becomes large, both schedulers effectively test
+everything.
+
+The hard bags change along the curves.  In the first regimes, mixtures of
+zero jobs and jobs of length $u$ are enough.  Later, the deterministic lower
+bound becomes a capped form of the decreasing-level construction from
+obligatory testing.  The exact formulas and matching constructions are in
+\cref{sec:optional,sec:random-common-upper}.
+
+\subsection{Speedup without information: blind optimization}
+
+Finally, suppose that a unit-time optimization replaces $u$ by $p_i\leq u$
+but does not reveal $p_i$.  The value becomes known only when the optimized
+job finishes.  Now a threshold cannot separate short and long outcomes:
+before execution, all optimized jobs still look the same.
+
+This makes the optimal policy simpler.  A pilot estimates only the mean
+$\mu$ of the optimized lengths.  Afterwards, the scheduler compares the two
+possible expected lengths, $u$ and $1+\mu$, and uses the better action for all
+remaining jobs.
+
+\begin{algorithm}[H]
+\caption{Instance-optimal blind optimization}
+\label{alg:intro-blind-optimization}
+\begin{algorithmic}
+\State Optimize and run a sublinear random pilot; estimate its mean $\widehat\mu$.
+\State If $1+\widehat\mu<u$, optimize and run every remaining job.
+\State Otherwise run every remaining job raw for time $u$.
+\end{algorithmic}
+\end{algorithm}
+
+This policy is again instance optimal up to $o(n^2)$.  Its worst-case ratio,
+however, grows as $\sqrt u/2$.  In contrast, the revealing common-upper curve
+eventually stays at $4/3$.  The difference shows exactly what information is
+worth: speedup alone does not give a bounded ratio when $u$ grows.
+
+A related non-revealing optimization appears in the oblivious-budget model
+of Damerius et al.~\cite{DameriusEtAl2023}.  There, optimization consumes an
+external budget.  Here it occupies the machine and delays every unfinished
+job.  Our exact result is in \cref{sec:blind-optimization}.
+
+\subsection{Techniques}
+
+The proofs repeatedly use three pictures.
+
+\paragraph{The area of unfinished jobs.}
+During one unit of machine work, the objective increases by the number of
+jobs that are still unfinished.  Thus the sum of completion times is the area
+under the curve ``number of unfinished jobs versus time.''  This picture is
+often easier to reason about than individual completion times.
+
+\paragraph{Jobs completed per unit of work.}
+A round of tests together with the short jobs completed during that round can
+be viewed as one large action.  It spends some amount of time and completes
+some fraction of the jobs.  Higher-density actions---those completing more
+jobs per unit of work---should come first.  Sorting these actions produces
+the thresholds, the ordered blocks, and the one-variable quadratics in the
+instance-optimal results.
+
+\paragraph{A private shuffle.}
+The universal algorithms start by shuffling the labels and inspecting a
+small prefix.  The same idea is needed in the lower bound, where the policy
+may adaptively decide which label to touch next.  If equal job lengths are
+temporarily distinguished as separate tokens, the order in which any
+deterministic policy first reveals these tokens is itself just a permutation
+of them.  The revealed sequence is therefore sampling without replacement.
+One concentration event can then control every possible stopping point of
+the policy.
+
+The deterministic proofs use a complementary idea.  Their lower bounds make
+the algorithm choose between completing the current jobs and waiting for
+shorter future jobs.  Their upper bounds maintain a threshold and charge each
+wrongly ordered pair to a small potential.  The exact constants appear when
+the two possible losses are equal.
+
+\subsection{Related work}
+\label{sec:related}
+
+The closest papers have already appeared next to the models they introduced.
+We give a broader comparison here.
+
+Scheduling with tests belongs to optimization with \emph{explorable
+uncertainty}, where uncertain data can be queried at a cost; the query
+viewpoint goes back at least to Kahan~\cite{Kahan1991}.  Levi, Magnanti, and
+Shaposhnik study a stochastic scheduling model and derive prefix-testing
+policies followed by an order based on expected processing time per unit
+weight~\cite{LeviMagnantiShaposhnik2019,LeviMagnantiShaposhnik2024}.  Our
+four-block blind-execution policy has a similar shape, but our input is an
+adversarial bag, need not converge to a distribution, and is not announced to
+the universal algorithm.
+
+D{"u}rr et al.~\cite{DurrErlebachMegowMeissner2020} introduced the
+adversarial common-upper model and obtained deterministic bounds, including
+the $1.8668\ldots$ guarantee for binary values.  We close the deterministic
+gap for arbitrary values $p_i\in[0,u]$ and give the exact randomized curve
+against an oblivious adversary.  Related work allows nonuniform test
+times~\cite{AlbersEckl2021,LiuLiuWongZhang2023,KrekelbergEtAl2026}, multiple
+machines~\cite{GongChenHayashi2024}, or weights~\cite{BuldSchulz2026}.
+
+Dogeas, Erlebach, and Liang~\cite{DogeasErlebachLiang2024} introduced
+obligatory testing for total completion time.  For uniform tests they proved
+the SIDLE upper bound $1.58451\ldots$ and the deterministic lower bound
+$\sqrt2$.  Liang and Liang~\cite{LiangLiang2026} later raised the lower bound
+to $3/2$.  Our matching value is $1.5705740966\ldots$, and our randomized
+result gives the oblivious value $4/3$.
+
+The processing-time oracle of Dufoss{\'e} et al.~\cite{DufosseEtAl2022} is
+close to blind execution, but allows only two possible hidden durations.  If
+no tests are available and processing times are revealed only at completion,
+one obtains the classical nonclairvoyant model of Motwani, Phillips, and
+Torng~\cite{MotwaniPhillipsTorng1994}.  These semantics differ from raw
+common-upper execution, which always lasts the declared time $u$.
+
+The rest of the paper gives precise versions and proofs.  We first fix the
+models and offline benchmarks in \cref{sec:model}.  Each main section then
+starts with the theorem it proves and a short overview of the proof.  The
+machine-checked part of the argument is summarized in
+\cref{sec:formalization}.

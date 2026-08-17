@@ -1,0 +1,467 @@
+\section{Instance optimality with a common upper bound}
+\label{sec:common-upper-instance}
+
+Fix $u<\infty$.  An untouched job may be run raw for the public time $u$, or
+tested for one unit; a test reveals $p_i\in[0,u]$, after which the processing
+operation of length $p_i$ may be delayed.  The goal of this section is to
+prove \cref{thm:common-upper-instance}, the common-upper part of the informal
+instance-optimality theorem \cref{thm:intro-instance-optimality}.
+
+For a distribution $D$ on $[0,u]$, we shall define an explicit value
+$\Phi_u(D)$ in \cref{eq:cui-Phi}.  It is obtained by choosing one threshold
+and minimizing a quadratic over the tested fraction $q$.  For a multiset
+$M$, write $D_M$ for its empirical distribution.
+
+\begin{theorem}[Common-upper instance optimality]
+\label{thm:common-upper-instance}
+For every fixed $u>0$ there are randomized nonanticipating policies
+$\mathcal A^*_{n,u}$, depending only on $n,u$, and a deterministic sequence
+$\eps_u(n)\to0$ such that every size-$n$ multiset
+$M\subseteq[0,u]$ has the following properties.
+For every fixed labelling $\sigma$,
+\begin{equation}
+ \EE C_{\mathcal A^*_{n,u}}(\sigma(M))
+ \le n^2\Phi_u(D_M)+\eps_u(n)n^2.
+ \label{eq:cui-upper}
+\end{equation}
+Conversely, for every randomized nonanticipating policy $\mathcal A$, even
+one told $M$, some fixed oblivious labelling $\sigma$ satisfies
+\begin{equation}
+ \EE C_{\mathcal A}(\sigma(M))
+ \ge n^2\Phi_u(D_M)-\eps_u(n)n^2.
+ \label{eq:cui-lower}
+\end{equation}
+One may take
+\begin{equation}
+ \eps_u(n)=O_u\!\left(n^{-1/6}\sqrt{\log(n+2)}\right).
+ \label{eq:cui-rate}
+\end{equation}
+\end{theorem}
+
+The proof has three layers.  First, for a fixed final tested fraction $q$, a
+completion envelope reduces every fluid schedule to an ordinary fractional
+knapsack.  Second, an adaptive first-touch trace turns every deterministic
+policy under a uniform placement into predictable sampling without
+replacement.  One event then controls every touch prefix, so the realized
+stopping fraction can be substituted pathwise.  Finally, a growing grid and
+a sublinear pilot make the result uniform over arbitrary bounded multisets
+without announcing the bag.  The first subsection begins the formal proof.
+
+\subsection{The fixed-fraction fluid benchmark}
+\label{sec:cui-fluid}
+
+Let $D$ initially have finite support, let $P\sim D$, and put
+\[
+ D_0=\Pr(P=0),\qquad \mu=\EE P.
+\]
+A test automatically completes a zero outcome.  For a rule
+$0\le g\le1$ selecting positive outcomes to process immediately, define
+\begin{equation}
+ A(g)=D_0+\EE[g(P)\one_{P>0}],
+ \qquad
+ W(g)=1+\EE[P g(P)\one_{P>0}].
+ \label{eq:cui-module-density}
+\end{equation}
+Choose $g^*$ maximizing $A(g)/W(g)$, put
+\begin{equation}
+ a=A(g^*),\qquad \ell=\EE[P g^*(P)\one_{P>0}],
+ \qquad \tau=\frac{1+\ell}{a},
+ \label{eq:cui-tau}
+\end{equation}
+and interpret the ratio as zero when its numerator vanishes.
+
+\begin{lemma}[Maximum-density threshold]
+\label{lem:cui-threshold}
+There is a maximizer which selects every $p<\tau$, rejects every
+$p>\tau$, and may split an atom at equality.  It satisfies
+\begin{equation}
+ \EE(\tau-P)^+=1,
+ \qquad
+ \tau\bigl(D_0+\EE[g(P)\one_{P>0}]\bigr)
+ \le 1+\EE[P g(P)\one_{P>0}]
+ \label{eq:cui-density-dual}
+\end{equation}
+for every $0\le g\le1$.
+\end{lemma}
+
+\begin{proof}
+If selected mass $d$ at a positive value $p$ is added to a candidate with
+density $\rho$, cross multiplication says that the density increases exactly
+when $1/p>\rho$.  Removing mass gives the reverse implication.  A maximizer
+may therefore be chosen as a threshold with boundary $1/\rho=\tau$.
+The identity $1+\ell=a\tau$ expands to
+\[
+ 1=\tau D_0+\EE[(\tau-P)g^*(P)\one_{P>0}]
+  =\EE(\tau-P)^+.
+\]
+Maximality gives $A(g)/W(g)\le1/\tau$ for every $g$; clearing the positive
+denominators proves the second inequality in
+\cref{eq:cui-density-dual}.
+\end{proof}
+
+Split a boundary atom according to $g^*$.  Let $R_i$ be the residual mass at
+positive support value $p_i$.  Thus
+\begin{equation}
+ \sum_iR_i=1-a,\qquad p_i\ge\tau\text{ whenever }R_i>0.
+ \label{eq:cui-residual}
+\end{equation}
+For a fixed final tested fraction $q\in[0,1]$, consider any prefix of a fluid
+schedule and write $t$ for tested mass, $b$ for raw-completed mass, and
+$c_i$ for processed known mass of class $i$.  Its completed mass and work
+are
+\begin{equation}
+ y=D_0t+b+\sum_i c_i,\qquad
+ x=t+ub+\sum_i p_ic_i,
+ \label{eq:cui-prefix}
+\end{equation}
+and every feasible prefix satisfies
+\begin{equation}
+ 0\le t\le q,\qquad 0\le b\le1-q,\qquad
+ 0\le c_i\le D_it.
+ \label{eq:cui-revelation}
+\end{equation}
+Let $H^u_{D,q}(x)$ be the maximum completed mass subject to
+\cref{eq:cui-prefix,eq:cui-revelation} and work at most $x$.
+
+\begin{lemma}[Fixed-$q$ completion envelope]
+\label{lem:cui-envelope}
+The envelope $H^u_{D,q}$ is the divisible-knapsack curve with items
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+item & completion capacity & work per completion\\
+\midrule
+maximum-density test module & $aq$ & $\tau$\\
+residual tested class $i$ & $qR_i$ & $p_i$\\
+raw module & $1-q$ & $u$\\
+\bottomrule
+\end{tabular}
+\end{center}
+If $\tau<u$, the greedy order is the test module, the residual classes in
+nondecreasing $p_i$, and the raw module.  If $\tau\ge u$, the all-raw curve
+pointwise dominates every choice with $q>0$.
+\end{lemma}
+
+\begin{proof}
+For a feasible prefix, let $y_L,x_L$ be the completion and work contributed
+by the tests, tested zeros, and processed selected positive outcomes.
+Apply \cref{eq:cui-density-dual} to the processed fractions within the first
+$t$ units of tests.  It gives
+\[
+ \tau y_L\le x_L,\qquad y_L\le at.
+\]
+With $\lambda=y_L/a$, replacing this part by $\lambda$ full test modules
+preserves completed mass, weakly decreases work, and uses
+$0\le\lambda\le t\le q$.  Residual class $i$ has capacity at most $qR_i$,
+and the raw mass has capacity at most $1-q$.  Thus every feasible prefix maps
+to the displayed knapsack.
+
+Conversely, while greedy is partway through the test-module item, run the
+corresponding fraction of tests and process their selected outcomes.  Once
+all $q$ tests have run, every residual capacity is available; the other
+items can then be processed in greedy order.  A partial final item is
+realized fractionally.  The knapsack curve is therefore the closure of the
+original fluid trajectories.  Fractional knapsack orders items by increasing
+work per completion.  In the short-test regime,
+$\tau\le p_i\le u$, which gives the claimed order.  In the other regime all
+test and residual items cost at least $u$, while one raw item of capacity one
+costs exactly $u$.
+\end{proof}
+
+Put
+\begin{equation}
+ m_R=\sum_i p_iR_i=\mu-\ell,\qquad
+ K_R=\sum_{i,j}\min\{p_i,p_j\}R_iR_j.
+ \label{eq:cui-residual-moments}
+\end{equation}
+Integrating the envelope of \cref{lem:cui-envelope} gives
+\begin{equation}
+ F_{u,D}(q)
+ =(1+\ell)\left(q-\frac{aq^2}{2}\right)
+ +qm_R(1-q)+\frac{q^2K_R}{2}
+ +\frac{u(1-q)^2}{2}.
+ \label{eq:cui-F}
+\end{equation}
+Indeed, the four terms are respectively the test-module area, residual work
+delaying the raw block, internal residual SPT pairs, and the homogeneous raw
+block.  Define
+\begin{equation}
+ \Phi_u(D)=
+ \begin{cases}
+  \displaystyle\min_{0\le q\le1}F_{u,D}(q),&\tau<u,\\[3pt]
+  u/2,&\tau\ge u.
+ \end{cases}
+ \label{eq:cui-Phi}
+\end{equation}
+This is an explicit one-dimensional optimization.  In fact
+\begin{equation}
+ F_{u,D}(q)=\frac u2+Aq+Bq^2,\qquad
+ A=1+\mu-u,\qquad
+ B=-\frac{a(1+\ell)}2-m_R+\frac{K_R}2+\frac u2.
+ \label{eq:cui-quadratic}
+\end{equation}
+For each work budget, convexly combining feasible points for $q_1,q_2$
+gives a feasible point for the corresponding convex combination of the two
+fractions.  Hence $H^u_{D,q}(x)$ is concave in $q$, its remaining-mass area is
+convex, and $B\ge0$.  Moreover,
+\[
+ \tau<u\quad\Longleftrightarrow\quad\EE(u-P)>1
+ \quad\Longleftrightarrow\quad A<0.
+\]
+Thus the minimizer is
+\begin{equation}
+ q^*=1\quad(B=0),\qquad
+ q^*=\min\{1,-A/(2B)\}\quad(B>0).
+ \label{eq:cui-qstar}
+\end{equation}
+We have proved pathwise at the fluid level that a policy with realized final
+tested fraction $q$ has area at least
+$F_{u,D}(q)\ge\Phi_u(D)$.
+
+\subsection{Adaptive policies and the announced lower bound}
+\label{sec:cui-announced}
+
+We now transfer the fluid envelope to a finite policy which may choose labels
+and its stopping time adaptively.  Equal-valued jobs are first distinguished
+as occurrence tokens.  Let $J$ be the public labels, $\Omega$ the tokens,
+$v:\Omega\to[0,u]$ their values, and let a placement
+$\sigma:J\to\Omega$ be a bijection.  Fix the private seed of a completing
+deterministic policy.  In its run on $\sigma$, list the labels in order of
+first touch,
+\[
+ \ell_1(\sigma),\ldots,\ell_n(\sigma),
+\]
+where a first touch is a test or a raw execution, and define
+\begin{equation}
+ R_{\mathcal A}(\sigma)_k=\sigma(\ell_k(\sigma)).
+ \label{eq:cui-reveal-order}
+\end{equation}
+
+\begin{lemma}[Adaptive first-touch bijection]
+\label{lem:cui-trace-bijection}
+The map $\sigma\mapsto R_{\mathcal A}(\sigma)$ is a bijection from placements
+to permutations of $\Omega$.  Whether touch $k$ is a test or a raw execution
+is determined by the preceding hidden values
+$v(R_{\mathcal A}(\sigma)_1),\ldots,
+v(R_{\mathcal A}(\sigma)_{k-1})$.
+\end{lemma}
+
+\begin{proof}
+Suppose two placements have the same occurrence order.  A lockstep induction
+shows that the two runs have the same observable history before every first
+touch.  Between touches, equal histories prescribe the same known-job
+operations.  At the next touch they prescribe the same fresh label and the
+same test/raw choice.  A test then reveals the same next token value; a raw
+operation lasts the same public time $u$ and reveals no value.  Thus the
+first-touch labels agree at every position.  Equality of the occurrence
+orders now gives equality of the placements on a permutation of all labels.
+The map is injective between finite sets of the same cardinality $n!$, hence
+bijective.  The same induction stopped after a common value prefix proves
+predictability.  The hidden value of a raw occurrence is extra analytical
+information and therefore cannot invalidate that conclusion.
+\end{proof}
+
+Under a uniform placement, the occurrence order is consequently a uniform
+permutation.  Partition $[0,u]$ into $K+1$ cells, keeping zero separate, and
+let $D_j$ be the exact mass of cell $j$.  If $X_k$ is the value at touch $k$
+and $A_k$ is the predictable indicator that this touch is a test, the
+following event is uniform over the policy.
+
+\begin{lemma}[Predictable urn discrepancy]
+\label{lem:cui-urn}
+Fix $\delta\in(0,1)$ and put
+\begin{equation}
+ e_n=\sqrt{8n\log(n(K+2))},
+ \qquad
+ \Gamma_n=(1+\delta^{-1})e_n.
+ \label{eq:cui-Gamma}
+\end{equation}
+With probability $1-o(1)$, simultaneously for every cell $j$ and every touch
+prefix $m\le(1-\delta)n$,
+\begin{equation}
+ \left|\sum_{k\le m}A_k\one_{X_k\in j}
+       -D_j\sum_{k\le m}A_k\right|\le\Gamma_n.
+ \label{eq:cui-urn-discrepancy}
+\end{equation}
+If $K$ is polynomial in $n$, the failure probability is inverse polynomial.
+\end{lemma}
+
+\begin{proof}
+Hoeffding's inequality for sampling without replacement, followed by a union
+bound over all prefixes and cells, gives
+$|N_j(k)-kD_j|\le e_n$ simultaneously, except with inverse-polynomial
+probability.  While $k\le(1-\delta)n$, the remaining proportion
+$R_{k,j}$ therefore obeys
+$|R_{k,j}-D_j|\le e_n/(\delta n)$.  Since $A_k$ is predictable,
+\[
+ \sum_{k\le m}A_k(\one_{X_k\in j}-R_{k-1,j})
+\]
+is a martingale with increments bounded by one.  Maximal
+Azuma--Hoeffding, again union-bounded over the cells, places its running
+maximum below $e_n$.  Adding the predictable drift gives
+\cref{eq:cui-urn-discrepancy}.
+\end{proof}
+
+Stop the first-touch sequence when only $\delta n+O(1)$ labels remain.  In
+the suffix, replace every future test of an untouched job by raw execution
+at its first original operation and delete its later known processing.
+Only $O(\delta n)$ bounded operations change, so
+\begin{equation}
+ C_{\rm original}\ge C_{\rm edited}-O_u(\delta n^2+n).
+ \label{eq:cui-suffix-edit}
+\end{equation}
+The edited schedule has a fixed final tested fraction $q$, but we do not
+condition on its value.
+
+On the single event of \cref{lem:cui-urn}, consider any operation prefix.
+Normalize counts and work by $n$; let $t,b,z,c_j$ denote tested mass, raw
+mass, tested-zero completions, and processed known mass from positive cell
+$j$.  With $\gamma_n=\Gamma_n/n$,
+\[
+ z\le D_0t+\gamma_n,\qquad c_j\le D_jt+\gamma_n.
+\]
+Set $c_j'=(c_j-\gamma_n)^+$.  Then
+\begin{equation}
+ c_j'\le D_jt,\qquad t\le q,\qquad b\le1-q.
+ \label{eq:cui-repaired-capacities}
+\end{equation}
+Raw work is exactly $ub$, and reducing known mass reduces work.  Thus the
+repaired point is feasible for the empirical envelope at the actual work
+budget, while completed mass decreases by at most $(K+1)\gamma_n$.  Hence
+\begin{equation}
+ \text{completed fraction at work }x
+ \le H^u_{D,q}(x)+(K+1)\gamma_n.
+ \label{eq:cui-envelope-repair}
+\end{equation}
+Integrating the remaining-mass curve, substituting the realized $q$ only
+after \cref{eq:cui-envelope-repair} is established, and restoring
+\cref{eq:cui-suffix-edit} gives the fixed-grid lower bound
+\begin{equation}
+ \frac{C_{\rm original}}{n^2}
+ \ge\Phi_u(D)-O_{u,K}(\gamma_n+\delta+1/n).
+ \label{eq:cui-fixed-grid-lower}
+\end{equation}
+
+For an arbitrary multiset, take
+\begin{equation}
+ K_n=\lfloor n^{1/6}\rfloor,\qquad
+ h_n=u/K_n,\qquad \delta_n=n^{-1/6},
+ \label{eq:cui-grid-parameters}
+\end{equation}
+keep zero separate, and round every positive value upward.  If two
+distributions admit a zero-preserving coupling with pointwise displacement
+at most $h$, transporting the same fluid policy changes total known
+processing work by at most $h$ and hence changes its remaining-mass area by
+at most $h$.  Therefore
+\begin{equation}
+ |\Phi_u(D)-\Phi_u(D')|\le h.
+ \label{eq:cui-rounding-stability}
+\end{equation}
+For the finite repair, raising a processed value to its bin endpoint shifts
+the envelope horizontally by at most $h_n$; deleting $\gamma_n$ from every
+cell creates vertical error $(K_n+1)\gamma_n$.  With the parameters above,
+\begin{equation}
+ (K_n+1)\frac{\Gamma_n}{n}
+ =O\!\left(n^{-1/6}\sqrt{\log(n+2)}\right).
+ \label{eq:cui-grid-error}
+\end{equation}
+On the bad event we use nonnegativity and $0\le\Phi_u\le u/2$.
+Averaging \cref{eq:cui-fixed-grid-lower}, using
+\cref{eq:cui-rounding-stability,eq:cui-grid-error}, and then averaging over
+the private seed proves that every announced policy has uniform-placement
+cost at least
+\begin{equation}
+ n^2\Phi_u(D_M)
+ -O_u\!\left(n^{11/6}\sqrt{\log(n+2)}\right).
+ \label{eq:cui-announced-lower}
+\end{equation}
+At least one placement has seed-expected cost at least this average.  It is
+chosen before the seed and is therefore a fixed oblivious labelling.  This
+proves \cref{eq:cui-lower}.
+
+\subsection{A universal policy without the multiset}
+\label{sec:cui-learning}
+
+It remains to attain the benchmark without being told $M$.  We first record
+the finite cost of one canonical template: select $r$ labels uniformly,
+test them in random order while immediately processing outcomes in a fixed
+low prefix, then process the tested residual stock in SPT order and finally
+run the other $n-r$ jobs raw.  If $q=r/n$, direct pair accounting gives,
+uniformly over the empirical grid histogram and the chosen prefix,
+\begin{equation}
+ \EE C_n(\pi)=n^2\Psi_D(\pi)+O_u(n),
+ \label{eq:cui-finite-kernel}
+\end{equation}
+where $\Psi_D(\pi)$ is the right-hand side of
+\cref{eq:cui-F}.  To verify this, expand the testing phase into one-job terms
+and relative-order kernels for pairs of tested jobs; expand the residual SPT
+block into its work against raw jobs and its minimum kernel; and add the
+exact raw-block cost $u(n-r)(n-r+1)/2$.  For distinct occurrences the finite
+coefficients
+\[
+ \frac{r(r-1)}{n(n-1)},\qquad
+ \frac{r(n-r)}{n(n-1)},\qquad
+ \frac{(n-r)(n-r-1)}{n(n-1)}
+\]
+differ from $q^2,q(1-q),(1-q)^2$ by $O(1/n)$.  Every kernel is bounded in
+terms of $u$, so fewer than $n^2$ pair terms create only $O_u(n)$ error.
+
+Use the grid from \cref{eq:cui-grid-parameters} and take a private random
+permutation.  Test its first
+\begin{equation}
+ k_n=\lceil n^{1/2}\rceil
+ \label{eq:cui-pilot-size}
+\end{equation}
+labels, keep positive pilot jobs pending, and form their rounded histogram
+$\widehat D_n$.  Among all grid prefixes containing zero and all
+$q\in[0,1]$, minimize the quadratic \cref{eq:cui-F}.  Apply the selected
+template to the remaining labels in their unused random order, then finish
+the positive pilot jobs.
+
+Let $D_n$ and $D_n^R$ be the full and remaining rounded histograms.
+Hypergeometric coordinate variances and Cauchy--Schwarz give
+\begin{equation}
+ \EE\|\widehat D_n-D_n\|_1
+ \le\sqrt{\frac{K_n+1}{k_n}},
+ \qquad
+ \|D_n^R-D_n\|_1\le\frac{2k_n}{n-k_n}.
+ \label{eq:cui-histogram}
+\end{equation}
+For a fixed template, the quantities $a,\ell,m_R$ in
+\cref{eq:cui-F} are bounded one-draw expectations and $K_R$ is a bounded
+two-draw expectation.  Inserting an intermediate product measure shows
+\begin{equation}
+ |\Psi_D(\pi)-\Psi_E(\pi)|
+ \le4(u+1)\|D-E\|_1,
+ \label{eq:cui-template-Lipschitz}
+\end{equation}
+uniformly over the grid and template.  The same bound holds for the minima.
+The threshold lemma and completion envelope show that the minimum over this
+common template family is exactly $\Phi_u(D)$.
+
+Condition on the pilot.  The learned template is fixed and the unused labels
+are uniformly ordered, so \cref{eq:cui-finite-kernel} applies.  The usual
+empirical-minimization sandwich, twice using
+\cref{eq:cui-template-Lipschitz}, bounds the main cost by
+\[
+ (n-k_n)^2\left(
+ \Phi_u(D_n^R)+O_u(\|\widehat D_n-D_n^R\|_1)\right)+O_u(n).
+\]
+The pilot and its final tail contribute $O_u(nk_n)$.  Now apply
+\cref{eq:cui-histogram}, replace the remaining histogram by the full one,
+and use \cref{eq:cui-rounding-stability}.  Since
+\[
+ h_n=O_u(n^{-1/6}),\qquad
+ \sqrt{(K_n+1)/k_n}=O(n^{-1/6}),\qquad
+ k_n/n=O(n^{-1/2}),
+\]
+the resulting bound is
+\begin{equation}
+ \EE C_{\mathcal A^*_{n,u}}(\sigma(M))
+ \le n^2\Phi_u(D_M)+O_u(n^{11/6})
+ \label{eq:cui-universal-upper}
+\end{equation}
+for every fixed labelling.  Together with the announced lower bound
+\cref{eq:cui-announced-lower}, this proves
+\cref{thm:common-upper-instance}.  The larger logarithmic lower-bound error
+gives the common sequence in \cref{eq:cui-rate}.
