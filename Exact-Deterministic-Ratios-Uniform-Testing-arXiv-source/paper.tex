@@ -152,50 +152,53 @@ In that setting, we present optimal algorithms for both deterministic and random
 
 \section{Introduction and proof intuition}
 
-This paper is broadly about the following problem. 
+This paper is broadly about the following problem. [explain testing] In another version of the problem, we replace testing by \emph{optimization} -- we can [explain u to pi optimization-of-running-time-angle]. 
 
-Scheduling with testing separates information acquisition from productive
-work.  A test reveals the unknown processing time of a job, but the test
-itself occupies the machine and delays every unfinished job.  This makes a
-locally cheap experiment globally expensive: one unit spent testing near the
-beginning of a schedule can be counted in the completion time of almost every
-job.
+In both cases, we are fighting the same problem -- we can get something good (knowledge / speed-up) but it also costs us precious time.  How to deal with this conflict is the main point of this paper. 
 
-We study one machine, unit tests, nonpreemptive operations, and total
-completion time.  All jobs are initially available.  Two superficially
-similar ways of making testing optional lead to different mathematics.  In
-the \emph{common-upper model}, executing an untested job consumes its declared
-upper bound $u$; in the \emph{blind-execution model}, it consumes its actual
-processing time $p$.  We also study \emph{obligatory testing}, where raw or
-blind execution is unavailable.  The common-upper model has the useful
-formal endpoint
-\begin{equation}
- u=\infty
- \quad\Longleftrightarrow\quad
- \text{raw execution is unavailable and every job must be tested.}
- \label{eq:intro-infinite-endpoint}
-\end{equation}
-Thus obligatory testing is the cap-free endpoint of the common-upper family,
-although it is also studied independently under randomization.  The
-blind-execution model is genuinely different: running an unknown job reveals
-its length only upon completion, but never overpays its actual processing
-work.
+While both being able to guess running time of procedures and being able to optimize them is clearly important, our goal is to come up with a suitable "metaalgorithm". Ideally, we want a simple algorithm that is a "wrapper" that around guessing/optimization heuristics. 
 
-For a clairvoyant scheduler, a job has effective length
-\begin{equation}
- q_u(p)=\min\{u,1+p\},
- \qquad q_\infty(p)=1+p.
- \label{eq:intro-effective-length}
-\end{equation}
-The optimum simply orders these effective lengths from shortest to longest.
-The online scheduler does not know whether a test will save almost $u$ time
-or reveal a job so long that the optimum would have skipped the test.  The
-deterministic common-upper problem is the cost of making this distinction too
-late.  In the two randomized problems the adversary fixes the labelled
-instance before the private random seed is drawn.  Random relabelling then
-turns the order of first touches into sampling without replacement; this
-permits distribution-sensitive thresholds without granting the algorithm any
-prior knowledge of the multiset.
+% Scheduling with testing separates information acquisition from productive
+% work.  A test reveals the unknown processing time of a job, but the test
+% itself occupies the machine and delays every unfinished job.  This makes a
+% locally cheap experiment globally expensive: one unit spent testing near the
+% beginning of a schedule can be counted in the completion time of almost every
+% job.
+
+\subsection{Warmpu -- obligatory testing}
+
+We start with the following, simplest to understand, setting. [explain obligatory, mention nonpreemptive is for the whole paper]
+
+[explain competitive analysis]
+
+This model has been introduced by XX who proved XX. [explain what is known]
+
+Our first contribution is settling the right competitive ratio in both deterministic and randomized model [some footnote about how adaptive adversary is basically the same as deterministic model ]. 
+
+[formal statement of deterministic result, informal, tag it as "informal version of THm XX"]
+
+[the same for randomized]
+
+[next to each other -- simplified/intuitively explained algorithms used in those two results]
+
+Let us explain the two algorithms. [brief explanation here]. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \subsection{The exact answers}
 
