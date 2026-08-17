@@ -72,6 +72,18 @@ formalization:
   finite `4/3`-competitive.  The universal unknown-multiset `4/3` proof does
   not depend on its general lower-transfer theorem.
 
+`RANDOMIZED_COMMON_UPPER_INSTANCE_OPTIMAL_PROOF.md` is a new standalone
+analytic proof for the finite common-upper model with raw execution of length
+`u`.  It derives the explicit fixed-distribution quadratic benchmark,
+proves its announced-multiset lower envelope against every adaptive policy,
+removes the announcement by a tested pilot sample, and identifies the
+instance-specific asymptotic ratio `Phi_u(D)/Omega_u(D)`.  It also solves the
+outer optimization over distributions, giving an explicit four-branch exact
+randomized curve with global maximum `1.6257523846...`.  The exact curve and
+its self-contained analytic proof are incorporated into the manuscript; the
+stronger instance-optimal statement remains in the standalone Markdown
+development and has not yet been added to Lean.
+
 The obligatory analytic proof is complete. Lean checks its exact and
 robust fluid certificates, maximum-density optimizer and sample-empty-bin
 closure, quantization and histogram concentration, fallback and bad-event

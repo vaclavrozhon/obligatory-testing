@@ -105,6 +105,8 @@
 \newcommand{\OPT}{\operatorname{OPT}}
 \newcommand{\CR}{\operatorname{CR}}
 \newcommand{\Rstar}{R_\star}
+\newcommand{\Rrand}{R_{\mathrm{rand}}}
+\newcommand{\urand}{u_{\mathrm r}}
 \newcommand{\zstar}{z_\star}
 \newcommand{\V}{V}
 \newcommand{\udiam}{u_\diamond}
@@ -131,19 +133,28 @@
 \maketitle
 
 \begin{abstract}
-Imagine jobs are coming on a machine and we have to do all of them, paying unit price for each second each job is not done yet. If we knew how long each job takes time to finish, we just sort them from shortest and do them. But what if we need a nontrivial time to estimate that time? 
+We study single-machine scheduling with unit-time tests and total completion
+time.  A test reveals a job's unknown processing time; without a test, a job
+may either be unavailable, run for a common upper bound $u$, or run blindly
+for its actual duration, depending on the model.
 
-This paper finds the best online algorithms for this problem that are also quite simple. In the \emph{obligatory} setting where every problem has to be tested first:
-\begin{enumerate}
-    \item In the deterministic setting, we settle the exact competitive ratio 1.866...
-    \item In the randomized setting (with oblivious adversary), we settle the comptetitive ratio 4/3; even stronger, our algorithm is instance-optimal, i.e., on no instance can its competitive ratio be improved by any other online algorithm.  
-\end{enumerate}
+For deterministic algorithms we determine the exact size-asymptotic ratio
+for every common upper bound $u\in(0,\infty]$.  The answer is a continuous
+six-piece curve whose cap-free obligatory endpoint is
+$1.5705740966\ldots$ and whose global maximum is $1.8667603992\ldots$.
+Against an oblivious adversary, we prove the exact randomized finite-cap
+curve: it has four pieces, global maximum $1.6257523846\ldots$, and equals
+$4/3$ for every $u\ge25/4$.  A separate uniform argument proves the same
+sharp $4/3$ value for obligatory testing with unbounded, unannounced
+processing times.
 
-In the nonobligatory setting, deterministic algorithms cannot have such guarantees but we again prove instance optimality for randomized algorihtms. 
-
-Finally, we consider variant of the problem where instead of testing, we can \emph{optimize} the running time to some $p_i$ with unit-cost optimization instead of paying a fixed cost. 
-
-In that setting, we present optimal algorithms for both deterministic and randomized setting. 
+For blind execution we prove a stronger instance-optimal statement at the
+quadratic scale.  A universal policy learns, from a sublinear pilot, the same
+explicit fluid value attainable with advance knowledge of the multiset; a
+matching oblivious lower bound holds even for announced adaptive policies.
+The proofs combine pairwise delay accounting, completion-density thresholds,
+fractional-knapsack envelopes, random relabelling, and sampling without
+replacement.
 \end{abstract}
 
 \tableofcontents
@@ -282,9 +293,60 @@ $u=\infty$.
 \end{theorem}
 
 The deterministic theorem is only the first part of the landscape.  Against
-an oblivious adversary, private randomization yields a strictly smaller sharp
-constant in obligatory testing, even when the processing-time multiset is not
-announced and has no a priori upper bound.
+an oblivious adversary, private randomization gives the following exact
+four-piece curve.  Let $\urand>1$ be the unique root of
+\begin{equation}
+ \urand^3-6\urand^2+5\urand-1=0,
+ \qquad
+ \urand=5.048917339522306\ldots .
+ \label{eq:intro-random-transition}
+\end{equation}
+
+\begin{theorem}[Randomized finite common-upper curve]
+\label{thm:random-common-upper-intro}
+For every fixed $u>0$, the optimal randomized size-asymptotic competitive
+ratio in the common-upper model against an oblivious adversary is
+\begin{equation}
+ \Rrand(u)=
+ \begin{cases}
+  1,&0<u\le1,\\[2pt]
+  \displaystyle\frac{u^3}{u^2+(u-1)^3},
+    &1\le u\le\urand,\\[8pt]
+  \displaystyle 1+\frac{1}{2(\sqrt u-1)},
+    &\urand\le u\le25/4,\\[8pt]
+  \displaystyle\frac43,&u\ge25/4.
+ \end{cases}
+ \label{eq:intro-random-common-upper-curve}
+\end{equation}
+More precisely, there are randomized nonanticipating algorithms
+$\mathcal A_{n,u}$ and numbers $\eps_u(n)\to0$ such that every fixed labelled
+vector $p\in[0,u]^n$ satisfies
+\begin{equation}
+ \EE\ALG_{\mathcal A_{n,u}}(p)
+ \le \Rrand(u)\OPT_u(p)+\eps_u(n)n^2.
+ \label{eq:intro-random-common-upper}
+\end{equation}
+Conversely, for every randomized online algorithm and every $\eps>0$, there
+are arbitrarily large $n$ and a fixed vector $p\in[0,u]^n$ for which
+\begin{equation}
+ \EE\ALG(p)\ge\bigl(\Rrand(u)-\eps\bigr)\OPT_u(p).
+ \label{eq:intro-random-common-lower}
+\end{equation}
+The curve is continuous at all three junctions.  Its global maximum is
+attained at $u=(3+\sqrt3)/2$ and equals
+\begin{equation}
+ \max_{u>0}\Rrand(u)
+ =\frac{27+6\sqrt3}{23}
+ =1.625752384583185\ldots .
+ \label{eq:intro-random-common-maximum}
+\end{equation}
+\end{theorem}
+
+Thus randomization improves every nontrivial part of the deterministic
+finite-cap curve.  The last branch already has value $4/3$, but passing to
+$u=\infty$ still requires a proof uniform over unbounded processing times.
+That endpoint remains sharp even when the processing-time multiset is not
+announced.
 
 \begin{theorem}[Randomized obligatory testing]
 \label{thm:random-obligatory-intro}
@@ -349,6 +411,7 @@ estimates.
 model & adversary / knowledge & benchmark & result \\
 \midrule
 common upper $u$ & deterministic & clairvoyant $\OPT$ & exact six-piece curve $\V(u)$ \\
+common upper $u$ & randomized oblivious; unknown $M$ & clairvoyant $\OPT$ & exact four-piece curve $\Rrand(u)$ \\
 obligatory & deterministic & clairvoyant $\OPT$ & exact $\Rstar$ \\
 obligatory & randomized oblivious; unknown $M$ & clairvoyant $\OPT$ & exact asymptotic ratio $4/3$ \\
 blind, $p\le L$ & randomized oblivious; unknown $M$ & announced minimax value & $\Phiopt(D_M)\pm o_L(1)$ after normalization by $n^2$ \\
@@ -517,34 +580,56 @@ coincidence.
 
 \subsection{Randomized intuition: completion density and sampling}
 
-The randomized obligatory result has a different core.  Suppose for a moment
-that the multiset is announced.  Choose a processing-time prefix $E$, test
-jobs in a uniformly random order, process a revealed job immediately exactly
-when it lies in $E$, and sort the remaining tail after the last test.  The
-expected cost of this stationary policy has a closed pairwise formula.  The
-right prefix maximizes
+The randomized common-upper and obligatory results have a different core.
+Suppose for a moment that the multiset is announced.  Choose a
+processing-time prefix $E$, test jobs in a uniformly random order, process a
+revealed job immediately exactly when it lies in $E$, and sort the remaining
+tail after the last test.  The expected cost of this stationary policy has a
+closed pairwise formula.  The right prefix maximizes
 \[
  \frac{\text{mass completed during discovery}}
       {\text{test work plus immediate processing work}}.
 \]
 Writing the reciprocal of this density as $\theta$, the optimizer is a
 threshold: early values are at most $\theta$ and late values are at least
-$\theta$.  A short algebraic identity then writes $4\OPT-3\EE\ALG$ as a sum
-of three nonnegative terms.  Equality identifies the hard distribution:
-half of the mass at zero and half at two.
+$\theta$.
 
-When the multiset is unknown, the algorithm tests $n^{3/4}$ uniformly random
-jobs and learns this threshold on a grid of $n^{1/4}$ cells.  Closing the
-chosen sample prefix under its numerical threshold is essential: otherwise a
-cell missed by the sample could violate the population separation.  Values
-above a fixed cutoff are always deferred.  If the learned completion density
-is too small, the algorithm falls back to test-all-then-SPT; precisely in that
-case the offline objective is already large enough to pay for the fallback.
-This gives the upper bound in \cref{eq:intro-random-upper}.  For the lower
-bound, a uniformly labelled half-zero, half-two multiset is a balanced random
-bridge.  At every time, the number of completed jobs is at most one half of
-the work spent, up to the bridge discrepancy.  Integrating this envelope
-gives \cref{eq:intro-random-lower}.
+For a finite cap, the algorithm compares this stationary policy with running
+every job raw.  Writing $H(t)=\Pr(P>t)$ and $s=u-1$, the offline quadratic
+coefficient is
+\[
+ \frac12\left(1+\int_0^s H(t)^2\,dt\right).
+\]
+The density threshold satisfies
+$\int_0^\theta(1-H(t))\,dt=1$.  Splitting according to whether
+$\theta\ge s$ or $\theta\le s$ reduces the worst distribution to one of two
+binary endpoints.  The distributions on $\{0,u\}$ give the two middle
+branches of \eqref{eq:intro-random-common-upper-curve}; the balanced
+$\{0,2\}$ distribution gives the $4/3$ plateau.  The first transition occurs
+when the stationary critical point meets the raw/stationary crossing, which
+is exactly the cubic in \eqref{eq:intro-random-transition}; the second occurs
+at $u=25/4$.
+
+At the obligatory endpoint, a short algebraic identity writes
+$4\OPT-3\EE\ALG$ as a sum of three nonnegative terms.  Equality again
+identifies the hard distribution: half of the mass at zero and half at two.
+
+For a finite cap, bounded support makes the announcement easy to remove: a
+pilot of size $n^{2/3}$ selects between raw execution and the stationary
+prefix on a grid of $n^{1/3}$ cells, losing only $O_u(n^{11/6})$.  At the
+unbounded obligatory endpoint, the algorithm instead tests $n^{3/4}$
+uniformly random jobs and learns the threshold on a grid of $n^{1/4}$ cells.
+Closing the chosen sample prefix under its numerical threshold is essential:
+otherwise a cell missed by the sample could violate the population
+separation.  Values above a fixed cutoff are always deferred.  If the learned
+completion density is too small, the algorithm falls back to
+test-all-then-SPT; precisely in that case the offline objective is already
+large enough to pay for the fallback.  This gives the upper bound in
+\cref{eq:intro-random-upper}.  For the lower bound, a uniformly labelled
+half-zero, half-two multiset is a balanced random bridge.  At every time, the
+number of completed jobs is at most one half of the work spent, up to the
+bridge discrepancy.  Integrating this envelope gives
+\cref{eq:intro-random-lower}.
 
 \subsection{Blind execution: from tests to a fractional knapsack}
 
@@ -625,9 +710,14 @@ its reserve.  At $u=\zstar$ both cap corrections vanish.
 checkpoint for the cap-free lower construction and an independent
 cap-bubbling certificate.
 
-\Cref{sec:random-obligatory} proves the sharp randomized $4/3$ theorem.  It
-first solves the announced stationary problem, then learns the threshold
-from a sample, and finally gives the balanced binary Yao lower bound.
+\Cref{sec:random-common-upper} proves the exact randomized finite-cap curve.
+It first identifies the announced stationary benchmark, reduces the
+distributional maximization to a scalar binary game, then removes announcement
+by a sublinear random pilot and proves the matching oblivious Yao bounds.
+\Cref{sec:random-obligatory} proves the sharp randomized $4/3$ endpoint
+theorem uniformly for unbounded processing times.  It first solves the
+announced stationary problem, then learns the threshold from a sample, and
+finally gives the balanced binary Yao lower bound.
 \Cref{sec:blind} turns to blind execution.  It defines the fluid benchmark,
 proves the fixed-$q$ envelope theorem, transfers the envelope to arbitrary
 adaptive announced policies, and removes announcement by a blind pilot.
@@ -664,7 +754,10 @@ bound $1.9338\ldots$; on the further restriction $p\in\{0,u\}$, their UTE
 algorithm achieves $1.8668\ldots$.  Our finite-cap theorem closes the
 common-upper gap for arbitrary $p\in[0,u]$, determines the dependence on the
 fixed parameter $u$, and shows that the UTE constant is exactly the maximum
-of the resulting curve.
+of the resulting deterministic curve.  Against an oblivious adversary, our
+random-labelling analysis gives the separate exact four-piece curve
+\eqref{eq:intro-random-common-upper-curve}; its survival-function reduction
+shows that binary distributions already witness every worst branch.
 
 A related binary-information model is the processing-time-oracle problem of
 Dufossé et al.~\cite{DufosseEtAl2022}.  There, every job has one of two known
@@ -964,6 +1057,8 @@ claim.
 
 \input{optional_upper}
 
+\input{randomized_common_upper}
+
 \input{randomized_obligatory}
 
 \input{blind_optional}
@@ -972,14 +1067,23 @@ claim.
 
 \section{Discussion and open questions}\label{sec:discussion}
 
-The curve identifies the leading quadratic constants of the deterministic
-games for every $u\in(0,\infty]$.  Its scope is deliberately precise: one
-machine, all release dates zero, unit tests, nonpreemptive operations, total
-completion time, and one common upper limit when the cap is finite.  Every
-upper proof loses at most a constant on each of the $n$ discrete transitions.
-This loss is asymptotically negligible, but it is not a fixed additive
-constant over the whole instance.  On $u\in[\zstar,\infty]$ the
-per-transition constant is uniform in $u$.
+The two common-upper curves identify the leading quadratic constants of the
+deterministic and oblivious-randomized games for every finite $u$; the
+deterministic analysis also includes $u=\infty$.  Their scope is deliberately
+precise: one machine, all release dates zero, unit tests, nonpreemptive
+operations, total completion time, and one common upper limit when the cap is
+finite.  The deterministic upper proof loses at most a constant on each of
+the $n$ discrete transitions.  This loss is asymptotically negligible, but
+it is not a fixed additive constant over the whole instance.  On
+$u\in[\zstar,\infty]$ its per-transition constant is uniform in $u$.
+
+For finite $u$, the randomized curve is learned with an
+$O_u(n^{11/6})$ remainder.  This exponent is only a convenient consequence
+of the pilot/grid parameters; sharper empirical-process estimates should
+reduce it without changing the four leading branches.  The randomized proof
+uses the oblivious assumption essentially.  Its random-labelling lower bound
+does not apply to an adversary that observes the private choices, so the
+adaptive-adversary curve remains open.
 
 The randomized obligatory theorem changes both the algorithmic power and the
 adversary: the input is fixed obliviously, while the algorithm may privately
@@ -1016,12 +1120,12 @@ obstruction might show that a different policy is needed.  The current lower
 bound does not distinguish these possibilities.  In particular, our result
 neither proves nor claims the stronger ordinary inequality with \(B=0\).
 
-The analogous endpoint-additive question is open for each nontrivial finite-cap
-branch as well: our claims concern $\CR_\infty$ and the infimum of admissible
-additive coefficients.  Also open are the exact randomized curve for finite
-common caps, adaptive-adversary randomization, heterogeneous upper limits,
-nonuniform test times in the exact-ratio regime, weights, and more than one
-machine.  The common-upper curve shows why a direct extension is unlikely to
+The analogous endpoint-additive question is open for each nontrivial
+finite-cap deterministic branch as well: our claims concern $\CR_\infty$ and
+the infimum of admissible additive coefficients.  Also open are
+adaptive-adversary randomization, heterogeneous upper limits, nonuniform test
+times in the exact-ratio regime, weights, and more than one machine.  The
+deterministic common-upper curve shows why a direct extension is unlikely to
 have one universal threshold: already in the uniform case the optimal policy
 changes form at five analytically distinct junctions.
 
@@ -1033,18 +1137,22 @@ every asymptotically extremal construction must have this form.
 
 \section{Conclusion}
 
-Uniform tests produce three different but related algorithmic landscapes.
-For deterministic common-upper execution, the exact answer is the six-piece
-curve \cref{eq:intro-optional-curve}; its cap-free endpoint is
+Uniform tests produce three different but related models.  For deterministic
+common-upper execution, the exact answer is the six-piece curve
+\cref{eq:intro-optional-curve}; its cap-free endpoint is
 $\Rstar=1.570574096649395\ldots$ and its global maximum is
 $\udiam=1.866760399173862\ldots$.  The proof combines binary stopping games,
 a harmonic adversary, and adaptive bank potentials.
 
-Against an oblivious adversary, randomization changes obligatory testing
-qualitatively.  A maximum-density threshold is exactly $4/3$-competitive
-when the multiset is announced, a sublinear sample learns it without any
-boundedness assumption, and the balanced half-zero, half-two instance proves
-that $4/3$ is sharp.
+Against an oblivious adversary, randomization gives the exact four-piece
+finite-cap curve \cref{eq:intro-random-common-upper-curve}.  Comparing raw
+execution with a maximum-density stationary threshold, and flattening the
+survival function, reduces its upper bound to two scalar binary families.  A
+sublinear pilot learns the right family without knowing the multiset, while
+binary random labellings give all matching lower branches.  At the obligatory
+endpoint, a uniform unbounded-support argument learns the stationary
+threshold without any boundedness assumption, and the balanced half-zero,
+half-two instance proves that $4/3$ remains sharp.
 
 When untested jobs instead run for their actual duration, the right answer is
 instance dependent.  Tests, known residual classes, and blind work become
@@ -1052,7 +1160,7 @@ divisible completion modules; their fractional-knapsack order yields the
 four-block policy and the quadratic benchmark $\Phiopt(D)$.  The adaptive-
 reveal bijection and a simultaneous urn bound show that neither adaptive
 stopping nor prior knowledge of the multiset improves its leading $n^2$
-coefficient.  Together, the three results identify completion density and
+coefficient.  Together, these results identify completion density and
 pairwise delay as the common organizing principles behind deterministic
 competitive ratios, randomized learning, and instance-optimal testing.
 

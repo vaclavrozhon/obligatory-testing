@@ -1,0 +1,522 @@
+\section{Randomized common upper bounds: the exact four-piece curve}
+\label{sec:random-common-upper}
+
+We return to the finite common-upper model and allow private randomization
+against an oblivious adversary.  The cap $u$ is fixed throughout this
+section, but the algorithm is not told the processing-time multiset.  This
+section proves \cref{thm:random-common-upper-intro}.  The proof has three
+parts.  First we analyze two policies for an announced distribution: run
+everything raw, or test everything using a maximum-density stationary
+threshold.  A survival-function argument shows that their worst
+distribution is binary.  We then learn the better policy from a sublinear
+pilot, and finally use random labellings and Yao's principle for the matching
+lower bounds.
+
+\subsection{Offline and stationary fluid coefficients}
+
+Assume initially that $u>1$ and write
+\begin{equation}
+ s=u-1.
+ \label{eq:rcu-s}
+\end{equation}
+Let $D$ be a finite distribution on $[0,u]$, let $P,P'$ be independent with
+law $D$, and use the survival function
+\begin{equation}
+ H(t)=\Pr(P\ge t),
+ \qquad H(t)=0\quad(t>u).
+ \label{eq:rcu-survival}
+\end{equation}
+The convention at atoms does not affect any integral below.  Since a
+clairvoyant job has effective length $1+\min\{s,P\}$, the layer-cake identity
+and \cref{lem:offline} give the leading offline coefficient
+\begin{align}
+ \Omega_u(D)
+ &\defeq \frac12\EE\min\{q_u(P),q_u(P')\}
+  =\frac12\left(1+\int_0^s H(t)^2\,dt\right),
+ \label{eq:rcu-offline-fluid}\\
+ \OPT_u(M)
+ &=n^2\Omega_u(D_M)+O_u(n)
+ \label{eq:rcu-offline-finite}
+\end{align}
+for every empirical distribution $D_M$.
+
+We next recall the maximum-density stationary policy in a form suited to the
+cap.  For a processing-time prefix of mass $a$ and first moment $m$, its
+completion density is $a/(1+m)$.  Choose a maximum-density prefix, include
+all zeros, and put
+\begin{equation}
+ \tau=\frac{1+m}{a}.
+ \label{eq:rcu-tau-density}
+\end{equation}
+The one-point addition/removal test puts every value below $\tau$ in the
+prefix and every value above $\tau$ outside it; an atom at equality may be
+split.  Equivalently,
+\begin{equation}
+ \EE(\tau-P)^+=1,
+ \qquad
+ \int_0^\tau H(t)\,dt=\tau-1.
+ \label{eq:rcu-threshold-equation}
+\end{equation}
+The equation has a unique solution $\tau\ge1$.
+
+The stationary policy tests all jobs in a uniform random order, processes a
+positive prefix outcome immediately after its test, and after the last test
+processes the residual jobs in SPT order.  The following formula is the
+finite-cap analogue of \cref{lem:rand-stationary-cost}.
+
+\begin{lemma}[Stationary survival formula]
+\label{lem:rcu-stationary-survival}
+The doubled leading coefficient of the stationary policy is
+\begin{equation}
+ \mathcal T_u(D)=
+ \begin{cases}
+  \displaystyle \tau+\int_\tau^u H(t)^2\,dt,&\tau\le u,\\[6pt]
+  \tau,&\tau>u.
+ \end{cases}
+ \label{eq:rcu-stationary-survival}
+\end{equation}
+Consequently the better of the raw and stationary policies has leading
+ratio
+\begin{equation}
+ \frac{\min\{u,\mathcal T_u(D)\}}
+      {1+\int_0^sH(t)^2\,dt}.
+ \label{eq:rcu-announced-ratio}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Let $h=1-a$ be the residual mass and let $K_L$ be the minimum kernel of two
+residual draws, with their subprobability masses left unnormalized.  The
+random-order pair calculation gives the stationary coefficient
+\begin{equation}
+ (1+m)\left(1-\frac a2\right)+\frac{K_L}{2}.
+ \label{eq:rcu-stationary-pair}
+\end{equation}
+If $\tau\le u$, the threshold property gives
+\[
+ K_L=\tau h^2+\int_\tau^uH(t)^2\,dt,
+ \qquad
+ (1+m)\left(1-\frac a2\right)
+ =\frac\tau2(1-h^2).
+\]
+Their sum is one half of the first line of
+\eqref{eq:rcu-stationary-survival}.  If $\tau>u$, the whole distribution is
+in the prefix and \eqref{eq:rcu-stationary-pair} equals $\tau/2$.  Raw
+execution has leading coefficient $u/2$, and division by
+\eqref{eq:rcu-offline-fluid} proves \eqref{eq:rcu-announced-ratio}.
+\end{proof}
+
+\subsection{Flattening the survival function}
+
+We now maximize \eqref{eq:rcu-announced-ratio} over arbitrary $D$.  Suppose
+first that $1\le\tau\le u$ and put
+\begin{equation}
+ y=\frac{\tau-1}{\tau}.
+ \label{eq:rcu-y}
+\end{equation}
+By \eqref{eq:rcu-threshold-equation}, $y$ is the average of $H$ on
+$[0,\tau]$.  Since $H$ is nonincreasing, its average on every initial
+subinterval is at least $y$.  Thus Cauchy--Schwarz gives
+\begin{equation}
+ \int_0^aH(t)^2\,dt\ge ay^2
+ \qquad(0\le a\le\tau),
+ \label{eq:rcu-initial-cs}
+\end{equation}
+and $H(t)\le y$ almost everywhere for $t>\tau$.
+
+Replace $H$ on $(0,\tau)$ by the constant $y$ and leave its tail unchanged.
+This remains a nonincreasing survival function, preserves
+\eqref{eq:rcu-threshold-equation} and $\mathcal T_u(D)$, and by
+\eqref{eq:rcu-initial-cs} can only decrease the offline coefficient.  Hence
+it can only increase the ratio.  We may therefore assume
+\begin{equation}
+ H(t)=y\quad(0<t<\tau).
+ \label{eq:rcu-flat-prefix}
+\end{equation}
+
+If $u-1\le\tau\le u$, the offline integral lies entirely in the flat part,
+and $H(t)^2\le y^2$ on the remaining tail.  It follows that
+\begin{equation}
+ \frac{\min\{u,\mathcal T_u(D)\}}
+      {1+\int_0^sH^2}
+ \le
+ B_u(\tau)
+ \defeq
+ \frac{\tau+(u-\tau)y^2}{1+(u-1)y^2}.
+ \label{eq:rcu-B-first}
+\end{equation}
+The numerator displayed on the right is at most $u$, so the raw minimum is
+inactive.
+
+Now suppose $\tau<u-1$.  Put
+\begin{equation}
+ L=u-1-\tau,
+ \quad E=\int_\tau^{u-1}H(t)^2\,dt,
+ \quad G=\int_{u-1}^uH(t)^2\,dt.
+ \label{eq:rcu-EG}
+\end{equation}
+Monotonicity gives
+\begin{equation}
+ 0\le E\le Ly^2,
+ \qquad G\le E/L.
+ \label{eq:rcu-E-range}
+\end{equation}
+Consequently
+\begin{equation}
+ \frac{\min\{u,\mathcal T_u(D)\}}
+      {1+\int_0^sH^2}
+ \le
+ \frac{\tau+\dfrac{u-\tau}{u-1-\tau}E}
+      {1+\tau y^2+E}.
+ \label{eq:rcu-linear-fractional-E}
+\end{equation}
+For fixed $\tau$ this is linear-fractional in $E$, so its derivative has a
+constant sign.  Its maximum on $[0,Ly^2]$ occurs at an endpoint.  The two
+endpoint values are
+\begin{align}
+ A(\tau)&\defeq\frac{\tau}{1+\tau y^2}
+              =\frac{\tau^2}{\tau^2-\tau+1},
+ \label{eq:rcu-A}\\
+ B_u(\tau)&=\frac{\tau+(u-\tau)y^2}{1+(u-1)y^2}.
+ \label{eq:rcu-B}
+\end{align}
+They are attained by rectangular survival functions: respectively a binary
+distribution on $\{0,\tau\}$ and one on $\{0,u\}$.
+
+It remains to cover $\tau>u$.  Equation
+\eqref{eq:rcu-threshold-equation} and the zero extension of $H$ give
+$\int_0^uH=\tau-1\ge u-1$.  The average of a nonincreasing function on
+$[0,u-1]$ is no smaller than its average on $[0,u]$, and hence
+\begin{equation}
+ \int_0^{u-1}H(t)^2\,dt
+ \ge (u-1)\left(\frac{\tau-1}{u}\right)^2
+ \ge\frac{(u-1)^3}{u^2}.
+ \label{eq:rcu-tau-large}
+\end{equation}
+Here the raw policy is chosen, and its ratio is at most $B_u(u)$.
+We have proved the reduction
+\begin{equation}
+ \sup_D\frac{\min\{u,\mathcal T_u(D)\}}
+                 {1+\int_0^sH(t)^2\,dt}
+ \le
+ \max\left\{
+  \sup_{1\le\tau\le u-1}A(\tau),
+  \sup_{1\le\tau\le u}B_u(\tau)
+ \right\},
+ \label{eq:rcu-binary-reduction}
+\end{equation}
+where the first supremum is omitted for $u<2$.  In fact equality holds in
+\eqref{eq:rcu-binary-reduction}, because the rectangular survival functions
+described above attain both families.
+
+\subsection{The two scalar maximizations}
+
+The first family satisfies
+\begin{equation}
+ A'(\tau)=\frac{\tau(2-\tau)}{(\tau^2-\tau+1)^2}.
+ \label{eq:rcu-A-derivative}
+\end{equation}
+Thus its maximum is attained at $\tau=\min\{2,u-1\}$ and equals $4/3$ as
+soon as $u\ge3$.
+
+For the second family, substitution of \eqref{eq:rcu-y} gives
+\begin{equation}
+ B_u(\tau)=
+ \frac{\tau^2u+2\tau^2-2\tau u-\tau+u}
+      {\tau^2u-2\tau u+2\tau+u-1}.
+ \label{eq:rcu-B-rational}
+\end{equation}
+The sign of its derivative is the sign of
+\begin{equation}
+ g_u(\tau)=(2\tau-1)^2-u(\tau-1)^2.
+ \label{eq:rcu-B-derivative}
+\end{equation}
+For $u\le4$ this is positive on $[1,\infty)$.  For $u>4$, its unique root
+above one is
+\begin{equation}
+ \tau_*(u)=\frac{u-2+\sqrt u}{u-4}
+           =\frac{\sqrt u-1}{\sqrt u-2},
+ \label{eq:rcu-tau-star}
+\end{equation}
+and $B_u$ increases before this point and decreases afterwards.  The
+identity $\tau_*(u)=u$ is equivalent to
+\begin{equation}
+ u^3-6u^2+5u-1=0.
+ \label{eq:rcu-transition-cubic}
+\end{equation}
+The cubic is strictly increasing beyond its last critical point and changes
+sign there exactly once; its unique root above one is $\urand$ from
+\eqref{eq:intro-random-transition}.  Hence
+\begin{align}
+ \max_{1\le\tau\le u}B_u(\tau)
+ &=B_u(u)=\frac{u^3}{u^3-2u^2+3u-1}
+       =\frac{u^3}{u^2+(u-1)^3},&&u\le\urand,
+ \label{eq:rcu-B-at-u}\\
+ &=B_u(\tau_*(u))
+       =1+\frac1{2(\sqrt u-1)},&&u\ge\urand.
+ \label{eq:rcu-B-at-star}
+\end{align}
+
+There is no missing branch from $A$.  On $2\le u\le3$, clearing the positive
+denominators in $B_u(u)-A(u-1)$ and putting $v=u-2$ leaves
+\[
+ v^4+3v^3+3v^2+3v+3>0.
+\]
+On $3\le u\le\urand$, one has $B_u(u)>4/3$.  On
+$\urand\le u\le25/4$, \eqref{eq:rcu-B-at-star} is at least $4/3$, with
+equality exactly at $u=25/4$; afterwards $A(2)=4/3$ is larger.  Combining
+these observations with \eqref{eq:rcu-binary-reduction} proves the announced
+upper bound
+\begin{equation}
+ \frac{\min\{u,\mathcal T_u(D)\}}
+      {1+\int_0^sH(t)^2\,dt}
+ \le\Rrand(u)
+ \label{eq:rcu-announced-upper}
+\end{equation}
+for every finite distribution $D$.
+
+The junction statements now follow directly.  Equations
+\cref{eq:rcu-transition-cubic,eq:rcu-B-at-u,eq:rcu-B-at-star} give
+continuity at $\urand$, and the square-root branch equals $4/3$ at
+$u=25/4$.  Differentiating \eqref{eq:rcu-B-at-u} shows that its only
+interior maximum above one occurs at $u=(3+\sqrt3)/2$; substitution gives
+\eqref{eq:intro-random-common-maximum}.
+
+\subsection{Learning the announced policy}
+
+The policy used for the upper bound must not know $D$.  The next lemma
+removes this announcement at lower-order cost.
+
+\begin{lemma}[Sublinear-pilot transfer]
+\label{lem:rcu-pilot-transfer}
+For every fixed $u>1$, there are randomized nonanticipating policies
+$\mathcal A_{n,u}$ such that every fixed labelled input with empirical
+distribution $D$ satisfies
+\begin{equation}
+ \EE\ALG_{\mathcal A_{n,u}}
+ \le \frac{n^2}{2}\min\{u,\mathcal T_u(D)\}
+      +O_u(n^{11/6}).
+ \label{eq:rcu-pilot-bound}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Let $k=\lfloor n^{2/3}\rfloor$, $d=\lfloor n^{1/3}\rfloor$, and
+$\eta=u/d$.  Keep zero as a separate category and round each positive value
+upward to one of the $d$ grid endpoints.  The algorithm privately permutes
+the labels, tests the first $k$, and forms the sample histogram.  On that
+histogram it compares the raw template with every stationary grid-prefix
+template.  It applies a minimizing template to the remaining labels; in the
+stationary case, prefix outcomes are processed immediately and the residual
+tail in SPT order.  Sampled positive jobs are inserted in the corresponding
+known part of the schedule.
+
+Let $\widehat D$ and $D^{\rm g}$ be the sample and population grid
+histograms.  Hypergeometric variance and Cauchy--Schwarz over the $d+1$
+categories give
+\begin{equation}
+ \EE\|\widehat D-D^{\rm g}\|_1
+ \le\sqrt{\frac{d+1}{k}}=O(n^{-1/6}).
+ \label{eq:rcu-histogram-error}
+\end{equation}
+For a fixed prefix, the stationary coefficient is a quadratic polynomial in
+the category masses, with coefficients bounded in terms of $u$.  It is
+therefore $O_u(1)$-Lipschitz in total variation, uniformly over all grid
+prefixes.  The empirical-minimization sandwich loses at most twice the
+right-hand side of \eqref{eq:rcu-histogram-error}.  Zero-preserving upward
+rounding changes every normalized work and pair kernel by $O_u(1/d)$.
+
+Finally, placing the sample before the main random-order template affects at
+most $O(nk+k^2)$ bounded operation--job pairs.  The already tested sample
+has the same bound when raw is selected.  After normalization by $n^2$, the
+total error is
+\[
+ O_u\left(\sqrt{d/k}+1/d+k/n\right)=O_u(n^{-1/6}).
+\]
+This proves \eqref{eq:rcu-pilot-bound}.  The initial private permutation
+makes the law identical for every fixed public labelling.
+\end{proof}
+
+Together with \eqref{eq:rcu-offline-finite} and
+\eqref{eq:rcu-announced-upper}, \cref{lem:rcu-pilot-transfer} yields
+\begin{equation}
+ \EE\ALG_{\mathcal A_{n,u}}
+ \le\Rrand(u)\OPT_u+O_u(n^{11/6}),
+ \label{eq:rcu-final-upper}
+\end{equation}
+which is \eqref{eq:intro-random-common-upper} with
+$\eps_u(n)=O_u(n^{-1/6})$.  For $0<u\le1$, raw execution is exactly
+clairvoyantly optimal, so no learning is required.
+
+\subsection{Binary oblivious lower bounds}
+
+It remains to show that the two endpoint policies used above cannot be
+improved in the worst case by a more adaptive algorithm.  We first record a
+binary random-labelling envelope.
+
+\begin{lemma}[Binary cap envelope]
+\label{lem:rcu-binary-lower}
+Fix $u>1$, $x\in[0,1]$, and put $z=1-x$.  Let $M_n$ have $xn+O(1)$ jobs of
+value $u$ and $zn+O(1)$ zero jobs.  For every randomized nonanticipating
+algorithm, even one told $M_n$, some fixed labelling satisfies
+\begin{equation}
+ \frac{\EE\ALG}{n^2}\ge
+ \begin{cases}
+  \displaystyle\frac u2-o_u(1),&x\ge (u-1)/u,\\[6pt]
+  \displaystyle\frac{1+x+ux^2}{2}-o_u(1),&x\le(u-1)/u.
+ \end{cases}
+ \label{eq:rcu-binary-fluid-lower}
+\end{equation}
+Every labelling has
+\begin{equation}
+ \frac{\OPT_u}{n^2}
+ =\frac{1+(u-1)x^2}{2}+O_u(1/n).
+ \label{eq:rcu-binary-offline}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+First fix a deterministic policy and place the occurrences uniformly on the
+public labels.  List labels in the order in which the policy first touches
+them, by either a test or a raw execution, and expose analytically also the
+hidden value of a raw-touched occurrence.  The map from placements to this
+occurrence word is a bijection: equal word prefixes give equal observable
+histories, hence the same next label and touch kind, and induction recovers
+the whole placement.  The word is therefore a uniform permutation, and the
+test/raw choice before its next entry is predictable from the preceding
+word.
+
+Take $\delta_n=n^{-1/4}$.  Uniform-prefix hypergeometric concentration,
+followed by maximal Azuma--Hoeffding for the predictably selected tests,
+gives one event of probability $1-o(1)$ on which every first-touch prefix
+ending with at least $\delta_n n$ untouched labels and containing $t$ tests
+satisfies
+\begin{equation}
+ \bigl|N_0(t)-zt\bigr|\le
+ \Delta_n,
+ \qquad
+ \Delta_n=O(\delta_n^{-1}\sqrt{n\log n})=o(n).
+ \label{eq:rcu-predictable-urn}
+\end{equation}
+Here $N_0(t)$ is the number of tested zeros.  The event is simultaneous, so
+we do not condition on the policy's adaptive stopping time.
+
+Edit the suffix by running raw every still-untouched job that the original
+schedule would later test, deleting its later known-processing operation.
+Only $\delta_n n+O(1)$ jobs change, so the edit changes total completion cost
+by $o_u(n^2)$.  Let $q$ be the final tested fraction of the edited schedule.
+On \eqref{eq:rcu-predictable-urn}, every prefix of its completion curve is
+dominated, up to $o(1)$ vertical error, by the divisible items
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+item & completion capacity & work per completion\\
+\midrule
+zero-test module & $zq$ & $1/z$\\
+tested cap processing & $xq$ & $u$\\
+raw jobs & $1-q$ & $u$\\
+\bottomrule
+\end{tabular}
+\end{center}
+When $z=0$, the zero-test module is simply omitted.
+Indeed, $t$ tests complete at most $zt+\Delta_n$ zeros and expose at most
+$xt+\Delta_n$ cap jobs; raw and known cap processing both use $u$ work per
+completion.  The ordinary divisible-knapsack exchange therefore
+upper-bounds completed mass at every work value.  Integrating the remaining
+mass gives a lower bound on total completion time.
+
+If $z\le1/u$, every displayed item costs at least $u$ per completion, so the
+normalized area is at least $u/2-o_u(1)$.  If $z\ge1/u$, the zero-test module
+comes first.  For fixed $q$ its remaining-mass area is
+\begin{equation}
+ F_z(q)=q-\frac{zq^2}{2}+\frac u2(1-zq)^2,
+ \qquad
+ F_z'(q)=(1-zq)(1-uz).
+ \label{eq:rcu-binary-F}
+\end{equation}
+It is minimized at $q=1$, giving
+$F_z(1)=(1+x+ux^2)/2$.  The suffix edit, vertical repair, and bad event all
+contribute $o_u(n^2)$.
+
+The argument holds for each deterministic policy.  For a randomized policy,
+fix its seed, average the result over seeds and the finite uniform placement
+space, and select a placement whose seed-expected cost is at least the joint
+average.  This placement is fixed before the seed and is therefore an
+oblivious input.  Finally, the effective lengths of the two job types are
+$1$ and $u$, so \eqref{eq:rcu-binary-offline} follows from
+\cref{lem:offline}.
+\end{proof}
+
+We now select the binary masses.  If $1<u\le\urand$, take
+\begin{equation}
+ x=\frac{u-1}{u}.
+ \label{eq:rcu-lower-x-crossing}
+\end{equation}
+This is the boundary $z=1/u$ in \cref{lem:rcu-binary-lower}, and its online
+and offline coefficients have ratio
+\begin{equation}
+ \frac{u}{1+(u-1)((u-1)/u)^2}
+ =\frac{u^3}{u^2+(u-1)^3}.
+ \label{eq:rcu-lower-first-branch}
+\end{equation}
+If $\urand\le u\le25/4$, take
+\begin{equation}
+ x=\frac1{\sqrt u-1}.
+ \label{eq:rcu-lower-x-stationary}
+\end{equation}
+The definition of $\urand$ is precisely the point from which
+$x\le(u-1)/u$.  Since $(u-1)x^2=1+2x$, the second line of
+\eqref{eq:rcu-binary-fluid-lower} divided by
+\eqref{eq:rcu-binary-offline} becomes
+\begin{equation}
+ 1+\frac x2=1+\frac1{2(\sqrt u-1)}.
+ \label{eq:rcu-lower-second-branch}
+\end{equation}
+Irrational masses are approximated by empirical rational frequencies; all
+rounding and diagonal terms are $O_u(n)$.
+
+For the last branch, the cap distribution is replaced by a fixed bounded
+one.
+
+\begin{lemma}[Balanced zero--two lower bound]
+\label{lem:rcu-zero-two-lower}
+For every $u\ge25/4$ and every randomized algorithm, arbitrarily large even
+$n$ admit a fixed labelling with $n/2$ jobs of value zero and $n/2$ jobs of
+value two such that
+\begin{equation}
+ \EE\ALG\ge n^2-o_u(n^2),
+ \qquad
+ \OPT_u=\frac34n^2+O(n).
+ \label{eq:rcu-zero-two-costs}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Use the same trace bijection, predictable-urn event, and suffix edit as in
+\cref{lem:rcu-binary-lower}.  For a realized tested fraction $q$, the three
+fluid items now have capacities and costs
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+item & completion capacity & work per completion\\
+\midrule
+zero-test module & $q/2$ & $2$\\
+tested two processing & $q/2$ & $2$\\
+raw jobs & $1-q$ & $u$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Every item costs at least two per completion.  Thus the completion envelope
+lies below $\min\{1,t/2\}$ independently of $q$, whose remaining-mass area is
+one.  This proves the online estimate after the $o_u(n^2)$ repairs and the
+finite Yao selection.  Since $u>3$, the two effective lengths are one and
+three; their equally weighted minimum kernel gives offline coefficient
+$3/4$.
+\end{proof}
+
+Equations \eqref{eq:rcu-lower-first-branch} and
+\eqref{eq:rcu-lower-second-branch}, together with
+\cref{lem:rcu-zero-two-lower}, match \eqref{eq:rcu-final-upper} in every
+range.  For $0<u\le1$, raw execution is both an online and a clairvoyant
+optimum.  This completes the proof of the exact curve in
+\cref{thm:random-common-upper-intro}.
