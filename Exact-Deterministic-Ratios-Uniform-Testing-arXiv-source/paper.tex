@@ -121,62 +121,38 @@
 \newcommand{\Phiopt}{\Phi}
 \newcommand{\Stat}{\mathrm{stat}}
 
-\title{Scheduling with Uniform Tests:\\
-Exact Ratios and Instance-Optimal Randomized Policies}
+\title{On the Scheduling with Uniform Tests and Optimizations}
 
 % Review this author block before submission.
-\author{Bolzano team}
+\author{Václav Rozhoň}
 \date{August 2026}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-We give a unified account of three single-machine scheduling models with unit
-tests and total completion time.  First, in the \emph{common-upper} model a
-job may be executed untested for a common cap $u$, or tested and then
-processed for its revealed time.  We determine the exact deterministic
-size-asymptotic competitive ratio for every $u\in(0,\infty]$, where
-$u=\infty$ denotes obligatory testing.  The obligatory value is
-\[
- R_{\rm obl}=1+r=1.570574096649395\ldots,
- \qquad r=\frac{2}{z_\star-1},\qquad z_\star-3=\log z_\star.
-\]
-For finite $u$, the exact curve has six explicit regimes and stabilizes at
-$R_{\rm obl}$ for every $u\ge z_\star$; its global maximum is
-\[
- \sup_{u>0}V(u)=\frac{1+\sqrt{3+2\sqrt5}}2
- =1.866760399173862\ldots .
-\]
+Imagine jobs are coming on a machine and we have to do all of them, paying unit price for each second each job is not done yet. If we knew how long each job takes time to finish, we just sort them from shortest and do them. But what if we need a nontrivial time to estimate that time? 
 
-Second, we settle randomization for obligatory testing against an oblivious
-adversary.  The algorithm is not told the multiset and processing times need
-not be bounded.  A sublinear sample learns a maximum-density threshold, and
-a tail-safe fallback handles missed large values.  We prove
-\[
- \EE\ALG\le \frac43\OPT+20378n^{7/4},
-\]
-and a uniformly labelled multiset with half zeros and half twos gives the
-matching ratio $4/3-O(n^{-1/2})$.  Thus the sharp randomized asymptotic ratio
-is $4/3$.
+This paper finds the best online algorithms for this problem that are also quite simple. In the \emph{obligatory} setting where every problem has to be tested first:
+\begin{enumerate}
+    \item In the deterministic setting, we settle the exact competitive ratio 1.866...
+    \item In the randomized setting (with oblivious adversary), we settle the comptetitive ratio 4/3; even stronger, our algorithm is instance-optimal, i.e., on no instance can its competitive ratio be improved by any other online algorithm.  
+\end{enumerate}
 
-Third, we study a distinct \emph{blind-execution} model: an untested job may
-be run for its actual processing time, while testing costs one unit and
-allows the revealed processing to be delayed.  For every fixed bound $L$, we
-identify an explicit distributional benchmark $\Phi(D)$ and prove a uniform
-instance-optimal theorem at the $n^2$ scale.  One universal policy, not told
-the multiset, attains $n^2\Phi(D_M)+o_L(n^2)$ on every fixed oblivious
-labelling, whereas even a policy told the multiset incurs
-$n^2\Phi(D_M)-o_L(n^2)$ on some fixed labelling.  The canonical policy has a
-threshold-testing prefix, a known-medium SPT block, a blind block, and a
-known-high SPT tail; its tested fraction minimizes an explicit quadratic.
-The deterministic exact curve, randomized $4/3$ theorem, and bounded
-instance-optimal theorem are formalized in Lean~4.
+In the nonobligatory setting, deterministic algorithms cannot have such guarantees but we again prove instance optimality for randomized algorihtms. 
+
+Finally, we consider variant of the problem where instead of testing, we can \emph{optimize} the running time to some $p_i$ with unit-cost optimization instead of paying a fixed cost. 
+
+In that setting, we present optimal algorithms for both deterministic and randomized setting. 
 \end{abstract}
 
 \tableofcontents
 
+% add acknowledgements, thank bolzano (cite the paper) and say the work was mostly gpt5.6. 
+
 \section{Introduction and proof intuition}
+
+This paper is broadly about the following problem. 
 
 Scheduling with testing separates information acquisition from productive
 work.  A test reveals the unknown processing time of a job, but the test
