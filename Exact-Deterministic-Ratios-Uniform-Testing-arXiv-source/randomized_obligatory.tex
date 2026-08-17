@@ -1,0 +1,434 @@
+\section{Randomized obligatory testing: the sharp ratio is
+\texorpdfstring{$4/3$}{4/3}}
+\label{sec:random-obligatory}
+
+We now keep obligatory tests but change the adversary.  It fixes the labelled
+vector $p\in[0,\infty)^n$ before the algorithm draws its random bits.  The
+multiset is not announced and no upper bound on the processing times is
+assumed.  This section proves \cref{thm:random-obligatory-intro}.
+
+\subsection{The normalized offline objective}
+
+For a fixed vector $p$, put
+\begin{align}
+ K(p)&=\frac1{n^2}\sum_{i,j}\min\{p_i,p_j\},
+ &O(p)&=\frac{1+K(p)}2,\label{eq:rand-KO}\\
+ D(p)&=\frac{n+\sum_i p_i}{2}.
+\end{align}
+The pair identity \cref{eq:opt-pair} is equivalently
+\begin{equation}
+ \OPT(p)=n^2O(p)+D(p).
+ \label{eq:rand-opt-normalized}
+\end{equation}
+The linear correction $D(p)$ will be kept rather than hidden: this makes the
+analysis valid for unbounded processing times.
+
+\subsection{Stationary prefixes}
+
+A set $E$ is a \emph{processing-time prefix} if every value in $E$ is at
+most every value outside it.  We require that $E$ contain every zero job;
+otherwise a supposedly deferred zero completes at its test and the following
+identity is false.  Write $L=[n]\setminus E$ and
+\begin{equation}
+ e=|E|,\quad a=\frac en,\quad h=1-a,\quad
+ m=\frac1n\sum_{i\in E}p_i,\quad
+ K_X=\frac1{n^2}\sum_{i,j\in X}\min\{p_i,p_j\}.
+ \label{eq:rand-prefix-notation}
+\end{equation}
+Every early--late pair has minimum equal to its early value, so
+\begin{equation}
+ K(p)=K_E+2hm+K_L.
+ \label{eq:rand-K-split}
+\end{equation}
+Define
+\begin{equation}
+ P(p,E)=(1+m)\left(1-\frac a2\right)+\frac{K_L}{2}.
+ \label{eq:rand-P}
+\end{equation}
+
+The stationary policy for $E$ tests all jobs in a uniformly random order,
+processes a positive early job immediately after its test, and defers every
+late job.  After the final test it processes the late jobs in SPT order.
+
+\begin{lemma}[Exact stationary cost]
+\label{lem:rand-stationary-cost}
+For every processing-time prefix $E$ containing all zero jobs,
+\begin{equation}
+ \EE\ALG_{\Stat}(p,E)
+ =n^2P(p,E)+\frac{e+\sum_i p_i}{2}.
+ \label{eq:rand-stationary-cost}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Let
+\[
+ W=n+\sum_{i\in E}p_i,
+ \qquad L_E=e+\sum_{i\in E}p_i.
+\]
+The discovery phase consists of $n$ blocks: an early block has length
+$1+p_i$ and completes its job, while a late block is its unit test and
+completes no job.  For an early job, each other block precedes it with
+probability $1/2$.  Its expected completion time is
+$W/2+(1+p_i)/2$, and the total early contribution is
+\begin{equation}
+ \frac{eW+L_E}{2}.
+ \label{eq:rand-early-cost}
+\end{equation}
+Every late job sees the common offset $W$.  Its tail contributes
+\begin{equation}
+ (n-e)W+\sum_{i\in L}p_i
+ +\sum_{\substack{i<j\\i,j\in L}}\min\{p_i,p_j\}.
+ \label{eq:rand-late-cost}
+\end{equation}
+Adding \cref{eq:rand-early-cost,eq:rand-late-cost} and collecting diagonal
+terms gives \cref{eq:rand-stationary-cost}.
+\end{proof}
+
+For a nonempty prefix define its completion density by
+\begin{equation}
+ \rho(E)=\frac{a}{1+m}.
+ \label{eq:rand-density}
+\end{equation}
+Choose a maximum-density prefix and put
+\begin{equation}
+ \theta=\frac{1+m}{a}=\frac1{\rho(E)}.
+ \label{eq:rand-theta}
+\end{equation}
+All zeros belong to every maximizer: adding a zero increases the numerator
+without increasing the denominator.
+
+\begin{lemma}[Density threshold]
+\label{lem:rand-density-threshold}
+There is a maximum-density prefix for which every early value is at most
+$\theta$ and every late value is at least $\theta$.  Values equal to
+$\theta$ may be assigned to either side.
+\end{lemma}
+
+\begin{proof}
+Removing boundary mass $\delta$ at value $x$ changes the density to
+$(a-\delta)/(1+m-x\delta)$.  Cross multiplication shows that this is larger
+exactly when $x>\theta$, so no selected boundary value can exceed $\theta$.
+The symmetric addition argument excludes an unselected value below
+$\theta$.  Equality preserves the density.
+\end{proof}
+
+The next identity is the algebraic source of the constant $4/3$.
+
+\begin{lemma}[Exact and robust certificates]
+\label{lem:rand-four-thirds-certificate}
+For every ordered prefix split with $a>0$ and
+$\theta=(1+m)/a$,
+\begin{equation}
+ 2\theta(4O-3P)
+  =(\theta-2)^2
+   +4(\theta K_E-m^2)
+   +\theta(K_L-\theta h^2).
+ \label{eq:rand-certificate}
+\end{equation}
+Consequently:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item if early values are at most $\theta$ and late values are at least
+      $\theta$, then $P\le4O/3$;
+\item if early values are at most $\theta+s$ and late values are at least
+      $\theta-s$, where $s\ge0$, then
+      \begin{equation}
+       P\le\frac43O+\frac23s.
+       \label{eq:rand-robust-certificate}
+      \end{equation}
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Expansion using $m=a\theta-1$, $h=1-a$, and
+\cref{eq:rand-K-split} gives \cref{eq:rand-certificate}.  Under exact
+separation, $xy\le\theta\min\{x,y\}$ for early $x,y$, hence
+$m^2\le\theta K_E$; for late $x,y$, one has
+$\min\{x,y\}\ge\theta$, hence $K_L\ge\theta h^2$.  This proves (i).
+
+Under the relaxed inequalities,
+\[
+ \theta K_E-m^2\ge-sK_E,
+ \qquad K_L-\theta h^2\ge-sh^2.
+\]
+Moreover $K_E\le am\le a^2\theta$.  Substitution into
+\cref{eq:rand-certificate} yields
+\[
+ P\le\frac43O+\frac23sa^2+\frac16sh^2
+ \le\frac43O+\frac23s,
+\]
+because $(2/3)a^2+(1/6)(1-a)^2\le2/3$ on $[0,1]$.
+\end{proof}
+
+Combining the exact certificate with
+\cref{lem:rand-stationary-cost,eq:rand-opt-normalized} already gives a finite
+statement useful below.
+
+\begin{corollary}[Announced multiset]
+\label{cor:rand-announced-four-thirds}
+If the multiset is announced, the stationary policy for a maximum-density
+prefix satisfies
+\[
+ \EE\ALG_{\Stat}(p,E)\le\frac43\OPT(p).
+\]
+\end{corollary}
+
+Indeed, the correction in \cref{eq:rand-stationary-cost} is at most $D(p)$.
+Equality in the quadratic coefficient of \cref{eq:rand-certificate} forces
+$\theta=2$, zero mass $1/2$, and all positive mass at two.  This predicts the
+lower-bound instance before any probabilistic argument is used.
+
+We shall also use the following tail-safe estimate.  Direct expansion gives
+\begin{equation}
+ P-O=\frac{h+am-K_E}{2}.
+ \label{eq:rand-crude-identity}
+\end{equation}
+If all early values are at most $R\ge1$, then $m\le aR$ and therefore
+\begin{equation}
+ P(p,E)\le O(p)+\frac R2.
+ \label{eq:rand-bounded-early}
+\end{equation}
+
+\subsection{Learning the prefix from a sublinear sample}
+
+Fix the universal cutoff
+\begin{equation}
+ B=32.
+ \label{eq:rand-cutoff}
+\end{equation}
+For an integer $d$, let $\eta=B/d$.  Keep zero as a separate category,
+partition $(0,B]$ into the consecutive bins
+$((b-1)\eta,b\eta]$, and add one overflow category for values above $B$.
+A finite positive value is rounded upward to the endpoint $q_b=b\eta$.
+
+Let $S$ be a uniformly random subset of $k$ labels.  If $\mu_b$ and
+$\widehat\mu_b$ are the population and sample fractions of category $b$, put
+\begin{equation}
+ \Delta=\sum_b|\widehat\mu_b-\mu_b|.
+ \label{eq:rand-hist-error}
+\end{equation}
+
+\begin{lemma}[Histogram error]
+\label{lem:rand-histogram}
+For $1\le k<n$,
+\[
+ \EE\Delta\le\sqrt{\frac{d+2}{k}}.
+\]
+\end{lemma}
+
+\begin{proof}
+The count in category $b$ is hypergeometric and its normalized variance is
+at most $\mu_b/k$.  Thus
+$\EE|\widehat\mu_b-\mu_b|\le\sqrt{\mu_b/k}$.  Summation and Cauchy--Schwarz
+give the claim.
+\end{proof}
+
+For a finite category prefix $J$, define
+\[
+ \widehat a(J)=\sum_{b\in J}\widehat\mu_b,\qquad
+ \widehat m(J)=\sum_{b\in J}q_b\widehat\mu_b,\qquad
+ \widehat\rho(J)=\frac{\widehat a(J)}{1+\widehat m(J)}.
+\]
+Let $\widehat\rho$ be the maximum and
+$\widehat\theta=1/\widehat\rho$.  The learned early set is not an arbitrary
+maximizing category prefix.  It is its \emph{threshold closure}
+\begin{equation}
+ \widehat J=\{\text{finite categories }b:q_b\le\widehat\theta\}.
+ \label{eq:rand-threshold-closure}
+\end{equation}
+
+\begin{lemma}[Threshold closure]
+\label{lem:rand-threshold-closure}
+The prefix \cref{eq:rand-threshold-closure} has the same maximum sample
+density.  Every category in it has endpoint at most $\widehat\theta$, and
+every finite category outside it has endpoint greater than
+$\widehat\theta$, including categories with zero sample count.
+\end{lemma}
+
+\begin{proof}
+The removal/addition calculation in
+\cref{lem:rand-density-threshold} applies to every positive-mass sample
+category.  Empty categories do not change the sample statistics, and adding
+mass at equality preserves the identity
+$1+\widehat m=\widehat a\widehat\theta$.  Closing the prefix therefore
+preserves optimality and makes the two pointwise assertions tautological.
+\end{proof}
+
+For large $n$, set
+\begin{equation}
+ k=\lfloor n^{3/4}\rfloor,\qquad
+ d=\lfloor n^{1/4}\rfloor,\qquad \eta=B/d.
+ \label{eq:rand-parameters}
+\end{equation}
+The algorithm draws a uniform permutation and first tests its first $k$ jobs,
+leaving positive sample jobs pending.  It computes the closed sample prefix.
+If
+\begin{equation}
+ \widehat\rho<\frac2B,
+ \label{eq:rand-fallback-test}
+\end{equation}
+it enters \emph{fallback mode}: test every remaining job and then process all
+positive jobs in SPT order.  Otherwise it enters \emph{learned mode}: process
+positive sampled early jobs in SPT order; test the remaining jobs in their
+random order, processing early outcomes immediately; and finish the deferred
+tail in SPT order.  Overflow is never early.
+
+\subsection{Good samples, fallback, and bad-event excess}
+
+Put
+\begin{equation}
+ \gamma=\frac1{B(B+1)},\qquad G=\{\Delta\le\gamma\}.
+ \label{eq:rand-good-event}
+\end{equation}
+Markov's inequality and \cref{lem:rand-histogram} give
+\begin{equation}
+ \Prob(G^c)\le B(B+1)\sqrt{\frac{d+2}{k}}.
+ \label{eq:rand-bad-probability}
+\end{equation}
+
+Assume $G$ and learned mode.  Let $E$ be the population set selected by the
+closed category prefix, and let $a,m,\theta=(1+m)/a$ be its true statistics.
+Since $\widehat\theta\le B/2$ and
+$\widehat a=(1+\widehat m)/\widehat\theta\ge2/B$, we have $a\ge1/B$.  For
+this fixed category set,
+\[
+ |a-\widehat a|\le\Delta,\qquad
+ |m-\widehat m|\le B\Delta+\eta.
+\]
+Consequently
+\begin{equation}
+ |\theta-\widehat\theta|
+ \le\frac32B^2\Delta+B\eta.
+ \label{eq:rand-threshold-transfer}
+\end{equation}
+Every early actual value is at most $\widehat\theta$, while every late value
+is greater than $\widehat\theta-\eta$.  Thus the robust certificate applies
+with
+\begin{equation}
+ s=\frac32B^2\Delta+B\eta+\eta.
+ \label{eq:rand-robust-s}
+\end{equation}
+
+The sample-first order is not exactly the fully stationary comparator, but
+the difference is only lower order.  Conditional on the unordered sample,
+write $e_S,e_R$ for the early counts and
+\[
+ W_S=k+\sum_{i\in E\cap S}p_i,\qquad
+ W_R=n-k+\sum_{i\in E\setminus S}p_i.
+\]
+Comparing the two independent random internal orders with one fully random
+order, the early-cost difference is
+\[
+ \frac{e_RW_S-e_SW_R}{2}
+ \le\frac12nk(1+B/2).
+\]
+Postponing positive sampled early jobs until all sample tests finish adds at
+most $k^2(1+B/2)$.  The late tail is identical because every zero is early.
+Therefore, on a good learned sample,
+\begin{equation}
+ \EE[\ALG\mid S]
+ \le\frac43\OPT
+ +n^2\!\left[B^2\Delta+\frac23(B+1)\eta\right]
+ +(1+B/2)(nk/2+k^2).
+ \label{eq:rand-good-learned}
+\end{equation}
+
+On a good fallback sample, comparison of sample and population densities
+shows that the true maximum-density reciprocal satisfies $\theta_*\ge B/4=8$.
+The exact threshold inequalities imply
+\begin{equation}
+ K(p)\ge\frac{(\theta_*-1)^2}{\theta_*},
+ \qquad O(p)\ge\frac{\theta_*-1+1/\theta_*}{2}\ge\frac{57}{16}.
+ \label{eq:rand-fallback-opt-large}
+\end{equation}
+For every test order, test-all-then-SPT satisfies
+\begin{equation}
+ \ALG_{\rm fb}\le\OPT+\frac{n(n-1)}2.
+ \label{eq:rand-fallback-crude}
+\end{equation}
+Indeed, if there are $z$ zeros, their total displacement from the first $z$
+SPT positions is at most $zn-z(z+1)/2$, while delaying the positive SPT tail
+adds $(n-z)(n-z-1)/2$; the sum is $n(n-1)/2$.  Combining
+\cref{eq:rand-fallback-opt-large,eq:rand-fallback-crude} gives
+$\ALG_{\rm fb}<4\OPT/3$.
+
+Because processing times are unbounded, a bad-event estimate must control
+excess over $4\OPT/3$, not raw cost.  In learned mode every early value is at
+most $B/2$, so \cref{eq:rand-bounded-early} bounds the stationary excess by
+$(B/4)n^2$; in fallback mode \cref{eq:rand-fallback-crude} bounds it by
+$n^2/2$.  Averaging \cref{eq:rand-good-learned} and these bad-event bounds,
+and using \cref{eq:rand-bad-probability}, yields the explicit uniform estimate
+\begin{equation}
+ \EE\ALG
+ \le\frac43\OPT
+ +n^2\!\left[9472\sqrt{\frac{d+2}{k}}+\frac{704}{d}\right]
+ +17(nk/2+k^2).
+ \label{eq:rand-explicit-upper}
+\end{equation}
+For $n\ge12^4$, the floors in \cref{eq:rand-parameters} give
+$\sqrt{(d+2)/k}\le2n^{-1/4}$, $1/d\le2n^{-1/4}$, and
+$k\le n^{3/4}$.  The right-hand side of
+\cref{eq:rand-explicit-upper} is at most
+\begin{equation}
+ \frac43\OPT+20378n^{7/4}.
+ \label{eq:rand-final-upper}
+\end{equation}
+For smaller $n$, test-all-then-SPT is covered by the same deliberately loose
+constant.  Finally $\OPT\ge n^2/2$ proves the multiplicative form in
+\cref{eq:intro-random-upper}.
+
+\subsection{The balanced binary lower bound}
+
+Let $n=2m$ and assign $m$ zeros and $m$ twos uniformly to the labels.  Fix a
+deterministic nonanticipating algorithm.  In its adaptive order of new tests,
+let $X_r=1$ for a zero and $X_r=-1$ for a two, and
+$S_k=\sum_{r\le k}X_r$.  Conditional on every history, the untested labels
+remain a uniform subset, so $(S_k)$ is a uniform balanced sign bridge even
+though the test order is adaptive.  Put
+\begin{equation}
+ \Delta_0=\frac12\max_{0\le k\le n}|S_k|.
+ \label{eq:rand-bridge-discrepancy}
+\end{equation}
+
+\begin{lemma}[Bridge discrepancy]
+\label{lem:rand-bridge-discrepancy}
+\[
+ \EE\Delta_0\le\frac{\sqrt{2}\,n}{\sqrt{n-1}}.
+\]
+\end{lemma}
+
+\begin{proof}
+For $0\le k\le m$, $M_k=S_k/(n-k)$ is a martingale.  Doob's $L^2$
+inequality and the hypergeometric variance
+$\EE S_m^2=n^2/[4(n-1)]$ give
+\[
+ \EE\max_{k\le m}|S_k|^2\le\frac{4n^2}{n-1}.
+\]
+Time reversal gives the same bound for the second half, and Cauchy--Schwarz
+then yields
+$\EE\max_k|S_k|\le2\sqrt{2}\,n/\sqrt{n-1}$.
+\end{proof}
+
+At physical time $t$, suppose the algorithm has completed $k$ tests and $x$
+processing operations of two-jobs.  At most $k/2+\Delta_0+x$ jobs are
+complete, while $k+2x\le t$.  Pathwise,
+\[
+ \#\text{completed by }t\le t/2+\Delta_0.
+\]
+The area under the unfinished-job curve therefore gives
+\begin{equation}
+ \ALG\ge\int_0^{2(n-\Delta_0)}
+       (n-\Delta_0-t/2)\,dt
+ =(n-\Delta_0)^2.
+ \label{eq:rand-lower-area}
+\end{equation}
+By \cref{lem:rand-bridge-discrepancy},
+$\EE\ALG\ge n^2-O(n^{3/2})$.  Every input in the distribution has
+\[
+ \OPT=3m^2+2m=\frac34n^2+n.
+\]
+Conditioning a randomized algorithm on its private seed and averaging over
+the finite placement distribution shows that one fixed labelling attains at
+least this average.  That labelling is chosen before the private seed and is
+therefore an oblivious input.  Together with \cref{eq:rand-final-upper}, this
+completes the proof of \cref{thm:random-obligatory-intro}.

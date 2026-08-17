@@ -18,6 +18,7 @@ namespace RandomizedOptional
 open Randomized
 open ObservedOnline
 open ObservedEnvelope
+open ObservedTrace
 open AnnouncedRoundedLower
 
 noncomputable section
@@ -115,7 +116,9 @@ theorem processing_eq_zero_of_populationMean_eq_zero
     unfold populationMean at hmean
     exact (div_eq_zero_iff.mp hmean).resolve_right hcard
   have hall := (Fintype.sum_eq_zero_iff_of_nonneg hp0).mp hsum
-  exact hall
+  intro job
+  have hj := congrFun hall job
+  simpa using hj
 
 theorem populationHistogram_roundedGridCell_eq_zeroAtom
     {n : ℕ} (hn : 0 < n)
@@ -129,7 +132,7 @@ theorem populationHistogram_roundedGridCell_eq_zeroAtom
   cases cell with
   | none =>
       simp [populationHistogram, categoryClass,
-        (roundedGridCell_eq_none_iff G _).2 (hp _)]
+        (roundedGridCell_eq_none_iff G _).2 (hp _), hn.ne']
   | some i =>
       have hcell : ∀ job, roundedGridCell G job = none := fun job =>
         (roundedGridCell_eq_none_iff G job).2 (hp job)
@@ -231,6 +234,7 @@ private theorem checkpoint_card_le_three_m4
   have hm4pos : 0 < m ^ 4 := pow_pos (by omega) _
   omega
 
+set_option maxHeartbeats 1000000 in
 private theorem inverse_parameter_error_bounds
     {n m : ℕ} (hm : 2 ≤ m) (hn : m ^ 16 ≤ n)
     {L : ℝ} (hL : 0 < L) :
@@ -301,7 +305,29 @@ private theorem inverse_parameter_error_bounds
     have hm4 : 1 / (m : ℝ) ^ 4 ≤ 1 / (m : ℝ) ^ 2 := by
       exact one_div_le_one_div_of_le (sq_pos_of_pos hmR) (by
         nlinarith [sq_nonneg ((m : ℝ) - 1)])
-    nlinarith [hdOverN, hdOverK, hkOverN]
+    have htwod : 2 * (d : ℝ) / k ≤ 4 / (m : ℝ) ^ 2 := by
+      calc
+        2 * (d : ℝ) / k = 2 * ((d : ℝ) / k) := by ring
+        _ ≤ 2 * (2 / (m : ℝ) ^ 2) :=
+          mul_le_mul_of_nonneg_left hdOverK (by norm_num)
+        _ = 4 / (m : ℝ) ^ 2 := by ring
+    calc
+      1 / (m : ℝ) ^ 2 + (d : ℝ) / n +
+            (1 / (m : ℝ) ^ 2 + 2 * (d : ℝ) / k) +
+            (k : ℝ) / n ≤
+          1 / (m : ℝ) ^ 2 + 1 / (m : ℝ) ^ 4 +
+            (1 / (m : ℝ) ^ 2 + 4 / (m : ℝ) ^ 2) +
+            1 / (m : ℝ) ^ 2 := by
+        gcongr
+      _ ≤ 1 / (m : ℝ) ^ 2 + 1 / (m : ℝ) ^ 2 +
+            (1 / (m : ℝ) ^ 2 + 4 / (m : ℝ) ^ 2) +
+            1 / (m : ℝ) ^ 2 := by
+        exact add_le_add
+          (add_le_add
+            (add_le_add (le_refl _) hm4)
+            (add_le_add (le_refl _) (le_refl _)))
+          (le_refl _)
+      _ = 8 / (m : ℝ) ^ 2 := by ring
   have hrounded : L + L / (m : ℝ) ≤ 2 * L := by
     have hdiv : L / (m : ℝ) ≤ L := by
       rw [div_le_iff₀ hmR]
@@ -320,10 +346,24 @@ private theorem inverse_parameter_error_bounds
     calc
       (L + L / (m : ℝ)) * γ + L / m ≤
           16 * L / (m : ℝ) ^ 2 + L / m := by
-        nlinarith
+        have hrewrite :
+            (2 * L) * (8 / (m : ℝ) ^ 2) =
+              16 * L / (m : ℝ) ^ 2 := by ring
+        rw [← hrewrite]
+        exact add_le_add hmul (le_refl _)
       _ ≤ 17 * L / m := by
-        have hmul := mul_le_mul_of_nonneg_left hmInv (by positivity : 0 ≤ 16 * L)
-        nlinarith
+        have hmulInv :=
+          mul_le_mul_of_nonneg_left hmInv (by positivity : 0 ≤ 16 * L)
+        have hsixteen : 16 * L / (m : ℝ) ^ 2 ≤ 16 * L / m := by
+          calc
+            16 * L / (m : ℝ) ^ 2 =
+                (16 * L) * (1 / (m : ℝ) ^ 2) := by ring
+            _ ≤ (16 * L) * (1 / m) := hmulInv
+            _ = 16 * L / m := by ring
+        calc
+          16 * L / (m : ℝ) ^ 2 + L / m ≤
+              16 * L / m + L / m := add_le_add hsixteen (le_refl _)
+          _ = 17 * L / m := by ring
       _ ≤ δ := by
         dsimp [δ]
         rw [div_le_div_iff₀ hmR hmR]
@@ -332,10 +372,9 @@ private theorem inverse_parameter_error_bounds
     have hmplus : (m : ℝ) + 1 ≤ 2 * m := by nlinarith
     have hmul := mul_le_mul hmplus hgamma (by positivity) (by positivity)
     calc
-      ((m : ℝ) + 1) * γ ≤ 16 / m := by
-        have hmInv : 1 / (m : ℝ) ^ 2 ≤ 1 / m :=
-          one_div_le_one_div_of_le hmR (by nlinarith)
-        nlinarith
+      ((m : ℝ) + 1) * γ ≤
+          2 * (m : ℝ) * (8 / (m : ℝ) ^ 2) := hmul
+      _ = 16 / m := by field_simp [hmR.ne']; ring
       _ ≤ δ := by
         dsimp [δ]
         rw [div_le_div_iff₀ hmR hmR]
@@ -365,10 +404,21 @@ private theorem inverse_parameter_error_bounds
       (by positivity : 0 ≤ (m : ℝ) ^ 4 / n)
     have hsecondMul := mul_le_mul_of_nonneg_right hcheckpointR
       (by positivity : 0 ≤ 2 * (m : ℝ) ^ 4 / k)
-    have hpow : 3 / (m : ℝ) ^ 8 ≤ 3 / (m : ℝ) ^ 6 :=
-      mul_le_mul_of_nonneg_left
-        (one_div_le_one_div_of_le (pow_pos hmR 6) (by
-          nlinarith [show (1 : ℝ) ≤ (m : ℝ) ^ 2 by nlinarith])) (by norm_num)
+    have hmSq : (1 : ℝ) ≤ (m : ℝ) ^ 2 := by nlinarith
+    have hmPow : (m : ℝ) ^ 6 ≤ (m : ℝ) ^ 8 := by
+      calc
+        (m : ℝ) ^ 6 ≤ (m : ℝ) ^ 6 * (m : ℝ) ^ 2 := by
+          simpa using (mul_le_mul_of_nonneg_left hmSq
+            (by positivity : 0 ≤ (m : ℝ) ^ 6))
+        _ = (m : ℝ) ^ 8 := by ring
+    have hpowInv : 1 / (m : ℝ) ^ 8 ≤ 1 / (m : ℝ) ^ 6 :=
+      one_div_le_one_div_of_le (pow_pos hmR 6) hmPow
+    have hpow : 3 / (m : ℝ) ^ 8 ≤ 3 / (m : ℝ) ^ 6 := by
+      calc
+        3 / (m : ℝ) ^ 8 = 3 * (1 / (m : ℝ) ^ 8) := by ring
+        _ ≤ 3 * (1 / (m : ℝ) ^ 6) :=
+          mul_le_mul_of_nonneg_left hpowInv (by norm_num)
+        _ = 3 / (m : ℝ) ^ 6 := by ring
     calc
       ((backwardCheckpoints d cutoff).card : ℝ) *
               ((m : ℝ) ^ 4 / n) +
@@ -376,32 +426,55 @@ private theorem inverse_parameter_error_bounds
               (2 * (m : ℝ) ^ 4 / k) ≤
           3 / (m : ℝ) ^ 8 + 12 / (m : ℝ) ^ 6 :=
         add_le_add (hfirstMul.trans hfirst) (hsecondMul.trans hsecond)
-      _ ≤ 15 / (m : ℝ) ^ 6 := by linarith
+      _ ≤ 3 / (m : ℝ) ^ 6 + 12 / (m : ℝ) ^ 6 :=
+        add_le_add hpow (le_refl _)
+      _ = 15 / (m : ℝ) ^ 6 := by ring
   have hbad : ((m : ℝ) + 2) *
       (((backwardCheckpoints d cutoff).card : ℝ) *
             ((n : ℝ) / ((n : ℝ) / (m : ℝ) ^ 2) ^ 2) +
         (backwardCheckpoints d cutoff).card *
           ((2 / (k : ℝ)) / (1 / (m : ℝ) ^ 2) ^ 2)) ≤ δ := by
-    have hmplus : (m : ℝ) + 2 ≤ 2 * m := by nlinarith
+    have hmTwo : (2 : ℝ) ≤ m := by exact_mod_cast hm
+    have hmplus : (m : ℝ) + 2 ≤ 2 * m := by linarith
     have hmul := mul_le_mul hmplus hbadBase (by positivity) (by positivity)
+    have hmPow5Nat : m ≤ m ^ 5 := by
+      simpa using Nat.pow_le_pow_right (by omega : 0 < m) (by omega : 1 ≤ 5)
+    have hmPow5 : (m : ℝ) ≤ (m : ℝ) ^ 5 := by
+      exact_mod_cast hmPow5Nat
     have hpow : 1 / (m : ℝ) ^ 5 ≤ 1 / m := by
-      exact one_div_le_one_div_of_le hmR (by
-        nlinarith [show (1 : ℝ) ≤ (m : ℝ) ^ 4 by positivity])
+      exact one_div_le_one_div_of_le hmR hmPow5
+    have hthirty : 30 / (m : ℝ) ^ 5 ≤ 30 / m := by
+      have hmul30 := mul_le_mul_of_nonneg_left hpow
+        (by norm_num : (0 : ℝ) ≤ 30)
+      simpa [div_eq_mul_inv] using hmul30
     calc
       ((m : ℝ) + 2) *
           (((backwardCheckpoints d cutoff).card : ℝ) *
                 ((n : ℝ) / ((n : ℝ) / (m : ℝ) ^ 2) ^ 2) +
             (backwardCheckpoints d cutoff).card *
               ((2 / (k : ℝ)) / (1 / (m : ℝ) ^ 2) ^ 2)) ≤
-          30 / (m : ℝ) ^ 5 := by nlinarith
-      _ ≤ 30 / m := mul_le_mul_of_nonneg_left hpow (by norm_num)
+          2 * (m : ℝ) * (15 / (m : ℝ) ^ 6) := hmul
+      _ = 30 / (m : ℝ) ^ 5 := by field_simp [hmR.ne']; ring
+      _ ≤ 30 / m := hthirty
       _ ≤ δ := by
         dsimp [δ]
-        rw [div_le_div_iff₀ hmR hmR]
-        nlinarith
+        exact div_le_div_of_nonneg_right (by nlinarith) hmR.le
   have hlearningRatio : ((m : ℝ) + 1) / k ≤ 4 / (m : ℝ) ^ 2 := by
+    have hkStrongNat : m ^ 14 ≤ k := by
+      dsimp [k, inverseSquareSize]
+      apply (Nat.le_div_iff_mul_le (pow_pos (by omega : 0 < m) 2)).2
+      calc
+        m ^ 14 * m ^ 2 = m ^ 16 := by ring
+        _ ≤ n := hn
+    have hkStrong : (m : ℝ) ^ 14 ≤ k := by exact_mod_cast hkStrongNat
+    have hm3Nat : m ^ 3 ≤ m ^ 14 :=
+      Nat.pow_le_pow_right (by omega : 0 < m) (by omega)
+    have hm3 : (m : ℝ) ^ 3 ≤ (m : ℝ) ^ 14 := by
+      exact_mod_cast hm3Nat
+    have hmplus : (m : ℝ) + 1 ≤ 2 * m := by nlinarith
     rw [div_le_div_iff₀ hkR (sq_pos_of_pos hmR)]
-    nlinarith [hkLower, hnPower]
+    nlinarith [mul_le_mul_of_nonneg_right hmplus
+      (sq_nonneg (m : ℝ))]
   have hlearning : Real.sqrt (((m : ℝ) + 1) / k) ≤ δ := by
     have hratio0 : 0 ≤ ((m : ℝ) + 1) / k := by positivity
     have hsqrt : Real.sqrt (((m : ℝ) + 1) / k) ≤ 2 / m := by
@@ -412,23 +485,36 @@ private theorem inverse_parameter_error_bounds
         rw [hsquare]
         exact hlearningRatio
     dsimp [δ]
-    nlinarith
+    exact hsqrt.trans (div_le_div_of_nonneg_right (by nlinarith) hmR.le)
   have hinverse : 1 / (n : ℝ) ≤ δ := by
     have hnm : (m : ℝ) ≤ n := by
-      exact_mod_cast (le_trans (by nlinarith [hm] : m ≤ m ^ 16) hn)
+      have hmPow16 : m ≤ m ^ 16 := by
+        simpa using Nat.pow_le_pow_right (by omega : 0 < m) (by omega : 1 ≤ 16)
+      exact_mod_cast hmPow16.trans hn
     have hfrac : 1 / (n : ℝ) ≤ 1 / m := by
       exact one_div_le_one_div_of_le hmR hnm
     dsimp [δ]
-    nlinarith
+    exact hfrac.trans (div_le_div_of_nonneg_right (by nlinarith) hmR.le)
   have hmesh : L / (m : ℝ) ≤ δ := by
     dsimp [δ]
-    nlinarith
+    exact div_le_div_of_nonneg_right (by nlinarith) hmR.le
   have hpilot : (k : ℝ) * L / n ≤ δ := by
     have hmul := mul_le_mul_of_nonneg_right hkOverN hL.le
     dsimp [δ]
     have hmInv : 1 / (m : ℝ) ^ 2 ≤ 1 / m := by
       exact one_div_le_one_div_of_le hmR (by nlinarith)
-    nlinarith [mul_le_mul_of_nonneg_left hmInv hL.le]
+    have hpilotBase : (k : ℝ) * L / n ≤ L / (m : ℝ) ^ 2 := by
+      calc
+        (k : ℝ) * L / n = ((k : ℝ) / n) * L := by ring
+        _ ≤ (1 / (m : ℝ) ^ 2) * L := hmul
+        _ = L / (m : ℝ) ^ 2 := by ring
+    have hpilotMesh : L / (m : ℝ) ^ 2 ≤ L / m := by
+      calc
+        L / (m : ℝ) ^ 2 = L * (1 / (m : ℝ) ^ 2) := by ring
+        _ ≤ L * (1 / m) := mul_le_mul_of_nonneg_left hmInv hL.le
+        _ = L / m := by ring
+    exact (hpilotBase.trans hpilotMesh).trans
+      (div_le_div_of_nonneg_right (by nlinarith) hmR.le)
   rw [hsuffix]
   exact ⟨hdiscovery, hcounts, hbad, hlearning, hinverse, hmesh, hpilot⟩
 
@@ -499,7 +585,8 @@ theorem boundedUniform_blindPilot_zero_parameter_rate
       rw [mul_div_cancel₀ L hKR.ne'] at hmul
       exact hmul
     exact hendpoint.trans (by
-      have : L ≤ L + L / (m : ℝ) := by positivity
+      have : L ≤ L + L / (m : ℝ) :=
+        le_add_of_nonneg_right (div_nonneg hL.le hKR.le)
       exact this.trans hroundedLeScale)
   have hupper := blindPilotLearnedCost_le_target hnTwo G hprice0 hprice
     pilot hpilotNonempty (zeroQuotaGridTemplate (β := Fin m) n)
@@ -518,7 +605,9 @@ theorem boundedUniform_blindPilot_zero_parameter_rate
     · linarith
     · have hdiv : L / (m : ℝ) ≤ L := by
         rw [div_le_iff₀ hKR]
-        nlinarith
+        have hmOne : (1 : ℝ) ≤ m := by
+          exact_mod_cast (by omega : 1 ≤ m)
+        nlinarith [mul_le_mul_of_nonneg_left hmOne hL.le]
       linarith
   have hlearnTerm :
       24 * (scale + 1) * Real.sqrt ((m + 1 : ℝ) / pilot.card) ≤
@@ -542,8 +631,20 @@ theorem boundedUniform_blindPilot_zero_parameter_rate
           12 * (scale + 1) * δ + 2 * δ ≤
         7830 * (L + 1) ^ 2 / m := by
     dsimp [δ]
-    apply (div_le_div_iff₀ hKR hKR).2
-    nlinarith
+    have hLone : 0 ≤ L + 1 := by linarith
+    have hscaleMul := mul_le_mul_of_nonneg_right hscale hLone
+    have hnumerator :
+        (1620 * scale + 1290) * (L + 1) ≤
+          7830 * (L + 1) ^ 2 := by
+      nlinarith
+    calc
+      24 * (scale + 1) * (30 * (L + 1) / m) +
+            (5 + 18 * scale) * (30 * (L + 1) / m) +
+            12 * (scale + 1) * (30 * (L + 1) / m) +
+            2 * (30 * (L + 1) / m) =
+          ((1620 * scale + 1290) * (L + 1)) / m := by ring
+      _ ≤ (7830 * (L + 1) ^ 2) / m :=
+        div_le_div_of_nonneg_right hnumerator hKR.le
   have hpolicyPoint : ∀ σ, 0 ≤ normalizedCost p policy σ := by
     intro σ
     unfold normalizedCost
@@ -556,7 +657,30 @@ theorem boundedUniform_blindPilot_zero_parameter_rate
     · positivity
   have hpolicy : 0 ≤ uniformAverage (normalizedCost p policy) :=
     uniformAverage_nonneg hpolicyPoint
-  linarith
+  have hupper' :
+      uniformAverage (fun pilotOrder : Equiv.Perm (Fin n) =>
+        uniformAverage (blindPilotLearnedCost G pilot pilotOrder)) /
+          (n : ℝ) ^ 2 ≤
+        24 * (scale + 1) * Real.sqrt ((m + 1 : ℝ) / pilot.card) +
+          (5 + 18 * scale) / (n : ℝ) +
+          12 * (scale + 1) * (L / (m : ℝ)) +
+          2 * pilot.card * L / (n : ℝ) := by
+    simpa [G, scale, boundedUniformRoundedGrid_mesh] using hupper
+  calc
+    uniformAverage (fun pilotOrder : Equiv.Perm (Fin n) =>
+        uniformAverage (blindPilotLearnedCost G pilot pilotOrder)) /
+          (n : ℝ) ^ 2 ≤
+        24 * (scale + 1) * Real.sqrt ((m + 1 : ℝ) / pilot.card) +
+          (5 + 18 * scale) / (n : ℝ) +
+          12 * (scale + 1) * (L / (m : ℝ)) +
+          2 * pilot.card * L / (n : ℝ) := hupper'
+    _ ≤ 24 * (scale + 1) * δ + (5 + 18 * scale) * δ +
+          12 * (scale + 1) * δ + 2 * δ :=
+      add_le_add (add_le_add (add_le_add hlearnTerm hinverseTerm)
+        hmeshTerm) hpilotTerm
+    _ ≤ 7830 * (L + 1) ^ 2 / m := herror
+    _ ≤ uniformAverage (normalizedCost p policy) +
+          7830 * (L + 1) ^ 2 / m := le_add_of_nonneg_left hpolicy
 
 /-- Fully instantiated finite theorem, valid for every `n >= m^16`.
 Letting `m` tend to infinity gives the unknown-multiset `o(n^2)` result for
@@ -613,7 +737,9 @@ theorem boundedUniform_blindPilot_inverse_parameter_rate
     · have hmR : (0 : ℝ) < m := by exact_mod_cast (by omega : 0 < m)
       have hdiv : L / (m : ℝ) ≤ L := by
         rw [div_le_iff₀ hmR]
-        nlinarith
+        have hmOne : (1 : ℝ) ≤ m := by
+          exact_mod_cast (by omega : 1 ≤ m)
+        nlinarith [mul_le_mul_of_nonneg_left hmOne hL.le]
       linarith
   have hδ0 : 0 ≤ δ := by dsimp [δ]; positivity
   have hconstant :

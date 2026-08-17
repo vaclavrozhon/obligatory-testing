@@ -1,9 +1,9 @@
-\section{Machine-checked main theorem and its correspondence}
+\section{Machine-checked deterministic theorem and its correspondence}
 \label{app:lean-formalization}
 
 This appendix records the public theorem exported by the Lean~4
 development~\cite{DeMouraUllrich2021} associated with this manuscript and
-explains how its formal predicates correspond to the mathematical statements
+explains how its formal predicates correspond to the deterministic statements
 in \cref{thm:main-intro,thm:optional-intro}.  The development uses the
 mathlib library~\cite{Mathlib2020} and is pinned to Lean and mathlib
 version~4.30.0.  Its root module imports
@@ -139,7 +139,7 @@ of \(u\), including the obligatory endpoint.  This uniformity is stronger
 than the quantifier order displayed by \texttt{exact\_ratio\_main}, which
 only exposes one strategy after a cap has been fixed.
 
-\subsection{Correspondence with the two main theorems}
+\subsection{Correspondence with the two deterministic theorems}
 
 The first conjunct of \texttt{exact\_ratio\_main} quantifies over every
 finite \(u>0\).  Substituting \(R=\texttt{exactCurve}\ u=\V(u)\), its lower

@@ -1,0 +1,88 @@
+\section{Machine-checked verification}
+\label{sec:formalization}
+
+The accompanying Lean~4 development~\cite{DeMouraUllrich2021} uses
+mathlib~\cite{Mathlib2020} and is pinned to version~4.30.0.  Its root module
+imports the complete deterministic, randomized-obligatory, and
+blind-execution developments.  The source contains no \texttt{sorry},
+\texttt{admit}, or project-defined axiom.  This section records the proof
+boundary of the three principal results; \cref{app:lean-formalization} gives
+the detailed dictionary for the deterministic exact curve.
+
+\subsection{Deterministic exact ratios}
+
+The theorem \texttt{SchedulingPaper.exact\_ratio\_main} packages both
+directions of the six-piece finite-cap curve and the obligatory endpoint.
+Its upper fields contain literal transcript-only strategies, termination
+proofs, and $O(n)$ certificates; its lower fields quantify over arbitrary
+deterministic strategy families and return genuine fixed inputs after the
+formal replay theorem.  The formal curve includes all five joins, continuity,
+the plateau, and the global maximum.
+
+\subsection{Randomized obligatory testing}
+
+The module \texttt{SchedulingPaper.RandomizedFourThirds} exports the
+operational upper theorem
+\begin{lstlisting}[style=lean]
+theorem unknownMultiset_operational_expectedCost_le_20378 ... :
+  uniformAverage (physicalSampledRunCost ...) <=
+    4 / 3 * finiteObligatoryOPT p + 20378 * R ^ 7
+\end{lstlisting}
+At the concrete parameter choice $n\le R^4$, this is
+\cref{eq:rand-final-upper}.  The proof below this interface includes the
+maximum-density optimizer, exact and robust $4/3$ certificates, threshold
+closure for sample-empty bins, finite hypergeometric concentration, the
+cutoff-$32$ fallback, sample-first accounting, bad-event excess, and
+termination of the sampled transcript strategy.
+
+The same module exports
+\texttt{oblivious\_iid\_binary\_lower\_online\_actualOPT}.  It accepts an
+arbitrary finite family of public-transcript strategies, assumes only that
+the supplied fuel completes every fair binary input, and returns a fixed
+binary input whose average cost has coefficient $4n/(3n+5)$.  The formal
+development identifies its denominator with the literal clairvoyant
+obligatory optimum.  Since $4n/(3n+5)\to4/3$, the upper and lower exports give
+the machine-checked sharp asymptotic value.
+
+\subsection{Blind-execution instance optimality}
+
+This formalization uses an operation semantics in which completion of a blind
+job records its realized duration.  The trace-bijection and observed-trace
+modules prove the occurrence-token reveal bijection of
+\cref{lem:blind-trace-bijection}, its lockstep causality theorem, the
+predictable test selector, and the exact selected-count and blind-work
+identities.
+
+The deterministic analytic layer checks the full-module replacement,
+fractional-knapsack envelope, long-test dominance, revelation repair,
+horizontal integral shift, formula \cref{eq:blind-F}, its quadratic normal
+form and vertex minimizer, and the three-point witness.  The finite layer
+checks all-grid repair, bounded one- and two-job kernels, histogram stability,
+the canonical physical operation word, a blind-pilot compiler, and the
+announced adaptive lower bound.
+
+The end-to-end theorem is exported as
+\texttt{boundedUniform\_blindPilot\_concrete\_rate} in
+\texttt{RandomizedOptionalUnknownRates}.  In mathematical notation, for
+$m=\lfloor n^{1/16}\rfloor\ge2$, every $p\in[0,L]^n$, and every complete
+announced policy $\pi$, it proves
+\begin{equation}
+ \frac{\EE C_{\rm learned}(p)}{n^2}
+ \le \frac{\EE C_\pi(p)}{n^2}
+    +\frac{7830(L+1)^2}{m}.
+ \label{eq:lean-blind-rate}
+\end{equation}
+The learned algorithm depends only on $n,L$ and its private permutations,
+not on the multiset.  Lean separately proves
+$\lfloor n^{1/16}\rfloor\to\infty$ and hence that the displayed error tends
+to zero.  It also discharges the zero-mean case for the same algorithm.  This
+is a slower rate than the exponential-tail analysis in
+\cref{eq:blind-unannounced-upper}, but it proves the same uniform
+$o_L(n^2)$ theorem using finite second-moment and checkpoint bounds.
+
+The formal statements use finite uniform averages rather than measure-valued
+random seeds.  This is sufficient for the advertised algorithms and Yao
+distributions, all of which use finite permutations, finite pilot choices,
+and finite tie-breaking coins.  Classical real analysis and noncomputable
+exact minimizers are used in certificates; no floating-point program is
+extracted.
