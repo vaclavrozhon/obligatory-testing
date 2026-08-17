@@ -139,6 +139,8 @@ We study single-machine scheduling with unit-time tests and total completion
 time.  A test reveals a job's unknown processing time; without a test, a job
 may either be unavailable, run for a common upper bound $u$, or run blindly
 for its actual duration, depending on the model.
+[tohle je takove suche a nic to podle me nerekne kdyz to clovek nezna. Radsi bych na zacatek dal neco cool]
+
 
 For deterministic algorithms we determine the exact size-asymptotic ratio
 for every common upper bound $u\in(0,\infty]$.  The answer is a continuous
@@ -158,6 +160,8 @@ matching oblivious lower bound holds even for announced adaptive policies.
 The proofs combine pairwise delay accounting, completion-density thresholds,
 fractional-knapsack envelopes, random relabelling, and sampling without
 replacement.
+
+[lidi si to nebudou cist kvuli 5 konkretnim vysledkum. asi to chceme trochu zminit, ale neni to to hlavni. Co je hlavni? nevim, urcite se hodi rict ze je to prirozeny problem a ze spoustu jeho podotazek jsme vyresili velmi silnym zpusobem. ]
 \end{abstract}
 
 \tableofcontents
@@ -197,7 +201,9 @@ models.  They also give a stronger, instance-dependent answer for randomized
 algorithms: after a sublinear pilot sample, advance knowledge of the entire
 multiset is worth only $o(n^2)$.
 
-\subsection{The common core: obligatory testing}
+[tohle je OK ale je to hned na zacatek takove technicke. uber na technikalite a ber to jako rozsireni abstraktu. Takze highlightni ze designujeme algoritmy ktere resi ten problem, zmin ze je to prakticke, ze mnohe nase algoritmy jsou simple a tak. Ale asi nech to vysvetleni ze jsou dva setupy. ]
+
+\subsection{The common core: obligatory testing} [warmup mi prijde lepsi]
 
 We begin with the most constrained model.  Every job must first undergo its
 unit test.  A positive outcome $p_i$ then requires another operation of
@@ -279,6 +285,8 @@ bound $p_i\le L$, with a different explicit benchmark
 $\Phi_{\rm blind}(D_M)$ and error $o_L(n^2)$.
 \end{theorem}
 
+[tady to je hodne technicke. pridal bych nekde diskuzi / footnote ze tenhle statement sam o sobe neni tak prekvapivy protoze pokud umime odhadnout co je M, tak pak proste muzeme bezet "optimum for M". Ale jde o to, ze nas algoritmus navic ma urcitou pevnou formu]
+
 Randomization is essential to the universal part of this statement.  A
 deterministic policy has a fixed pattern of labels from which it tries to
 learn, and an oblivious labelling can make that pattern unrepresentative.  A
@@ -294,6 +302,8 @@ by contrast, allows arbitrary processing times and uses its cutoff/fallback
 argument instead.
 
 \subsection{The information view: blind execution}
+
+[proc je vysledek z tehle sekce pridany k vysledku z predchozi? jsem z toho uplne zmateny. ]
 
 We now drop the obligation to test.  An untouched job may be run blindly for
 its actual duration $p_i$; only after it finishes is that duration known.
