@@ -12,7 +12,9 @@ latexmk -pdf paper.tex
 ```
 
 from this directory.  The build uses only standard LaTeX packages and the
-included vector figure `curve.pdf`.
+included vector figures `curve.pdf` and `curves_overview.pdf`.  The latter can
+be regenerated with `python3 plot_curves_overview.py`; regeneration requires
+NumPy, SciPy, and Matplotlib, but compiling the paper does not.
 
 If `latexmk` is unavailable, the equivalent manual build is
 
@@ -33,8 +35,8 @@ results and formalization.
 
 ## Exact scope of the claims
 
-Both main theorems concern deterministic **size-asymptotic** competitive
-ratios.  The algorithms prove bounds of the form
+The deterministic theorems concern **size-asymptotic** competitive ratios.
+Their algorithms prove bounds of the form
 
 ```text
 ALG <= R OPT + O_u(n),
@@ -60,3 +62,10 @@ six-branch function `V(u)`, not only its worst value.  The three upper-bound
 policies are specified in numbered `algorithmic` environments.  Its
 mixed-regime upper bound is presented by a direct cap-reserve potential and
 accompanied by an independent adjacent-exchange cross-check.
+
+The randomized results give the exact four-piece common-upper curve, the
+sharp unbounded obligatory ratio `4/3`, and instance-optimal leading values
+for the bounded blind-execution and common-upper models.  The blind theorem
+is formalized in Lean.  The common-upper instance-optimal proof is presently
+given in `../RANDOMIZED_COMMON_UPPER_INSTANCE_OPTIMAL_PROOF.md`; the exact
+curve derived from it is integrated into the manuscript.
