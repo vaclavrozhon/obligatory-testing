@@ -1121,48 +1121,60 @@ correspondence for the deterministic theorem remains in
 
 \section{Models and common preliminaries}\label{sec:model}
 
-There are $n$ jobs, all available at time zero, and one machine.  Operations
-are nonpreemptive, and at most one operation can run at a time.  In the first
-three models below, a unit test of job $j$ reveals its processing time
-$p_j\ge0$.  The fourth instead has a unit optimization that changes the
-processing time without revealing it.
+This section makes the four models from the introduction precise and records
+the common facts used throughout the paper.  There are $n$ jobs, all
+available at time zero, and one machine.  Operations are nonpreemptive, and
+at most one operation can run at a time.  Job $j$ has a hidden value
+$p_j\ge0$.  The four models differ in what can be done before this value is
+known.
 
-We use four operation models.  The introduction described them informally;
-here are the precise rules. [dej je do spravneho poradi, zaciname OT]
 \begin{description}[leftmargin=*,style=nextline]
-\item[Common-upper execution $\mathsf{CU}(u)$.]
-For finite $u$, all jobs share the known upper limit $p_j\in[0,u]$.  A job is
-completed either by raw execution for exactly $u$ time, or by a unit test and
-subsequent processing for $p_j$.  Raw execution reveals no hidden value.
-
 \item[Obligatory testing $\mathsf{OT}$.]
-Processing times are arbitrary finite nonnegative numbers.  Every job must be
-tested for one unit and subsequently processed for $p_j$; the processing may
-be delayed after the test.  This is also the formal endpoint
-$\mathsf{CU}(\infty)$. [tohle ma byt remark mimo definici]
+The values $p_j$ are arbitrary finite nonnegative numbers.  Every job must
+first be tested for one unit.  The test reveals $p_j$, after which its
+processing operation of length $p_j$ may be performed immediately or
+delayed.
 
 \item[Blind execution $\mathsf{BE}(L)$.]
-Here $p_j\in[0,L]$. [proc tady je L a jinde u? potrebujeme sjednotit notaci. obecne se mi libi pouzivat upper case jako L na konstanty, spis nez u. Ale pokud nekde jako v lemma 2.1 pouzivame u ale neplati to v setupu s L tak asi dava smysl to rozlisit. ]  A job may be run blindly for its actual duration $p_j$,
-at whose completion its duration becomes known, or tested for one unit and
-subsequently processed for $p_j$.  Thus blind execution never pays an upper
-bound in place of the actual processing time.
+Here $p_j\in[0,L]$.  A job may be run blindly for its actual duration $p_j$;
+the value becomes known only when that execution finishes.  Alternatively,
+the job may be tested for one unit, revealing $p_j$, and its processing
+operation may then be delayed.  Testing provides information but does not
+shorten the job.
 
 \item[Blind optimization $\mathsf{BO}(u)$.]
-Here $p_j\in[0,u]$.  A job may be run raw for $u$, or optimized for one unit
-and subsequently processed blindly for $p_j$.  Optimization changes the
-duration but does not reveal it.  The value $p_j$ becomes observable only
-when the optimized processing operation finishes; raw execution reveals no
-hidden value.
+Here $p_j\in[0,u]$.  A job may be run raw for the known time $u$.
+Alternatively, one unit of optimization changes its running time from $u$
+to $p_j$ without revealing $p_j$; the optimized job is subsequently run
+blindly, possibly after a delay.  Its value becomes observable only when that
+execution finishes.  Raw execution reveals no hidden value.
+
+\item[Common-upper execution $\mathsf{CU}(u)$.]
+Again $p_j\in[0,u]$, and raw execution takes the known time $u$.  The other
+option is a unit test that reveals $p_j$, followed, possibly after a delay,
+by processing for $p_j$.  Thus the preliminary action provides both the
+speedup and its size.
 \end{description}
 
-The completion time $C_j$ is the completion time of the processing operation;
-in tested mode, when $p_j=0$, this is the instant immediately after the test.
-In the blind-execution model, a blind zero job completes immediately when
-selected.  In the blind-optimization model, even a zero job first pays its
-unit optimization cost.
-The objective is $\sum_j C_j$.  The number $n$ and the parameter $u$ are
-known to a common-upper or blind-optimization algorithm; a blind-execution
-algorithm knows $n,L$.
+The different letters $L$ and $u$ are intentional.  In blind execution,
+$L$ is only a known bound used by the uniform instance-optimal theorem.  In
+the last two models, $u$ is itself an available running time and hence part
+of every scheduling decision.  The number $n$ and the relevant parameter
+$L$ or $u$ are known to the algorithm.
+
+The completion time $C_j$ is the time at which job $j$ finishes.  If a test
+reveals $p_j=0$, the job completes at the end of that test.  A blind zero job
+in $\mathsf{BE}(L)$ completes as soon as it is selected, whereas an optimized
+zero job in $\mathsf{BO}(u)$ first pays its unit optimization cost.  The
+objective is
+\[
+                              \sum_{j=1}^n C_j.
+\]
+
+Obligatory testing can be viewed as the limit of the common-upper model in
+which raw execution becomes unavailable.  We use this only as intuition:
+the obligatory theorems and their algorithms are proved directly, without
+interchanging the limits $u\to\infty$ and $n\to\infty$.
 
 We write $\ALG_{\mathcal A}(I)$ for the objective value of an online algorithm
 $\mathcal A$ on an instance $I$, and $\OPT(I)$ for the value of an offline
@@ -1188,56 +1200,62 @@ select one labeling whose cost is at least the average.
 
 \subsection{Offline optima and pair accounting}
 
-Define the clairvoyant effective length by [hm neni tohle ruzne v ruznych modelech? co takhle mit tady vic definic pro kazdy model a vsemu rikat q aby pristi lemma bylo pravda pro vsechny modely]
+The offline optimum knows all values $p_j$.  It therefore chooses the shorter
+available way to complete each job and orders the resulting job blocks
+shortest first.  For later use, define
 \begin{equation}\label{eq:optional-effective-length}
- q_u(p)\defeq
+ q_u(p)\defeq\min\{u,1+p\}
+ \qquad(0<u<\infty),
+\end{equation}
+and associate with job $j$ the model-dependent \emph{effective length}
+\begin{equation}
+ q_j\defeq
  \begin{cases}
-  \min\{u,1+p\},&u<\infty,\\
-  1+p,&u=\infty.
+  1+p_j, & \mathsf{OT},\\
+  p_j, & \mathsf{BE}(L),\\
+  q_u(p_j), & \mathsf{BO}(u)\text{ or }\mathsf{CU}(u).
  \end{cases}
+ \label{eq:model-effective-length}
 \end{equation}
 
-[pred to napsat ze to plati pro vsechny modely]
 \begin{lemma}[Unified offline order]
 \label{lem:offline}\label{lem:optional-offline}
-Let $q_i=q_u(p_i)$ and let $q_{(1)}\le\cdots\le q_{(n)}$.  For every
-$u\in(0,\infty]$, an offline optimum completes the jobs in nondecreasing
-order of $q_i$ and has value
+Fix any one of the four models and let
+$q_{(1)}\le\cdots\le q_{(n)}$ be its effective lengths from
+\cref{eq:model-effective-length}.  A clairvoyant optimum completes the jobs
+in this order and has value
 \begin{align}
- \OPT_u
+ \OPT
  &=\sum_{k=1}^n\sum_{i=1}^kq_{(i)},
  \label{eq:unified-opt-prefix}\\
  &=\sum_iq_i+\sum_{i<j}\min\{q_i,q_j\}.
  \label{eq:optional-opt-pair}
 \end{align}
-For finite $u$, it uses raw mode when $u\le1+p_j$ and tested mode otherwise.
-At $u=\infty$, it tests every job and processes the jobs in nondecreasing
-$p_j$ order.
+In $\mathsf{OT}$ it tests every job.  In $\mathsf{BE}(L)$ it runs every job
+blindly.  In $\mathsf{BO}(u)$ and $\mathsf{CU}(u)$ it uses raw mode when
+$u\le1+p_j$ and the unit preliminary action followed by processing otherwise.
 \end{lemma}
 
 \begin{proof}
-Let $C_{[1]}\le\cdots\le C_{[n]}$ be the completion times of any feasible
-schedule.  Completing job $j$ consumes at least $q_j$ units: for finite $u$
-this is the shorter of its two modes, and for $u=\infty$ it is its compulsory
-test--process length.  By time $C_{[k]}$ the machine has completed some $k$
-jobs, so
+Let $C_{[1]}\le\cdots\le C_{[n]}$ be the ordered completion times of any
+feasible schedule.  Completing job $j$ consumes at least $q_j$ units of work
+belonging to that job.  Hence, by time $C_{[k]}$, the machine has performed
+the required work of some $k$ jobs, and
 \[
  C_{[k]}\ge\sum_{i=1}^kq_{(i)}.
 \]
-The schedule that takes the shorter available mode for every job and executes
-the resulting blocks in nondecreasing $q_i$ order attains every inequality.
-Summing and expanding the prefix sums gives both formulas.
+Choose the mode specified in the lemma, keep each resulting block contiguous,
+and execute the blocks in nondecreasing order of $q_j$.  This schedule is
+feasible in the relevant model and attains equality for every $k$.  Summing
+over $k$ and then collecting the contribution of each unordered pair gives
+the two formulas.
 \end{proof}
 
-The same effective lengths and the same offline formula apply to
-$\mathsf{BO}(u)$. [tohle bych mel radsi receno formalne pro vsechny modely v lemmatu, viz co jsem psal vise]  A clairvoyant scheduler knows whether raw execution of
-length $u$ or optimization followed by processing of total length $1+p_j$ is
-shorter.  The information available to the online scheduler is different,
-but the offline blocks are identical.
-
-In the blind-execution model, a clairvoyant optimum never tests: it knows all
-values and can execute each job blindly for $p_j$.  The same shortest-first
-argument gives
+The common-upper and blind-optimization models have the same offline
+effective lengths.  Their difference is entirely online: a test reveals
+$p_j$, whereas optimization does not.  Blind execution is different even
+offline, because a clairvoyant scheduler can run a job for $p_j$ without
+paying the unit test.  Thus
 \begin{equation}
  \OPT_{\mathsf{BE}}(p)
  =\sum_i p_i+\sum_{i<j}\min\{p_i,p_j\}.
@@ -1248,9 +1266,10 @@ clairvoyant value may be $o(n^2)$, whereas that theorem compares policies at
 the $n^2$ scale with the optimal announced-multiset online value
 $\Phiopt(D_M)$.
 
-At the cap-free endpoint [endpoint je divne slovo, proc ne limit? pouzij vsude], the pair formula specializes to
+For obligatory testing, \cref{eq:unified-opt-prefix,eq:optional-opt-pair}
+specialize to
 \begin{align}
- \OPT_\infty
+ \OPT_{\mathsf{OT}}
  &=\sum_{k=1}^n\left(k+\sum_{i=1}^kp_{(i)}\right),
  \label{eq:opt-prefix}\\
  &=\sum_i(1+p_i)+\sum_{i<j}\bigl(1+\min\{p_i,p_j\}\bigr).
@@ -1258,57 +1277,37 @@ At the cap-free endpoint [endpoint je divne slovo, proc ne limit? pouzij vsude],
 \end{align}
 In particular,
 \begin{equation}\label{eq:opt-n2}
- \OPT_\infty\ge\frac{n(n+1)}2.
+ \OPT_{\mathsf{OT}}\ge\frac{n(n+1)}2.
 \end{equation}
-For finite $u$, $q_j\ge\min\{u,1\}$ gives
+For $\mathsf{BO}(u)$ and $\mathsf{CU}(u)$, $q_j\ge\min\{u,1\}$ gives
 \begin{equation}\label{eq:optional-opt-n2}
  \OPT_u\ge\min\{u,1\}\frac{n(n+1)}2.
 \end{equation}
-
-[chci formalni lemma pro vsechny modely soucasne a pod nim diskuzi. ]
+There is deliberately no analogous positive lower bound for blind execution:
+a bag of zero jobs has clairvoyant cost zero.
 
 \subsection{Competitive-ratio conventions}
 
-The ordinary competitive ratio of $\mathcal A$ is
-\[
-  \CR(\mathcal A)=\sup_I\frac{\ALG_{\mathcal A}(I)}{\OPT(I)}.
-\]
-For our results, the relevant size-asymptotic ratio is
-\begin{equation}\label{eq:cr-infty}
-  \CR_\infty(\mathcal A)
-  =\limsup_{n\to\infty}\ \sup_{|I|=n}
-       \frac{\ALG_{\mathcal A}(I)}{\OPT(I)}.
+Every asymptotic statement in this paper allows a uniform additive
+$o(n^2)$ term.  Formally, a policy family $\mathcal A$ has asymptotic
+competitive ratio at most $R$ if there is a deterministic sequence
+$\eps(n)\to0$ such that every $n$-job instance satisfies
+\begin{equation}
+ \EE\ALG_{\mathcal A}(I)
+ \le R\OPT(I)+\eps(n)n^2.
+ \label{eq:cr-infty}
 \end{equation}
-[z toho jsem zmateny, nemuze byt problem pro nejake vstupy s malym optem? radsi bych tam nekde mel to o(n2). ]
+For a deterministic policy the expectation is omitted.  The optimal ratio
+in a model is the infimum of such $R$ over all admissible policy families.
 
-The additive-constant convention [proc tohle definujeme? dyt nas zajima jen additive o(n2) ne additive constant ne??] calls a coefficient $c$ admissible for
-$\mathcal A$ if there exists $B<\infty$ such that
-\[
-  \ALG_{\mathcal A}(I)\le c\OPT(I)+B
-  \qquad\text{for every }I.
-\]
-We write
-\begin{equation}\label{eq:cr-add}
-  \CR_{\rm add}(\mathcal A)
-  =\inf\{c:\text{$c$ is admissible for $\mathcal A$}\}.
-\end{equation}
-The optimal deterministic values in the two conventions are obtained by
-taking the infimum of $\CR_\infty(\mathcal A)$ and
-$\CR_{\rm add}(\mathcal A)$, respectively, over deterministic algorithms.
-For any fixed $u$, an estimate $\ALG\le c\OPT+O_u(n)$ fixes
-\cref{eq:cr-infty} at most $c$ and, by
-\cref{eq:opt-n2,eq:optional-opt-n2}, makes every coefficient $c+\eps$
-admissible.  It need not make the endpoint coefficient $c$ admissible.
-
-\begin{remark}[No hidden interchange of limits]\label{rem:no-limit-swap}
-[nechapu k cemu tohle je]
-The notation $u=\infty$ identifies one model exactly.  We never infer an
-endpoint upper bound merely by taking $u\to\infty$ in an estimate whose
-algorithm or additive term may depend on $u$.  The endpoint estimate is
-proved directly in \cref{sec:upper}; \cref{sec:optional-upper} then verifies
-that the same algorithm and certificate work uniformly for every finite
-$u\ge\zstar$.
-\end{remark}
+For obligatory testing and for either model with fixed raw time $u>0$,
+\cref{eq:opt-n2,eq:optional-opt-n2} show that
+$\OPT=\Omega_u(n^2)$.  In these models the definition above is equivalent to
+the usual worst-case ratio after taking $n\to\infty$.  This equivalence fails
+for blind execution, where $\OPT$ can be $o(n^2)$.  Accordingly,
+\cref{thm:blind-instance} makes the absolute statement
+$\EE\ALG=n^2\Phiopt(D_M)+o_L(n^2)$ and does not claim a bounded ratio to the
+clairvoyant optimum on every sparse bag.
 
 \subsection{Test-order adversaries}
 
@@ -1379,38 +1378,6 @@ half of the theorem; the second proves the upper half.
 \input{obligatory_lower}
 
 \input{obligatory_upper}
-
-\begin{corollary}[Additive-constant consequence]\label{cor:asymptotic}
-The optimal deterministic size-asymptotic value and the optimal deterministic
-additive-constant infimum both equal $\Rstar$.
-Moreover, for every $\eps>0$, the Adaptive-Threshold algorithm satisfies
-\begin{equation}\label{eq:additive-eps}
-  \ALG(I)\le(\Rstar+\eps)\OPT(I)+B_\eps
-\end{equation}
-for all instances, with $B_\eps$ independent of $I$.
-\end{corollary}
-
-\begin{proof}
-The upper bound and \cref{eq:opt-n2} imply
-\[
-  \frac{\ALG}{\OPT}
-  \le\Rstar+\frac{2C}{n+1},
-\]
-so the size-asymptotic ratio is at most $\Rstar$.  The lower bound is
-\cref{thm:lower}.  For the additive statement, Young's inequality and
-\cref{eq:opt-n2} give
-\[
-  Cn\le\frac\eps2n^2+\frac{C^2}{2\eps}
-      \le\eps\OPT+\frac{C^2}{2\eps}.
-\]
-Thus one can take $B_\eps=C^2/(2\eps)$, proving that every coefficient above
-$\Rstar$ is admissible for this algorithm.  Conversely, fix $c<\Rstar$.
-By \cref{thm:lower}, every deterministic algorithm has a sequence of instances
-with $\OPT\to\infty$ and $\ALG/\OPT>c+\delta$ for some $\delta>0$.  The
-inequality $\ALG\le c\OPT+B$ would then force
-$\delta\le B/\OPT\to0$, a contradiction.  This proves the additive-constant
-claim.
-\end{proof}
 
 \input{randomized_obligatory}
 

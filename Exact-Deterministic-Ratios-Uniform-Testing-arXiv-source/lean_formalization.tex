@@ -72,8 +72,8 @@ Lean object & Manuscript object & Meaning \\
     \(\zstar-3=\log\zstar\) \\
 \texttt{fixedOfflineCost}
   & \(\OPT\)
-  & the clairvoyant shortest-first cost of the effective lengths
-    \(q_u(p)\) \\
+  & the clairvoyant shortest-first cost of the model-dependent effective
+    lengths in \cref{eq:model-effective-length} \\
 \texttt{strategyCost}
   & \(\ALG\)
   & the total completion cost of the operational online transcript \\
@@ -135,7 +135,7 @@ The quadratic lower bounds
 \cref{eq:opt-n2,eq:optional-opt-n2} then imply
 \eqref{eq:lean-upper-expansion}.  For \(u\ge\zstar\), the separately verified
 plateau certificate uses the same strategy and the same \(C\), independent
-of \(u\), including the obligatory endpoint.  This uniformity is stronger
+of \(u\), including the obligatory limit.  This uniformity is stronger
 than the quantifier order displayed by \texttt{exact\_ratio\_main}, which
 only exposes one strategy after a cap has been fixed.
 
@@ -171,9 +171,8 @@ implementation.
 
 The theorem recorded here is specifically the size-asymptotic result.  It
 does not assert the pointwise inequality \(\ALG\le R\OPT\) without a
-remainder, nor admissibility of the endpoint coefficient with one fixed
-additive constant.  The formal library separately derives additive
-admissibility of every coefficient \(R+\eps\) from
-\eqref{eq:lean-linear-certificate}.  The machine-checked mixed-regime upper
-bound follows the cap-reserve potential proof; the bubbling argument in
+remainder.  Its checked remainder is the linear term in
+\eqref{eq:lean-linear-certificate}, and is therefore $o(n^2)$.  The
+machine-checked mixed-regime upper bound follows the cap-reserve potential
+proof; the bubbling argument in
 \cref{app:cap-bubbling} remains an independent manuscript cross-check.
