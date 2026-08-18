@@ -53,6 +53,9 @@ $4/3$.  The two optimal policies are sketched in
 \cref{alg:intro-obligatory}.
 \end{theorem}
 
+[tady chci minipage a v ní dva algoritmy vedle sebe. zkus oba algoritmy napsat vic dopodrobna]
+[spt je nedefinovane]
+[]
 \begin{algorithm}[H]
 \caption{The two optimal obligatory-testing policies, informally}
 \label{alg:intro-obligatory}
@@ -87,22 +90,20 @@ possible and leave long jobs for the end.  The difficult part is choosing the
 threshold.  The deterministic algorithm must keep updating it from the
 history it has seen.  The randomized algorithm instead learns one threshold
 from a small random sample.  A fallback rule protects it when the sample
-misses an extremely long job, but this is the whole algorithmic picture.  In
-particular, the randomized algorithm is not told the multiset of lengths, and
-the guarantee holds even when the $p_i$ are unbounded.
+misses an extremely long job, but this is the whole algorithmic picture.  
 
 Let us briefly describe why the two constants are different.  A hard input
 for a deterministic algorithm reveals positive jobs in decreasing levels and
 hides many zero jobs until the end.  If the algorithm finishes the positive
 jobs, it delays the zeros.  If it postpones them, it creates a costly tail.
 The levels can be chosen so that these two losses balance at
-$1.57\ldots$.
+$1.57\ldots$ (we prove this formally in XX). 
 
 For randomized algorithms the hard input is simpler.  Half of the jobs have
 length zero and half have length two, and their labels are shuffled.  Until
 the shuffle is uncovered, one unit of work completes only about half a job.
 Counting the area under the number of unfinished jobs gives the lower bound
-$4/3$.  A threshold learned from a random sample attains the same value.
+$4/3$ (proven in XX). 
 
 \subsection{What if testing is optional?}
 
@@ -111,11 +112,10 @@ separate questions to ask.
 
 First, how long does an untested job run?  It may run for its true but hidden
 length $p_i$.  Alternatively, every untested job may have the same known raw
-length $u$, while a test replaces $u$ by a smaller value $p_i\leq u$.
+length $u$, while a test replaces $u$ by a smaller value $p_i\leq u$. This second interpretation corresponds to the tests actually being optimizations -- for example, one can imagine a basic code that is being run that typically solves a task in $u$ units of time; but if we know details of the job, we can ask an AI agent to adapt the code before running it, perhaps adding some input-tailored heuristics that will make it faster. 
 
-Second, does the test reveal $p_i$?  If it does, the scheduler gains both a
-faster job and information about where the job belongs.  If it does not, the
-job becomes faster but remains unknown until it finishes.
+Second, does the test (optimization) reveal $p_i$?  If it does, the scheduler gains both a faster job and information about where the job belongs.  If it does not, the
+job becomes faster but that speedup remains unknown until it finishes.
 
 These choices give the following four models.  The table is a summary rather
 than four new sets of notation; in every row, the preliminary action in the
@@ -134,16 +134,23 @@ blind optimization & the job runs for time $u$ & replaces $u$ by a still-hidden 
 \bottomrule
 \end{tabular}
 \end{center}
+[neni logictejsi mit blind optimization pred common upper bound?]
+
 
 The last three rows separate the two benefits of the unit preliminary action.
 Blind execution studies information without speedup.  Blind optimization
 studies speedup without advance information.  The common-upper model contains
-both.
+both. [a few words about whether somebody defined those models]
+
+The next three subsections describe these three models. 
 
 \subsection{One algorithm for every bag}
 
-Once testing becomes optional, a single worst-case ratio no longer tells the
-whole story.  Consider the input as a bag $M$ of $n$ job lengths.  On one bag
+Once testing becomes optional, a single worst-case ratio as in thm1.1 can no longer tell the
+whole story: 
+
+[tady mi to prijde divny, neni lepsi napsat ze problem jsou dlouhe joby a dat kratky priklad? ]
+Consider the input as a bag $M$ of $n$ job lengths.  On one bag
 it may be best to test almost every job.  On another bag it may be best to
 test none.  We would like the algorithm to make the right choice on each bag,
 not merely to survive the worst bag.
@@ -174,6 +181,8 @@ explicit functions $\Phi$.
 This is the informal version of
 \cref{thm:common-upper-instance,thm:blind-instance,thm:bo-instance}.
 \end{theorem}
+
+[zase napis algoritmus tady]
 
 The important point is the order of the quantifiers: the same algorithm
 works for every bag.  Telling the bag to the competing policy is only a
