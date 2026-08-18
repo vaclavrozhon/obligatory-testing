@@ -40,14 +40,14 @@ $\mathcal A^{\rm bo}$, depending only on $n,u$, and a sequence
 $\eps_u(n)\to0$ such that every size-$n$ multiset $M\subseteq[0,u]$ and every
 fixed labeling $\sigma$ satisfy
 \begin{equation}
- \EE C_{\mathcal A^{\rm bo}}(\sigma(M))
+ \EE\cost(\mathcal A^{\rm bo},\sigma(M))
  \le n^2\Phi_{\rm bo}(M)+\eps_u(n)n^2.
  \label{eq:bo-instance-upper}
 \end{equation}
 Conversely, for every randomized nonanticipating policy $\mathcal A$, even
 one told $M$, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
- \EE C_{\mathcal A}(\sigma(M))
+ \EE\cost(\mathcal A,\sigma(M))
  \ge n^2\Phi_{\rm bo}(M)-\eps_u(n)n^2.
  \label{eq:bo-instance-lower}
 \end{equation}
@@ -148,7 +148,7 @@ the shorter cost per completion first.  Equations
 \eqref{eq:bo-selected-work}--\eqref{eq:bo-fluid-raw-first}, with the uniform
 choice $\delta=\delta_n$, give
 \[
- \frac1{n^2}\EE C_{\mathcal A}
+ \frac1{n^2}\EE\cost(\mathcal A,M)
  \ge\frac12\min\{u,1+\mu_M\}-o_u(1).
 \]
 The estimate is uniform in the deterministic policy.  Averaging over its

@@ -83,8 +83,8 @@ The end-to-end theorem is exported as
 $m=\lfloor n^{1/16}\rfloor\ge2$, every $p\in[0,L]^n$, and every complete
 announced policy $\pi$, it proves
 \begin{equation}
- \frac{\EE C_{\rm learned}(p)}{n^2}
- \le \frac{\EE C_\pi(p)}{n^2}
+ \frac{\EE\cost(\mathrm{learned},p)}{n^2}
+ \le \frac{\EE\cost(\pi,p)}{n^2}
     +\frac{7830(L+1)^2}{m}.
  \label{eq:lean-blind-rate}
 \end{equation}

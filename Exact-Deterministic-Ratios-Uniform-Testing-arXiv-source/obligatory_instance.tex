@@ -24,14 +24,14 @@ fixed $L<\infty$ there is a deterministic sequence
 $\eps_L(n)\to0$ such that, for every size-$n$ multiset
 $M\subseteq[0,L]$ and every fixed labeling $\sigma$,
 \begin{equation}
- \EE C_{\mathcal A^*}(\sigma(M))
+ \EE\cost(\mathcal A^*,\sigma(M))
  \le n^2\Phi_{\rm OT}(D_M)+\eps_L(n)n^2.
  \label{eq:ot-instance-upper}
 \end{equation}
 Conversely, for every randomized policy $\mathcal A$, even one told $M$ in
 advance, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
- \EE C_{\mathcal A}(\sigma(M))
+ \EE\cost(\mathcal A,\sigma(M))
  \ge n^2\Phi_{\rm OT}(D_M)-\eps_L(n)n^2.
  \label{eq:ot-instance-lower}
 \end{equation}
@@ -42,6 +42,26 @@ asymptotically instance-optimal, uniformly over all bounded bags.
 The upper estimate will have order $O_L(n^{-1/5})$.  The announced lower
 bound is sharper, of order $O_L(n^{-1/2}\sqrt{\log(n+2)})$; we use the slower
 common rate only to keep the theorem statement symmetric.
+
+\begin{remark}[Why boundedness and randomization matter]
+\label{rem:ot-instance-assumptions}
+The bound $L$ prevents a vanishing fraction of unseen jobs from carrying an
+arbitrarily large amount of work.  Without some such restriction, compare a
+bag in which every job has a very large length $H$ with one in which a single
+job has length zero and all others have length $H$.  Until the exceptional
+job is found, the two inputs look identical.  On the first bag, postponing
+all processing creates a quadratic excess from the unit tests; on the
+second, processing an $H$-job before finding the zero can create an
+arbitrarily larger excess.  Taking $H$ sufficiently large rules out one
+uniform $o(n^2)$ guarantee of the stated form.
+
+Randomization is needed for a different reason.  A deterministic policy has
+a predictable pattern of labels from which it learns, and a fixed oblivious
+labeling can make those labels atypical of the bag.  The private permutation
+used by $\mathcal A^*$ turns the pilot into a uniform sample under every
+fixed labeling.  Thus randomness is used to obtain a representative view of
+the bag, not in the subsequent threshold optimization.
+\end{remark}
 
 \subsection{The maximum-density benchmark}
 
@@ -145,7 +165,7 @@ an $E$-job immediately, and finish the residual jobs in SPT order.  The exact
 identity \cref{eq:rand-stationary-cost} and
 \cref{eq:ot-Phi} give
 \begin{equation}
- \EE C_{\rm stat}(M)
+ \EE\cost(\mathrm{stat},M)
  =n^2\Phi_{\rm OT}(D_M)
   +\frac12\left(|E|+\sum_i p_i\right).
  \label{eq:ot-announced-upper}
@@ -236,7 +256,7 @@ Put $H=1+n^{-1}\sum_i p_i$.  The fluid curve is one by time $H$.  Integrating
 the unfinished-job area in \cref{eq:ot-pointwise-completion} gives the
 pathwise inequality
 \begin{align}
- C_{\mathcal A}
+ \cost(\mathcal A,M)
  &\ge\int_0^{nH}
    \left[n(1-F_{D_M}(t/n))-\Delta\right]dt\notag\\
  &=n^2\Phi_{\rm OT}(D_M)-Hn\Delta.
@@ -319,7 +339,7 @@ $O_L(nk+k^2)$.  The diagonal term in the exact stationary identity is
 $O_L(n)$, and using the rounded values can only increase the comparator's
 processing delays.  Therefore
 \begin{equation}
- \EE[C_{\mathcal A^*}\mid S]
+ \EE[\cost(\mathcal A^*,M)\mid S]
  \le n^2\Psi_{D^+}(\widehat J)+O_L(nk+k^2+n).
  \label{eq:ot-sample-first-instance}
 \end{equation}
@@ -332,7 +352,7 @@ Since
 \]
 we obtain
 \begin{equation}
- \EE C_{\mathcal A^*}(\sigma(M))
+ \EE\cost(\mathcal A^*,\sigma(M))
  \le n^2\Phi_{\rm OT}(D_M)+O_L(n^{9/5})
  \label{eq:ot-instance-upper-rate}
 \end{equation}

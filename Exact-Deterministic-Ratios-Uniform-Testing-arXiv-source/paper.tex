@@ -106,6 +106,7 @@
 
 \newcommand{\ALG}{\operatorname{ALG}}
 \newcommand{\OPT}{\operatorname{OPT}}
+\newcommand{\cost}{\operatorname{cost}}
 \newcommand{\CR}{\operatorname{CR}}
 \newcommand{\Rstar}{R_\star}
 \newcommand{\Rrand}{R_{\mathrm{rand}}}
@@ -1176,10 +1177,18 @@ which raw execution becomes unavailable.  We use this only as intuition:
 the obligatory theorems and their algorithms are proved directly, without
 interchanging the limits $u\to\infty$ and $n\to\infty$.
 
-We write $\ALG_{\mathcal A}(I)$ for the objective value of an online algorithm
-$\mathcal A$ on an instance $I$, and $\OPT(I)$ for the value of an offline
-optimum that knows all processing times.  We omit subscripts and arguments
-when they are clear.
+We write $\cost(\mathcal A,I)$ for the objective value of an online algorithm
+$\mathcal A$ on an instance $I$, and $\cost(\OPT,I)$ for the value of an
+offline optimum that knows all processing times.  In calculations we use the
+shorter abbreviations
+\[
+ \ALG_{\mathcal A}(I)=\cost(\mathcal A,I),
+ \qquad
+ \OPT(I)=\cost(\OPT,I),
+\]
+and omit algorithms or instances when they are clear.  Thus $\OPT$ denotes
+an algorithm inside $\cost(\OPT,I)$ and its cost only in the abbreviated
+notation $\OPT(I)$.
 
 \subsection{Information and adversaries}
 
@@ -1354,12 +1363,12 @@ and put
 For every deterministic online algorithm $\mathcal B$ and every $\eps>0$,
 there are arbitrarily large obligatory-testing instances $I$ such that
 \[
- \ALG_{\mathcal B}(I)\ge(\Rstar-\eps)\OPT(I).
+ \cost(\mathcal B,I)\ge(\Rstar-\eps)\cost(\OPT,I).
 \]
 Conversely, there exist a deterministic algorithm $\mathcal A$ and an
 absolute constant $C$ such that every $n$-job instance satisfies
 \[
- \ALG_{\mathcal A}(I)\le\Rstar\OPT(I)+Cn.
+ \cost(\mathcal A,I)\le\Rstar\cost(\OPT,I)+Cn.
 \]
 Consequently the optimal deterministic size-asymptotic competitive ratio is
 exactly $\Rstar$.

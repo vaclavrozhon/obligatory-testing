@@ -89,14 +89,15 @@ R_{\rm obl}, &u\ge z_*.
 \end{equation}
 For every branch there is an explicit deterministic algorithm satisfying
 \[
- \ALG\le V(u)\OPT+O_u(n).
+ \cost(\mathcal A,I)\le V(u)\cost(\OPT,I)+O_u(n).
 \]
 On finite $u\ge z_*$ the remainder is one absolute $O(n)$ term, and
 \cref{thm:det-obligatory} supplies the same algorithm at $u=\infty$.
 Conversely, for every deterministic algorithm $\mathcal A$ and every
 $\epsilon>0$, there are arbitrarily large fixed instances $I$ such that
 \[
- \ALG_{\mathcal A}(I)\ge\bigl(V(u)-\epsilon\bigr)\OPT(I).
+ \cost(\mathcal A,I)
+ \ge\bigl(V(u)-\epsilon\bigr)\cost(\OPT,I).
 \]
 \end{theorem}
 

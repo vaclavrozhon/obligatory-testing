@@ -135,26 +135,57 @@ bound $4/3$.  The formal argument is in \cref{sec:random-obligatory}.
 \subsection{One algorithm for every bag}
 \label{sec:intro-obligatory-instance}
 
-Let us consider alg2 again. The competitive ratio $4/3$ describes only the hardest input. This kind of guarantee is somewhat unsatisfactory -- perhaps in practice, many inputs we are going to deal with are going to be very simple to deal with in some sense -- perhaps $p_i$s are all going to be very large so the obvious strategy of first testing everything and then running all jobs shortest-first is going to be essentially 1-competitive with the offline optimum. Yet, we are only proving 1.33... competitivity. 
+Let us return to \cref{alg:intro-obligatory-rand}.  The ratio $4/3$ describes
+only the hardest bag.  It says much less on an easy one.  Suppose, for
+example, that all processing times are very large compared with the unit
+test.  Then the simple strategy that first tests everything and subsequently
+runs the jobs shortest first is nearly optimal.  A worst-case guarantee still
+tells us only that our cost is at most $1.33\ldots$ times the optimum.
 
-Fortunately, a slight variant of alg2 is \emph{instance-optimal}. \footnote{The slight difference from alg2 is that we maximize over $t$ up to $O(n^{1/20})$ instead of up to O(1). Notice since this slight variant of alg2 is instance optimal, it is also worst-case optimal, i.e., its competitive factor is also $4/3$. The reason why we presented the simplified alg2 is that it's easier to analyze. }
-
-
+A slight variant of \cref{alg:intro-obligatory-rand} satisfies a much stronger
+bag-by-bag guarantee: it is \emph{instance-optimal}.  The variant maximizes
+over thresholds up to $O(n^{1/20})$, rather than up to a fixed constant.  It
+is still worst-case optimal, with competitive ratio $4/3$; we presented the
+fixed-cutoff algorithm first because its worst-case analysis is simpler.
 
 \begin{theorem}[Obligatory-testing instance optimality, informal version of
 \protect\cref{thm:obligatory-instance}]
 \label{thm:intro-obligatory-instance}
-A variant of alg2 has the following property. Assuming all job lengths are at most a constant $L$, on any instance $M$ and any other online algorithm $A'$ we have 
+Fix $L<\infty$.  There is a variant $\mathcal A^*$ of
+\cref{alg:intro-obligatory-rand} such that, for every bag
+$M\subseteq[0,L]$ and every online algorithm $\mathcal A'$,
 \[
-                 cost(A) \le cost(A') + o_L(n^2)
+ \cost(\mathcal A^*)\le \cost(\mathcal A')+o_L(n^2),
 \]
+where both costs are measured on $M$ and include the algorithms' randomness.
+The competing algorithm $\mathcal A'$ may even be designed specifically for
+$M$ and told the entire bag in advance.
 \end{theorem}
 
-The assumption on constant L is necessary: [give short reason here + link to later section with more proper explanation]. We also cannot have i.o. for deterministic algorithms [give short reason here + link to later section with more proper explanation]
+Both restrictions in the theorem matter.  Without a fixed bound $L$, a
+single rare value can be arbitrarily large and can change the best policy
+while remaining invisible to a sublinear sample.  Randomization is also
+essential: a deterministic algorithm samples a predictable set of labels,
+and an oblivious labeling can make that set unrepresentative.  We return to
+both points in \cref{rem:ot-instance-assumptions}.
 
-We make two points here. First, the other algorithm A' can be assumed to know $M$; while we are comparing ourselves to online algorithms, we are comparing ourselves to all of them on any single instance, hence we are comparing ourselves to those optimized for any particular M. The fact this is possible is because the first step of alg2 subsamples the input and hence, essentially, our algorithm learns M anyway and can optimize its subsequent behavior against it. 
+Two points are worth emphasizing.  First, the comparison is made separately
+on every bag.  We must therefore compete not only with one fixed online
+algorithm, but also with algorithms optimized for this particular $M$.
+Allowing $\mathcal A'$ to know $M$ makes this strongest possible online
+benchmark explicit.
 
-Hence, it is perhaps not too suprising that instance-optimal algorithm \emph{exists}; after all, we could consider a meta-algorithm that 1) estimates M 2) runs optimal algorithm for M. Thus the interesting part of thmABOVE is that our alg2 is actually a quite straightforward algorithm, and not just a theoretical construction
+Second, the existence of some instance-optimal algorithm is perhaps not so
+surprising.  One could imagine a meta-algorithm that samples the input to
+estimate $M$ and then runs an optimal policy for that estimate.  The
+substantive part of the theorem is that no complicated meta-algorithm is
+needed.  The optimal leading-order policy for a known bag is itself a simple
+threshold policy, so $\mathcal A^*$ has essentially the same form as
+\cref{alg:intro-obligatory-rand}: sample the bag, choose the
+maximum-density threshold, and use it for the rest of the schedule.
+
+The rigorous benchmark and proof are given in
+\cref{sec:obligatory-instance}.
 
 \subsection{Generalizations of the model}
 \label{sec:intro-optional-map}
@@ -242,13 +273,16 @@ this value for every bag.
 \begin{theorem}[Blind-execution instance optimality, informal version of
 \protect\cref{thm:blind-instance}]
 \label{thm:intro-blind-instance}
-Fix $L<\infty$.  There is one randomized algorithm, independent of $M$, whose
-cost on every bag $M\subseteq[0,L]$ is
+Fix $L<\infty$.  There is one randomized algorithm $\mathcal A^*$,
+independent of $M$, whose cost on every bag $M\subseteq[0,L]$ is
 \[
-                 n^2\Phi_{\rm BE}(M)+o_L(n^2).
+ \cost(\mathcal A^*)=n^2\Phi_{\rm BE}(M)+o_L(n^2).
 \]
-No online policy has a smaller leading cost on $M$, even if that competing
-policy is told the entire bag in advance.
+Equivalently, for every online policy $\mathcal A'$, even one told the entire
+bag in advance,
+\[
+ \cost(\mathcal A^*)\le \cost(\mathcal A')+o_L(n^2).
+\]
 \end{theorem}
 
 The order of the quantifiers is important: our algorithm is not told $M$.
@@ -325,13 +359,17 @@ for all remaining jobs.
 \protect\cref{thm:bo-instance}]
 \label{thm:intro-bo-instance}
 Fix $u<\infty$ and let $\mu_M$ be the mean optimized length in a bag $M$.
-There is one randomized algorithm, independent of $M$, whose cost on every
-bag is
+There is one randomized algorithm $\mathcal A^*$, independent of $M$, whose
+cost on every bag is
 \[
-             \frac{n^2}{2}\min\{u,1+\mu_M\}+o_u(n^2).
+ \cost(\mathcal A^*)
+ =\frac{n^2}{2}\min\{u,1+\mu_M\}+o_u(n^2).
 \]
-No online policy has a smaller leading cost on $M$, even if that competing
-policy is told the entire bag in advance.
+Equivalently, for every online policy $\mathcal A'$, even one told the entire
+bag in advance,
+\[
+ \cost(\mathcal A^*)\le \cost(\mathcal A')+o_u(n^2).
+\]
 \end{theorem}
 
 \begin{algorithm}[H]
@@ -415,13 +453,17 @@ block.
 \begin{theorem}[Revealing-optimization instance optimality, informal version of
 \protect\cref{thm:common-upper-instance}]
 \label{thm:intro-common-upper-instance}
-Fix $u<\infty$.  There is one randomized algorithm, independent of the bag
-$M$, whose cost is
+Fix $u<\infty$.  There is one randomized algorithm $\mathcal A^*$,
+independent of the bag $M$, whose cost is
 \[
-                    n^2\Phi_{{\rm RO},u}(M)+o_u(n^2).
+ \cost(\mathcal A^*)=n^2\Phi_{{\rm RO},u}(M)+o_u(n^2).
 \]
-No online policy has a smaller leading cost on $M$, even if that competing
-policy is told the entire bag in advance.  The value
+Equivalently, for every online policy $\mathcal A'$, even one told the entire
+bag in advance,
+\[
+ \cost(\mathcal A^*)\le \cost(\mathcal A')+o_u(n^2).
+\]
+The value
 $\Phi_{{\rm RO},u}(M)$ is obtained by minimizing an explicit quadratic over
 the tested fraction $q$.
 \end{theorem}

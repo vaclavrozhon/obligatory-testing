@@ -16,14 +16,14 @@ which knows $n,L$ but not the processing-time multiset, and a deterministic
 sequence $\eps_L(n)\to0$ with the following properties.  For every multiset
 $M\subseteq[0,L]$ of size $n$ and every fixed labeling $\sigma$,
 \begin{equation}
- \EE C_{\mathcal A^*}(\sigma(M))
+ \EE\cost(\mathcal A^*,\sigma(M))
  \le n^2\Phiopt(D_M)+\eps_L(n)n^2.
  \label{eq:intro-blind-upper}
 \end{equation}
 For every randomized policy $\mathcal A$, even one told $M$, some fixed
 oblivious labeling $\sigma$ satisfies
 \begin{equation}
- \EE C_{\mathcal A}(\sigma(M))
+ \EE\cost(\mathcal A,\sigma(M))
  \ge n^2\Phiopt(D_M)-\eps_L(n)n^2.
  \label{eq:intro-blind-lower}
 \end{equation}
@@ -374,7 +374,7 @@ $0\le1-H\le1$; the vertical slack is multiplied by a horizon at most $L+1$.
 After restoring \cref{eq:blind-suffix-edit}, the fixed-$q$ envelope lemma
 therefore gives, pathwise on the good event,
 \begin{equation}
- \frac{C_{\mathcal A}}{n^2}
+ \frac{\cost(\mathcal A,M)}{n^2}
  \ge F_{D_n}(Q_{n,\delta})
    -O_{D}(\gamma_n+\delta+1/n)
  \ge\Phiopt(D_n)-O_D(\gamma_n+\delta+1/n).
@@ -510,7 +510,7 @@ $Lnk_n=O_L(n^{3/2})$.  Combining
 \cref{eq:blind-rounding-stability,eq:blind-histogram-learning} with
 \cref{eq:blind-template-Lipschitz,eq:blind-empirical-sandwich} gives
 \begin{equation}
- \frac{\EE C_{\mathcal A^*}(p)}{n^2}
+ \frac{\EE\cost(\mathcal A^*,p)}{n^2}
  \le\Phiopt(D_M)
  +O_L\!\left(n^{-1/6}\sqrt{\log(n+2)}\right)
  \label{eq:blind-unannounced-upper}

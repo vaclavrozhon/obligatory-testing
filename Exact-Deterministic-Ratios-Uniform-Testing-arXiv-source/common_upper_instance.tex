@@ -20,14 +20,14 @@ $\eps_u(n)\to0$ such that every size-$n$ multiset
 $M\subseteq[0,u]$ has the following properties.
 For every fixed labeling $\sigma$,
 \begin{equation}
- \EE C_{\mathcal A^*_{n,u}}(\sigma(M))
+ \EE\cost(\mathcal A^*_{n,u},\sigma(M))
  \le n^2\Phi_u(D_M)+\eps_u(n)n^2.
  \label{eq:cui-upper}
 \end{equation}
 Conversely, for every randomized nonanticipating policy $\mathcal A$, even
 one told $M$, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
- \EE C_{\mathcal A}(\sigma(M))
+ \EE\cost(\mathcal A,\sigma(M))
  \ge n^2\Phi_u(D_M)-\eps_u(n)n^2.
  \label{eq:cui-lower}
 \end{equation}
@@ -457,7 +457,7 @@ and use \cref{eq:cui-rounding-stability}.  Since
 \]
 the resulting bound is
 \begin{equation}
- \EE C_{\mathcal A^*_{n,u}}(\sigma(M))
+ \EE\cost(\mathcal A^*_{n,u},\sigma(M))
  \le n^2\Phi_u(D_M)+O_u(n^{11/6})
  \label{eq:cui-universal-upper}
 \end{equation}

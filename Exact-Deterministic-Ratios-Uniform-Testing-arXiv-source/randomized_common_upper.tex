@@ -35,14 +35,16 @@ More precisely, there are randomized nonanticipating algorithms
 $\mathcal A_{n,u}$ and numbers $\eps_u(n)\to0$ such that every fixed labeled
 vector $p\in[0,u]^n$ satisfies
 \begin{equation}
- \EE\ALG_{\mathcal A_{n,u}}(p)
- \le \Rrand(u)\OPT_u(p)+\eps_u(n)n^2.
+ \EE\cost(\mathcal A_{n,u},p)
+ \le \Rrand(u)\cost(\OPT_u,p)+\eps_u(n)n^2.
  \label{eq:intro-random-common-upper}
 \end{equation}
-Conversely, for every randomized online algorithm and every $\eps>0$, there
+Conversely, for every randomized online algorithm $\mathcal A$ and every
+$\eps>0$, there
 are arbitrarily large $n$ and a fixed vector $p\in[0,u]^n$ for which
 \begin{equation}
- \EE\ALG(p)\ge\bigl(\Rrand(u)-\eps\bigr)\OPT_u(p).
+ \EE\cost(\mathcal A,p)
+ \ge\bigl(\Rrand(u)-\eps\bigr)\cost(\OPT_u,p).
  \label{eq:random-common-upper-lower}
 \end{equation}
 The curve is continuous and has global maximum
