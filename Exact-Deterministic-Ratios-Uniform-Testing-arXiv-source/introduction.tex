@@ -11,39 +11,38 @@ Should we open another paper, or should we start working?
 Opening a paper may reveal a tiny job that we can finish immediately.  It may
 also reveal a huge job that is best left for the end.  On the other hand,
 looking has a cost.  If one hundred jobs are still unfinished, one unit spent
-opening a paper adds one hundred units to the sum of completion times.  Thus
-the machine has to balance two uses of its time: it can learn which jobs are
+opening a paper adds one hundred units to the sum of completion times.  Hence, the machine has to balance two uses of its time: it can learn which jobs are
 short, or it can complete jobs that are already understood.
 
-This is the scheduling problem studied in this paper.  We start with its
+This is the scheduling problem studied in this paper, variants of which were already studied [few citations here].  We start with its
 cleanest version, in which every paper has to be opened.  We then allow a job
 to be run without opening its paper.  Depending on what this means, we obtain
-three natural variants.  The same simple ideas---thresholds, random sampling,
-and shortest-first execution---give exact answers in all of them.
+three natural variants.  The same simple ideas---random sampling,
+and shortest-first execution, thresholding---give exact answers in all of them.
 
 \subsection{First example: every job has to be tested}
 
-There are $n$ jobs.  Testing job $i$ takes one unit of time and reveals a
-number $p_i\geq0$.  The job then needs another $p_i$ units of processing.  A
-job with $p_i=0$ is completed by its test.  For now, every job has to be
-tested.
+There are $n$ jobs.  Testing job $i$ takes one unit of time and reveals a number $p_i\geq0$.  The job then needs another $p_i$ units of processing.  For now, every job has to be tested, i.e., testing is \emph{obligatory}.
 
-After a test, the scheduler faces one elementary decision.  Should the
-revealed job be finished now, or should it be put aside while another job is
-tested?  Short jobs should clearly be finished.  Long jobs should clearly
-wait.  This suggests a threshold algorithm.
 
-\begin{algorithm}[H]
-\caption{The shape of an optimal obligatory-testing algorithm}
-\label{alg:intro-obligatory}
-\begin{algorithmic}
-\State Test a job.
-\State If its revealed length is below the current threshold, finish it now.
-\State Otherwise put it aside and test another job.
-\State After all tests, finish the jobs put aside from shortest to longest.
-\end{algorithmic}
-\end{algorithm}
+The obligatory-testing model (see XX for formal definition) for total completion time was introduced by
+Dogeas, Erlebach, and Liang~\cite{DogeasErlebachLiang2024}.  Their work and a
+later lower bound of Liang and Liang~\cite{LiangLiang2026} left a gap between
+the best deterministic upper and lower bounds.  They also left the randomized
+problem open.  We close both gaps.
 
+\begin{theorem}[Obligatory testing, informal version of  \cref{thm:det-obligatory,thm:rand-obligatory}] % takhle to udelej i u ostatnich informal theoremu
+\label{thm:intro-obligatory}
+In the obligatory-testing model, the best achievable deterministic asymptotic competitive ratio is
+$1.57\ldots$ by algorithm XX.  Against an adversary that fixes the input before the algorithm draws its random bits, the best randomized ratio is $4/3$ by algorithm XX.
+\end{theorem}
+
+Let us briefly describe the two algorithms. 
+
+[sem dej vedle sebe informal verze obou algoritmu]
+
+
+The general idea is to have a threshold algorithm that runs short jobs as soon as possible and leaves long jobs til the end. 
 The difficult part is choosing the threshold.  A deterministic algorithm has
 to update it from the history it has seen.  A randomized algorithm can first
 test a small random sample and use the sample to choose one threshold for the
@@ -55,29 +54,14 @@ all values $p_i$ in advance.  As usual, the competitive ratio is the online
 cost divided by this offline optimum.  We are interested in the asymptotic
 ratio: lower-order additive terms, of size $o(n^2)$, do not matter.
 
-The obligatory-testing model for total completion time was introduced by
-Dogeas, Erlebach, and Liang~\cite{DogeasErlebachLiang2024}.  Their work and a
-later lower bound of Liang and Liang~\cite{LiangLiang2026} left a gap between
-the best deterministic upper and lower bounds.  They also left the randomized
-problem open.  We close both gaps.
 
-\begin{theorem}[Obligatory testing, informal]
-\label{thm:intro-obligatory}
-The best deterministic asymptotic competitive ratio is
-$1.5705740966\ldots$.  Against an adversary that fixes the input before the
-algorithm draws its random bits, the best randomized ratio is $4/3$.
-
-The randomized algorithm is not told the multiset of job lengths, and its
-guarantee holds even when the lengths are unbounded.  This is the informal
-version of \cref{thm:det-obligatory,thm:rand-obligatory}.
-\end{theorem}
 
 Let us briefly describe why the two constants are different.  A hard input
 for a deterministic algorithm reveals positive jobs in decreasing levels and
 hides many zero jobs until the end.  If the algorithm finishes the positive
 jobs, it delays the zeros.  If it postpones them, it creates a costly tail.
 The levels can be chosen so that these two losses balance at
-$1.5705740966\ldots$.
+$1.5705740966\ldots$. % tyhle cisla staci vzdy na dve desetinna mista
 
 For randomized algorithms the hard input is simpler.  Half of the jobs have
 length zero and half have length two, and their labels are shuffled.  Until

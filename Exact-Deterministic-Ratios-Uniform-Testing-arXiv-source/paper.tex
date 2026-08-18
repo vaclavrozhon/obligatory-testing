@@ -151,20 +151,8 @@ length.  Together these models separate the two possible benefits of spending
 one unit before execution: learning which job to do next and making the job
 faster.
 
-We give exact answers at the quadratic scale.  In the obligatory model the exact
-asymptotic ratios are $1.570574\ldots$ for deterministic algorithms and
-$4/3$ for randomized algorithms.  When untested execution takes a common
-time $u$, we determine the exact deterministic and randomized ratios for
-every $u$; both answers are explicit curves.  We also go beyond worst-case
-ratios.  In each optional model we design one randomized policy that is
-asymptotically optimal for \emph{every} bounded collection of job lengths,
-not merely for the worst one.
-The revealing policies have a simple shape: sample, learn a threshold, and
-then execute a few ordered blocks.  If a unit-time optimization shortens a
-job but does not reveal its new length, only the mean has to be learned.  We
-give both the instance-optimal policy and the exact worst-case curve for this
-model; unlike the revealing curve, its ratio is unbounded as the raw
-execution time grows.
+We give exact asymptotic answers for these models, using the framework of competitive analysis and instance optimality. Our algorithms are typically rather simple and potentially practical. 
+
 \end{abstract}
 
 \tableofcontents
