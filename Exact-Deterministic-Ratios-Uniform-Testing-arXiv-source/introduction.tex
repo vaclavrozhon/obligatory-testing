@@ -24,7 +24,7 @@ this means, we obtain three further variants.  The same simple
 ideas---random sampling, thresholding, and shortest-first execution---give
 exact answers in all of them.
 
-\subsection{First example: every job has to be tested}
+\subsection{Warmup: every job has to be tested}
 
 There are $n$ jobs.  Testing job $i$ takes one unit of time and reveals a
 number $p_i\geq0$.  The job then needs another $p_i$ units of processing; if
@@ -114,27 +114,26 @@ length zero and half have length two, and their labels are shuffled.  Until the 
 Counting the area under the number of unfinished jobs gives the lower bound
 $4/3$.  The formal argument is in \cref{sec:random-obligatory}. [wasnt this actually known? ]
 
-\subsection{What if testing is optional?}
+\subsection{Generalizations of the model}
 
-We now change one rule: a job may be run without a test.  There are two
-separate questions to ask.
+We now consider different weakenings of the obligatory model. 
 
-First, how long does an untested job run?  It may run for its true but hidden
-length $p_i$.  Alternatively, every untested job may have the same known raw
-length $u$, while a unit-time action replaces $u$ by a smaller value
-$p_i\leq u$.  The second interpretation turns testing into
-\emph{optimization}.  For example, a generic piece of code solves every task
-within time $u$, but an AI agent can spend one unit adapting the code to a
+
+There are two separate directions.
+
+First, we may drop the requirement of testing a job before it is run. 
+
+Second, there are two different reasons why we might want to "test". First, we simply want to estimate the true running time $p_i$. Alternatively, the testing procedure is actually an optimization procedure that replaces some original (long) running time $u$ by a potentially shorter $p_i$. For example, a generic piece of code solves every task
+within time $u$, but an AI agent can spend one unit of time adapting the code to a
 particular input and make it faster.
 
-Second, does this optimization reveal the new running time $p_i$?  If it
+These are orthogonal directions -- if an optimization shortens the running time from $u$ to $p_i$, does it also reveal the value of $p_i$?  If it
 does, the scheduler gains both a faster job and information about where the
 job belongs.  If it does not, the job becomes faster but the size of the
 speedup remains unknown until the job finishes.
 
 These choices give the following four models.  The table is a summary rather
-than four new sets of notation; in every row, the preliminary action in the
-last column costs one unit of machine time.
+than four new sets of notation; in every row, the preliminary action in the last column costs one unit of machine time.
 
 \begin{center}
 \small
