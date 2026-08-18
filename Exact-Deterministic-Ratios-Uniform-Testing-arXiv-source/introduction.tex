@@ -62,7 +62,7 @@ the shape of the algorithms is.
 \noindent
 \begin{minipage}[t]{0.485\textwidth}
 \begin{algorithm}[H]
-\caption{Deterministic threshold}
+\caption{Deterministic moving threshold}
 \label{alg:intro-obligatory-det}
 \begin{algorithmic}
 \State Put $\rho=0.57\ldots$ and $R=1+\rho$.
@@ -88,14 +88,13 @@ positive jobs processed immediately and $d_i$ the number deferred.
 \begin{algorithmic}
 \State Shuffle the jobs and test $o(n)$ of them to estimate the distribution
 of job lengths.
-\State Treat this estimate as exact.  If $P$ has the estimated distribution,
-then for each threshold $t$ put
+\State For $P$ the estimated distribution,
+for each threshold $t$ put
 \[
  a(t)=\Pr(P\le t),\qquad
  m(t)=\mathbb E[P\mathbf 1_{P\le t}].
 \]
-\State Testing one random job and immediately processing it when $P\le t$
-completes expected mass $a(t)$ using expected work $1+m(t)$.  Put
+Put
 \[
  \widehat\rho=\max_t\frac{a(t)}{1+m(t)}.
 \]
@@ -169,16 +168,13 @@ blind execution & runs for its hidden length $p_i$ & reveals $p_i$ before execut
  & Intro~\ref{sec:intro-blind}; \cref{sec:blind} \\
 blind optimization & runs for raw time $u$ & replaces $u$ by a still-hidden $p_i\leq u$
  & Intro~\ref{sec:intro-speedup}; \cref{sec:blind-optimization} \\
-common upper bound & runs for raw time $u$ & reveals $p_i$ and replaces $u$ by $p_i$
+common upper bound & runs for raw time $u$ & replaces $u$ by $p_i$ and reveals it
  & Intro~\ref{sec:intro-speedup}; \cref{sec:optional,sec:common-upper-instance,sec:random-common-upper} \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-The last three rows separate the two benefits of the unit preliminary action.
-Blind execution studies information without speedup.  Blind optimization
-studies speedup without advance information.  The common-upper model contains
-both.  The common-upper model was introduced by D{\"u}rr et
+The common-upper model was introduced by D{\"u}rr et
 al.~\cite{DurrErlebachMegowMeissner2020}.  Blind execution is an
 adversarial-bag counterpart of stochastic scheduling with testing
 ~\cite{LeviMagnantiShaposhnik2019}; its closest earlier adversarial relative
@@ -188,11 +184,8 @@ closest to the non-revealing optimization studied by Damerius et
 al.~\cite{DameriusEtAl2023}, although their optimization consumes a separate
 budget rather than machine time.
 
-The three optional models have different optimal policies and different
-bag-specific benchmarks.  We therefore state their results separately.  The
-algorithms nevertheless share one simple design principle: privately shuffle
-the jobs, use a sublinear pilot to estimate the bag, and optimize the rest of
-the schedule as if that estimate were exact.
+The three optional models have different optimal policies and we need to approach them in somewhat different frameworks.  We therefore state their results separately.  The
+algorithms nevertheless share common simple design principles. 
 
 \subsection{Information without speedup: blind execution}
 \label{sec:intro-blind}
@@ -202,12 +195,15 @@ time is its true hidden length $p_i$.  Testing does not make the job shorter;
 it only tells us $p_i$ before we decide when to run it.  We call this
 \emph{blind execution}.
 
-A worst-case competitive ratio is a coarse summary here because the right
-policy depends strongly on the bag.  If every job has length one, testing
-only wastes time.  If half of the jobs have length zero and half have length
-six, the best leading-order policy tests half of them.  Both examples have
-cost of order $n^2$, so the distinction remains visible even when we ignore
-an additive $o(n^2)$.
+A worst-case competitive ratio does not work here. Let us explain why. 
+[tady vysvetli priklad proc neexistuje worst-case competitive algorithmus]
+
+% is a coarse summary here because the right
+% policy depends strongly on the input bag of jobs.  If every job has length one, testing
+% only wastes time.  If half of the jobs have length zero and half have length
+% six, the best leading-order policy tests half of them.  Both examples have
+% cost of order $n^2$, so the distinction remains visible even when we ignore
+% an additive $o(n^2)$.
 
 For a bag $M\subseteq[0,L]$, let $n^2\Phi_{\rm BE}(M)$ denote the best
 leading-order cost of an online policy designed specifically for that bag.
