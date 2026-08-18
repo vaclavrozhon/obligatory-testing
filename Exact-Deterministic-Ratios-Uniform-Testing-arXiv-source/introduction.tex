@@ -50,7 +50,7 @@ In the obligatory-testing model, the best deterministic asymptotic
 competitive ratio is $1.57\ldots$.  Against an adversary that fixes the input
 before the algorithm draws its random bits, the best randomized ratio is
 $4/3$.  The two optimal policies are sketched in
-\cref{alg:intro-obligatory}.
+\cref{alg:intro-obligatory-det,alg:intro-obligatory-rand}.
 \end{theorem}
 
 Here and below, \emph{shortest first} means processing revealed jobs in
@@ -58,42 +58,50 @@ nondecreasing order of $p_i$.  The following pseudocode gives a little more
 detail about the two policies.  The constants and the rounding in the right
 column are not meant to be memorable; the shape of the algorithms is.
 
-[tohle chci aby byly dva algorithm ne jeden!]
+\noindent
+\begin{minipage}[t]{0.485\textwidth}
 \begin{algorithm}[H]
-\caption{The two optimal obligatory-testing policies}
-\label{alg:intro-obligatory}
-\begin{minipage}[t]{0.48\textwidth}
-\raggedright
-\textbf{Deterministic: adapt the threshold.}
+\caption{Adaptive deterministic threshold}
+\label{alg:intro-obligatory-det}
 \begin{algorithmic}
-\State Let $\rho=0.57...$ and $N=D=0$.
-\State Before a test, let $x$ be the number of untested jobs and put
-$y=(D-RN)/x$. [proc pouzivame x N D na tri veci co se sectou na n? to zni jako spatna notace. nebylo by lepsi na zacatek napsat neco jako "v i-tem kroku vzdy mame n = d_i + p_i + (n-i) nebo tak neco? ]
-\State Use threshold $T_i = 1$ if $y\le-1$; otherwise use
+\State Put $\rho=0.57\ldots$ and $R=1+\rho$.
+\State Before test $i+1$, where $0\le i<n$, let $c_i$ be the number of
+positive jobs processed immediately and $d_i$ the number deferred.
+\State Put
 \[
-  T_i 1+\frac12\log\frac{\rho+2}{\rho-2y}.
+ y_i=\frac{d_i-R(c_i+d_i)}{n-i}.
 \]
-\State Test the next job.  Process it now if it is at or below the threshold $T_i$;
-otherwise defer it.
-\State Update $N$ (positive outcomes) and $D$ (deferred outcomes).
-\State Finish all deferred jobs shortest first.
+\State Use threshold $T_i=1$ if $y_i\le-1$; otherwise use
+\[
+ T_i=1+\frac12\log\frac{\rho+2}{\rho-2y_i}.
+\]
+\State Test the next job.  Process it now if $p\le T_i$; otherwise defer it.
+\State After all tests, finish deferred jobs shortest first.
 \end{algorithmic}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.48\textwidth}
-\raggedright
-\textbf{Randomized: learn the threshold.}
-\begin{algorithmic}
-\State Shuffle the jobs and test the first $o(n)$ of them to estimate the job-length distribution. 
-\State Let $\rho = ... max \widehat a/(1+\widehat m)$ where we maximize over ... 
-\State If $\rho < 1$ [radsi pouzijme jednoduche konstanty kdyz to nic nemeni], test every job and finish all positive [tohle dropni, nechceme travit cas s length=0 jobs v intru vubec!] jobs shortest first.
-\State Otherwise use $T_i = 1/ \rho_i$. [proc vubec definujeme $\rho_i$?] Process the
-sampled jobs at or below it and defer the other sampled jobs.
-\State Test the rest in random order, processing low outcomes now and
-deferring the others.
-\State Finish all deferred jobs shortest first.
-\end{algorithmic}
-\end{minipage}
 \end{algorithm}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\begin{algorithm}[H]
+\caption{Learned randomized threshold}
+\label{alg:intro-obligatory-rand}
+\begin{algorithmic}
+\State Shuffle the jobs and test a sublinear prefix.
+\State Estimate the job-length distribution, rounding values below the
+safety cutoff $32$ into a sublinear number of bins.
+\State For every finite-bin prefix, compute
+\[
+ \frac{\text{estimated completed mass}}
+ {1+\text{estimated processing work}}.
+\]
+Let $\widehat\rho$ be the largest such density.
+\State If $\widehat\rho<1/16$, test every remaining job and then finish all
+revealed jobs shortest first.
+\State Otherwise set $T=1/\widehat\rho$.  Process sampled jobs with $p\le T$,
+then use the same threshold while testing the remaining jobs.
+\State After all tests, finish deferred jobs shortest first.
+\end{algorithmic}
+\end{algorithm}
+\end{minipage}
 
 Both algorithms follow the same principle: process short jobs as soon as
 possible and leave long jobs for the end.  The difficult part is choosing the
@@ -164,67 +172,11 @@ closest to the non-revealing optimization studied by Damerius et
 al.~\cite{DameriusEtAl2023}, although their optimization consumes a separate
 budget rather than machine time.
 
-After one common principle, we return to these three models in this order.
-
-\subsection{One algorithm for every bag of jobs}
-
-Once testing becomes optional, the ordinary competitive ratio gets problematic since in blind execution it can even be unbounded:  Take a
-bag of jobs with containing many zero jobs and one long job.  A clairvoyant scheduler completes
-all zero jobs for free and runs the long job last.  An online scheduler that
-encounters the long job early delays every zero that remains.  Avoiding this
-mistake by testing many jobs can itself cost on the order of $n^2$.  Thus the
-ratio to the clairvoyant optimum may be huge even though there is still a
-well-defined best online way to handle this particular bag.
-
-[tady to prepis jak jsme se o tom bavili]
-
-This leads to a stronger goal than measuring competitive ratio.  For each bag $M$,
-let $n^2\Phi(M)$ denote the best leading-order cost of an online policy
-designed specifically for that bag.  We ask whether one policy, chosen before
-seeing $M$, can attain $n^2\Phi(M)$ for every $M$.
-
-\begin{theorem}[One algorithm for every bag, informal version of
-\protect\cref{thm:common-upper-instance,thm:blind-instance,thm:bo-instance}]
-\label{thm:intro-instance-optimality}
-Fix a bound on the job lengths.  In each of the three optional models [wtf?? kazdy teorem ma byt jen pro jeden model] there
-is one randomized algorithm, independent of $M$, whose cost on every bag $M$
-is
-\[
-                       n^2\Phi(M)+o(n^2).
-\]
-No online policy has a smaller leading cost on $M$, even if that competing
-policy is told the whole bag in advance.  The three models have different,
-explicit functions $\Phi$.
-\end{theorem}
-
-\begin{algorithm}[H]
-\caption{One algorithm for every bag}
-\label{alg:intro-every-bag}
-\begin{algorithmic}
-\State Privately shuffle the jobs and observe a sublinear pilot sample.
-\State Use the sample to estimate the bag of lengths.
-\State Pretend that this estimate is exact and compute the threshold, tested
-fraction, and block order minimizing the model's explicit cost.
-\State Run the resulting policy on the remaining randomly ordered jobs.
-\end{algorithmic}
-\end{algorithm}
-[rozepis ten algoritmus a napis jak se lisi od toho z predchozi subsekce]
-
-The important point is the order of the quantifiers: the same algorithm
-works for every bag.  Telling the bag to the competing policy is only a
-convenient strengthening of the lower bound.  It is not extra information
-available to our algorithm.
-
-The randomization also has a simple role.  If jobs are presented under fixed
-labels, a private random shuffle makes the pilot representative.  In the
-equivalent random-bag picture, asking for a new job already returns a random
-remaining element of the bag, and no additional randomization is needed
-after the pilot.
-
-The rest of the introduction explains what $\Phi(M)$ and its optimal policy
-look like in the three models.  Bounded job lengths are needed for these
-uniform instance-optimal statements.  They are not needed for the
-randomized obligatory result above.
+The three optional models have different optimal policies and different
+bag-specific benchmarks.  We therefore state their results separately.  The
+algorithms nevertheless share one simple design principle: privately shuffle
+the jobs, use a sublinear pilot to estimate the bag, and optimize the rest of
+the schedule as if that estimate were exact.
 
 \subsection{Information without speedup: blind execution}
 
@@ -233,10 +185,39 @@ time is its true hidden length $p_i$.  Testing does not make the job shorter;
 it only tells us $p_i$ before we decide when to run it.  We call this
 \emph{blind execution}.
 
-The example from the preceding subsection explains why we compare with the
-bag-dependent value $\Phi(M)$ rather than insisting on a bounded ratio to the
-clairvoyant optimum.  The quantity $\Phi(M)$ captures the best cost that
-online information permits on this particular bag.
+A worst-case competitive ratio is a coarse summary here because the right
+policy depends strongly on the bag.  If every job has length one, testing
+only wastes time.  If half of the jobs have length zero and half have length
+six, the best leading-order policy tests half of them.  Both examples have
+cost of order $n^2$, so the distinction remains visible even when we ignore
+an additive $o(n^2)$.
+
+For a bag $M\subseteq[0,L]$, let $n^2\Phi_{\rm BE}(M)$ denote the best
+leading-order cost of an online policy designed specifically for that bag.
+The following theorem says that one policy, chosen before seeing $M$, attains
+this value for every bag.
+
+\begin{theorem}[Blind-execution instance optimality, informal version of
+\protect\cref{thm:blind-instance}]
+\label{thm:intro-blind-instance}
+Fix $L<\infty$.  There is one randomized algorithm, independent of $M$, whose
+cost on every bag $M\subseteq[0,L]$ is
+\[
+                 n^2\Phi_{\rm BE}(M)+o_L(n^2).
+\]
+No online policy has a smaller leading cost on $M$, even if that competing
+policy is told the entire bag in advance.
+\end{theorem}
+
+The order of the quantifiers is important: our algorithm is not told $M$.
+It learns $M$ from a small blind pilot, whose $o(n)$ jobs cost only $o(n^2)$.
+A private shuffle makes this pilot representative under every fixed
+labelling.
+
+This algorithm differs from obligatory testing in one essential way.  In the
+obligatory model every job must be tested.  Here the algorithm also chooses a
+tested fraction $q$; after testing stops, it may run all untouched jobs
+blindly.
 
 Let $\mu$ be the mean job length.  A revealed job shorter than $\mu$ should
 be run before an untouched job; a longer one should be run after it.  When
@@ -279,17 +260,36 @@ processing-time oracle of Dufoss{\'e} et al.~\cite{DufosseEtAl2022}, where the
 hidden length has only two possible values.  Our bag may contain arbitrary
 bounded lengths.  The precise result is \cref{thm:blind-instance}.
 
-\subsection{Speedup without information: blind optimization}
+\subsection{Speedup, with and without information}
 
-Next suppose that a unit-time optimization replaces $u$ by $p_i\leq u$ but
-does not reveal $p_i$.  The value becomes known only when the optimized job
-finishes.  A threshold can no longer separate short and long outcomes:
-before execution, all optimized jobs still look the same.
+The two remaining models start from the same operation.  Every job takes a
+known raw time $u$, and one unit of optimization reduces its running time to
+$p_i\leq u$.  They differ only in whether optimization reveals $p_i$.  This
+lets us isolate the value of information while keeping the speedup fixed.
+
+\paragraph{Blind optimization.}
+First suppose that optimization does not reveal $p_i$.  The value becomes
+known only when the optimized job finishes.  A threshold can no longer
+separate short and long outcomes: before execution, all optimized jobs still
+look the same.
 
 This makes the optimal policy simpler.  A pilot estimates only the mean
 $\mu$ of the optimized lengths.  Afterwards, the scheduler compares the two
 possible average times per job, $u$ and $1+\mu$, and uses the better action
 for all remaining jobs.
+
+\begin{theorem}[Blind-optimization instance optimality, informal version of
+\protect\cref{thm:bo-instance}]
+\label{thm:intro-bo-instance}
+Fix $u<\infty$ and let $\mu_M$ be the mean optimized length in a bag $M$.
+There is one randomized algorithm, independent of $M$, whose cost on every
+bag is
+\[
+             \frac{n^2}{2}\min\{u,1+\mu_M\}+o_u(n^2).
+\]
+No online policy has a smaller leading cost on $M$, even if that competing
+policy is told the entire bag in advance.
+\end{theorem}
 
 \begin{algorithm}[H]
 \caption{Instance-optimal blind optimization}
@@ -302,10 +302,8 @@ $\widehat\mu$.
 \end{algorithmic}
 \end{algorithm}
 
-This policy is instance optimal up to $o(n^2)$.  Its worst-case ratio,
-however, grows as $\sqrt u/2$.  The difference between this model and the
-revealing common-upper model below shows exactly what information is worth:
-speedup alone does not give a bounded ratio when $u$ grows.
+The instance-specific value depends only on the mean.  Its worst-case ratio,
+however, grows as $\sqrt u/2$.
 
 \begin{theorem}[Blind-optimization curve, informal version of
 \protect\cref{thm:bo-curve}]
@@ -325,11 +323,10 @@ of Damerius et al.~\cite{DameriusEtAl2023}.  There, optimization consumes an
 external budget.  Here it occupies the machine and delays every unfinished
 job.  The precise result is in \cref{sec:blind-optimization}.
 
-\subsection{Information and speedup: a common upper bound}
+\paragraph{Revealing optimization: the common-upper model.}
 
-Finally, assume that every untested job can be run for a known raw time $u$.
-A unit test reveals a value $p_i\leq u$ and replaces the raw execution by the
-shorter one.  Thus the test buys both information and speed.
+Now assume that optimization also reveals $p_i$.  Thus the unit action buys
+both information and speed.  This is the common-upper model.
 
 The two endpoints are easy to understand.  If $u\leq1$, the test alone costs
 at least as much as raw execution, so we should never test.  If $u$ is very
@@ -354,9 +351,11 @@ A deterministic algorithm uses three basic shapes.
 \end{algorithmic}
 \end{algorithm}
 
-For randomized algorithms we can say more.  On each fixed bag, the same
-sample-and-optimize principle from \cref{thm:intro-instance-optimality}
-finds the best threshold and the best tested fraction $q$.
+For randomized algorithms we can say more.  On each fixed bag, the sampling
+principle from blind execution finds the best threshold and the best tested
+fraction $q$.  Unlike blind execution, every tested processing time is at
+most the raw time $u$, so all tested jobs belong before the untouched raw
+block.
 
 \begin{algorithm}[H]
 \caption{Instance-optimal common-upper policy}
@@ -369,6 +368,20 @@ finds the best threshold and the best tested fraction $q$.
 \State Run every untouched job raw for time $u$.
 \end{algorithmic}
 \end{algorithm}
+
+\begin{theorem}[Common-upper instance optimality, informal version of
+\protect\cref{thm:common-upper-instance}]
+\label{thm:intro-common-upper-instance}
+Fix $u<\infty$.  There is one randomized algorithm, independent of the bag
+$M$, whose cost is
+\[
+                    n^2\Phi_{{\rm CU},u}(M)+o_u(n^2).
+\]
+No online policy has a smaller leading cost on $M$, even if that competing
+policy is told the entire bag in advance.  The value
+$\Phi_{{\rm CU},u}(M)$ is obtained by minimizing an explicit quadratic over
+the tested fraction $q$.
+\end{theorem}
 
 For each bag, this policy attains its best online leading cost.  We obtain the
 competitive ratio by asking which bag maximizes the ratio between that cost
