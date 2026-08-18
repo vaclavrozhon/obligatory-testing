@@ -83,15 +83,15 @@ positive jobs processed immediately and $d_i$ the number deferred.
 \end{minipage}\hfill
 \begin{minipage}[t]{0.485\textwidth}
 \begin{algorithm}[H]
-\caption{Universal randomized threshold}
+\caption{Learned randomized threshold}
 \label{alg:intro-obligatory-rand}
 \begin{algorithmic}
 \State Shuffle the jobs and test $o(n)$ of them to estimate the distribution
 of job lengths.
-\State Choose a safety cutoff $B_n$ that tends to infinity very slowly;
-values above $B_n$ are always deferred.
+\State Use the fixed safety cutoff $B=32$; values above $B$ are always
+deferred.
 \State Treat this estimate as exact.  If $P$ has the estimated distribution,
-then for each threshold $0\le t\le B_n$ put
+then for each threshold $0\le t\le B$ put
 \[
  a(t)=\Pr(P\le t),\qquad
  m(t)=\mathbb E[P\mathbf 1_{P\le t}].
@@ -101,7 +101,7 @@ completes expected mass $a(t)$ using expected work $1+m(t)$.  Put
 \[
  \widehat\rho=\max_t\frac{a(t)}{1+m(t)}.
 \]
-\State If $\widehat\rho<2/B_n$, test every
+\State If $\widehat\rho<2/B$, test every
 remaining job and then finish all revealed jobs shortest first.
 \State Otherwise set $T=1/\widehat\rho$.  Process the sampled jobs with
 $p\le T$.  Keep testing jobs, processing them immediately when $p\le T$ and
@@ -140,12 +140,12 @@ bound $4/3$.  The formal argument is in \cref{sec:random-obligatory}.
 \subsection{One algorithm for every bag}
 \label{sec:intro-obligatory-instance}
 
-The ratio $4/3$ describes only the hardest input.  The same randomized
-algorithm says more.  Consider the job lengths as a bag $M$, with the labels
+The ratio $4/3$ describes only the hardest input.  A slight variant of the
+same randomized algorithm says more.  Consider the job lengths as a bag $M$, with the labels
 hidden by a shuffle.  If this bag consists mostly of short jobs, the best
 threshold is quite different from the best threshold for a bag with a long
-tail.  Nevertheless, \cref{alg:intro-obligatory-rand} learns the right one in
-both cases.
+tail.  Nevertheless, the sampled-threshold idea from
+\cref{alg:intro-obligatory-rand} learns the right one in both cases.
 
 To state this precisely, imagine first that a competing online policy is
 told the whole bag $M$, but not which length belongs to which label.  It can
@@ -163,20 +163,23 @@ For every fixed $L$, its cost on every bag $M\subseteq[0,L]$ is
                  n^2\Phi_{\rm OT}(M)+o(n^2).
 \]
 No online policy has a smaller leading cost on $M$, even if that competing
-policy is told the entire bag in advance.  The algorithm is exactly
-\cref{alg:intro-obligatory-rand}.
+policy is told the entire bag in advance.  The algorithm is a variant of
+\cref{alg:intro-obligatory-rand} with a slowly growing safety cutoff.
 \end{theorem}
 
-The safety cutoff in the algorithm grows slowly with $n$.  This is what lets
-one policy serve two purposes.  On an arbitrary unbounded input, the cutoff and the
-fallback protect the $4/3$ guarantee.  For every fixed bound $L$, the cutoff
-eventually lies above every value in $M\subseteq[0,L]$, so the fallback
-disappears and the random sample learns the bag-specific optimum.  The
-sample has sublinear size and therefore costs only $o(n^2)$.
+The difference is only in the safeguard.  Algorithm~2 uses the fixed cutoff
+$B=32$, which gives its uniform $4/3$ guarantee even when processing times
+are unbounded.  For instance optimality we replace it by
+$B_n=32+n^{1/20}$.  Every other step---sampling, maximizing completion
+density, thresholding, and fallback---is unchanged.  For every fixed bound
+$L$, eventually $B_n>L$, so the cutoff no longer distorts any bag
+$M\subseteq[0,L]$ and the sample learns the bag-specific optimum.  The sample
+has sublinear size and therefore costs only $o(n^2)$.
 
 Thus instance optimality is not another model.  It is a stronger way of
-judging the same algorithm: instead of comparing it only on the worst bag,
-we compare it with the best online policy separately on every bag.  The
+judging the same sampled-threshold design: instead of comparing it only on
+the worst bag, we compare it with the best online policy separately on every
+bag.  The
 worst value of this bag-by-bag comparison is $4/3$, attained by the same
 half-zero, half-two bag used in the lower bound above.  The rigorous
 benchmark and proof are in \cref{sec:obligatory-instance}.

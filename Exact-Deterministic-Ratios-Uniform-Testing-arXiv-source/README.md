@@ -67,13 +67,13 @@ accompanied by an independent adjacent-exchange cross-check.
 The randomized results give the exact four-piece revealing-optimization
 curve, the sharp unbounded obligatory ratio `4/3`, and instance-optimal
 leading values for bounded obligatory testing, blind execution, revealing
-optimization, and blind optimization.  In obligatory testing, the same
-slowly-growing-cutoff algorithm gives both the unbounded worst-case `4/3`
-guarantee and the bounded-bag instance-optimal guarantee.
+optimization, and blind optimization.  In obligatory testing, the worst-case
+algorithm uses the fixed cutoff `32`; the bounded-bag instance-optimal policy
+is its variant with a slowly growing cutoff.
 The full revealing-optimization instance-optimal proof is Section 7 of the
 manuscript; its outer worst-case optimization is the separate four-piece
 curve in Section 8.  The blind-execution theorem is formalized in Lean.  The
 blind-optimization theorem and its exact curve, which is unbounded as
 $u\to\infty$, are currently analytic only.  For obligatory testing, Lean
 checks the fixed-cutoff `4/3` theorem and the shared fluid algebra; the
-growing-cutoff instance-optimal assembly is currently analytic.
+growing-cutoff instance-optimal variant is currently analytic.

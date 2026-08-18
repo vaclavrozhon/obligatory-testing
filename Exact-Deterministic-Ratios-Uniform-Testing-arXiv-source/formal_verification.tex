@@ -34,8 +34,7 @@ theorem unknownMultiset_operational_expectedCost_le_20378 ... :
     4 / 3 * finiteObligatoryOPT p + 20378 * R ^ 7
 \end{lstlisting}
 At the concrete parameter choice $n\le R^4$, this is
-\cref{eq:rand-final-upper}, equivalently the fixed-cutoff estimate
-\cref{eq:rand-obligatory-fixed-upper}.  The proof below this interface includes the
+\cref{eq:rand-final-upper}.  The proof below this interface includes the
 maximum-density optimizer, exact and robust $4/3$ certificates, threshold
 closure for sample-empty bins, finite hypergeometric concentration, the
 cutoff-$32$ fallback, sample-first accounting, bad-event excess, and
@@ -50,9 +49,10 @@ development identifies its denominator with the literal clairvoyant
 obligatory optimum.  Since $4n/(3n+5)\to4/3$, the upper and lower exports give
 the machine-checked sharp asymptotic value.
 
-The slowly growing cutoff in \cref{eq:rand-growing-cutoff} and the full
-instance-optimal assembly of \cref{sec:obligatory-instance} are analytic
-extensions of this checked fixed-cutoff theorem.  Lean verifies their shared
+The instance-optimal variant in \cref{sec:obligatory-instance} replaces the
+checked cutoff $32$ by the slowly growing cutoff from
+\cref{eq:ot-learning-parameters}.  Its full assembly is currently analytic.
+Lean verifies the shared
 finite stationary-cost identity, maximum-density algebra, and fluid
 $4/3$ certificate in \texttt{RandomizedAnnouncedFluid} and the randomized
 operational modules.  It does not currently export the whole-measure

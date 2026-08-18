@@ -4,9 +4,10 @@
 The goal of this section is to prove \cref{thm:obligatory-instance}, the
 rigorous version of the ``one algorithm for every bag'' statement
 \cref{thm:intro-obligatory-instance}.  The algorithm is not a new one: it is
-the growing-cutoff policy from \cref{sec:random-obligatory}.  The new point is
-that on every bounded bag it attains the best leading cost available even to
-a policy that is told the bag in advance.
+a slight variant of the policy from \cref{sec:random-obligatory}, obtained by
+replacing its fixed cutoff $32$ by a slowly growing cutoff.  The new point is
+that this variant attains, on every bounded bag, the best leading cost
+available even to a policy that is told the bag in advance.
 
 For a multiset $M=\{p_1,\ldots,p_n\}$, write $D_M$ for its empirical
 probability measure.  We define below an explicit number
@@ -256,8 +257,10 @@ When $p_i\le L$, one has $H\le1+L$, uniformly over $M$.
 
 \subsection{The same unannounced policy for every bag}
 
-It remains to prove \cref{eq:ot-instance-upper} for the policy already used
-in \cref{sec:random-obligatory}.  Recall its parameters
+It remains to prove \cref{eq:ot-instance-upper}.  Start with the policy from
+\cref{sec:random-obligatory}, keep its sampling, threshold, and fallback
+rules, but replace its fixed cutoff $32$ by $B_n=32+n^{1/20}$.  The full
+parameter choice is
 \begin{equation}
  k=\lfloor n^{3/4}\rfloor,\qquad
  d=\lfloor n^{1/4}\rfloor,\qquad
