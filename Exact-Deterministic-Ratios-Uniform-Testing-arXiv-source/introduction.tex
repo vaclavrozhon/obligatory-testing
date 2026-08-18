@@ -25,6 +25,7 @@ ideas---random sampling, thresholding, and shortest-first execution---give
 exact answers in all of them.
 
 \subsection{Warmup: every job has to be tested}
+\label{sec:intro-obligatory}
 
 There are $n$ jobs.  Testing job $i$ takes one unit of time and reveals a
 number $p_i\geq0$.  The job then needs another $p_i$ units of processing; if
@@ -47,21 +48,21 @@ problem open.  We close both gaps.
 \protect\cref{thm:det-obligatory,thm:rand-obligatory}]
 \label{thm:intro-obligatory}
 In the obligatory-testing model, the best deterministic asymptotic
-competitive ratio is a constant $R \approx 1.57\ldots$  Against an adversary that fixes the input
-before the algorithm draws its random bits, the best randomized ratio is
-$4/3$.  The two optimal policies are sketched in
+competitive ratio is the constant $R=1.570574\ldots$.  Against an adversary
+that fixes the input before the algorithm draws its random bits, the best
+randomized ratio is $4/3$.  The two optimal policies are sketched in
 \cref{alg:intro-obligatory-det,alg:intro-obligatory-rand}.
 \end{theorem}
 
 Here and below, \emph{shortest first} means processing revealed jobs in
 nondecreasing order of $p_i$.  The following pseudocode gives a little more
-detail about the two policies.  The constants and the rounding in the right
-column are not meant to be memorable; the shape of the algorithms is.
+detail about the two policies.  The formulas are not meant to be memorable;
+the shape of the algorithms is.
 
 \noindent
 \begin{minipage}[t]{0.485\textwidth}
 \begin{algorithm}[H]
-\caption{Adaptive deterministic threshold}
+\caption{Deterministic threshold}
 \label{alg:intro-obligatory-det}
 \begin{algorithmic}
 \State Put $\rho=0.57\ldots$ and $R=1+\rho$.
@@ -85,17 +86,24 @@ positive jobs processed immediately and $d_i$ the number deferred.
 \caption{Learned randomized threshold}
 \label{alg:intro-obligatory-rand}
 \begin{algorithmic}
-\State Shuffle the jobs and test $o(n)$ many of them to estimate the job-length distribution. 
-\State Assuming we know the distribution [tady bych to zkusil takle zjednodusit -- misto mluveni o binech a tak predpokladejme ze proste zname distribuci, je v poho pokud jsme tu trochu nepresni] For every threshold $t$, consider
+\State Shuffle the jobs and test $o(n)$ of them to estimate the distribution
+of job lengths.
+\State Treat this estimate as exact.  If $P$ has the estimated distribution,
+then for each threshold $t$ put
 \[
- \frac{\text{estimated completed mass of jobs of length $\le t$}}
- {1+\text{estimated processing work}}.
-\] [what is completed mass and processing work? can you define it? ]
-Let $\widehat\rho$ be the largest such density.
-\State If $\widehat\rho<O(1)$, test every remaining job and then finish all
-revealed jobs shortest first.
-\State Otherwise set $T=1/\widehat\rho$.  Process sampled jobs with $p\le T$,
-then use the same threshold while testing the remaining jobs. [tuhle vetu nechapu, proc proste nenapsat "keep sampling jobs and processing them when $p \le T$"]
+ a(t)=\Pr(P\le t),\qquad
+ m(t)=\mathbb E[P\mathbf 1_{P\le t}].
+\]
+\State Testing one random job and immediately processing it when $P\le t$
+completes expected mass $a(t)$ using expected work $1+m(t)$.  Put
+\[
+ \widehat\rho=\max_t\frac{a(t)}{1+m(t)}.
+\]
+\State If $\widehat\rho$ is below a fixed safety constant, test every
+remaining job and then finish all revealed jobs shortest first.
+\State Otherwise set $T=1/\widehat\rho$.  Process the sampled jobs with
+$p\le T$.  Keep testing jobs, processing them immediately when $p\le T$ and
+deferring them otherwise.
 \State After all tests, finish deferred jobs shortest first.
 \end{algorithmic}
 \end{algorithm}
@@ -103,51 +111,69 @@ then use the same threshold while testing the remaining jobs. [tuhle vetu nechap
 
 Both algorithms follow the same principle: process short jobs as soon as
 possible and leave long jobs for the end.  The difficult part is choosing the
-threshold.  The deterministic algorithm must keep updating it from the history it has seen -- the best way is the specific formula described on lines 3 and 4 in algorithm 1 [make this into links]; notice that the threshold is changing during the execution of the algorithm.  
-Perhaps the best intuition for this comes from the lower bound: [a few words about lower bound here]. blah blah The levels can be chosen so that these two losses balance at
-$1.57\ldots$; the formal construction is in \cref{sec:obligatory}.
+threshold.  A deterministic algorithm has no representative view of the
+unseen jobs, so its threshold has to change with the history.  The exact
+update is given in steps 3 and 4 of
+\cref{alg:intro-obligatory-det}.  The lower bound explains this moving
+threshold.  It reveals positive jobs in decreasing levels while hiding many
+zero jobs until the end.  Processing a positive level immediately delays the
+hidden zeros; postponing it instead creates a costly tail.  The levels can be
+chosen so that these two losses balance at $1.57\ldots$; the formal
+construction is in \cref{sec:obligatory}.
 
+Randomization gives the algorithm a global view of the input.  It first tests
+a sublinear random sample and estimates the distribution of job lengths.
+This costs only $o(n^2)$ and therefore does not change the asymptotic ratio.
+Up to a small estimation error, the algorithm now knows what remains in the
+bag and can keep one fixed threshold for the rest of the schedule.  The
+earlier obligatory-testing work studied deterministic algorithms and
+explicitly left randomization open~\cite{DogeasErlebachLiang2024}.
 
-The randomized algorithm has additional power -- it can start by sampling a sublinear number of jobs and estimating their length; this will not affect the final asymptotic ratio. This way, the algorithm learns a useful information about the global input -- up to some small errors, it more or less knows what to expect and this makes the final algorithm in fact simpler: there is a single threshold that needs to be computed and is preserved during the algorithm. 
-Correspondingly, for randomized algorithms the hard input is simpler: Half of the jobs have
-length zero and half have length two, and their labels are shuffled.  Until the shuffle is uncovered, one unit of work completes only about half a job.
-Counting the area under the number of unfinished jobs gives the lower bound
-$4/3$.  The formal argument is in \cref{sec:random-obligatory}. [wasnt this actually known? ]
+The matching randomized lower bound is correspondingly simple.  Half of the
+jobs have length zero and half have length two, and their labels are shuffled.
+Until the shuffle is uncovered, one unit of work completes only about half a
+job.  Counting the area under the number of unfinished jobs gives the lower
+bound $4/3$.  The formal argument is in \cref{sec:random-obligatory}.
 
 \subsection{Generalizations of the model}
+\label{sec:intro-optional-map}
 
-We now consider different weakenings of the obligatory model. 
+We next weaken the obligatory model in two directions.  First, we may allow a
+job to run without being tested.  Second, the unit preliminary action may have
+two different benefits.  It may reveal the true running time $p_i$ before the
+job is run.  It may also be an optimization procedure that replaces a common
+raw running time $u$ by a shorter time $p_i\leq u$.  For example, a generic
+piece of code solves every task within time $u$, but an AI agent can spend one
+unit adapting the code to a particular input and make it faster.
 
-
-There are two separate directions.
-
-First, we may drop the requirement of testing a job before it is run. 
-
-Second, there are two different reasons why we might want to "test". First, we simply want to estimate the true running time $p_i$. Alternatively, the testing procedure is actually an optimization procedure that replaces some original (long) running time $u$ by a potentially shorter $p_i$. For example, a generic piece of code solves every task
-within time $u$, but an AI agent can spend one unit of time adapting the code to a
-particular input and make it faster.
-
-These are orthogonal directions -- if an optimization shortens the running time from $u$ to $p_i$, does it also reveal the value of $p_i$?  If it
-does, the scheduler gains both a faster job and information about where the
-job belongs.  If it does not, the job becomes faster but the size of the
-speedup remains unknown until the job finishes.
+These two benefits are independent.  An optimization may reveal its new
+running time $p_i$, giving the scheduler both a faster job and information
+about where the job belongs.  Or it may leave $p_i$ hidden until the optimized
+job finishes.
 
 These choices give the following four models.  The table is a summary rather
-than four new sets of notation; in every row, the preliminary action in the last column costs one unit of machine time.
+than four new sets of notation; in every row, the preliminary action in the
+third column costs one unit of machine time.
 
 \begin{center}
 \small
-\begin{tabular}{@{}L{0.20\linewidth}L{0.29\linewidth}L{0.40\linewidth}@{}}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{@{}L{0.17\linewidth}L{0.24\linewidth}L{0.32\linewidth}L{0.19\linewidth}@{}}
 \toprule
-model & without a test & what the unit action does \\
+model & without a test & what the unit action does & where discussed \\
 \midrule
-obligatory testing & cannot be run & reveals $p_i$ and unlocks the job \\
-blind execution & runs for its hidden length $p_i$ & reveals $p_i$ before execution \\
-blind optimization & runs for raw time $u$ & replaces $u$ by a still-hidden $p_i\leq u$ \\
-common upper bound & runs for raw time $u$ & reveals $p_i$ and replaces $u$ by $p_i$ \\
+obligatory testing & cannot be run & reveals $p_i$ and unlocks the job
+ & Intro~\ref{sec:intro-obligatory}; \cref{sec:obligatory,sec:random-obligatory} \\
+blind execution & runs for its hidden length $p_i$ & reveals $p_i$ before execution
+ & Intro~\ref{sec:intro-blind}; \cref{sec:blind} \\
+blind optimization & runs for raw time $u$ & replaces $u$ by a still-hidden $p_i\leq u$
+ & Intro~\ref{sec:intro-speedup}; \cref{sec:blind-optimization} \\
+common upper bound & runs for raw time $u$ & reveals $p_i$ and replaces $u$ by $p_i$
+ & Intro~\ref{sec:intro-speedup}; \cref{sec:optional,sec:common-upper-instance,sec:random-common-upper} \\
 \bottomrule
 \end{tabular}
-\end{center} [tady pridej jeden sloupecek kde vzdy bude neco jako "subsection 1.3, section 4" -- kde to je probirano. uprav marginy at je to citelnejsi]
+\end{center}
 
 The last three rows separate the two benefits of the unit preliminary action.
 Blind execution studies information without speedup.  Blind optimization
@@ -169,6 +195,7 @@ the jobs, use a sublinear pilot to estimate the bag, and optimize the rest of
 the schedule as if that estimate were exact.
 
 \subsection{Information without speedup: blind execution}
+\label{sec:intro-blind}
 
 Suppose an untested job can simply be run until it finishes.  Its running
 time is its true hidden length $p_i$.  Testing does not make the job shorter;
@@ -251,6 +278,7 @@ hidden length has only two possible values.  Our bag may contain arbitrary
 bounded lengths.  The precise result is \cref{thm:blind-instance}.
 
 \subsection{Speedup, with and without information}
+\label{sec:intro-speedup}
 
 The two remaining models start from the same operation.  Every job takes a
 known raw time $u$, and one unit of optimization reduces its running time to
