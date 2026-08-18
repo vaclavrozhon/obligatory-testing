@@ -58,6 +58,7 @@ nondecreasing order of $p_i$.  The following pseudocode gives a little more
 detail about the two policies.  The constants and the rounding in the right
 column are not meant to be memorable; the shape of the algorithms is.
 
+[tohle chci aby byly dva algorithm ne jeden!]
 \begin{algorithm}[H]
 \caption{The two optimal obligatory-testing policies}
 \label{alg:intro-obligatory}
@@ -65,15 +66,14 @@ column are not meant to be memorable; the shape of the algorithms is.
 \raggedright
 \textbf{Deterministic: adapt the threshold.}
 \begin{algorithmic}
-\State Let $R$ be the optimal ratio ($R=1.57\ldots$), and put $\rho=R-1$.
-Start with $N=D=0$.
+\State Let $\rho=0.57...$ and $N=D=0$.
 \State Before a test, let $x$ be the number of untested jobs and put
-$y=(D-RN)/x$.
-\State Use threshold $1$ if $y\le-1$; otherwise use
+$y=(D-RN)/x$. [proc pouzivame x N D na tri veci co se sectou na n? to zni jako spatna notace. nebylo by lepsi na zacatek napsat neco jako "v i-tem kroku vzdy mame n = d_i + p_i + (n-i) nebo tak neco? ]
+\State Use threshold $T_i = 1$ if $y\le-1$; otherwise use
 \[
-  1+\frac12\log\frac{\rho+2}{\rho-2y}.
+  T_i 1+\frac12\log\frac{\rho+2}{\rho-2y}.
 \]
-\State Test the next job.  Process it now if it is at or below the threshold;
+\State Test the next job.  Process it now if it is at or below the threshold $T_i$;
 otherwise defer it.
 \State Update $N$ (positive outcomes) and $D$ (deferred outcomes).
 \State Finish all deferred jobs shortest first.
@@ -83,15 +83,10 @@ otherwise defer it.
 \raggedright
 \textbf{Randomized: learn the threshold.}
 \begin{algorithmic}
-\State Shuffle the jobs and test the first $n^{3/4}$ of them.
-\State Round sampled values in $[0,32]$ into $n^{1/4}$ bins; keep larger
-values in an overflow bin.
-\State For each finite-bin prefix, let $\widehat a$ be its sample mass and
-$\widehat m$ its normalized rounded work.  Maximize
-$\widehat a/(1+\widehat m)$.
-\State If this density is below $1/16$, test every job and finish all positive
-jobs shortest first.
-\State Otherwise use the reciprocal density as a threshold.  Process the
+\State Shuffle the jobs and test the first $o(n)$ of them to estimate the job-length distribution. 
+\State Let $\rho = ... max \widehat a/(1+\widehat m)$ where we maximize over ... 
+\State If $\rho < 1$ [radsi pouzijme jednoduche konstanty kdyz to nic nemeni], test every job and finish all positive [tohle dropni, nechceme travit cas s length=0 jobs v intru vubec!] jobs shortest first.
+\State Otherwise use $T_i = 1/ \rho_i$. [proc vubec definujeme $\rho_i$?] Process the
 sampled jobs at or below it and defer the other sampled jobs.
 \State Test the rest in random order, processing low outcomes now and
 deferring the others.
@@ -171,29 +166,19 @@ budget rather than machine time.
 
 After one common principle, we return to these three models in this order.
 
-\subsection{One algorithm for every bag}
+\subsection{One algorithm for every bag of jobs}
 
-Once testing becomes optional, the ordinary competitive ratio is not the
-only natural question.  In blind execution it can even be unbounded.  Take a
-bag with many zero jobs and one long job.  A clairvoyant scheduler completes
+Once testing becomes optional, the ordinary competitive ratio gets problematic since in blind execution it can even be unbounded:  Take a
+bag of jobs with containing many zero jobs and one long job.  A clairvoyant scheduler completes
 all zero jobs for free and runs the long job last.  An online scheduler that
 encounters the long job early delays every zero that remains.  Avoiding this
 mistake by testing many jobs can itself cost on the order of $n^2$.  Thus the
 ratio to the clairvoyant optimum may be huge even though there is still a
 well-defined best online way to handle this particular bag.
 
-Write $M$ for the bag of $n$ job lengths.  On one bag it may be best to test
-almost every job; on another it may be best to test none.  We would like one
-algorithm to make the right choice on each bag, not merely to survive the
-worst bag.
+[tady to prepis jak jsme se o tom bavili]
 
-There is an obvious difficulty: the algorithm is not told $M$.  Still, it can
-look at a small random sample.  Since the sample has size $o(n)$, it costs
-only $o(n^2)$ in the objective.  Since it is random, it gives an accurate
-picture of the whole bag.  The algorithm can then behave almost as if it had
-known $M$ from the beginning.
-
-This leads to a stronger goal than a competitive ratio.  For each bag $M$,
+This leads to a stronger goal than measuring competitive ratio.  For each bag $M$,
 let $n^2\Phi(M)$ denote the best leading-order cost of an online policy
 designed specifically for that bag.  We ask whether one policy, chosen before
 seeing $M$, can attain $n^2\Phi(M)$ for every $M$.
@@ -201,7 +186,7 @@ seeing $M$, can attain $n^2\Phi(M)$ for every $M$.
 \begin{theorem}[One algorithm for every bag, informal version of
 \protect\cref{thm:common-upper-instance,thm:blind-instance,thm:bo-instance}]
 \label{thm:intro-instance-optimality}
-Fix a bound on the job lengths.  In each of the three optional models there
+Fix a bound on the job lengths.  In each of the three optional models [wtf?? kazdy teorem ma byt jen pro jeden model] there
 is one randomized algorithm, independent of $M$, whose cost on every bag $M$
 is
 \[
@@ -223,6 +208,7 @@ fraction, and block order minimizing the model's explicit cost.
 \State Run the resulting policy on the remaining randomly ordered jobs.
 \end{algorithmic}
 \end{algorithm}
+[rozepis ten algoritmus a napis jak se lisi od toho z predchozi subsekce]
 
 The important point is the order of the quantifiers: the same algorithm
 works for every bag.  Telling the bag to the competing policy is only a
