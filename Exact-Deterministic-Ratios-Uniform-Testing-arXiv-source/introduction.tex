@@ -162,12 +162,12 @@ The competing algorithm $\mathcal A'$ may even be designed specifically for
 $M$ and told the entire bag in advance.
 \end{theorem}
 
-Both restrictions in the theorem matter.  Without a fixed bound $L$, a
-single rare value can be arbitrarily large and can change the best policy
-while remaining invisible to a sublinear sample.  Randomization is also
-essential: a deterministic algorithm samples a predictable set of labels,
-and an oblivious labeling can make that set unrepresentative.  We return to
-both points in \cref{rem:ot-instance-assumptions}.
+Both assumptions are necessary.  Without a fixed bound $L$, there is no
+randomized instance-optimal algorithm.  Without randomization, there is no
+instance-optimal algorithm even when all lengths lie in $[0,2]$.  The reason
+is simple: a deterministic sample can be made unrepresentative, while an
+unbounded bag may hide one arbitrarily important job.  We prove both claims
+in \cref{thm:ot-instance-impossibility}.
 
 Two points are worth emphasizing.  First, the comparison is made separately
 on every bag.  We must therefore compete not only with one fixed online
