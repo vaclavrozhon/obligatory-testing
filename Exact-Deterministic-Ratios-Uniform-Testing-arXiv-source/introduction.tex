@@ -11,57 +11,92 @@ Should we open another paper, or should we start working?
 Opening a paper may reveal a tiny job that we can finish immediately.  It may
 also reveal a huge job that is best left for the end.  On the other hand,
 looking has a cost.  If one hundred jobs are still unfinished, one unit spent
-opening a paper adds one hundred units to the sum of completion times.  Hence, the machine has to balance two uses of its time: it can learn which jobs are
-short, or it can complete jobs that are already understood.
+opening a paper adds one hundred units to the sum of completion times.  The
+machine must therefore balance two uses of its time: learning which jobs are
+short and completing jobs that are already understood.
 
-This is the scheduling problem studied in this paper, variants of which were already studied [few citations here].  We start with its
-cleanest version, in which every paper has to be opened.  We then allow a job
-to be run without opening its paper.  Depending on what this means, we obtain
-three natural variants.  The same simple ideas---random sampling,
-and shortest-first execution, thresholding---give exact answers in all of them.
+Variants of this question have appeared in both stochastic and adversarial
+scheduling with testing
+~\cite{LeviMagnantiShaposhnik2019,DurrErlebachMegowMeissner2020,DogeasErlebachLiang2024}.
+We start with its cleanest version, in which every paper has to be opened.
+We then allow a job to be run without opening its paper.  Depending on what
+this means, we obtain three further variants.  The same simple
+ideas---random sampling, thresholding, and shortest-first execution---give
+exact answers in all of them.
 
 \subsection{First example: every job has to be tested}
 
-There are $n$ jobs.  Testing job $i$ takes one unit of time and reveals a number $p_i\geq0$.  The job then needs another $p_i$ units of processing.  For now, every job has to be tested, i.e., testing is \emph{obligatory}.
+There are $n$ jobs.  Testing job $i$ takes one unit of time and reveals a
+number $p_i\geq0$.  The job then needs another $p_i$ units of processing; if
+$p_i=0$, it completes with the test.  For now every job has to be tested:
+testing is \emph{obligatory}.  The formal model is given in
+\cref{sec:model}.
 
+We compare an online scheduler with the shortest-first schedule that knows
+all values $p_i$ in advance.  The \emph{competitive ratio} is the online cost
+divided by this offline optimum.  We care about its asymptotic value, so
+lower-order additive terms of size $o(n^2)$ do not matter.
 
-The obligatory-testing model (see XX for formal definition) for total completion time was introduced by
+The obligatory-testing model for total completion time was introduced by
 Dogeas, Erlebach, and Liang~\cite{DogeasErlebachLiang2024}.  Their work and a
 later lower bound of Liang and Liang~\cite{LiangLiang2026} left a gap between
 the best deterministic upper and lower bounds.  They also left the randomized
 problem open.  We close both gaps.
 
-\begin{theorem}[Obligatory testing, informal version of  \cref{thm:det-obligatory,thm:rand-obligatory}] % takhle to udelej i u ostatnich informal theoremu
+\begin{theorem}[Obligatory testing, informal version of
+\protect\cref{thm:det-obligatory,thm:rand-obligatory}]
 \label{thm:intro-obligatory}
-In the obligatory-testing model, the best achievable deterministic asymptotic competitive ratio is
-$1.57\ldots$ by algorithm XX.  Against an adversary that fixes the input before the algorithm draws its random bits, the best randomized ratio is $4/3$ by algorithm XX.
+In the obligatory-testing model, the best deterministic asymptotic
+competitive ratio is $1.57\ldots$.  Against an adversary that fixes the input
+before the algorithm draws its random bits, the best randomized ratio is
+$4/3$.  The two optimal policies are sketched in
+\cref{alg:intro-obligatory}.
 \end{theorem}
 
-Let us briefly describe the two algorithms. 
+\begin{algorithm}[H]
+\caption{The two optimal obligatory-testing policies, informally}
+\label{alg:intro-obligatory}
+\begin{minipage}[t]{0.48\textwidth}
+\textbf{Deterministic: adapt the threshold.}
+\begin{algorithmic}
+\State Test the jobs in any fixed order.
+\State Before each test, update a threshold from the numbers of positive and
+deferred jobs seen so far.
+\State Process the new job now if it is below the threshold; otherwise defer
+it.
+\State Finish all deferred jobs shortest first.
+\end{algorithmic}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\textbf{Randomized: learn the threshold.}
+\begin{algorithmic}
+\State Test a sublinear uniform random sample and keep its positive jobs
+pending.
+\State Learn one threshold; if the sample is inconclusive, use a safe
+test-all-then-SPT fallback.
+\State Otherwise process the sampled jobs at or below the threshold.
+\State Test the remaining jobs in random order; process a job now exactly
+when it is at or below the threshold.
+\State Finish all deferred jobs shortest first.
+\end{algorithmic}
+\end{minipage}
+\end{algorithm}
 
-[sem dej vedle sebe informal verze obou algoritmu]
-
-
-The general idea is to have a threshold algorithm that runs short jobs as soon as possible and leaves long jobs til the end. 
-The difficult part is choosing the threshold.  A deterministic algorithm has
-to update it from the history it has seen.  A randomized algorithm can first
-test a small random sample and use the sample to choose one threshold for the
-rest of the input.  Some safeguards are needed when job lengths are
-unbounded, but this is the whole algorithmic picture.
-
-We compare the online scheduler with the shortest-first schedule that knows
-all values $p_i$ in advance.  As usual, the competitive ratio is the online
-cost divided by this offline optimum.  We are interested in the asymptotic
-ratio: lower-order additive terms, of size $o(n^2)$, do not matter.
-
-
+Both algorithms follow the same principle: process short jobs as soon as
+possible and leave long jobs for the end.  The difficult part is choosing the
+threshold.  The deterministic algorithm must keep updating it from the
+history it has seen.  The randomized algorithm instead learns one threshold
+from a small random sample.  A fallback rule protects it when the sample
+misses an extremely long job, but this is the whole algorithmic picture.  In
+particular, the randomized algorithm is not told the multiset of lengths, and
+the guarantee holds even when the $p_i$ are unbounded.
 
 Let us briefly describe why the two constants are different.  A hard input
 for a deterministic algorithm reveals positive jobs in decreasing levels and
 hides many zero jobs until the end.  If the algorithm finishes the positive
 jobs, it delays the zeros.  If it postpones them, it creates a costly tail.
 The levels can be chosen so that these two losses balance at
-$1.5705740966\ldots$. % tyhle cisla staci vzdy na dve desetinna mista
+$1.57\ldots$.
 
 For randomized algorithms the hard input is simpler.  Half of the jobs have
 length zero and half have length two, and their labels are shuffled.  Until
