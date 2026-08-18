@@ -86,22 +86,17 @@ positive jobs processed immediately and $d_i$ the number deferred.
 \caption{Learned randomized threshold}
 \label{alg:intro-obligatory-rand}
 \begin{algorithmic}
-\State Shuffle the jobs and test $o(n)$ of them to estimate the distribution
-of job lengths.
-\State Use the fixed safety cutoff $B=32$; values above $B$ are always
-deferred.
-\State Treat this estimate as exact.  If $P$ has the estimated distribution,
-then for each threshold $0\le t\le B$ put
+\State Shuffle the jobs and test $o(n)$ of them to estimate the random variable
+$X$ of job lengths distributions.
+\State Treat this estimate as exact.  For each threshold $0\le t\le 100$ put
 \[
- a(t)=\Pr(P\le t),\qquad
- m(t)=\mathbb E[P\mathbf 1_{P\le t}].
+ a(t)=\Pr(X\le t),\qquad
+ m(t)=\mathbb E[X\mathbf 1_{X\le t}].
 \]
-\State Testing one random job and immediately processing it when $P\le t$
-completes expected mass $a(t)$ using expected work $1+m(t)$.  Put
 \[
  \widehat\rho=\max_t\frac{a(t)}{1+m(t)}.
 \]
-\State If $\widehat\rho<2/B$, test every
+\State If $\widehat\rho<1/100$, test every
 remaining job and then finish all revealed jobs shortest first.
 \State Otherwise set $T=1/\widehat\rho$.  Process the sampled jobs with
 $p\le T$.  Keep testing jobs, processing them immediately when $p\le T$ and
@@ -140,54 +135,24 @@ bound $4/3$.  The formal argument is in \cref{sec:random-obligatory}.
 \subsection{One algorithm for every bag}
 \label{sec:intro-obligatory-instance}
 
-The ratio $4/3$ describes only the hardest input.  A slight variant of the
-same randomized algorithm says more.  Consider the job lengths as a bag $M$, with the labels
-hidden by a shuffle.  If this bag consists mostly of short jobs, the best
-threshold is quite different from the best threshold for a bag with a long
-tail.  Nevertheless, the sampled-threshold idea from
-\cref{alg:intro-obligatory-rand} learns the right one in both cases.
+Let us consider alg2 again. The competitive ratio $4/3$ describes only the hardest input. This kind of guarantee is somewhat unsatisfactory -- perhaps in practice, many inputs we are going to deal with are going to be very simple to deal with in some sense -- perhaps $p_i$s are all going to be very large so the obvious strategy of first testing everything and then running all jobs shortest-first is going to be essentially 1-competitive with the offline optimum. Yet, we are only proving 1.33... competitivity. 
 
-To state this precisely, imagine first that a competing online policy is
-told the whole bag $M$, but not which length belongs to which label.  It can
-compute the best possible threshold for this particular bag.  Write
-$n^2\Phi_{\rm OT}(M)$ for its optimal leading cost.  The value is explicit:
-sort the lengths, scan the prefixes, and choose the prefix that completes the
-most jobs per unit of testing and processing work.
+Fortunately, a slight variant of alg2 is \emph{instance-optimal}. 
+
+
 
 \begin{theorem}[Obligatory-testing instance optimality, informal version of
 \protect\cref{thm:obligatory-instance}]
 \label{thm:intro-obligatory-instance}
-There is one randomized algorithm, independent of both $M$ and its bound.
-For every fixed $L$, its cost on every bag $M\subseteq[0,L]$ is
+A variant of alg2 has the following property. Assuming all job lengths are at most a constant $L$, on any instance $M$ and any other online algorithm $A'$ we have 
 \[
-                 n^2\Phi_{\rm OT}(M)+o(n^2).
+                 cost(A) \le cost(A') + o_L(n^2)
 \]
-No online policy has a smaller leading cost on $M$, even if that competing
-policy is told the entire bag in advance.  The algorithm is a variant of
-\cref{alg:intro-obligatory-rand} with a slowly growing safety cutoff.
 \end{theorem}
 
-The difference is only in the safeguard.  Algorithm~2 uses the fixed cutoff
-$B=32$, which gives its uniform $4/3$ guarantee even when processing times
-are unbounded.  For instance optimality we replace it by
-$B_n=32+n^{1/20}$.  Every other step---sampling, maximizing completion
-density, thresholding, and fallback---is unchanged.  For every fixed bound
-$L$, eventually $B_n>L$, so the cutoff no longer distorts any bag
-$M\subseteq[0,L]$ and the sample learns the bag-specific optimum.  The sample
-has sublinear size and therefore costs only $o(n^2)$.
+We make two points here. First, the other algorithm A' can be assumed to know $M$; while we are comparing ourselves to online algorithms, we are comparing ourselves to all of them on any single instance, hence we are comparing ourselves to those optimized for any particular M. The fact this is possible is because the first step of alg2 subsamples the input and hence, essentially, our algorithm learns M anyway and can optimize its subsequent behavior against it. 
 
-Thus instance optimality is not another model.  It is a stronger way of
-judging the same sampled-threshold design: instead of comparing it only on
-the worst bag, we compare it with the best online policy separately on every
-bag.  The
-worst value of this bag-by-bag comparison is $4/3$, attained by the same
-half-zero, half-two bag used in the lower bound above.  The rigorous
-benchmark and proof are in \cref{sec:obligatory-instance}.
-
-In a formulation where the algorithm sees fixed public labels, the private
-shuffle is essential for obtaining a representative sample.  In the
-equivalent bag formulation, where the next untouched job is already chosen
-uniformly, this randomization is built into the model.
+Hence, it is perhaps not too suprising that instance-optimal algorithm \emph{exists}; after all, we could consider a meta-algorithm that 1) estimates M 2) runs optimal algorithm for M. Thus the interesting part of thmABOVE is that our alg2 is actually a quite straightforward algorithm, and not just a theoretical construction
 
 \subsection{Generalizations of the model}
 \label{sec:intro-optional-map}
