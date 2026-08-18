@@ -144,22 +144,15 @@ We study this question for one machine and total completion time.  We
 consider three natural rules: every job must be tested; an untested job can
 be run for a common upper bound; or it can be run blindly for its true hidden
 length.  Together these models separate the two possible benefits of a
-test---learning which job to do next and making the tested job faster.
+test---learning which job to do next and making the tested job faster. [hm ale je spravne tomu rikat test pokud to dela "make job faster"? ]
 
-We give a nearly complete answer.  In the obligatory model the exact
-asymptotic ratios are $1.570574\ldots$ for deterministic algorithms and
-$4/3$ for randomized algorithms.  When untested execution takes a common
-time $u$, we determine the exact deterministic and randomized ratios for
-every $u$; both answers are explicit curves.  We also go beyond worst-case
-ratios.  We design one randomized policy that is asymptotically optimal for
-\emph{every} bounded collection of job lengths, not merely for the worst one.
-The policy has a simple shape: sample, learn a threshold, and then execute a
-few ordered blocks.
-\end{abstract}
+We give nearly complete answers for these various models, improving upon several lines of earlier work [XX]. [asi bych nejak zminil ze ten model jsme si nevycucali z prstu pro tenhle paper] \end{abstract}
 
 \tableofcontents
 
 \section{Introduction and proof intuition}
+
+[mozna bych zacal tim ze nas zajima soucet casu at je jasny ze zaklad je seradit od nejkratsiho]
 
 Imagine a queue of jobs whose lengths are written on folded pieces of paper.
 Opening one piece of paper takes one unit of machine time.  The information
@@ -171,9 +164,7 @@ units of total waiting time.
 This leaves a basic dilemma.  Should we keep learning, or should we stop
 looking and start completing jobs?  The dilemma appears in diagnostic
 testing, query optimization, and any setting where work can be inspected or
-improved before it is executed.  Many of the optimal policies we find are
-surprisingly simple: sample a few jobs, compare two ways of using the
-machine, and then follow a threshold.
+improved before it is executed.  
 
 There are two reasons why a test can help.  First, it can give
 \emph{information}: we learn the true length before deciding when to run the
@@ -196,6 +187,11 @@ common upper bound & run for a known time $u$ & replace $u$ by the revealed $p_i
 \bottomrule
 \end{tabular}
 \end{center}
+
+Many of the optimal policies we find are
+surprisingly simple: sample a few jobs, compare two ways of using the
+machine, and then follow a threshold.
+
 
 \subsection{Warm-up: every job must be tested}
 
