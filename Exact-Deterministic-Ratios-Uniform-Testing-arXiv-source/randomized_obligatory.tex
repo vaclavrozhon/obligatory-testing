@@ -16,9 +16,17 @@ There is a universal randomized nonanticipating algorithm, depending only on
 $n$, such that every fixed vector $p\in[0,\infty)^n$ satisfies
 \begin{equation}
  \EE\ALG(p)
+ \le \frac43\OPT(p)+O(n^{19/10})
+ \le\left(\frac43+O(n^{-1/10})\right)\OPT(p).
+ \label{eq:rand-obligatory-upper}
+\end{equation}
+The same construction with the fixed cutoff $B=32$ instead satisfies the
+fully explicit estimate
+\begin{equation}
+ \EE\ALG_{32}(p)
  \le \frac43\OPT(p)+20378n^{7/4}
  \le\left(\frac43+40756n^{-1/4}\right)\OPT(p).
- \label{eq:rand-obligatory-upper}
+ \label{eq:rand-obligatory-fixed-upper}
 \end{equation}
 Conversely, for every randomized algorithm and every sufficiently large even
 $n$, some fixed labeling of $n/2$ zero jobs and $n/2$ jobs of processing
@@ -37,8 +45,10 @@ For an announced multiset, the algorithmic core is the processing-time
 prefix with maximum completions per unit discovery work.  Testing jobs in a
 uniformly random order gives an exact pair identity and a $4/3$ algebraic
 certificate.  The universal algorithm learns an approximately separated
-prefix from a sublinear sample; a fixed cutoff and a fallback schedule
-protect it from unbounded values missed by the sample.  For the lower bound,
+prefix from a sublinear sample; a slowly growing cutoff and a fallback
+schedule protect it from unbounded values missed by the sample.  The growing
+cutoff will also let the same algorithm attain the instance-specific optimum
+on every bounded multiset in \cref{sec:obligatory-instance}.  For the lower bound,
 we randomly label half zero and half length-two jobs.  A balanced-bridge
 discrepancy bound limits how fast any algorithm can complete them.  The next
 subsection begins the formal proof.
@@ -227,11 +237,7 @@ If all early values are at most $R\ge1$, then $m\le aR$ and therefore
 
 \subsection{Learning the prefix from a sublinear sample}
 
-Fix the universal cutoff
-\begin{equation}
- B=32.
- \label{eq:rand-cutoff}
-\end{equation}
+We first analyze the algorithm with an arbitrary safety cutoff $B\ge32$.
 For an integer $d$, let $\eta=B/d$.  Keep zero as a separate category,
 partition $(0,B]$ into the consecutive bins
 $((b-1)\eta,b\eta]$, and add one overflow category for values above $B$.
@@ -370,7 +376,8 @@ Therefore, on a good learned sample,
 \end{equation}
 
 On a good fallback sample, comparison of sample and population densities
-shows that the true maximum-density reciprocal satisfies $\theta_*\ge B/4=8$.
+shows that the true maximum-density reciprocal satisfies
+$\theta_*\ge B/4\ge8$.
 The exact threshold inequalities imply
 \begin{equation}
  K(p)\ge\frac{(\theta_*-1)^2}{\theta_*},
@@ -393,15 +400,24 @@ excess over $4\OPT/3$, not raw cost.  In learned mode every early value is at
 most $B/2$, so \cref{eq:rand-bounded-early} bounds the stationary excess by
 $(B/4)n^2$; in fallback mode \cref{eq:rand-fallback-crude} bounds it by
 $n^2/2$.  Averaging \cref{eq:rand-good-learned} and these bad-event bounds,
-and using \cref{eq:rand-bad-probability}, yields the explicit uniform estimate
+and using \cref{eq:rand-bad-probability}, yields the uniform estimate
 \begin{equation}
  \EE\ALG
  \le\frac43\OPT
- +n^2\!\left[9472\sqrt{\frac{d+2}{k}}+\frac{704}{d}\right]
- +17(nk/2+k^2).
+ +n^2\!\left[
+   \frac{B^2(B+5)}4\sqrt{\frac{d+2}{k}}
+   +\frac{2B(B+1)}{3d}\right]
+ +(1+B/2)(nk/2+k^2).
  \label{eq:rand-explicit-upper}
 \end{equation}
-For $n\ge12^4$, the floors in \cref{eq:rand-parameters} give
+Indeed, the good learned contribution is at most
+$B^2n^2\EE\Delta+2B(B+1)n^2/(3d)$.  On a bad sample the excess is at most
+$(B/4)n^2$ in learned mode and $n^2/2$ in fallback mode, while
+$\Prob(G^c)\le B(B+1)\EE\Delta$.  These are exactly the two coefficients in
+\cref{eq:rand-explicit-upper}; the sample-first term is paid only once.
+
+There are two useful specializations.  First take $B=32$.  For $n\ge12^4$,
+the floors in \cref{eq:rand-parameters} give
 $\sqrt{(d+2)/k}\le2n^{-1/4}$, $1/d\le2n^{-1/4}$, and
 $k\le n^{3/4}$.  The right-hand side of
 \cref{eq:rand-explicit-upper} is at most
@@ -411,7 +427,23 @@ $k\le n^{3/4}$.  The right-hand side of
 \end{equation}
 For smaller $n$, test-all-then-SPT is covered by the same deliberately loose
 constant.  Finally $\OPT\ge n^2/2$ proves the multiplicative form in
-\cref{eq:rand-obligatory-upper}.
+\cref{eq:rand-obligatory-fixed-upper}.  This is the version formalized in
+Lean.
+
+For the universal policy used in the introduction, instead take
+\begin{equation}
+ B_n=32+n^{1/20}.
+ \label{eq:rand-growing-cutoff}
+\end{equation}
+Then the three normalized error terms in
+\cref{eq:rand-explicit-upper} are respectively
+\begin{align*}
+ O(n^{3/20}n^{-1/4})&=O(n^{-1/10}),&
+ O(n^{1/10}n^{-1/4})&=O(n^{-3/20}),\\
+ O(n^{1/20}n^{-1/4})&=O(n^{-1/5}).
+\end{align*}
+Thus its additive error is $O(n^{19/10})$.  Using again
+$\OPT\ge n^2/2$ proves \cref{eq:rand-obligatory-upper}.
 
 \subsection{The balanced binary lower bound}
 
@@ -466,5 +498,6 @@ $\EE\ALG\ge n^2-O(n^{3/2})$.  Every input in the distribution has
 Conditioning a randomized algorithm on its private seed and averaging over
 the finite placement distribution shows that one fixed labeling attains at
 least this average.  That labeling is chosen before the private seed and is
-therefore an oblivious input.  Together with \cref{eq:rand-final-upper}, this
-completes the proof of \cref{thm:rand-obligatory}.
+therefore an oblivious input.  Together with
+\cref{eq:rand-obligatory-upper}, this completes the proof of
+\cref{thm:rand-obligatory}.

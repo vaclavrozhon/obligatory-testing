@@ -58,17 +58,22 @@ ALG <= R_* OPT + C n
 
 with one absolute constant `C` independent of `u`.
 
-The optional common-upper theorem is per parameter: it gives the full
+The deterministic revealing-optimization theorem is per parameter: it gives the full
 six-branch function `V(u)`, not only its worst value.  The three upper-bound
 policies are specified in numbered `algorithmic` environments.  Its
 mixed-regime upper bound is presented by a direct cap-reserve potential and
 accompanied by an independent adjacent-exchange cross-check.
 
-The randomized results give the exact four-piece common-upper curve, the
-sharp unbounded obligatory ratio `4/3`, and instance-optimal leading values
-for the bounded blind-execution, common-upper, and blind-optimization models.
-The full common-upper instance-optimal proof is Section 6 of the manuscript;
-its outer worst-case optimization is the separate four-piece curve in
-Section 7.  The blind-execution theorem is formalized in Lean.  The
+The randomized results give the exact four-piece revealing-optimization
+curve, the sharp unbounded obligatory ratio `4/3`, and instance-optimal
+leading values for bounded obligatory testing, blind execution, revealing
+optimization, and blind optimization.  In obligatory testing, the same
+slowly-growing-cutoff algorithm gives both the unbounded worst-case `4/3`
+guarantee and the bounded-bag instance-optimal guarantee.
+The full revealing-optimization instance-optimal proof is Section 7 of the
+manuscript; its outer worst-case optimization is the separate four-piece
+curve in Section 8.  The blind-execution theorem is formalized in Lean.  The
 blind-optimization theorem and its exact curve, which is unbounded as
-$u\to\infty$, are currently analytic only.
+$u\to\infty$, are currently analytic only.  For obligatory testing, Lean
+checks the fixed-cutoff `4/3` theorem and the shared fluid algebra; the
+growing-cutoff instance-optimal assembly is currently analytic.

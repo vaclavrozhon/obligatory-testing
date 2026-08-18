@@ -2,7 +2,7 @@
 \label{sec:blind-optimization}
 
 We finally separate the two benefits that were bundled together in the
-common-upper model.  Raw execution still takes the known time $u$, and one
+revealing-optimization model.  Raw execution still takes the known time $u$, and one
 unit of optimization still reduces the processing time to $p_i\in[0,u]$.
 The difference is that optimization does not reveal $p_i$.  An optimized job
 must be started blindly and its duration becomes known only when it finishes.
@@ -314,7 +314,7 @@ $(u^2+u-1)/(u-1)=u+2+1/(u-1)$ gives
 \begin{figure}[H]
  \centering
  \includegraphics[width=0.78\textwidth]{blind_optimization_curve.pdf}
- \caption{Revealing $p_i$ keeps the randomized common-upper ratio bounded and
+ \caption{Revealing $p_i$ keeps the randomized revealing-optimization ratio bounded and
  eventually gives the $4/3$ plateau.  If optimization changes the processing
  time but does not reveal it before execution, the exact ratio instead grows
  as $\sqrt u/2$.}

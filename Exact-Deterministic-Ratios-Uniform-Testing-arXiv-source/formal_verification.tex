@@ -7,7 +7,7 @@ imports the complete deterministic, randomized-obligatory, and
 blind-execution developments.  The source contains no \texttt{sorry},
 \texttt{admit}, or project-defined axiom.  This section records the precise
 proof boundary; \cref{app:lean-formalization} gives the detailed dictionary
-for the deterministic exact curve.  The common-upper instance theorem of
+for the deterministic exact curve.  The revealing-optimization instance theorem of
 \cref{sec:common-upper-instance} and its randomized curve in
 \cref{sec:random-common-upper} are currently analytic only and are not
 included in the machine-checked claims below.  The blind-optimization
@@ -34,7 +34,8 @@ theorem unknownMultiset_operational_expectedCost_le_20378 ... :
     4 / 3 * finiteObligatoryOPT p + 20378 * R ^ 7
 \end{lstlisting}
 At the concrete parameter choice $n\le R^4$, this is
-\cref{eq:rand-final-upper}.  The proof below this interface includes the
+\cref{eq:rand-final-upper}, equivalently the fixed-cutoff estimate
+\cref{eq:rand-obligatory-fixed-upper}.  The proof below this interface includes the
 maximum-density optimizer, exact and robust $4/3$ certificates, threshold
 closure for sample-empty bins, finite hypergeometric concentration, the
 cutoff-$32$ fallback, sample-first accounting, bad-event excess, and
@@ -48,6 +49,16 @@ binary input whose average cost has coefficient $4n/(3n+5)$.  The formal
 development identifies its denominator with the literal clairvoyant
 obligatory optimum.  Since $4n/(3n+5)\to4/3$, the upper and lower exports give
 the machine-checked sharp asymptotic value.
+
+The slowly growing cutoff in \cref{eq:rand-growing-cutoff} and the full
+instance-optimal assembly of \cref{sec:obligatory-instance} are analytic
+extensions of this checked fixed-cutoff theorem.  Lean verifies their shared
+finite stationary-cost identity, maximum-density algebra, and fluid
+$4/3$ certificate in \texttt{RandomizedAnnouncedFluid} and the randomized
+operational modules.  It does not currently export the whole-measure
+quantile transfer \cref{eq:ot-quantile-transfer} or an end-to-end theorem for
+\cref{thm:obligatory-instance}; those are not included in the
+machine-checked claim.
 
 \subsection{Blind-execution instance optimality}
 

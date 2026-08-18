@@ -144,10 +144,11 @@ it may reveal nothing useful while every other job waits.  When should the
 machine keep looking, and when should it start working?
 
 We study this question for one machine and total completion time.  We
-consider four natural rules: every job must be tested; an untested job can
-be run for a common upper bound; it can be run blindly for its true hidden
-length; or a unit-time optimization can shorten it without revealing the new
-length.  Together these models separate the two possible benefits of spending
+consider four natural rules: every job must be tested; a unit-time revealing
+optimization can replace a raw time $u$ by a shorter revealed length; an
+untested job can be run blindly for its true hidden length; or a unit-time
+optimization can shorten it without revealing the new length.  Together these
+models separate the two possible benefits of spending
 one unit before execution: learning which job to do next and making the job
 faster.
 
@@ -201,7 +202,7 @@ model & without a test & what the test buys \\
 \midrule
 obligatory testing & the job cannot be run & access to the job \\
 blind execution & run for its hidden length $p_i$ & see $p_i$ before committing \\
-common upper bound & run for a known time $u$ & replace $u$ by the revealed $p_i\le u$ \\
+revealing optimization & run for a known time $u$ & replace $u$ by the revealed $p_i\le u$ \\
 blind optimization & run for a known time $u$ & replace $u$ by a still-hidden $p_i\le u$ \\
 \bottomrule
 \end{tabular}
@@ -301,9 +302,9 @@ multiset $M$ pays
                  n^2\Phi(M)+o(n^2).
 \]
 No online algorithm has a smaller leading cost on $M$.  This holds when an
-untested job runs blindly for its true length, when it runs for a common upper
-bound $u$, and when optimization shortens it without revealing the new
-length.  The three models have different explicit functions $\Phi$.
+untested job runs blindly for its true length, when revealing optimization
+replaces a raw time $u$, and when optimization shortens it without revealing
+the new length.  The three models have different explicit functions $\Phi$.
 This is the informal version of
 \cref{thm:common-upper-instance,thm:blind-instance,thm:bo-instance}.
 \end{theorem}
@@ -394,14 +395,14 @@ For a fixed $q$, the leading cost of \cref{alg:intro-blind} is a quadratic
 $F_M(q)$, and $\Phi(M)=\min_{0\le q\le1}F_M(q)$.  The full result is
 \cref{thm:blind-instance}.
 
-\subsection{Testing for speed: a common upper bound}
+\subsection{Testing for speed: revealing optimization}
 
 In the second optional model, every job can be run immediately for a known
 raw time $u$.  Testing for one unit reveals an optimized time $p_i\le u$.
 The scheduler may then use the shorter description $p_i$, possibly after
 putting the job aside.  Here a test buys speed as well as information.
 
-This adversarial common-upper model was introduced by D{\"u}rr et
+This adversarial revealing-optimization model was introduced by D{\"u}rr et
 al.~\cite{DurrErlebachMegowMeissner2020}.  Their bounds already exposed the
 nonmonotone difficulty of intermediate $u$; our two curves give the exact
 deterministic and oblivious-randomized answers for every $u$.
@@ -415,7 +416,7 @@ The deterministic optimum uses three algorithmic shapes.  Their exact
 cutoffs are part of the curve theorem; the useful picture is the following.
 
 \begin{algorithm}[H]
-\caption{Deterministic policies for a common upper bound, schematically}
+\caption{Deterministic revealing-optimization policies, schematically}
 \label{alg:intro-common-upper-det}
 \begin{algorithmic}
 \State For small $u$, run every job raw and do not test.
@@ -433,7 +434,7 @@ are known to take at most $u$, so they are processed shortest first before
 the untouched jobs are run raw.
 
 \begin{algorithm}[H]
-\caption{Instance-optimal randomized policy for a common upper bound}
+\caption{Instance-optimal randomized revealing-optimization policy}
 \label{alg:intro-common-upper}
 \begin{algorithmic}
 \State Test a sublinear random pilot and estimate the bag of optimized lengths.
@@ -453,7 +454,7 @@ gives the randomized curve below.
 Matching hard inputs for the deterministic curve move from zero/$u$ mixtures
 to capped versions of the decreasing-level construction from the warm-up.
 
-\begin{theorem}[Common-upper curves, informal]
+\begin{theorem}[Revealing-optimization curves, informal]
 \label{thm:intro-common-upper-curves}
 For every $u>0$, the exact deterministic and randomized asymptotic
 competitive ratios are respectively the six-piece and four-piece curves in
@@ -550,11 +551,11 @@ processing time per unit weight
 four-block blind policy has a similar shape, but our collection of lengths is
 adversarial, need not converge, and is not announced to the universal policy.
 
-The adversarial common-upper model was introduced by Dürr et
+The adversarial revealing-optimization model was introduced by Dürr et
 al.~\cite{DurrErlebachMegowMeissner2020}.  For one machine and total
 completion time they obtained deterministic bounds, including the
 $1.8668\ldots$ guarantee for binary values under a common upper bound.
-Our deterministic theorem closes the common-upper gap for arbitrary
+Our deterministic theorem closes the revealing-optimization gap for arbitrary
 $p_i\in[0,u]$ and every fixed $u$.  Our randomized theorem gives a separate
 exact four-piece curve against an oblivious adversary.  Related variants
 allow nonuniform test times~\cite{AlbersEckl2021,LiuLiuWongZhang2023,
@@ -580,13 +581,13 @@ arbitrary bounded multiset and obtain a distribution-sensitive benchmark and
 four-block policy.  If no tests are available and processing times are
 revealed only at completion, one obtains the classical nonclairvoyant model
 of Motwani, Phillips, and Torng~\cite{MotwaniPhillipsTorng1994}.  These
-semantics differ from common-upper raw execution, which always lasts the
+semantics differ from raw execution in revealing optimization, which always lasts the
 declared upper bound, regardless of the hidden optimized value.
 
 The rest of the paper first fixes the models and offline benchmarks in
 \cref{sec:model}.  Each following main section opens with the precise theorem
 it proves and a short proof overview.  We treat deterministic obligatory
-testing and the finite common-upper curve first, then the common-upper
+testing and the finite revealing-optimization curve first, then the revealing-optimization
 instance benchmark and its randomized worst-case curve, randomized
 obligatory testing, blind execution, and finally non-revealing optimization.
 The machine-checked scope is summarized in \cref{sec:formalization}.
@@ -602,7 +603,7 @@ The machine-checked scope is summarized in \cref{sec:formalization}.
 
 The obligatory endpoint had a gap between the best known deterministic lower
 and upper bounds \cite{DogeasErlebachLiang2024,LiangLiang2026}.  The finite
-common-upper problem likewise had no exact answer for arbitrary revealed
+revealing-optimization problem likewise had no exact answer for arbitrary revealed
 values \cite{DurrErlebachMegowMeissner2020}.  We close both gaps in the
 natural size-asymptotic convention.
 
@@ -656,7 +657,7 @@ $(c,m)$ satisfying
 \end{equation}
 with $2/(\zstar-1)\le c\le1/\varphi$ and $0\le m\le1/\varphi$.
 
-\begin{theorem}[Finite common-upper curve]
+\begin{theorem}[Finite revealing-optimization curve]
 \label{thm:optional-intro}
 For every fixed $u>0$, the optimal deterministic size-asymptotic competitive
 ratio is
@@ -689,10 +690,10 @@ four-piece curve.  Let $\urand>1$ be the unique root of
  \label{eq:intro-random-transition}
 \end{equation}
 
-\begin{theorem}[Randomized finite common-upper curve]
+\begin{theorem}[Randomized finite revealing-optimization curve]
 \label{thm:random-common-upper-intro}
 For every fixed $u>0$, the optimal randomized size-asymptotic competitive
-ratio in the common-upper model against an oblivious adversary is
+ratio in the revealing-optimization model against an oblivious adversary is
 \begin{equation}
  \Rrand(u)=
  \begin{cases}
@@ -797,8 +798,8 @@ estimates.
 \toprule
 model & adversary / knowledge & benchmark & result \\
 \midrule
-common upper $u$ & deterministic & clairvoyant $\OPT$ & exact six-piece curve $\V(u)$ \\
-common upper $u$ & randomized oblivious; unknown $M$ & clairvoyant $\OPT$ & exact four-piece curve $\Rrand(u)$ \\
+revealing optimization & deterministic & clairvoyant $\OPT$ & exact six-piece curve $\V(u)$ \\
+revealing optimization & randomized oblivious; unknown $M$ & clairvoyant $\OPT$ & exact four-piece curve $\Rrand(u)$ \\
 obligatory & deterministic & clairvoyant $\OPT$ & exact $\Rstar$ \\
 obligatory & randomized oblivious; unknown $M$ & clairvoyant $\OPT$ & exact asymptotic ratio $4/3$ \\
 blind, $p\le L$ & randomized oblivious; unknown $M$ & announced minimax value & $\Phiopt(D_M)\pm o_L(1)$ after normalization by $n^2$ \\
@@ -968,7 +969,7 @@ coincidence.
 
 \subsection{Randomized intuition: completion density and sampling}
 
-The randomized common-upper and obligatory results have a different core.
+The randomized revealing-optimization and obligatory results have a different core.
 Suppose for a moment that the multiset is announced.  Choose a
 processing-time prefix $E$, test jobs in a uniformly random order, process a
 revealed job immediately exactly when it lies in $E$, and sort the remaining
@@ -1148,7 +1149,7 @@ to $p_j$ without revealing $p_j$; the optimized job is subsequently run
 blindly, possibly after a delay.  Its value becomes observable only when that
 execution finishes.  Raw execution reveals no hidden value.
 
-\item[Common-upper execution $\mathsf{CU}(u)$.]
+\item[Revealing optimization $\mathsf{RO}(u)$.]
 Again $p_j\in[0,u]$, and raw execution takes the known time $u$.  The other
 option is a unit test that reveals $p_j$, followed, possibly after a delay,
 by processing for $p_j$.  Thus the preliminary action provides both the
@@ -1170,7 +1171,7 @@ objective is
                               \sum_{j=1}^n C_j.
 \]
 
-Obligatory testing can be viewed as the limit of the common-upper model in
+Obligatory testing can be viewed as the limit of revealing optimization in
 which raw execution becomes unavailable.  We use this only as intuition:
 the obligatory theorems and their algorithms are proved directly, without
 interchanging the limits $u\to\infty$ and $n\to\infty$.
@@ -1182,7 +1183,7 @@ when they are clear.
 
 \subsection{Information and adversaries}
 
-The deterministic common-upper results allow the usual adversarial input and
+The deterministic revealing-optimization results allow the usual adversarial input and
 use adaptive revelation only as a lower-bound device that is frozen by
 \cref{lem:replay}.  The randomized results use an \emph{oblivious} adversary:
 the labeled processing-time vector is fixed before the algorithm draws its
@@ -1212,7 +1213,7 @@ and associate with job $j$ the model-dependent \emph{effective length}
  \begin{cases}
   1+p_j, & \mathsf{OT},\\
   p_j, & \mathsf{BE}(L),\\
-  q_u(p_j), & \mathsf{BO}(u)\text{ or }\mathsf{CU}(u).
+  q_u(p_j), & \mathsf{BO}(u)\text{ or }\mathsf{RO}(u).
  \end{cases}
  \label{eq:model-effective-length}
 \end{equation}
@@ -1231,7 +1232,7 @@ in this order and has value
  \label{eq:optional-opt-pair}
 \end{align}
 In $\mathsf{OT}$ it tests every job.  In $\mathsf{BE}(L)$ it runs every job
-blindly.  In $\mathsf{BO}(u)$ and $\mathsf{CU}(u)$ it uses raw mode when
+blindly.  In $\mathsf{BO}(u)$ and $\mathsf{RO}(u)$ it uses raw mode when
 $u\le1+p_j$ and the unit preliminary action followed by processing otherwise.
 \end{lemma}
 
@@ -1250,7 +1251,7 @@ over $k$ and then collecting the contribution of each unordered pair gives
 the two formulas.
 \end{proof}
 
-The common-upper and blind-optimization models have the same offline
+The revealing-optimization and blind-optimization models have the same offline
 effective lengths.  Their difference is entirely online: a test reveals
 $p_j$, whereas optimization does not.  Blind execution is different even
 offline, because a clairvoyant scheduler can run a job for $p_j$ without
@@ -1278,7 +1279,7 @@ In particular,
 \begin{equation}\label{eq:opt-n2}
  \OPT_{\mathsf{OT}}\ge\frac{n(n+1)}2.
 \end{equation}
-For $\mathsf{BO}(u)$ and $\mathsf{CU}(u)$, $q_j\ge\min\{u,1\}$ gives
+For $\mathsf{BO}(u)$ and $\mathsf{RO}(u)$, $q_j\ge\min\{u,1\}$ gives
 \begin{equation}\label{eq:optional-opt-n2}
  \OPT_u\ge\min\{u,1\}\frac{n(n+1)}2.
 \end{equation}
@@ -1380,6 +1381,8 @@ half of the theorem; the second proves the upper half.
 
 \input{randomized_obligatory}
 
+\input{obligatory_instance}
+
 \input{optional_lower_and_curve}
 
 \input{optional_upper}
@@ -1401,7 +1404,7 @@ research system~\cite{GrebikEtAl2026Bolzano}.  That preliminary result
 motivated the present project.  Most of the subsequent conjecture generation,
 proof development, counterexample search, exposition, and Lean formalization
 was carried out with substantial assistance from OpenAI's GPT-5.6 through
-interactive Codex sessions.  In particular, the randomized common-upper
+interactive Codex sessions.  In particular, the randomized revealing-optimization
 curve was developed in a separate model run and then integrated with the
 instance-optimal framework.  The author selected the research directions,
 reviewed and revised the arguments, and takes responsibility for the claims

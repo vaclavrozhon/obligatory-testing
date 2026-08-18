@@ -1,0 +1,345 @@
+\section{Obligatory-testing instance optimality}
+\label{sec:obligatory-instance}
+
+The goal of this section is to prove \cref{thm:obligatory-instance}, the
+rigorous version of the ``one algorithm for every bag'' statement
+\cref{thm:intro-obligatory-instance}.  The algorithm is not a new one: it is
+the growing-cutoff policy from \cref{sec:random-obligatory}.  The new point is
+that on every bounded bag it attains the best leading cost available even to
+a policy that is told the bag in advance.
+
+For a multiset $M=\{p_1,\ldots,p_n\}$, write $D_M$ for its empirical
+probability measure.  We define below an explicit number
+$\Phi_{\rm OT}(D_M)$.  It is obtained by scanning the processing times in
+increasing order, choosing the prefix with the largest number of completions
+per unit of discovery work, and evaluating the stationary policy for that
+prefix.
+
+\begin{theorem}[Obligatory-testing instance optimality]
+\label{thm:obligatory-instance}
+There is a single randomized nonanticipating policy $\mathcal A^*$, depending
+only on $n$ and not on the multiset, with the following property.  For every
+fixed $L<\infty$ there is a deterministic sequence
+$\eps_L(n)\to0$ such that, for every size-$n$ multiset
+$M\subseteq[0,L]$ and every fixed labeling $\sigma$,
+\begin{equation}
+ \EE C_{\mathcal A^*}(\sigma(M))
+ \le n^2\Phi_{\rm OT}(D_M)+\eps_L(n)n^2.
+ \label{eq:ot-instance-upper}
+\end{equation}
+Conversely, for every randomized policy $\mathcal A$, even one told $M$ in
+advance, some fixed oblivious labeling $\sigma$ satisfies
+\begin{equation}
+ \EE C_{\mathcal A}(\sigma(M))
+ \ge n^2\Phi_{\rm OT}(D_M)-\eps_L(n)n^2.
+ \label{eq:ot-instance-lower}
+\end{equation}
+One may take $\eps_L(n)=O_L(n^{-1/5})$.  Thus $\mathcal A^*$ is
+asymptotically instance-optimal, uniformly over all bounded bags.
+\end{theorem}
+
+The upper estimate will have order $O_L(n^{-1/5})$.  The announced lower
+bound is sharper, of order $O_L(n^{-1/2}\sqrt{\log(n+2)})$; we use the slower
+common rate only to keep the theorem statement symmetric.
+
+\subsection{The maximum-density benchmark}
+
+We first define the benchmark for an arbitrary finitely supported
+probability distribution $D$ on $[0,\infty)$.  A discovery module is
+described by numbers $g(p)\in[0,1]$ on the support, with $g(0)=1$.  It tests
+one unit mass of jobs and processes the selected positive outcomes.  Its
+completed mass and work are
+\begin{equation}
+ a(g)=\int g(p)\,dD(p),\qquad
+ w(g)=1+\int p g(p)\,dD(p).
+ \label{eq:ot-module-aw}
+\end{equation}
+Choose $g_*$ maximizing $a(g)/w(g)$ and put
+\begin{equation}
+ \rho_* =\frac{a_*}{w_*},\qquad
+ \theta_*=\frac1{\rho_*},\qquad
+ \nu=(1-g_*)D.
+ \label{eq:ot-module-threshold}
+\end{equation}
+The one-coordinate addition and removal calculation from
+\cref{lem:rand-density-threshold} shows that $g_*=1$ below $\theta_*$ and
+$g_*=0$ above $\theta_*$.  Only an atom at equality may be split.  For an
+empirical measure one may equivalently sort the occurrences and maximize
+\begin{equation}
+ \frac{|E|/n}{1+n^{-1}\sum_{i\in E}p_i}
+ \label{eq:ot-empirical-density}
+\end{equation}
+over processing-time prefixes $E$ containing all zeros.  A tied boundary
+class may be placed on either side.
+
+Define
+\begin{equation}
+ \boxed{
+ \Phi_{\rm OT}(D)
+ =w_*\left(1-\frac{a_*}{2}\right)
+  +\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q).}
+ \label{eq:ot-Phi}
+\end{equation}
+For $D=D_M$ and a whole-occurrence maximizing prefix $E$, this is precisely
+$P(p,E)$ from \cref{eq:rand-P}.  The next lemma proves both that the value is
+independent of choices at a tied atom and that it lower-bounds every fluid
+policy.
+
+\begin{lemma}[Pointwise completion envelope]
+\label{lem:ot-completion-envelope}
+For scaled time $s\ge0$, let
+\begin{equation}
+ F_D(s)=\max\left\{
+  D(\{0\})T+\sum_{p>0}c_p:
+  \begin{array}{l}
+   0\le T\le1,\quad 0\le c_p\le D(\{p\})T,\\
+   T+\sum_{p>0}p c_p\le s
+  \end{array}\right\}.
+ \label{eq:ot-envelope}
+\end{equation}
+Then $F_D$ is attained simultaneously at all times by the stationary
+maximum-density schedule: repeat infinitesimal full modules $g_*$ until all
+jobs have been tested, then process the residual measure $\nu$ in SPT order.
+Moreover,
+\begin{equation}
+ \Phi_{\rm OT}(D)=\int_0^\infty(1-F_D(s))\,ds.
+ \label{eq:ot-Phi-area}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Let $F^*$ be the completion curve of the claimed schedule.  Up to time
+$w_*$ it is the line $F^*(s)=\rho_*s$.  Afterwards its slopes are $1/p$ for
+the residual processing times in increasing order.  Every residual value is
+at least $\theta_*=1/\rho_*$, so the slopes do not increase at the join.
+Thus $F^*$ is nondecreasing and concave, with $F^*(0)=0$.
+
+Take a feasible point of \cref{eq:ot-envelope}.  If $T=0$ there is nothing
+to prove.  Otherwise put $x_p=c_p/T$.  At $T=1$, a selection whose work is at
+most $w_*$ completes at most $\rho_*$ times its work, by maximality of
+$g_*$.  Above $w_*$, fractional-knapsack optimality says to select processing
+times in increasing order; this is exactly the continuation traced by
+$F^*$.  Hence the completed mass of the corresponding full-test point is at
+most $F^*(1+\sum p x_p)$.  Concavity and $F^*(0)=0$ now give
+\[
+ F^*\!\left(T\left(1+\sum p x_p\right)\right)
+ \ge T F^*\!\left(1+\sum p x_p\right)
+ \ge T\left(D(\{0\})+\sum x_p\right).
+\]
+Monotonicity proves $F_D\le F^*$.  Conversely, fractional amounts of the
+full module, followed by fractional SPT processing of $\nu$, are feasible in
+\cref{eq:ot-envelope}, so equality holds pointwise.
+
+During discovery, integrating $1-\rho_*s$ from $0$ to $w_*$ gives
+$w_*(1-a_*/2)$.  The remaining SPT area is
+$\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q)$.  This proves
+\cref{eq:ot-Phi-area} and \cref{eq:ot-Phi}.
+\end{proof}
+
+\subsection{The announced upper bound}
+
+Suppose the bag is announced but its labeling is not.  Choose a maximizing
+whole-occurrence prefix $E$, test labels in a uniformly random order, process
+an $E$-job immediately, and finish the residual jobs in SPT order.  The exact
+identity \cref{eq:rand-stationary-cost} and
+\cref{eq:ot-Phi} give
+\begin{equation}
+ \EE C_{\rm stat}(M)
+ =n^2\Phi_{\rm OT}(D_M)
+  +\frac12\left(|E|+\sum_i p_i\right).
+ \label{eq:ot-announced-upper}
+\end{equation}
+In particular, if $M\subseteq[0,L]$, the remainder is at most
+$(1+L)n/2$.  The announced optimum is therefore at most the claimed fluid
+value plus $O_L(n)$.
+
+\subsection{No adaptive announced policy has a better leading cost}
+
+Assign the occurrences of $M$ uniformly to the public labels and fix a
+deterministic nonanticipating policy.  In the adaptive order in which it
+tests new labels, the revealed occurrences form a uniform random permutation
+$P_1,\ldots,P_n$ of $M$.  One way to see this without assuming distinct
+processing times is to give equal-valued occurrences temporary private
+tokens: the map from a placement to the order in which the policy first
+reveals these tokens is a bijection of the finite permutation space.
+
+For every prefix length $k$ and threshold $z$, put
+\begin{equation}
+ N_k(z)=|\{j\le k:P_j\le z\}|,\qquad
+ N(z)=|\{i:p_i\le z\}|,
+\end{equation}
+and define
+\begin{equation}
+ \Delta=\max_{0\le k\le n}\max_z
+ \left|N_k(z)-\frac{k}{n}N(z)\right|.
+ \label{eq:ot-prefix-discrepancy}
+\end{equation}
+Only the at most $n+1$ thresholds immediately after values of $M$ matter.
+The hypergeometric Hoeffding bound, followed by a union bound over $k$ and
+$z$, gives universal constants $c,C>0$ such that
+\begin{equation}
+ \Prob(\Delta\ge u)\le2(n+1)^2e^{-cu^2/n},\qquad
+ \EE\Delta\le C\sqrt{n\log(n+2)}.
+ \label{eq:ot-discrepancy-concentration}
+\end{equation}
+
+We now transfer a realized schedule prefix to the deterministic fluid
+envelope.  For a finite subprobability measure $\lambda$, let
+\begin{equation}
+ Q_\lambda(u)=\inf\{z:\lambda([0,z])\ge u\},\qquad
+ W_\lambda(c)=\int_0^cQ_\lambda(u)\,du.
+ \label{eq:ot-quantile-work}
+\end{equation}
+Thus $W_\lambda(c)$ is the least work needed to process mass $c$ from
+$\lambda$, with the endpoint fraction of an atom taken when necessary.
+After $k$ tests define
+\begin{equation}
+ R_k=\frac1n\sum_{j\le k}\delta_{P_j},\qquad
+ A_k=\frac{k}{n}D_M,\qquad \delta=\frac\Delta n.
+\end{equation}
+Both measures have mass $k/n$, and
+\begin{equation}
+ \sup_z|R_k([0,z])-A_k([0,z])|\le\delta.
+ \label{eq:ot-cdf-transfer}
+\end{equation}
+Consequently, for $u>\delta$,
+$Q_{A_k}(u-\delta)\le Q_{R_k}(u)$.  Indeed, whenever the $R_k$-CDF has
+reached $u$, \cref{eq:ot-cdf-transfer} says that the $A_k$-CDF has reached
+$u-\delta$; taking generalized inverses gives the inequality, including at
+atom endpoints.  Thus, when $c\ge\delta$, integration yields
+\begin{equation}
+ W_{A_k}((c-\delta)_+)
+ \le\int_\delta^cQ_{R_k}(u)\,du
+ \le W_{R_k}(c).
+ \label{eq:ot-quantile-transfer}
+\end{equation}
+If $c<\delta$, the retained mass $(c-\delta)_+$ is zero and the corresponding
+claim is immediate.
+
+At physical time $t$, suppose $k$ tests have completed, the policy has
+completed mass $c$ of jobs, and the positive processing work belonging to
+those completed jobs is $nq$.  Replacing the completed submeasure by the
+shortest mass $c$ of $R_k$ can only reduce its work, so
+$W_{R_k}(c)\le q$.  Also $k+nq\le t$.  By
+\cref{eq:ot-quantile-transfer}, the proportional supply $A_k$ contains mass
+$(c-\delta)_+$ processable with work at most $q$.  This is a feasible point
+of \cref{eq:ot-envelope} at scaled time $t/n$.  Therefore, pathwise and
+simultaneously for every $t$,
+\begin{equation}
+ \#\{\text{jobs completed by time }t\}
+ \le nF_{D_M}(t/n)+\Delta.
+ \label{eq:ot-pointwise-completion}
+\end{equation}
+
+Put $H=1+n^{-1}\sum_i p_i$.  The fluid curve is one by time $H$.  Integrating
+the unfinished-job area in \cref{eq:ot-pointwise-completion} gives the
+pathwise inequality
+\begin{align}
+ C_{\mathcal A}
+ &\ge\int_0^{nH}
+   \left[n(1-F_{D_M}(t/n))-\Delta\right]dt\notag\\
+ &=n^2\Phi_{\rm OT}(D_M)-Hn\Delta.
+ \label{eq:ot-announced-lower-pathwise}
+\end{align}
+Taking expectations and using
+\cref{eq:ot-discrepancy-concentration}, every deterministic announced policy
+has expected cost at least
+\begin{equation}
+ n^2\Phi_{\rm OT}(D_M)
+ -O\!\left(Hn^{3/2}\sqrt{\log(n+2)}\right).
+ \label{eq:ot-announced-lower}
+\end{equation}
+Yao's principle gives the same lower bound for randomized policies: the
+uniform distribution over occurrence placements is an oblivious finite
+input distribution, so some fixed placement has at least the average cost.
+When $p_i\le L$, one has $H\le1+L$, uniformly over $M$.
+
+\subsection{The same unannounced policy for every bag}
+
+It remains to prove \cref{eq:ot-instance-upper} for the policy already used
+in \cref{sec:random-obligatory}.  Recall its parameters
+\begin{equation}
+ k=\lfloor n^{3/4}\rfloor,\qquad
+ d=\lfloor n^{1/4}\rfloor,\qquad
+ B_n=32+n^{1/20},\qquad \eta=B_n/d.
+ \label{eq:ot-learning-parameters}
+\end{equation}
+The policy privately permutes the labels, tests the first $k$, rounds
+positive values upward to the $B_n$-grid, and uses the threshold closure of a
+maximum-density sample prefix.
+
+Fix $L$.  For all sufficiently large $n$, $B_n>L$ and the grid has no
+overflow job.  Moreover, the full sample prefix has density at least
+$1/(1+L+\eta)>2/B_n$, so fallback never occurs.  Let $D^+$ be the rounded
+population histogram, $\widehat D$ the sample histogram, and
+$\Delta=\|D^+-\widehat D\|_1$.  By \cref{lem:rand-histogram},
+\begin{equation}
+ \EE\Delta\le\sqrt{\frac{d+2}{k}}.
+ \label{eq:ot-learning-histogram}
+\end{equation}
+
+For a fixed grid prefix $J$, let $\Psi_D(J)$ be the right-hand side of
+\cref{eq:ot-Phi} when $J$ is used as the early set, whether or not it is
+optimal for $D$.  If $D,E$ are grid histograms supported on $[0,L+\eta]$,
+then
+\begin{equation}
+ |\Psi_D(J)-\Psi_E(J)|
+ \le3(L+2)\|D-E\|_1.
+ \label{eq:ot-template-lipschitz}
+\end{equation}
+Indeed, early mass changes by at most the $\ell_1$ distance, early first
+moment by at most $(L+\eta)$ times that distance, and the residual pair
+kernel $\min\{p,q\}$ changes by at most twice this amount under the two
+product measures.  The displayed loose constant covers the three terms.
+
+By \cref{lem:ot-completion-envelope}, a maximum-density prefix minimizes
+$\Psi_D(J)$ over grid prefixes.  If $\widehat J$ is the prefix learned from
+the sample, the standard empirical-optimization sandwich and
+\cref{eq:ot-template-lipschitz} give
+\begin{equation}
+ \Psi_{D^+}(\widehat J)
+ \le\Phi_{\rm OT}(D^+)+6(L+2)\Delta.
+ \label{eq:ot-learning-sandwich}
+\end{equation}
+Rounding each processing time upward by at most $\eta$ preserves zeros and
+changes the fluid unfinished-mass area by at most $\eta$ under the coupled
+schedule.  Hence
+\begin{equation}
+ \Phi_{\rm OT}(D^+)\le\Phi_{\rm OT}(D_M)+\eta.
+ \label{eq:ot-rounding-stability}
+\end{equation}
+
+Conditional on the unordered sample, compare the actual sample-first
+schedule with the fully stationary policy for $\widehat J$.  The calculation
+in \cref{sec:random-obligatory} bounds the extra cost by
+$O_L(nk+k^2)$.  The diagonal term in the exact stationary identity is
+$O_L(n)$, and using the rounded values can only increase the comparator's
+processing delays.  Therefore
+\begin{equation}
+ \EE[C_{\mathcal A^*}\mid S]
+ \le n^2\Psi_{D^+}(\widehat J)+O_L(nk+k^2+n).
+ \label{eq:ot-sample-first-instance}
+\end{equation}
+Average \cref{eq:ot-sample-first-instance}, then use
+\cref{eq:ot-learning-histogram,eq:ot-learning-sandwich,eq:ot-rounding-stability}.
+Since
+\[
+ \sqrt{d/k}=O(n^{-1/4}),\qquad
+ \eta=O(n^{-1/5}),\qquad k/n=O(n^{-1/4}),
+\]
+we obtain
+\begin{equation}
+ \EE C_{\mathcal A^*}(\sigma(M))
+ \le n^2\Phi_{\rm OT}(D_M)+O_L(n^{9/5})
+ \label{eq:ot-instance-upper-rate}
+\end{equation}
+for every fixed labeling $\sigma$.  Together with
+\cref{eq:ot-announced-lower}, this proves
+\cref{thm:obligatory-instance}.
+
+Finally, the exact certificate \cref{eq:rand-certificate} says that
+$\Phi_{\rm OT}(D)$ is at most $4/3$ times the leading clairvoyant SPT value
+for every $D$.  Equality is attained by
+$D=\tfrac12\delta_0+\tfrac12\delta_2$.  Thus the sharp $4/3$ theorem is
+exactly the worst-bag consequence of the stronger instance-optimal
+description.

@@ -1,18 +1,18 @@
-\section{Common-upper instance optimality}
+\section{Revealing-optimization instance optimality}
 \label{sec:common-upper-instance}
 
 Fix $u<\infty$.  An untouched job may be run raw for the public time $u$, or
 tested for one unit; a test reveals $p_i\in[0,u]$, after which the processing
 operation of length $p_i$ may be delayed.  The goal of this section is to
 prove \cref{thm:common-upper-instance}, the rigorous version of the informal
-common-upper theorem \cref{thm:intro-common-upper-instance}.
+revealing-optimization theorem \cref{thm:intro-common-upper-instance}.
 
 For a distribution $D$ on $[0,u]$, we define an explicit value
 $\Phi_u(D)$ in \cref{eq:cui-Phi}.  It is obtained by choosing one threshold
 and minimizing a quadratic over the tested fraction $q$.  For a multiset
 $M$, write $D_M$ for its empirical distribution.
 
-\begin{theorem}[Common-upper instance optimality]
+\begin{theorem}[Revealing-optimization instance optimality]
 \label{thm:common-upper-instance}
 For every fixed $u>0$ there exist randomized nonanticipating policies
 $\mathcal A^*_{n,u}$, depending only on $n,u$, and a deterministic sequence

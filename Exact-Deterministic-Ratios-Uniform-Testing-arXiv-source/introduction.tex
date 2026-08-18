@@ -83,13 +83,15 @@ positive jobs processed immediately and $d_i$ the number deferred.
 \end{minipage}\hfill
 \begin{minipage}[t]{0.485\textwidth}
 \begin{algorithm}[H]
-\caption{Learned randomized threshold}
+\caption{Universal randomized threshold}
 \label{alg:intro-obligatory-rand}
 \begin{algorithmic}
 \State Shuffle the jobs and test $o(n)$ of them to estimate the distribution
 of job lengths.
+\State Choose a safety cutoff $B_n$ that tends to infinity very slowly;
+values above $B_n$ are always deferred.
 \State Treat this estimate as exact.  If $P$ has the estimated distribution,
-then for each threshold $t$ put
+then for each threshold $0\le t\le B_n$ put
 \[
  a(t)=\Pr(P\le t),\qquad
  m(t)=\mathbb E[P\mathbf 1_{P\le t}].
@@ -99,7 +101,7 @@ completes expected mass $a(t)$ using expected work $1+m(t)$.  Put
 \[
  \widehat\rho=\max_t\frac{a(t)}{1+m(t)}.
 \]
-\State If $\widehat\rho$ is below a fixed safety constant, test every
+\State If $\widehat\rho<2/B_n$, test every
 remaining job and then finish all revealed jobs shortest first.
 \State Otherwise set $T=1/\widehat\rho$.  Process the sampled jobs with
 $p\le T$.  Keep testing jobs, processing them immediately when $p\le T$ and
@@ -135,6 +137,55 @@ Until the shuffle is uncovered, one unit of work completes only about half a
 job.  Counting the area under the number of unfinished jobs gives the lower
 bound $4/3$.  The formal argument is in \cref{sec:random-obligatory}.
 
+\subsection{One algorithm for every bag}
+\label{sec:intro-obligatory-instance}
+
+The ratio $4/3$ describes only the hardest input.  The same randomized
+algorithm says more.  Consider the job lengths as a bag $M$, with the labels
+hidden by a shuffle.  If this bag consists mostly of short jobs, the best
+threshold is quite different from the best threshold for a bag with a long
+tail.  Nevertheless, \cref{alg:intro-obligatory-rand} learns the right one in
+both cases.
+
+To state this precisely, imagine first that a competing online policy is
+told the whole bag $M$, but not which length belongs to which label.  It can
+compute the best possible threshold for this particular bag.  Write
+$n^2\Phi_{\rm OT}(M)$ for its optimal leading cost.  The value is explicit:
+sort the lengths, scan the prefixes, and choose the prefix that completes the
+most jobs per unit of testing and processing work.
+
+\begin{theorem}[Obligatory-testing instance optimality, informal version of
+\protect\cref{thm:obligatory-instance}]
+\label{thm:intro-obligatory-instance}
+There is one randomized algorithm, independent of both $M$ and its bound.
+For every fixed $L$, its cost on every bag $M\subseteq[0,L]$ is
+\[
+                 n^2\Phi_{\rm OT}(M)+o(n^2).
+\]
+No online policy has a smaller leading cost on $M$, even if that competing
+policy is told the entire bag in advance.  The algorithm is exactly
+\cref{alg:intro-obligatory-rand}.
+\end{theorem}
+
+The safety cutoff in the algorithm grows slowly with $n$.  This is what lets
+one policy serve two purposes.  On an arbitrary unbounded input, the cutoff and the
+fallback protect the $4/3$ guarantee.  For every fixed bound $L$, the cutoff
+eventually lies above every value in $M\subseteq[0,L]$, so the fallback
+disappears and the random sample learns the bag-specific optimum.  The
+sample has sublinear size and therefore costs only $o(n^2)$.
+
+Thus instance optimality is not another model.  It is a stronger way of
+judging the same algorithm: instead of comparing it only on the worst bag,
+we compare it with the best online policy separately on every bag.  The
+worst value of this bag-by-bag comparison is $4/3$, attained by the same
+half-zero, half-two bag used in the lower bound above.  The rigorous
+benchmark and proof are in \cref{sec:obligatory-instance}.
+
+In a formulation where the algorithm sees fixed public labels, the private
+shuffle is essential for obtaining a representative sample.  In the
+equivalent bag formulation, where the next untouched job is already chosen
+uniformly, this randomization is built into the model.
+
 \subsection{Generalizations of the model}
 \label{sec:intro-optional-map}
 
@@ -157,28 +208,32 @@ third column costs one unit of machine time.
 
 \begin{center}
 \small
-\setlength{\tabcolsep}{3pt}
+\setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.12}
-\begin{tabular}{@{}L{0.17\linewidth}L{0.24\linewidth}L{0.32\linewidth}L{0.19\linewidth}@{}}
-\toprule
+\begin{tabular}{@{}|L{0.18\linewidth}|L{0.24\linewidth}|L{0.34\linewidth}|L{\dimexpr0.24\linewidth-8\tabcolsep-5\arrayrulewidth\relax}|@{}}
+\hline
 model & without a test & what the unit action does & where discussed \\
-\midrule
+\hline
 obligatory testing & cannot be run & reveals $p_i$ and unlocks the job
- & Intro~\ref{sec:intro-obligatory}; \cref{sec:obligatory,sec:random-obligatory} \\
+ & Intro~\ref{sec:intro-obligatory};
+   \cref{sec:obligatory,sec:random-obligatory,sec:obligatory-instance} \\
+\hline
 blind execution & runs for its hidden length $p_i$ & reveals $p_i$ before execution
  & Intro~\ref{sec:intro-blind}; \cref{sec:blind} \\
+\hline
 blind optimization & runs for raw time $u$ & replaces $u$ by a still-hidden $p_i\leq u$
  & Intro~\ref{sec:intro-speedup}; \cref{sec:blind-optimization} \\
-common upper bound & runs for raw time $u$ & reveals $p_i$ and replaces $u$ by $p_i$
+\hline
+revealing optimization & runs for raw time $u$ & reveals $p_i$ and replaces $u$ by $p_i$
  & Intro~\ref{sec:intro-speedup}; \cref{sec:optional,sec:common-upper-instance,sec:random-common-upper} \\
-\bottomrule
+\hline
 \end{tabular}
 \end{center}
 
 The last three rows separate the two benefits of the unit preliminary action.
 Blind execution studies information without speedup.  Blind optimization
-studies speedup without advance information.  The common-upper model contains
-both.  The common-upper model was introduced by D{\"u}rr et
+studies speedup without advance information.  Revealing optimization contains
+both benefits.  This model was introduced by D{\"u}rr et
 al.~\cite{DurrErlebachMegowMeissner2020}.  Blind execution is an
 adversarial-bag counterpart of stochastic scheduling with testing
 ~\cite{LeviMagnantiShaposhnik2019}; its closest earlier adversarial relative
@@ -341,17 +396,17 @@ of Damerius et al.~\cite{DameriusEtAl2023}.  There, optimization consumes an
 external budget.  Here it occupies the machine and delays every unfinished
 job.  The precise result is in \cref{sec:blind-optimization}.
 
-\paragraph{Revealing optimization: the common-upper model.}
+\paragraph{Revealing optimization.}
 
 Now assume that optimization also reveals $p_i$.  Thus the unit action buys
-both information and speed.  This is the common-upper model.
+both information and speed.  We call this \emph{revealing optimization}.
 
 The two endpoints are easy to understand.  If $u\leq1$, the test alone costs
 at least as much as raw execution, so we should never test.  If $u$ is very
 large, raw execution is unattractive, so the problem approaches obligatory
 testing.  The interesting question is what happens between these endpoints.
 
-This common-upper model was introduced by D{\"u}rr et
+This model was introduced by D{\"u}rr et
 al.~\cite{DurrErlebachMegowMeissner2020}.  Their results already showed that
 intermediate values of $u$ are the difficult ones.  We determine the exact
 answer for every $u$, for both deterministic and randomized algorithms.
@@ -359,7 +414,7 @@ answer for every $u$, for both deterministic and randomized algorithms.
 A deterministic algorithm uses three basic shapes.
 
 \begin{algorithm}[H]
-\caption{Deterministic common-upper policies, schematically}
+\caption{Deterministic revealing-optimization policies, schematically}
 \label{alg:intro-common-upper-det}
 \begin{algorithmic}
 \State For small $u$, run every job raw.
@@ -376,7 +431,7 @@ most the raw time $u$, so all tested jobs belong before the untouched raw
 block.
 
 \begin{algorithm}[H]
-\caption{Instance-optimal common-upper policy}
+\caption{Instance-optimal revealing-optimization policy}
 \label{alg:intro-common-upper}
 \begin{algorithmic}
 \State Test a sublinear random pilot and estimate the bag.
@@ -387,17 +442,17 @@ block.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{theorem}[Common-upper instance optimality, informal version of
+\begin{theorem}[Revealing-optimization instance optimality, informal version of
 \protect\cref{thm:common-upper-instance}]
 \label{thm:intro-common-upper-instance}
 Fix $u<\infty$.  There is one randomized algorithm, independent of the bag
 $M$, whose cost is
 \[
-                    n^2\Phi_{{\rm CU},u}(M)+o_u(n^2).
+                    n^2\Phi_{{\rm RO},u}(M)+o_u(n^2).
 \]
 No online policy has a smaller leading cost on $M$, even if that competing
 policy is told the entire bag in advance.  The value
-$\Phi_{{\rm CU},u}(M)$ is obtained by minimizing an explicit quadratic over
+$\Phi_{{\rm RO},u}(M)$ is obtained by minimizing an explicit quadratic over
 the tested fraction $q$.
 \end{theorem}
 
@@ -406,7 +461,7 @@ competitive ratio by asking which bag maximizes the ratio between that cost
 and the clairvoyant optimum.  The worst bag can be reduced to two job
 lengths, leaving a one-variable optimization.
 
-\begin{theorem}[Common-upper curves, informal version of
+\begin{theorem}[Revealing-optimization curves, informal version of
 \protect\cref{thm:optional-curve,thm:random-common-upper}]
 \label{thm:intro-common-upper-curves}
 For every $u>0$, the exact deterministic and randomized asymptotic
@@ -489,7 +544,7 @@ adversarial bag, need not converge to a distribution, and is not announced to
 the universal algorithm.
 
 D{\"u}rr et al.~\cite{DurrErlebachMegowMeissner2020} introduced the
-adversarial common-upper model and obtained deterministic bounds, including
+adversarial revealing-optimization model and obtained deterministic bounds, including
 the $1.87\ldots$ guarantee for binary values.  We close the deterministic
 gap for arbitrary values $p_i\in[0,u]$ and give the exact randomized curve
 against an oblivious adversary.  Related work allows nonuniform test
@@ -501,14 +556,15 @@ obligatory testing for total completion time.  For uniform tests they proved
 the SIDLE upper bound $1.58\ldots$ and the deterministic lower bound
 $\sqrt2$.  Liang and Liang~\cite{LiangLiang2026} later raised the lower bound
 to $3/2$.  Our matching value is $1.57\ldots$, and our randomized
-result gives the oblivious value $4/3$.
+result gives the oblivious value $4/3$.  More strongly, its stationary
+threshold is asymptotically optimal separately for every bounded bag.
 
 The processing-time oracle of Dufoss{\'e} et al.~\cite{DufosseEtAl2022} is
 close to blind execution, but allows only two possible hidden durations.  If
 no tests are available and processing times are revealed only at completion,
 one obtains the classical nonclairvoyant model of Motwani, Phillips, and
 Torng~\cite{MotwaniPhillipsTorng1994}.  These semantics differ from raw
-common-upper execution, which always lasts the declared time $u$.
+raw execution in revealing optimization, which always lasts the declared time $u$.
 
 The rest of the paper gives precise versions and proofs.  We first fix the
 models and offline benchmarks in \cref{sec:model}.  Each main section then
