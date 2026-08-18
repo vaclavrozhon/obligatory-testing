@@ -1128,7 +1128,7 @@ $p_j\ge0$.  The fourth instead has a unit optimization that changes the
 processing time without revealing it.
 
 We use four operation models.  The introduction described them informally;
-here are the precise rules.
+here are the precise rules. [dej je do spravneho poradi, zaciname OT]
 \begin{description}[leftmargin=*,style=nextline]
 \item[Common-upper execution $\mathsf{CU}(u)$.]
 For finite $u$, all jobs share the known upper limit $p_j\in[0,u]$.  A job is
@@ -1139,10 +1139,10 @@ subsequent processing for $p_j$.  Raw execution reveals no hidden value.
 Processing times are arbitrary finite nonnegative numbers.  Every job must be
 tested for one unit and subsequently processed for $p_j$; the processing may
 be delayed after the test.  This is also the formal endpoint
-$\mathsf{CU}(\infty)$.
+$\mathsf{CU}(\infty)$. [tohle ma byt remark mimo definici]
 
 \item[Blind execution $\mathsf{BE}(L)$.]
-Here $p_j\in[0,L]$.  A job may be run blindly for its actual duration $p_j$,
+Here $p_j\in[0,L]$. [proc tady je L a jinde u? potrebujeme sjednotit notaci. obecne se mi libi pouzivat upper case jako L na konstanty, spis nez u. Ale pokud nekde jako v lemma 2.1 pouzivame u ale neplati to v setupu s L tak asi dava smysl to rozlisit. ]  A job may be run blindly for its actual duration $p_j$,
 at whose completion its duration becomes known, or tested for one unit and
 subsequently processed for $p_j$.  Thus blind execution never pays an upper
 bound in place of the actual processing time.
@@ -1188,7 +1188,7 @@ select one labeling whose cost is at least the average.
 
 \subsection{Offline optima and pair accounting}
 
-Define the clairvoyant effective length by
+Define the clairvoyant effective length by [hm neni tohle ruzne v ruznych modelech? co takhle mit tady vic definic pro kazdy model a vsemu rikat q aby pristi lemma bylo pravda pro vsechny modely]
 \begin{equation}\label{eq:optional-effective-length}
  q_u(p)\defeq
  \begin{cases}
@@ -1197,6 +1197,7 @@ Define the clairvoyant effective length by
  \end{cases}
 \end{equation}
 
+[pred to napsat ze to plati pro vsechny modely]
 \begin{lemma}[Unified offline order]
 \label{lem:offline}\label{lem:optional-offline}
 Let $q_i=q_u(p_i)$ and let $q_{(1)}\le\cdots\le q_{(n)}$.  For every
@@ -1229,7 +1230,7 @@ Summing and expanding the prefix sums gives both formulas.
 \end{proof}
 
 The same effective lengths and the same offline formula apply to
-$\mathsf{BO}(u)$.  A clairvoyant scheduler knows whether raw execution of
+$\mathsf{BO}(u)$. [tohle bych mel radsi receno formalne pro vsechny modely v lemmatu, viz co jsem psal vise]  A clairvoyant scheduler knows whether raw execution of
 length $u$ or optimization followed by processing of total length $1+p_j$ is
 shorter.  The information available to the online scheduler is different,
 but the offline blocks are identical.
@@ -1247,7 +1248,7 @@ clairvoyant value may be $o(n^2)$, whereas that theorem compares policies at
 the $n^2$ scale with the optimal announced-multiset online value
 $\Phiopt(D_M)$.
 
-At the cap-free endpoint, the pair formula specializes to
+At the cap-free endpoint [endpoint je divne slovo, proc ne limit? pouzij vsude], the pair formula specializes to
 \begin{align}
  \OPT_\infty
  &=\sum_{k=1}^n\left(k+\sum_{i=1}^kp_{(i)}\right),
@@ -1264,6 +1265,8 @@ For finite $u$, $q_j\ge\min\{u,1\}$ gives
  \OPT_u\ge\min\{u,1\}\frac{n(n+1)}2.
 \end{equation}
 
+[chci formalni lemma pro vsechny modely soucasne a pod nim diskuzi. ]
+
 \subsection{Competitive-ratio conventions}
 
 The ordinary competitive ratio of $\mathcal A$ is
@@ -1276,7 +1279,9 @@ For our results, the relevant size-asymptotic ratio is
   =\limsup_{n\to\infty}\ \sup_{|I|=n}
        \frac{\ALG_{\mathcal A}(I)}{\OPT(I)}.
 \end{equation}
-The additive-constant convention calls a coefficient $c$ admissible for
+[z toho jsem zmateny, nemuze byt problem pro nejake vstupy s malym optem? radsi bych tam nekde mel to o(n2). ]
+
+The additive-constant convention [proc tohle definujeme? dyt nas zajima jen additive o(n2) ne additive constant ne??] calls a coefficient $c$ admissible for
 $\mathcal A$ if there exists $B<\infty$ such that
 \[
   \ALG_{\mathcal A}(I)\le c\OPT(I)+B
@@ -1296,6 +1301,7 @@ For any fixed $u$, an estimate $\ALG\le c\OPT+O_u(n)$ fixes
 admissible.  It need not make the endpoint coefficient $c$ admissible.
 
 \begin{remark}[No hidden interchange of limits]\label{rem:no-limit-swap}
+[nechapu k cemu tohle je]
 The notation $u=\infty$ identifies one model exactly.  We never infer an
 endpoint upper bound merely by taking $u\to\infty$ in an estimate whose
 algorithm or additive term may depend on $u$.  The endpoint estimate is
