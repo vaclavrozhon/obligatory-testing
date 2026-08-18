@@ -147,8 +147,9 @@ We study this question for one machine and total completion time.  We
 consider four natural rules: every job must be tested; an untested job can
 be run for a common upper bound; it can be run blindly for its true hidden
 length; or a unit-time optimization can shorten it without revealing the new
-length.  Together these models separate the two possible benefits of a
-test---learning which job to do next and making the tested job faster.
+length.  Together these models separate the two possible benefits of spending
+one unit before execution: learning which job to do next and making the job
+faster.
 
 We give exact answers at the quadratic scale.  In the obligatory model the exact
 asymptotic ratios are $1.570574\ldots$ for deterministic algorithms and
@@ -1130,8 +1131,10 @@ correspondence for the deterministic theorem remains in
 \section{Models and common preliminaries}\label{sec:model}
 
 There are $n$ jobs, all available at time zero, and one machine.  Operations
-are nonpreemptive, and at most one operation can run at a time.  A unit test
-of job $j$ reveals its processing time $p_j\ge0$.
+are nonpreemptive, and at most one operation can run at a time.  In the first
+three models below, a unit test of job $j$ reveals its processing time
+$p_j\ge0$.  The fourth instead has a unit optimization that changes the
+processing time without revealing it.
 
 We use four operation models.  The introduction described them informally;
 here are the precise rules.

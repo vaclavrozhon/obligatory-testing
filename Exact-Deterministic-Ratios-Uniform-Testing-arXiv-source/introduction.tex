@@ -1,10 +1,10 @@
 \section{Introduction}
 
-Suppose that we have many jobs waiting for one machine.  The length of each
-job is written on a folded piece of paper.  If we knew all the lengths, the
-right schedule would be clear: we would simply run the jobs from shortest to
-longest.  But the papers are folded, and opening one of them takes one unit of
-machine time.
+Suppose that we have many jobs waiting for one machine.  We want to minimize
+the sum of the times at which they finish.  The length of each job is written
+on a folded piece of paper.  If we knew all the lengths, the right schedule
+would be clear: we would simply run the jobs from shortest to longest.  But
+the papers are folded, and opening one of them takes one unit of machine time.
 
 Should we open another paper, or should we start working?
 
@@ -99,14 +99,14 @@ faster job and information about where the job belongs.  If it does not, the
 job becomes faster but remains unknown until it finishes.
 
 These choices give the following four models.  The table is a summary rather
-than four new sets of notation; in every row, testing costs one unit of
-machine time.
+than four new sets of notation; in every row, the preliminary action in the
+last column costs one unit of machine time.
 
 \begin{center}
 \small
 \begin{tabular}{@{}L{0.20\linewidth}L{0.29\linewidth}L{0.40\linewidth}@{}}
 \toprule
-model & without a test & what a test does \\
+model & without a test & what the unit action does \\
 \midrule
 obligatory testing & the job cannot be run & reveals $p_i$ and gives access to the job \\
 blind execution & the job runs for hidden time $p_i$ & reveals $p_i$ before we run it \\
@@ -116,9 +116,10 @@ blind optimization & the job runs for time $u$ & replaces $u$ by a still-hidden 
 \end{tabular}
 \end{center}
 
-The last three rows separate the two benefits of a test.  Blind execution
-studies information without speedup.  Blind optimization studies speedup
-without advance information.  The common-upper model contains both.
+The last three rows separate the two benefits of the unit preliminary action.
+Blind execution studies information without speedup.  Blind optimization
+studies speedup without advance information.  The common-upper model contains
+both.
 
 \subsection{One algorithm for every bag}
 
