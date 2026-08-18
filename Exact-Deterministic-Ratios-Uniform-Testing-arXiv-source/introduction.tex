@@ -137,7 +137,7 @@ bound $4/3$.  The formal argument is in \cref{sec:random-obligatory}.
 
 Let us consider alg2 again. The competitive ratio $4/3$ describes only the hardest input. This kind of guarantee is somewhat unsatisfactory -- perhaps in practice, many inputs we are going to deal with are going to be very simple to deal with in some sense -- perhaps $p_i$s are all going to be very large so the obvious strategy of first testing everything and then running all jobs shortest-first is going to be essentially 1-competitive with the offline optimum. Yet, we are only proving 1.33... competitivity. 
 
-Fortunately, a slight variant of alg2 is \emph{instance-optimal}. 
+Fortunately, a slight variant of alg2 is \emph{instance-optimal}. \footnote{The slight difference from alg2 is that we maximize over $t$ up to $O(n^{1/20})$ instead of up to O(1). Notice since this slight variant of alg2 is instance optimal, it is also worst-case optimal, i.e., its competitive factor is also $4/3$. The reason why we presented the simplified alg2 is that it's easier to analyze. }
 
 
 
@@ -149,6 +149,8 @@ A variant of alg2 has the following property. Assuming all job lengths are at mo
                  cost(A) \le cost(A') + o_L(n^2)
 \]
 \end{theorem}
+
+The assumption on constant L is necessary: [give short reason here + link to later section with more proper explanation]. We also cannot have i.o. for deterministic algorithms [give short reason here + link to later section with more proper explanation]
 
 We make two points here. First, the other algorithm A' can be assumed to know $M$; while we are comparing ourselves to online algorithms, we are comparing ourselves to all of them on any single instance, hence we are comparing ourselves to those optimized for any particular M. The fact this is possible is because the first step of alg2 subsamples the input and hence, essentially, our algorithm learns M anyway and can optimize its subsequent behavior against it. 
 
