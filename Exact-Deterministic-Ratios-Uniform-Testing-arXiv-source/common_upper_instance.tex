@@ -44,7 +44,7 @@ knapsack.  Second, an adaptive first-touch trace turns every deterministic
 policy under a uniform placement into predictable sampling without
 replacement.  One event then controls every touch prefix, so the realized
 stopping fraction can be substituted pathwise.  Finally, a growing grid and
-a sublinear pilot make the result uniform over arbitrary bounded multisets
+a sublinear sample make the result uniform over arbitrary bounded multisets
 without announcing the bag.  The first subsection begins the formal proof.
 
 \subsection{The fixed-fraction fluid benchmark}
@@ -412,11 +412,11 @@ permutation.  Test its first
  k_n=\lceil n^{1/2}\rceil
  \label{eq:cui-pilot-size}
 \end{equation}
-labels, keep positive pilot jobs pending, and form their rounded histogram
+labels, keep positive sample jobs pending, and form their rounded histogram
 $\widehat D_n$.  Among all grid prefixes containing zero and all
 $q\in[0,1]$, minimize the quadratic \cref{eq:cui-F}.  Apply the selected
 template to the remaining labels in their unused random order, then finish
-the positive pilot jobs.
+the positive sample jobs.
 
 Let $D_n$ and $D_n^R$ be the full and remaining rounded histograms.
 Hypergeometric coordinate variances and Cauchy--Schwarz give
@@ -439,7 +439,7 @@ uniformly over the grid and template.  The same bound holds for the minima.
 The threshold lemma and completion envelope show that the minimum over this
 common template family is exactly $\Phi_u(D)$.
 
-Condition on the pilot.  The learned template is fixed and the unused labels
+Condition on the sample.  The learned template is fixed and the unused labels
 are uniformly ordered, so \cref{eq:cui-finite-kernel} applies.  The usual
 empirical-minimization sandwich, twice using
 \cref{eq:cui-template-Lipschitz}, bounds the main cost by
@@ -447,7 +447,7 @@ empirical-minimization sandwich, twice using
  (n-k_n)^2\left(
  \Phi_u(D_n^R)+O_u(\|\widehat D_n-D_n^R\|_1)\right)+O_u(n).
 \]
-The pilot and its final tail contribute $O_u(nk_n)$.  Now apply
+The sample and its final tail contribute $O_u(nk_n)$.  Now apply
 \cref{eq:cui-histogram}, replace the remaining histogram by the full one,
 and use \cref{eq:cui-rounding-stability}.  Since
 \[

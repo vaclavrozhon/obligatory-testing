@@ -61,7 +61,7 @@ The preceding instance-optimal theorem identifies the best policy on each
 bag.  Here we compare that value with the clairvoyant minimum kernel and
 maximize over all empirical distributions.  A survival-function flattening
 argument reduces the outer optimization to binary distributions.  Two
-scalar maximizations give the four branches above.  A sublinear pilot removes
+scalar maximizations give the four branches above.  A sublinear sample removes
 advance knowledge of the bag, and binary random labelings give matching Yao
 lower bounds.  The next subsection starts the formal calculation.
 
@@ -354,7 +354,7 @@ interior maximum above one occurs at $u=(3+\sqrt3)/2$; substitution gives
 The policy used for the upper bound must not know $D$.  The next lemma
 removes this announcement at lower-order cost.
 
-\begin{lemma}[Sublinear-pilot transfer]
+\begin{lemma}[Sublinear-sample transfer]
 \label{lem:rcu-pilot-transfer}
 For every fixed $u>1$, there are randomized nonanticipating policies
 $\mathcal A_{n,u}$ such that every fixed labeled input with empirical

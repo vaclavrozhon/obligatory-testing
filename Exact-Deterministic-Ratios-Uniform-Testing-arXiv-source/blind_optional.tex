@@ -33,6 +33,58 @@ One may take
 $\eps_L(n)=O_L(n^{-1/6}\sqrt{\log(n+2)})$.
 \end{theorem}
 
+The boundedness assumption in \cref{thm:blind-instance} cannot be removed.
+In fact, without it even the much weaker worst-case guarantee is impossible.
+
+\begin{theorem}[No finite ratio for unbounded blind execution]
+\label{thm:blind-unbounded-impossible}
+There are no randomized policies $\mathcal A_n$, constant $R<\infty$, and
+sequence $\eta(n)\to0$ such that every vector
+$p\in[0,\infty)^n$ satisfies
+\begin{equation}
+ \EE\cost(\mathcal A_n,p)
+ \le R\cost(\OPT,p)+\eta(n)n^2.
+ \label{eq:blind-unbounded-impossible}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Suppose that such a guarantee exists, and run $\mathcal A_n$ on the all-zero
+instance.  Its offline cost is zero, so if $Z_n$ denotes the expected online
+cost, then $Z_n\le\eta(n)n^2=o(n^2)$.  We may assume that the policy finishes
+every job, since otherwise its cost is infinite.
+
+Fix its private seed and order the labels by their first touch on this zero
+instance.  Every first touch completes its job: a blind zero takes no time,
+while a tested zero completes with its unit test.  If the job at rank $r$ is
+tested, that test is performed while $n-r+1$ jobs are unfinished and hence
+contributes $n-r+1$ to the objective.  Consequently
+\begin{equation}
+ Z_n\ge\EE\sum_{r:\,\text{rank }r\text{ is tested}}(n-r+1).
+ \label{eq:blind-zero-test-area}
+\end{equation}
+
+Now choose one label uniformly and change only its length from zero to
+$H=n^2$.  Until this exceptional label is first touched, the policy sees
+exactly the zero-instance history.  If its rank $r$ is touched blindly, its
+nonpreemptive execution occupies the machine for $H$ time units while
+$n-r+1$ jobs are unfinished.  Averaging over the exceptional label and the
+private seed therefore gives
+\begin{align}
+ \EE\cost(\mathcal A_n,p)
+ &\ge \frac Hn\,\EE
+   \sum_{r:\,\text{rank }r\text{ is blind}}(n-r+1)\notag\\
+ &\ge\frac Hn\left(\frac{n(n+1)}2-Z_n\right)
+  =H\left(\frac n2-o(n)\right).
+ \label{eq:blind-one-long-average}
+\end{align}
+Some fixed choice of the exceptional label has at least this expected cost.
+For every such labeling, the clairvoyant schedule runs all zero jobs first
+and the long job last, so $\cost(\OPT,p)=H$.  With $H=n^2$,
+\cref{eq:blind-one-long-average} contradicts
+\cref{eq:blind-unbounded-impossible} for all sufficiently large $n$.
+\end{proof}
+
 The proof first replaces a round of tests and its immediate short outcomes
 by one divisible completion module.  For a fixed tested fraction $q$, a
 fractional-knapsack envelope then forces the four-block order from the
@@ -40,7 +92,7 @@ introduction and gives its exact quadratic cost.  To handle an arbitrary
 adaptive policy, we show that its first-touch order is a bijective
 relabeling of the occurrence permutation; predictable sampling controls all
 touch prefixes at once.  A growing grid extends the bound to arbitrary
-bounded multisets, and a blind pilot removes advance knowledge of the bag.
+bounded multisets, and a blind sample removes advance knowledge of the bag.
 The next subsection defines the benchmark and begins the formal proof.
 
 \subsection{The distributional benchmark}
@@ -467,7 +519,7 @@ executes
  k_n=\lceil n^{1/2}\rceil
  \label{eq:blind-pilot-size}
 \end{equation}
-pilot jobs.  Their observed durations give a grid histogram $\widehat D_n$.
+sample jobs.  Their observed durations give a grid histogram $\widehat D_n$.
 The policy minimizes the canonical quadratic over every grid threshold,
 blind-block insertion position, and $q\in[0,1]$, then runs the selected
 four-block template on the remaining jobs in the unused random order.
@@ -503,8 +555,8 @@ optimization sandwich is
      +2C_L\|\widehat D_n-D_n^R\|_1.
  \label{eq:blind-empirical-sandwich}
 \end{align}
-Conditional on the pilot, the remaining order is uniform and the learned
-template is fixed, so \cref{eq:blind-finite-kernel} applies.  The pilot itself
+Conditional on the sample, the remaining order is uniform and the learned
+template is fixed, so \cref{eq:blind-finite-kernel} applies.  The sample itself
 has work at most $Lk_n$ and delays at most $n$ jobs, adding at most
 $Lnk_n=O_L(n^{3/2})$.  Combining
 \cref{eq:blind-rounding-stability,eq:blind-histogram-learning} with

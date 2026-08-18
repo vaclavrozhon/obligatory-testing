@@ -8,6 +8,12 @@ The difference is that optimization does not reveal $p_i$.  An optimized job
 must be started blindly and its duration becomes known only when it finishes.
 We call this the \emph{blind-optimization} model $\mathsf{BO}(u)$.
 
+We study randomized policies against an oblivious adversary.  This is the
+natural setting for learning the bag: a private random sample is
+representative under every fixed labeling, whereas an adversary can make any
+predetermined deterministic sample atypical.  We do not pursue a separate
+deterministic worst-case curve for this model.
+
 This small change removes the threshold decision entirely.  It also shows
 that the bounded randomized ratio in the revealing model is genuinely an
 information effect.
@@ -60,7 +66,7 @@ The proof is simpler than in the revealing models.  Because optimization
 reveals nothing, it can be moved next to the processing of its job.  Every
 job is then either a raw block of known length $u$ or an optimized blind
 block with average length $1+\mu_M$.  A predictable-sampling bound rules out
-an adaptive advantage, while a pilot estimates the one number $\mu_M$.  The
+an adaptive advantage, while a sample estimates the one number $\mu_M$.  The
 first subsection makes this argument formal; the second performs the outer
 worst-case optimization.
 
@@ -158,13 +164,13 @@ private seed and applying the same finite Yao/relabeling argument as in
 take $\eps_u(n)=O_u(n^{-1/4}\sqrt{\log(n+2)})$ after enlarging its constant.
 
 \paragraph{One policy for all multisets.}
-Take $k=\lceil n^{2/3}\rceil$ uniformly random pilot jobs.  Optimize each
-pilot and process it immediately, thereby observing its duration, and let
+Take $k=\lceil n^{2/3}\rceil$ uniformly random sample jobs.  Optimize each
+sample job and process it immediately, thereby observing its duration, and let
 $\widehat\mu$ be their sample mean.  If $1+\widehat\mu<u$, optimize and
 immediately process every remaining job in fresh random order.  Otherwise
 run every remaining job raw.
 
-The pilot contributes at most $O_u(nk)=o_u(n^2)$ beyond the main schedule.
+The sample contributes at most $O_u(nk)=o_u(n^2)$ beyond the main schedule.
 Sampling without replacement gives
 \[
  \EE|\widehat\mu-\mu_M|=O_u(k^{-1/2}+k/n)=o_u(1).
