@@ -47,7 +47,7 @@ problem open.  We close both gaps.
 \protect\cref{thm:det-obligatory,thm:rand-obligatory}]
 \label{thm:intro-obligatory}
 In the obligatory-testing model, the best deterministic asymptotic
-competitive ratio is $1.57\ldots$.  Against an adversary that fixes the input
+competitive ratio is $1.57\ldots$  Against an adversary that fixes the input
 before the algorithm draws its random bits, the best randomized ratio is
 $4/3$.  The two optimal policies are sketched in
 \cref{alg:intro-obligatory-det,alg:intro-obligatory-rand}.
@@ -105,23 +105,16 @@ then use the same threshold while testing the remaining jobs.
 
 Both algorithms follow the same principle: process short jobs as soon as
 possible and leave long jobs for the end.  The difficult part is choosing the
-threshold.  The deterministic algorithm must keep updating it from the
-history it has seen.  The randomized algorithm instead learns one threshold
-from a small random sample.  A fallback rule protects it when the sample
-misses an extremely long job, but this is the whole algorithmic picture.
-
-Let us briefly describe why the two constants are different.  A hard input
-for a deterministic algorithm reveals positive jobs in decreasing levels and
-hides many zero jobs until the end.  If the algorithm finishes the positive
-jobs, it delays the zeros.  If it postpones them, it creates a costly tail.
-The levels can be chosen so that these two losses balance at
+threshold.  The deterministic algorithm must keep updating it from the history it has seen -- the best way is the specific formula described on lines 3 and 4 in algorithm 1 [make this into links]; notice that the threshold is changing during the execution of the algorithm.  
+Perhaps the best intuition for this comes from the lower bound: [a few words about lower bound here]. blah blah The levels can be chosen so that these two losses balance at
 $1.57\ldots$; the formal construction is in \cref{sec:obligatory}.
 
-For randomized algorithms the hard input is simpler.  Half of the jobs have
-length zero and half have length two, and their labels are shuffled.  Until
-the shuffle is uncovered, one unit of work completes only about half a job.
+
+The randomized algorithm has additional power -- it can start by sampling a sublinear number of jobs and estimating their length; this will not affect the final asymptotic ratio. This way, the algorithm learns a useful information about the global input -- up to some small errors, it more or less knows what to expect and this makes the final algorithm in fact simpler: there is a single threshold that needs to be computed and is preserved during the algorithm. 
+Correspondingly, for randomized algorithms the hard input is simpler: Half of the jobs have
+length zero and half have length two, and their labels are shuffled.  Until the shuffle is uncovered, one unit of work completes only about half a job.
 Counting the area under the number of unfinished jobs gives the lower bound
-$4/3$.  The formal argument is in \cref{sec:random-obligatory}.
+$4/3$.  The formal argument is in \cref{sec:random-obligatory}. [wasnt this actually known? ]
 
 \subsection{What if testing is optional?}
 
@@ -157,7 +150,7 @@ blind optimization & runs for raw time $u$ & replaces $u$ by a still-hidden $p_i
 common upper bound & runs for raw time $u$ & reveals $p_i$ and replaces $u$ by $p_i$ \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{center} [tady pridej jeden sloupecek kde vzdy bude neco jako "subsection 1.3, section 4" -- kde to je probirano. uprav marginy at je to citelnejsi]
 
 The last three rows separate the two benefits of the unit preliminary action.
 Blind execution studies information without speedup.  Blind optimization
