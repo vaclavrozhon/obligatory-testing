@@ -162,20 +162,16 @@ The competing algorithm $\mathcal A'$ may even be designed specifically for
 $M$ and told the entire bag in advance.
 \end{theorem}
 
-Both assumptions are necessary.  Without a fixed bound $L$, there is no
-randomized instance-optimal algorithm.  Without randomization, there is no
-instance-optimal algorithm even when all lengths lie in $[0,2]$.  The reason
-is simple: a deterministic sample can be made unrepresentative, while an
-unbounded bag may hide one arbitrarily important job.  We prove both claims
-in \cref{thm:ot-instance-impossibility}.
+Both assumptions in the theorem are necessary.  Without a fixed bound $L$, or without randomization, there is no
+randomized instance-optimal algorithm (see \cref{thm:ot-instance-impossibility}). 
 
-Two points are worth emphasizing.  First, the comparison is made separately
+Two points about the theorem are worth emphasizing.  First, the comparison is made separately
 on every bag.  We must therefore compete not only with one fixed online
 algorithm, but also with algorithms optimized for this particular $M$.
 Allowing $\mathcal A'$ to know $M$ makes this strongest possible online
 benchmark explicit.
 
-Second, the existence of some instance-optimal algorithm is perhaps not so
+Hence, the existence of some instance-optimal algorithm is perhaps not so
 surprising.  One could imagine a meta-algorithm that samples the input to
 estimate $M$ and then runs an optimal policy for that estimate.  The
 substantive part of the theorem is that no complicated meta-algorithm is
@@ -184,8 +180,6 @@ threshold policy, so $\mathcal A^*$ has essentially the same form as
 \cref{alg:intro-obligatory-rand}: sample the bag, choose the
 maximum-density threshold, and use it for the rest of the schedule.
 
-The rigorous benchmark and proof are given in
-\cref{sec:obligatory-instance}.
 
 \subsection{Generalizations of the model}
 \label{sec:intro-optional-map}
@@ -258,21 +252,13 @@ time is its true hidden length $p_i$.  Testing does not make the job shorter;
 it only tells us $p_i$ before we decide when to run it.  We call this
 \emph{blind execution}.
 
-A worst-case competitive ratio is a coarse summary here because the right
-policy depends strongly on the bag.  If every job has length one, testing
-only wastes time.  If half of the jobs have length zero and half have length
-six, the best leading-order policy tests half of them.  Both examples have
-cost of order $n^2$, so the distinction remains visible even when we ignore
-an additive $o(n^2)$.
+In this setting, we cannot hope even for the worst-case competitive analysis for unbounded $L$ (see thm XX). However, for bounded L, a more complicated variant of alg1.2 achieves the same instance optimality guarantee. 
 
-For a bag $M\subseteq[0,L]$, let $n^2\Phi_{\rm BE}(M)$ denote the best
-leading-order cost of an online policy designed specifically for that bag.
-The following theorem says that one policy, chosen before seeing $M$, attains
-this value for every bag.
 
 \begin{theorem}[Blind-execution instance optimality, informal version of
 \protect\cref{thm:blind-instance}]
 \label{thm:intro-blind-instance}
+[prepis to at to vyzniva stejne jak predchozi i.o. teorem. ]
 Fix $L<\infty$.  There is one randomized algorithm $\mathcal A^*$,
 independent of $M$, whose cost on every bag $M\subseteq[0,L]$ is
 \[
@@ -285,30 +271,7 @@ bag in advance,
 \]
 \end{theorem}
 
-The order of the quantifiers is important: our algorithm is not told $M$.
-It learns $M$ from a small blind pilot, whose $o(n)$ jobs cost only $o(n^2)$.
-A private shuffle makes this pilot representative under every fixed
-labelling.
 
-This algorithm differs from obligatory testing in one essential way.  In the
-obligatory model every job must be tested.  Here the algorithm also chooses a
-tested fraction $q$; after testing stops, it may run all untouched jobs
-blindly.
-
-Let $\mu$ be the mean job length.  A revealed job shorter than $\mu$ should
-be run before an untouched job; a longer one should be run after it.  When
-testing is useful, there is another threshold $\tau$ that decides which jobs
-are so short that they should interrupt the testing phase.  It is defined by
-\[
-                         \mathbb E(\tau-P)^+=1.
-\]
-The left-hand side is the expected saving obtained by moving outcomes below
-$\tau$ forward.  Thus the cutoff is chosen exactly where this saving balances
-the unit cost of a test.
-
-One number remains: the fraction $q$ of jobs to test.  Once the bag is known,
-the leading cost is an explicit quadratic in $q$, so the best value of $q$
-is obtained by minimizing a one-variable quadratic.
 
 \begin{algorithm}[H]
 \caption{Instance-optimal blind execution}
@@ -322,35 +285,22 @@ is obtained by minimizing a one-variable quadratic.
 \State Finish the remaining tested jobs, shortest first.
 \end{algorithmic}
 \end{algorithm}
+[tohle ma byt stejne podrobne popsane jako algoritmy nad tim]
 
 The block between testing and blind execution is important.  A job can be too
 long to interrupt the test phase and still be shorter than an untouched job
 on average.  Such a job waits until testing stops and is then processed before
 the blind block.
 
-A similar test-prefix structure is known in the Bayesian i.i.d. model of
-Levi, Magnanti, and Shaposhnik
-~\cite{LeviMagnantiShaposhnik2019,LeviMagnantiShaposhnik2024}.  Our input is
-instead one adversarial bag.  The closest earlier adversarial model is the
-processing-time oracle of Dufoss{\'e} et al.~\cite{DufosseEtAl2022}, where the
-hidden length has only two possible values.  Our bag may contain arbitrary
-bounded lengths.  The precise result is \cref{thm:blind-instance}.
 
-\subsection{Speedup, with and without information}
-\label{sec:intro-speedup}
+\subsection{Blind optimization.}
 
 The two remaining models start from the same operation.  Every job takes a
 known raw time $u$, and one unit of optimization reduces its running time to
-$p_i\leq u$.  They differ only in whether optimization reveals $p_i$.  This
-lets us isolate the value of information while keeping the speedup fixed.
-
-\paragraph{Blind optimization.}
-First suppose that optimization does not reveal $p_i$.  The value becomes
-known only when the optimized job finishes.  A threshold can no longer
-separate short and long outcomes: before execution, all optimized jobs still
+$p_i\leq u$.  They differ only in whether optimization reveals $p_i$; we start with the case when optimization does not reveal $p_i$.  I.e., before execution, all optimized jobs still
 look the same.
 
-This makes the optimal policy simpler.  A pilot estimates only the mean
+This turns out to be the simplest-to-analyze case. The detrministic case turns out not very interesting (see section XX); in the randomized case, the optimal algorithm first does pilot [dont use this word, use sample or subsample] estimates only the mean
 $\mu$ of the optimized lengths.  Afterwards, the scheduler compares the two
 possible average times per job, $u$ and $1+\mu$, and uses the better action
 for all remaining jobs.
@@ -358,6 +308,7 @@ for all remaining jobs.
 \begin{theorem}[Blind-optimization instance optimality, informal version of
 \protect\cref{thm:bo-instance}]
 \label{thm:intro-bo-instance}
+[prepis jako predchozi i.o. vysledky]
 Fix $u<\infty$ and let $\mu_M$ be the mean optimized length in a bag $M$.
 There is one randomized algorithm $\mathcal A^*$, independent of $M$, whose
 cost on every bag is
@@ -383,28 +334,17 @@ $\widehat\mu$.
 \end{algorithmic}
 \end{algorithm}
 
-The instance-specific value depends only on the mean.  Its worst-case ratio,
-however, grows as $\sqrt u/2$.
+Notice that even though we know the instance optimal algorithm, this does not automatically tell us the competitive ratio -- for that, we need to actually find the worst-case input for our algorithm. It turns out that this worst-case input grows roughly as $\sqrt(u)$ as $u \to \infty$. 
 
 \begin{theorem}[Blind-optimization curve, informal version of
 \protect\cref{thm:bo-curve}]
 \label{thm:intro-bo-curve}
-The exact randomized asymptotic competitive ratio is one for $u\le1$ and is
-given by an explicit two-branch curve for $u>1$.  After the transition point
-$u=2.25\ldots$, it equals
-\[
- \frac12\left(1+\sqrt{\frac{u^2+u-1}{u-1}}\right).
-\]
-In particular, it is $\sqrt u/2+1/2+o(1)$ as $u\to\infty$, and hence is
-unbounded.
+The exact randomized asymptotic competitive ratio is one given by an explicit two-branch curve for $u>1$ from fig XX [hod tenhle figure vedle algo4 doprava, udelej ho stejne jako analogicke fig dole] that grows as sqt(u)/2 + 1/2 + o(1) as $u \to \infty$. 
 \end{theorem}
 
-A related non-revealing optimization appears in the oblivious-budget model
-of Damerius et al.~\cite{DameriusEtAl2023}.  There, optimization consumes an
-external budget.  Here it occupies the machine and delays every unfinished
-job.  The precise result is in \cref{sec:blind-optimization}.
 
-\paragraph{Revealing optimization.}
+
+\subsection{Revealing optimization.}
 
 Now assume that optimization also reveals $p_i$.  Thus the unit action buys
 both information and speed.  We call this \emph{revealing optimization}.
