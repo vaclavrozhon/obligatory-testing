@@ -1,27 +1,27 @@
-\section{Blind execution and instance-optimal two-phase policies}
+\section{Blind execution: instance-optimal two-phase policies}
 \label{sec:blind}
 
 We now turn to $\mathsf{BE}(L)$.  Running an untouched job blindly consumes
 its actual processing time and completes it; testing consumes one unit,
 reveals the value, and permits the processing operation to be delayed.  The
-adversary fixes an arbitrary labelled vector in $[0,L]^n$ before the private
+adversary fixes an arbitrary labeled vector in $[0,L]^n$ before the private
 seed is drawn.  The goal of this section is to prove
 \cref{thm:blind-instance}, the blind-execution part of the informal
 instance-optimality theorem \cref{thm:intro-instance-optimality}.
 
 \begin{theorem}[Blind-execution instance optimality]
 \label{thm:blind-instance}
-Fix $L<\infty$.  There are a randomized nonanticipating policy $\mathcal A^*$,
+Fix $L<\infty$.  There exist a randomized nonanticipating policy $\mathcal A^*$,
 which knows $n,L$ but not the processing-time multiset, and a deterministic
 sequence $\eps_L(n)\to0$ with the following properties.  For every multiset
-$M\subseteq[0,L]$ of size $n$ and every fixed labelling $\sigma$,
+$M\subseteq[0,L]$ of size $n$ and every fixed labeling $\sigma$,
 \begin{equation}
  \EE C_{\mathcal A^*}(\sigma(M))
  \le n^2\Phiopt(D_M)+\eps_L(n)n^2.
  \label{eq:intro-blind-upper}
 \end{equation}
 For every randomized policy $\mathcal A$, even one told $M$, some fixed
-oblivious labelling $\sigma$ satisfies
+oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE C_{\mathcal A}(\sigma(M))
  \ge n^2\Phiopt(D_M)-\eps_L(n)n^2.
@@ -385,8 +385,8 @@ The long-test regime uses the $\mu_n/2$ dominance part of
 and then over private seeds proves the same lower bound for every randomized
 announced policy.
 
-The random-labelling and announced minimax values coincide.  A uniform
-labelling is a valid finite Yao distribution, giving one inequality.  For the
+The random-labeling and announced minimax values coincide.  A uniform
+labeling is a valid finite Yao distribution, giving one inequality.  For the
 other, privately relabel the physical jobs before running an optimal
 deterministic urn policy; against every fixed assignment, the policy sees a
 uniform assignment.  Thus the lower bound above applies to the announced
@@ -515,11 +515,11 @@ $Lnk_n=O_L(n^{3/2})$.  Combining
  +O_L\!\left(n^{-1/6}\sqrt{\log(n+2)}\right)
  \label{eq:blind-unannounced-upper}
 \end{equation}
-uniformly over every fixed labelled vector $p\in[0,L]^n$.
+uniformly over every fixed labeled vector $p\in[0,L]^n$.
 
 For the converse, reveal $M$ to an arbitrary policy for free and draw a
-uniform labelling.  The announced lower bound
-\cref{eq:blind-announced-lower} applies seedwise.  Some fixed labelling in
+uniform labeling.  The announced lower bound
+\cref{eq:blind-announced-lower} applies seedwise.  Some fixed labeling in
 the support has cost at least the average, which proves
 \cref{eq:intro-blind-lower}.  This completes the proof of
 \cref{thm:blind-instance}.

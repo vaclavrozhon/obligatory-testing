@@ -116,7 +116,7 @@ blind optimization & the job runs for time $u$ & replaces $u$ by a still-hidden 
 \end{tabular}
 \end{center}
 
-The two middle rows separate the two benefits of a test.  Blind execution
+The last three rows separate the two benefits of a test.  Blind execution
 studies information without speedup.  Blind optimization studies speedup
 without advance information.  The common-upper model contains both.
 
@@ -180,7 +180,7 @@ it only tells us $p_i$ before we decide when to run it.  We call this
 
 Why do we use the bag-dependent value $\Phi(M)$ here instead of the ordinary
 clairvoyant optimum?  Take a bag containing many zero jobs and a few positive
-jobs.  A scheduler that knows the bag's labelling completes all zeros at time
+jobs.  A scheduler that knows the bag's labeling completes all zeros at time
 zero.  An online scheduler has to search for them.  Its competitive ratio can
 therefore be arbitrarily large.  This does not mean that all online policies
 are equally bad.  The quantity $\Phi(M)$ captures the best cost that online
@@ -238,7 +238,7 @@ at least as much as raw execution, so we should never test.  If $u$ is very
 large, raw execution is unattractive, so the problem approaches obligatory
 testing.  The interesting question is what happens between these endpoints.
 
-This common-upper model was introduced by D{"u}rr et
+This common-upper model was introduced by D{\"u}rr et
 al.~\cite{DurrErlebachMegowMeissner2020}.  Their results already showed that
 intermediate values of $u$ are the difficult ones.  We determine the exact
 answer for every $u$, for both deterministic and randomized algorithms.
@@ -338,6 +338,19 @@ however, grows as $\sqrt u/2$.  In contrast, the revealing common-upper curve
 eventually stays at $4/3$.  The difference shows exactly what information is
 worth: speedup alone does not give a bounded ratio when $u$ grows.
 
+\begin{theorem}[Blind-optimization curve, informal]
+\label{thm:intro-bo-curve}
+The exact randomized asymptotic competitive ratio is one for $u\le1$ and is
+given by an explicit two-branch curve for $u>1$.  After the transition point
+$u=2.246979\ldots$, it equals
+\[
+ \frac12\left(1+\sqrt{\frac{u^2+u-1}{u-1}}\right).
+\]
+In particular, it is $\sqrt u/2+1/2+o(1)$ as $u\to\infty$, and hence is
+unbounded.  This is the informal version of
+\cref{thm:bo-curve}.
+\end{theorem}
+
 A related non-revealing optimization appears in the oblivious-budget model
 of Damerius et al.~\cite{DameriusEtAl2023}.  There, optimization consumes an
 external budget.  Here it occupies the machine and delays every unfinished
@@ -393,7 +406,7 @@ four-block blind-execution policy has a similar shape, but our input is an
 adversarial bag, need not converge to a distribution, and is not announced to
 the universal algorithm.
 
-D{"u}rr et al.~\cite{DurrErlebachMegowMeissner2020} introduced the
+D{\"u}rr et al.~\cite{DurrErlebachMegowMeissner2020} introduced the
 adversarial common-upper model and obtained deterministic bounds, including
 the $1.8668\ldots$ guarantee for binary values.  We close the deterministic
 gap for arbitrary values $p_i\in[0,u]$ and give the exact randomized curve

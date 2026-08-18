@@ -1,4 +1,4 @@
-\section{Instance optimality with a common upper bound}
+\section{Common-upper instance optimality}
 \label{sec:common-upper-instance}
 
 Fix $u<\infty$.  An untouched job may be run raw for the public time $u$, or
@@ -7,25 +7,25 @@ operation of length $p_i$ may be delayed.  The goal of this section is to
 prove \cref{thm:common-upper-instance}, the common-upper part of the informal
 instance-optimality theorem \cref{thm:intro-instance-optimality}.
 
-For a distribution $D$ on $[0,u]$, we shall define an explicit value
+For a distribution $D$ on $[0,u]$, we define an explicit value
 $\Phi_u(D)$ in \cref{eq:cui-Phi}.  It is obtained by choosing one threshold
 and minimizing a quadratic over the tested fraction $q$.  For a multiset
 $M$, write $D_M$ for its empirical distribution.
 
 \begin{theorem}[Common-upper instance optimality]
 \label{thm:common-upper-instance}
-For every fixed $u>0$ there are randomized nonanticipating policies
+For every fixed $u>0$ there exist randomized nonanticipating policies
 $\mathcal A^*_{n,u}$, depending only on $n,u$, and a deterministic sequence
 $\eps_u(n)\to0$ such that every size-$n$ multiset
 $M\subseteq[0,u]$ has the following properties.
-For every fixed labelling $\sigma$,
+For every fixed labeling $\sigma$,
 \begin{equation}
  \EE C_{\mathcal A^*_{n,u}}(\sigma(M))
  \le n^2\Phi_u(D_M)+\eps_u(n)n^2.
  \label{eq:cui-upper}
 \end{equation}
 Conversely, for every randomized nonanticipating policy $\mathcal A$, even
-one told $M$, some fixed oblivious labelling $\sigma$ satisfies
+one told $M$, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE C_{\mathcal A}(\sigma(M))
  \ge n^2\Phi_u(D_M)-\eps_u(n)n^2.
@@ -376,7 +376,7 @@ cost at least
  \label{eq:cui-announced-lower}
 \end{equation}
 At least one placement has seed-expected cost at least this average.  It is
-chosen before the seed and is therefore a fixed oblivious labelling.  This
+chosen before the seed and is therefore a fixed oblivious labeling.  This
 proves \cref{eq:cui-lower}.
 
 \subsection{A universal policy without the multiset}
@@ -461,7 +461,7 @@ the resulting bound is
  \le n^2\Phi_u(D_M)+O_u(n^{11/6})
  \label{eq:cui-universal-upper}
 \end{equation}
-for every fixed labelling.  Together with the announced lower bound
+for every fixed labeling.  Together with the announced lower bound
 \cref{eq:cui-announced-lower}, this proves
 \cref{thm:common-upper-instance}.  The larger logarithmic lower-bound error
 gives the common sequence in \cref{eq:cui-rate}.

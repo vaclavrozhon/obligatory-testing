@@ -1,4 +1,4 @@
-\section{Optimization without revelation}
+\section{Blind optimization: speedup without revelation}
 \label{sec:blind-optimization}
 
 We finally separate the two benefits that were bundled together in the
@@ -16,8 +16,9 @@ The goal of this section is to prove two closely related statements.  The
 first, \cref{thm:bo-instance}, is the non-revealing-optimization part of the
 informal instance-optimality theorem
 \cref{thm:intro-instance-optimality}.  The second,
-\cref{thm:bo-curve}, maximizes that instance-specific value relative to the
-clairvoyant optimum.  Keeping them together avoids repeating the same
+\cref{thm:bo-curve}, is the rigorous version of
+\cref{thm:intro-bo-curve} and maximizes that instance-specific value relative
+to the clairvoyant optimum.  Keeping them together avoids repeating the same
 two-block reduction.
 
 For a multiset $M$ let
@@ -35,17 +36,17 @@ $1+\mu_M$ units per completion on average.
 
 \begin{theorem}[Blind-optimization instance optimality]
 \label{thm:bo-instance}
-For every fixed $u<\infty$ there is a randomized nonanticipating policy
+For every fixed $u<\infty$ there exist a randomized nonanticipating policy
 $\mathcal A^{\rm bo}$, depending only on $n,u$, and a sequence
 $\eps_u(n)\to0$ such that every size-$n$ multiset $M\subseteq[0,u]$ and every
-fixed labelling $\sigma$ satisfy
+fixed labeling $\sigma$ satisfy
 \begin{equation}
  \EE C_{\mathcal A^{\rm bo}}(\sigma(M))
  \le n^2\Phi_{\rm bo}(M)+\eps_u(n)n^2.
  \label{eq:bo-instance-upper}
 \end{equation}
 Conversely, for every randomized nonanticipating policy $\mathcal A$, even
-one told $M$, some fixed oblivious labelling $\sigma$ satisfies
+one told $M$, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE C_{\mathcal A}(\sigma(M))
  \ge n^2\Phi_{\rm bo}(M)-\eps_u(n)n^2.
@@ -300,7 +301,7 @@ optimal afterwards.  Substitution gives
   1+\sqrt{\frac{u^2+u-1}{u-1}}\right).
 \]
 This proves \eqref{eq:bo-curve}.  The binary distributions
-\eqref{eq:bo-binary-hard}, uniformly relabelled, are oblivious Yao
+\eqref{eq:bo-binary-hard}, uniformly relabeled, are oblivious Yao
 distributions.  Together with the universal upper policy of
 \cref{thm:bo-instance}, they prove both sides of the competitive-ratio claim.
 If the maximizing mass $b$ is irrational, finite multisets use

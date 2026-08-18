@@ -155,13 +155,15 @@ asymptotic ratios are $1.570574\ldots$ for deterministic algorithms and
 $4/3$ for randomized algorithms.  When untested execution takes a common
 time $u$, we determine the exact deterministic and randomized ratios for
 every $u$; both answers are explicit curves.  We also go beyond worst-case
-ratios.  We design one randomized policy that is asymptotically optimal for
-\emph{every} bounded collection of job lengths, not merely for the worst one.
-The policy has a simple shape: sample, learn a threshold, and then execute a
-few ordered blocks.  Finally, if a unit-time optimization shortens a job but
-does not reveal its new length, we give both the instance-optimal policy and
-the exact worst-case curve; unlike the revealing curve, this ratio is
-unbounded as the raw execution time grows.
+ratios.  In each optional model we design one randomized policy that is
+asymptotically optimal for \emph{every} bounded collection of job lengths,
+not merely for the worst one.
+The revealing policies have a simple shape: sample, learn a threshold, and
+then execute a few ordered blocks.  If a unit-time optimization shortens a
+job but does not reveal its new length, only the mean has to be learned.  We
+give both the instance-optimal policy and the exact worst-case curve for this
+model; unlike the revealing curve, its ratio is unbounded as the raw
+execution time grows.
 \end{abstract}
 
 \tableofcontents
@@ -1125,13 +1127,14 @@ correspondence for the deterministic theorem remains in
 
 \fi
 
-\section{Models, benchmarks, and common preliminaries}\label{sec:model}
+\section{Models and common preliminaries}\label{sec:model}
 
 There are $n$ jobs, all available at time zero, and one machine.  Operations
 are nonpreemptive, and at most one operation can run at a time.  A unit test
 of job $j$ reveals its processing time $p_j\ge0$.
 
-We use the following four operation models throughout.
+We use four operation models.  The introduction described them informally;
+here are the precise rules.
 \begin{description}[leftmargin=*,style=nextline]
 \item[Common-upper execution $\mathsf{CU}(u)$.]
 For finite $u$, all jobs share the known upper limit $p_j\in[0,u]$.  A job is
@@ -1177,17 +1180,17 @@ when they are clear.
 The deterministic common-upper results allow the usual adversarial input and
 use adaptive revelation only as a lower-bound device that is frozen by
 \cref{lem:replay}.  The randomized results use an \emph{oblivious} adversary:
-the labelled processing-time vector is fixed before the algorithm draws its
+the labeled processing-time vector is fixed before the algorithm draws its
 private random seed.  Unless explicitly stated otherwise, the algorithm is
 not told the multiset of values.  An \emph{announced} policy is additionally
 given that multiset but not its assignment to labels.  Announcing the
 multiset can only help and is therefore a valid strengthening in lower bounds.
 
 All randomized expectations are over private algorithmic randomness.  A
-uniform random relabelling is private randomness, not a distributional
+uniform random relabeling is private randomness, not a distributional
 assumption on the adversarial multiset.  For lower bounds we use a uniform
-distribution over fixed labellings as a finite Yao distribution and then
-select one labelling whose cost is at least the average.
+distribution over fixed labelings as a finite Yao distribution and then
+select one labeling whose cost is at least the average.
 
 \subsection{Offline optima and pair accounting}
 
@@ -1245,10 +1248,10 @@ argument gives
  =\sum_i p_i+\sum_{i<j}\min\{p_i,p_j\}.
  \label{eq:blind-offline-opt}
 \end{equation}
-We will not use this quantity as the principal benchmark of
-\cref{thm:blind-instance}: it may be $o(n^2)$, while that theorem
-compares policies at the $n^2$ scale to the stronger announced-multiset
-online benchmark $\Phiopt(D_M)$.
+This is not the principal benchmark in \cref{thm:blind-instance}.  The
+clairvoyant value may be $o(n^2)$, whereas that theorem compares policies at
+the $n^2$ scale with the optimal announced-multiset online value
+$\Phiopt(D_M)$.
 
 At the cap-free endpoint, the pair formula specializes to
 \begin{align}
@@ -1273,7 +1276,7 @@ The ordinary competitive ratio of $\mathcal A$ is
 \[
   \CR(\mathcal A)=\sup_I\frac{\ALG_{\mathcal A}(I)}{\OPT(I)}.
 \]
-For the result of this paper, the relevant size-asymptotic ratio is
+For our results, the relevant size-asymptotic ratio is
 \begin{equation}\label{eq:cr-infty}
   \CR_\infty(\mathcal A)
   =\limsup_{n\to\infty}\ \sup_{|I|=n}
@@ -1329,7 +1332,7 @@ competitive ratio is already infinite; otherwise every relevant label is
 recorded.
 \end{proof}
 
-\section{The cap-free endpoint \texorpdfstring{$u=\infty$}{u=infinity}}
+\section{Deterministic obligatory testing: the exact ratio}
 \label{sec:obligatory}
 
 The goal of this section is to prove \cref{thm:det-obligatory}, the rigorous
@@ -1354,7 +1357,7 @@ there are arbitrarily large obligatory-testing instances $I$ such that
 \[
  \ALG_{\mathcal B}(I)\ge(\Rstar-\eps)\OPT(I).
 \]
-Conversely, there are one deterministic algorithm $\mathcal A$ and one
+Conversely, there exist a deterministic algorithm $\mathcal A$ and an
 absolute constant $C$ such that every $n$-job instance satisfies
 \[
  \ALG_{\mathcal A}(I)\le\Rstar\OPT(I)+Cn.
@@ -1409,6 +1412,8 @@ $\delta\le B/\OPT\to0$, a contradiction.  This proves the additive-constant
 claim.
 \end{proof}
 
+\input{randomized_obligatory}
+
 \input{optional_lower_and_curve}
 
 \input{optional_upper}
@@ -1416,8 +1421,6 @@ claim.
 \input{common_upper_instance}
 
 \input{randomized_common_upper}
-
-\input{randomized_obligatory}
 
 \input{blind_optional}
 

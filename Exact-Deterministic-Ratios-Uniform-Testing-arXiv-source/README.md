@@ -67,8 +67,8 @@ accompanied by an independent adjacent-exchange cross-check.
 The randomized results give the exact four-piece common-upper curve, the
 sharp unbounded obligatory ratio `4/3`, and instance-optimal leading values
 for the bounded blind-execution, common-upper, and blind-optimization models.
-The full common-upper instance-optimal proof is Section 5 of the manuscript;
+The full common-upper instance-optimal proof is Section 6 of the manuscript;
 its outer worst-case optimization is the separate four-piece curve in
-Section 6.  The blind-execution theorem is formalized in Lean.  The
+Section 7.  The blind-execution theorem is formalized in Lean.  The
 blind-optimization theorem and its exact curve, which is unbounded as
 $u\to\infty$, are currently analytic only.

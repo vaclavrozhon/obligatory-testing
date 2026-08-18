@@ -1,12 +1,11 @@
-\section{Finite caps: the exact curve}
+\section{Deterministic common-upper testing: the exact curve}
 \label{sec:optional}
 
 The goal of this section is to prove \cref{thm:optional-curve}, the rigorous
 deterministic part of the informal common-upper curve theorem
-\cref{thm:intro-common-upper-curves}.  We now move from the cap-free endpoint
-to finite $u$.  Raw execution becomes
-available, all jobs have the same known upper limit, and a test reveals
-$p_j\in[0,u]$.  Thus the offline effective length of job $j$ is
+\cref{thm:intro-common-upper-curves}.  We now allow raw execution for a
+finite common time $u$.  All jobs have this same known upper limit, and a
+test reveals $p_j\in[0,u]$.  Thus the offline effective length of job $j$ is
 \begin{equation}
  q_j=\min\{u,1+p_j\},
  \label{eq:opt:effective-length}
@@ -73,7 +72,7 @@ with $r\le c\le1/\varphi$ and $0\le m\le1/\varphi$.
 \begin{theorem}[Exact common-upper curve]
 \label{thm:optional-curve}
 For every fixed $u>0$, the optimal deterministic size-asymptotic ratio in
-the optional-testing model is
+the common-upper model is
 \begin{equation}
 \boxed{
 V(u)=
@@ -220,7 +219,7 @@ $d$ pending long jobs.  Indeed, if a noncompleting unit test is immediately
 before an available length-$u$ completion while $h$ jobs remain, the two
 orders contribute $h+hu$ and $hu+(h-1)$, respectively; moving the
 completion left saves one.  Raw completions are available from time zero,
-and identical long jobs may be relabelled so that the $e$ completed ones are
+and identical long jobs may be relabeled so that the $e$ completed ones are
 tested first.  After the switch, a zero test-completion has length one and
 therefore precedes a pending operation of length $u$.  These exchanges
 respect precedence.

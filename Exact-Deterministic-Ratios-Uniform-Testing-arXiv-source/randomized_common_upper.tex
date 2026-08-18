@@ -1,11 +1,12 @@
-\section{Randomized common upper bounds: the exact four-piece curve}
+\section{Randomized common-upper testing: the exact four-piece curve}
 \label{sec:random-common-upper}
 
-We return to the finite common-upper model and allow private randomization
-against an oblivious adversary.  The cap $u$ is fixed throughout this
-section, but the algorithm is not told the processing-time multiset.  This
-section proves \cref{thm:random-common-upper}, the rigorous randomized half
-of the informal curve theorem \cref{thm:intro-common-upper-curves}.  Let
+The previous section identified the optimal leading online cost for every
+fixed bag in the common-upper model.  We now compare that cost with the
+clairvoyant optimum and maximize over all bags.  The cap $u$ is fixed, but
+the algorithm is not told the processing-time multiset.  This section proves
+\cref{thm:random-common-upper}, the rigorous randomized half of the informal
+curve theorem \cref{thm:intro-common-upper-curves}.  Let
 $\urand>1$ be the unique root of
 \begin{equation}
  \urand^3-6\urand^2+5\urand-1=0,
@@ -31,7 +32,7 @@ ratio against an oblivious adversary is
  \label{eq:intro-random-common-upper-curve}
 \end{equation}
 More precisely, there are randomized nonanticipating algorithms
-$\mathcal A_{n,u}$ and numbers $\eps_u(n)\to0$ such that every fixed labelled
+$\mathcal A_{n,u}$ and numbers $\eps_u(n)\to0$ such that every fixed labeled
 vector $p\in[0,u]^n$ satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A_{n,u}}(p)
@@ -59,7 +60,7 @@ bag.  Here we compare that value with the clairvoyant minimum kernel and
 maximize over all empirical distributions.  A survival-function flattening
 argument reduces the outer optimization to binary distributions.  Two
 scalar maximizations give the four branches above.  A sublinear pilot removes
-advance knowledge of the bag, and binary random labellings give matching Yao
+advance knowledge of the bag, and binary random labelings give matching Yao
 lower bounds.  The next subsection starts the formal calculation.
 
 \subsection{Offline and stationary fluid coefficients}
@@ -354,7 +355,7 @@ removes this announcement at lower-order cost.
 \begin{lemma}[Sublinear-pilot transfer]
 \label{lem:rcu-pilot-transfer}
 For every fixed $u>1$, there are randomized nonanticipating policies
-$\mathcal A_{n,u}$ such that every fixed labelled input with empirical
+$\mathcal A_{n,u}$ such that every fixed labeled input with empirical
 distribution $D$ satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A_{n,u}}
@@ -398,7 +399,7 @@ total error is
  O_u\left(\sqrt{d/k}+1/d+k/n\right)=O_u(n^{-1/6}).
 \]
 This proves \eqref{eq:rcu-pilot-bound}.  The initial private permutation
-makes the law identical for every fixed public labelling.
+makes the law identical for every fixed public labeling.
 \end{proof}
 
 Together with \eqref{eq:rcu-offline-finite} and
@@ -416,13 +417,13 @@ clairvoyantly optimal, so no learning is required.
 
 It remains to show that the two endpoint policies used above cannot be
 improved in the worst case by a more adaptive algorithm.  We first record a
-binary random-labelling envelope.
+binary random-labeling envelope.
 
 \begin{lemma}[Binary cap envelope]
 \label{lem:rcu-binary-lower}
 Fix $u>1$, $x\in[0,1]$, and put $z=1-x$.  Let $M_n$ have $xn+O(1)$ jobs of
 value $u$ and $zn+O(1)$ zero jobs.  For every randomized nonanticipating
-algorithm, even one told $M_n$, some fixed labelling satisfies
+algorithm, even one told $M_n$, some fixed labeling satisfies
 \begin{equation}
  \frac{\EE\ALG}{n^2}\ge
  \begin{cases}
@@ -431,7 +432,7 @@ algorithm, even one told $M_n$, some fixed labelling satisfies
  \end{cases}
  \label{eq:rcu-binary-fluid-lower}
 \end{equation}
-Every labelling has
+Every labeling has
 \begin{equation}
  \frac{\OPT_u}{n^2}
  =\frac{1+(u-1)x^2}{2}+O_u(1/n).
@@ -545,7 +546,7 @@ one.
 \begin{lemma}[Balanced zero--two lower bound]
 \label{lem:rcu-zero-two-lower}
 For every $u\ge25/4$ and every randomized algorithm, arbitrarily large even
-$n$ admit a fixed labelling with $n/2$ jobs of value zero and $n/2$ jobs of
+$n$ admit a fixed labeling with $n/2$ jobs of value zero and $n/2$ jobs of
 value two such that
 \begin{equation}
  \EE\ALG\ge n^2-o_u(n^2),

@@ -2,10 +2,11 @@
 \texorpdfstring{$4/3$}{4/3}}
 \label{sec:random-obligatory}
 
-We now keep obligatory tests but change the adversary.  It fixes the labelled
-vector $p\in[0,\infty)^n$ before the algorithm draws its random bits.  The
-multiset is not announced and no upper bound on the processing times is
-assumed.  The goal of this section is to prove \cref{thm:rand-obligatory},
+We keep the obligatory-testing model and now allow private randomization.  The
+adversary fixes the labeled vector $p\in[0,\infty)^n$ before the algorithm
+draws its random bits.  The multiset is not announced, and no upper bound on
+the processing times is assumed.  The goal of this section is to prove
+\cref{thm:rand-obligatory},
 the rigorous randomized part of the informal obligatory-testing result
 \cref{thm:intro-obligatory} from the introduction.
 
@@ -20,7 +21,7 @@ $n$, such that every fixed vector $p\in[0,\infty)^n$ satisfies
  \label{eq:rand-obligatory-upper}
 \end{equation}
 Conversely, for every randomized algorithm and every sufficiently large even
-$n$, some fixed labelling of $n/2$ zero jobs and $n/2$ jobs of processing
+$n$, some fixed labeling of $n/2$ zero jobs and $n/2$ jobs of processing
 time two satisfies
 \begin{equation}
  \EE\ALG(p)\ge n^2-O(n^{3/2}),
@@ -213,7 +214,7 @@ Equality in the quadratic coefficient of \cref{eq:rand-certificate} forces
 $\theta=2$, zero mass $1/2$, and all positive mass at two.  This predicts the
 lower-bound instance before any probabilistic argument is used.
 
-We shall also use the following tail-safe estimate.  Direct expansion gives
+We also use the following tail-safe estimate.  Direct expansion gives
 \begin{equation}
  P-O=\frac{h+am-K_E}{2}.
  \label{eq:rand-crude-identity}
@@ -463,7 +464,7 @@ $\EE\ALG\ge n^2-O(n^{3/2})$.  Every input in the distribution has
  \OPT=3m^2+2m=\frac34n^2+n.
 \]
 Conditioning a randomized algorithm on its private seed and averaging over
-the finite placement distribution shows that one fixed labelling attains at
-least this average.  That labelling is chosen before the private seed and is
+the finite placement distribution shows that one fixed labeling attains at
+least this average.  That labeling is chosen before the private seed and is
 therefore an oblivious input.  Together with \cref{eq:rand-final-upper}, this
 completes the proof of \cref{thm:rand-obligatory}.
