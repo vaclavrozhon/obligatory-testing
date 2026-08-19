@@ -316,7 +316,8 @@ This is the simplest case.  Its deterministic version has no useful learning
 mechanism: an adversarial labeling can make any fixed sample unrepresentative (see
 \cref{sec:blind-optimization}).
 In the randomized model, we can at least sample a few jobs to estimate the only number that
-matters: the mean $\mu$ of the optimized lengths.  The optimal scheduler from algXX then compares
+matters: the mean $\mu$ of the optimized lengths.  The policy in
+\cref{alg:intro-blind-optimization} then compares
 the two average times per job, $u$ and $1+\mu$, and uses the better action for
 all remaining jobs.  
 
@@ -349,11 +350,10 @@ and let $\widehat\mu$ be the mean observed length.
 \begin{figure}[H]
 \centering
 \input{blind_optimization_curve_tikz}
-\caption{Randomized ratios for blind and revealing optimization.}
+\caption{The exact randomized ratio for blind optimization.}
 \label{fig:intro-bo-curve}
 \end{figure}
 \end{minipage}
-[tady dej jenom blind, revealing hod samostatne do pristi kapitoly]
 
 More precisely, if $\mu_M$ is the mean optimized length in $M$, the best
 possible leading value is
@@ -397,26 +397,46 @@ answer for every $u$, for both deterministic and randomized algorithms.
 \label{thm:intro-common-upper-curves}
 For every $u>0$, the exact deterministic and randomized asymptotic
 competitive ratios are the six-piece and four-piece curves in
-\cref{fig:intro-curves}.  The deterministic curve reaches
+\cref{fig:intro-curves-det,fig:intro-curves-rand}.  The deterministic curve reaches
 $1.87\ldots$ and then falls to the obligatory value
 $1.57\ldots$.  The randomized curve reaches $1.63\ldots$ and
 eventually becomes $4/3$.
 \end{theorem} 
 
 The deterministic curve is the lower envelope of three explicit policy
-families that we briefly explain next without defining all details. 
+families.  We describe their shape here and defer the exact parameters to
+\cref{sec:optional}.
 
-The first algorithm, Raw(u), simple fixes an arbitrary order of the jobs and executes each one untested for the public raw time $u$. This strategy is optimal for small $u$; for $u \le 1$ it's clearly $1$-competitive and for $u > 1$ it is $u$-competitive (see Fig XX). 
+The first algorithm, \textsc{Raw}$(u)$, simply fixes an arbitrary job order
+and executes every job untested for the public raw time $u$.  Its ratio is
+$1$ for $u\le1$ and $u$ for $u>1$, and it supplies the lower envelope up to
+$u_\diamond=1.866760\ldots$; see \cref{fig:intro-curves-det}.
 
-The next algorithm, ForcedPrefixUTE, is essentially a threshold algorithm. However, it additionally executes all optimized jobs for a certain fraction of the first coming jobs. The reason [quick intuition here for why]
+The second algorithm, \textsc{ForcedPrefixUTE}, tests every job and normally
+processes only outcomes below a fixed threshold.  It makes one deliberate
+exception: every outcome in an initial $b(u)$-fraction of the test order is
+processed immediately.  Without this forced prefix, deferring early long
+outcomes can create a tail that is delayed by almost all later tests; the
+prefix balances this tail cost against the opposite risk of processing a
+long job before shorter unseen jobs.
+
+For intuition, $b(u)$ decreases from $0.287\ldots$ at
+$u_\diamond$ to zero at $u_0=3.147899\ldots$.  Over this interval it is
+well approximated by
+\[
+ b(u)\approx0.287
+ \left(\frac{u_0-u}{u_0-u_\diamond}\right)^{1.56}.
+\]
+The algorithm uses the exact value defined in \cref{eq:opt:ute-parameters},
+not this numerical approximation.
 
 \begin{algorithm}[htbp]
 \caption{\textsc{ForcedPrefixUTE}$(J,u)$}
 \label{alg:intro-ro-ute}
 \begin{algorithmic}
 \State Fix a test order $j_1,\ldots,j_n$ and set $Q\gets\varnothing$.
-\State Set $\tau\gets u-1$ and
-$b\gets b(u) \approx $ [tady dopln aproximativni funkci pro b(u)] for $u\le u_0 \approx 3.14...$, while $b\gets0$ otherwise
+\State Set $\tau\gets\min\{1,u-1\}$ and
+$b\gets b(u)$ for $u\le u_0$, while $b\gets0$ otherwise.
 \State For $i=1,\ldots,n$, test $j_i$ and observe $p_{j_i}$.
 \State \quad If $i\le\lfloor bn\rfloor$ or $p_{j_i}\le\tau$, process
 $j_i$ immediately; otherwise add it to $Q$.
@@ -424,7 +444,14 @@ $j_i$ immediately; otherwise add it to $Q$.
 \end{algorithmic}
 \end{algorithm}
 
-Finally, the last algorithm, AdaptiveThreshold, is essentially our alg1. The difference is that the constant $\rho$ from Line1 is chosen by a somewhat complicated optimization. 
+Finally, \textsc{AdaptiveThreshold} is the same history-dependent policy as
+\cref{alg:intro-obligatory-det}.  For finite $u$, only its parameter $\rho$
+changes: it is chosen by the optimization in
+\cref{eq:opt:mixed-parametrization} until $u=z_*=4.505241\ldots$, after which
+it equals the obligatory-testing value $0.570574\ldots$.  The three policies
+form the deterministic lower envelope in \cref{fig:intro-curves-det}:
+\textsc{Raw} wins first, \textsc{ForcedPrefixUTE} in the middle, and
+\textsc{AdaptiveThreshold} for large $u$.
 
 
 For randomized algorithms we can say more.  On each fixed bag, the sampling
@@ -465,15 +492,19 @@ lengths, leaving a one-variable optimization.
 \begin{figure}[H]
 \centering
 \input{curves_overview_tikz}
-\caption{The exact asymptotic ratios as a function of the raw execution time
-$u$.  In the deterministic panel, the three styled curves are the guarantees
-of \textsc{Raw}, \textsc{ForcedPrefixUTE}, and
-\textsc{AdaptiveThreshold}; the black-outlined curve is their pointwise
-minimum.  Testing is pointless on the left.  On the right, both optimal
-curves reach their obligatory-testing values.}
-\label{fig:intro-curves}
+\caption{The three deterministic policy guarantees as functions of the raw
+execution time $u$.  Their pointwise minimum, shown with a black outline, is
+the exact deterministic ratio.}
+\label{fig:intro-curves-det}
 \end{figure}
-[tohle maji byt dva samostatne grafy] -- a ten graf nalevo je ted broken
+
+\begin{figure}[H]
+\centering
+\input{randomized_curve_tikz}
+\caption{The exact randomized revealing-optimization ratio as a function of
+the raw execution time $u$.}
+\label{fig:intro-curves-rand}
+\end{figure}
 
 
 The curves are not monotone.  This is not a contradiction: increasing $u$

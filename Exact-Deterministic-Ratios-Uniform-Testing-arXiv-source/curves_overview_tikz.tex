@@ -1,9 +1,5 @@
-% The introduction curves as native pgfplots graphics.  All explicit
-% branches are plotted from their formulas.  The only tabulated branch is
-% C_mix, which is defined implicitly in Equation (intro-ro-mixed-parameter).
+% Deterministic revealing-optimization policy curves and their lower envelope.
 \begingroup
-% TeX Live 2023's pgfplots emits spurious nullfont diagnostics containing
-% ``0.01pt'' while sampling expressions; no text is actually lost.
 \tracinglostchars=0
 \pgfmathdeclarefunction{introRhoI}{1}{%
   \pgfmathparse{%
@@ -13,55 +9,50 @@
       /(2*(#1-1))}%
 }
 \begin{tikzpicture}
-\begin{groupplot}[
-  group style={group size=2 by 1,horizontal sep=1.15cm},
-  width=0.465\textwidth,
-  height=0.315\textwidth,
+\begin{axis}[
+  width=0.78\textwidth,
+  height=0.39\textwidth,
   xmin=0.2,
   xmax=7.3,
   ymin=0.97,
   ymax=1.91,
   xlabel={raw execution time $u$},
+  ylabel={competitive ratio},
   xtick={1,2,3,4,5,6,7},
   ytick={1,1.2,1.4,1.6,1.8},
   tick label style={font=\scriptsize},
   label style={font=\small},
-  title style={font=\small},
   grid=major,
   grid style={black!15},
   axis line style={black!65},
   tick style={black!65},
   axis x line*=bottom,
   axis y line*=left,
-  samples=90,
+  samples=100,
   no markers,
   clip=true,
-]
-
-\nextgroupplot[
-  title={deterministic},
-  ylabel={competitive ratio},
   legend style={
-    font=\tiny,
+    font=\scriptsize,
     draw=none,
     fill=white,
-    fill opacity=0.88,
+    fill opacity=0.9,
     text opacity=1,
     at={(0.98,0.98)},
     anchor=north east,
     legend columns=2,
-    /tikz/every even column/.append style={column sep=3pt},
+    /tikz/every even column/.append style={column sep=7pt},
   },
 ]
-% The exact lower envelope, drawn first as a black outline.
-\addplot[black,line width=2.6pt,domain=0.2:1] {1};
+
+% Exact lower envelope, drawn first as a black outline.
+\addplot[black,line width=2.8pt,domain=0.2:1] {1};
 \addlegendentry{optimal minimum}
-\addplot[black,line width=2.6pt,domain=1:1.86676039917] {x};
-\addplot[black,line width=2.6pt,domain=1.86676039917:3.14789903570]
+\addplot[black,line width=2.8pt,domain=1:1.86676039917] {x};
+\addplot[black,line width=2.8pt,domain=1.86676039917:3.14789903570]
   {introRhoI(x)};
-\addplot[black,line width=2.6pt,domain=3.14789903570:3.61803398875]
+\addplot[black,line width=2.8pt,domain=3.14789903570:3.61803398875]
   {1+1/sqrt(x-1)};
-\addplot[black,line width=2.6pt,smooth] coordinates {
+\addplot[black,line width=2.8pt,smooth] coordinates {
   (3.61803399,1.61803399)
   (3.63837920,1.61566099)
   (3.65923107,1.61328800)
@@ -84,25 +75,25 @@
   (4.23729031,1.57294709)
   (4.50524150,1.57057410)
 };
-\addplot[black,line width=2.6pt,domain=4.50524149579:7.3]
+\addplot[black,line width=2.8pt,domain=4.50524149579:7.3]
   {1.57057409665};
 
-% The three policy guarantees whose pointwise minimum is the black curve.
-\addplot[violet!82!black,densely dotted,line width=1.35pt,domain=0.2:1]
+% Individual policy guarantees.
+\addplot[violet!82!black,densely dotted,line width=1.5pt,domain=0.2:1]
   {1};
 \addlegendentry{\textsc{Raw}}
-\addplot[violet!82!black,densely dotted,line width=1.35pt,domain=1:7.3]
+\addplot[violet!82!black,densely dotted,line width=1.5pt,domain=1:7.3]
   {x};
 
-\addplot[teal!78!black,dashed,line width=1.35pt,
+\addplot[teal!78!black,dashed,line width=1.5pt,
   domain=1.86676039917:3.14789903570] {introRhoI(x)};
 \addlegendentry{\textsc{ForcedPrefixUTE}}
-\addplot[teal!78!black,dashed,line width=1.35pt,
+\addplot[teal!78!black,dashed,line width=1.5pt,
   domain=3.14789903570:3.61803398875] {1+1/sqrt(x-1)};
-\addplot[teal!78!black,dashed,line width=1.35pt,
+\addplot[teal!78!black,dashed,line width=1.5pt,
   domain=3.61803398875:7.3] {1.61803398875};
 
-\addplot[red!78!black,dash dot,line width=1.35pt,smooth] coordinates {
+\addplot[red!78!black,dash dot,line width=1.5pt,smooth] coordinates {
   (3.61803399,1.61803399)
   (3.63837920,1.61566099)
   (3.65923107,1.61328800)
@@ -126,7 +117,7 @@
   (4.50524150,1.57057410)
 };
 \addlegendentry{\textsc{AdaptiveThreshold}}
-\addplot[red!78!black,dash dot,line width=1.35pt,
+\addplot[red!78!black,dash dot,line width=1.5pt,
   domain=4.50524149579:7.3] {1.57057409665};
 
 \addplot[black!45,densely dotted,thin] coordinates {(1,0.97) (1,1.91)};
@@ -138,33 +129,11 @@
   coordinates {(3.61803398875,0.97) (3.61803398875,1.91)};
 \addplot[black!45,densely dotted,thin]
   coordinates {(4.50524149579,0.97) (4.50524149579,1.91)};
-\addplot[only marks,mark=*,mark size=1.45pt,black]
+\addplot[only marks,mark=*,mark size=1.6pt,black]
   coordinates {(1.86676039917,1.86676039917) (4.50524149579,1.57057409665)};
 \node[font=\scriptsize,anchor=west] at (axis cs:5.25,1.535)
   {$1.57\ldots$};
 
-\nextgroupplot[title={randomized}]
-\addplot[orange!88!black,very thick,domain=0.2:1] {1};
-\addplot[orange!88!black,very thick,domain=1:5.04891733952]
-  {x^3/(x^2+(x-1)^3)};
-\addplot[orange!88!black,very thick,domain=5.04891733952:6.25]
-  {1+1/(2*(sqrt(x)-1))};
-\addplot[orange!88!black,very thick,domain=6.25:7.3] {4/3};
-\addplot[black!45,densely dotted,thin] coordinates {(1,0.97) (1,1.91)};
-\addplot[black!45,densely dotted,thin]
-  coordinates {(5.04891733952,0.97) (5.04891733952,1.91)};
-\addplot[black!45,densely dotted,thin]
-  coordinates {(6.25,0.97) (6.25,1.91)};
-\addplot[only marks,mark=*,mark size=1.45pt,black] coordinates {
-  (2.36602540378,1.62575238458)
-  (5.04891733952,1.39719767662)
-  (6.25,1.33333333333)
-};
-\node[font=\scriptsize,anchor=west] at (axis cs:2.88,1.65)
-  {maximum $1.63\ldots$};
-\draw[black!55,thin] (axis cs:2.84,1.647) -- (axis cs:2.39,1.627);
-\node[font=\scriptsize,anchor=west] at (axis cs:6.53,1.375) {$4/3$};
-
-\end{groupplot}
+\end{axis}
 \end{tikzpicture}
 \endgroup
