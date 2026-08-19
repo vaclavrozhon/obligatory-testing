@@ -404,55 +404,19 @@ eventually becomes $4/3$.
 \end{theorem} 
 
 The deterministic curve is the lower envelope of three explicit policy
-families.  To state them, put
-\[
- \varphi=\frac{1+\sqrt5}{2},\qquad
- u_\diamond=\frac{1+\sqrt{3+2\sqrt5}}2=1.866760\ldots,
-\]
-let $s_0>1$ solve $s_0^3=(s_0+1)^2$, and let $z_*>1$ solve
-$z_*-3=\log z_*$.  Thus
-\begin{align*}
- u_0=1+s_0&=3.147899\ldots,
- &\varphi+2&=3.618033\ldots,\\
- z_*&=4.505241\ldots,
- &r=\frac2{z_*-1}&=0.570574\ldots .
-\end{align*}
-For $s=u-1$, let $\rho_I(u)$ be the positive root of
-\[
- s\rho^2+(s^3+s^2+1)\rho-(s^2+s+1)(s+2)=0,
-\]
-and, when $u_\diamond\le u\le u_0$, set
-\[
- K=s^2+s+1,\qquad D=K+s\rho_I(u),\qquad
- b(u)=\frac{K-s^2\rho_I(u)}D.
-\]
-Finally, for $\varphi+2\le u\le z_*$, the parameter $c(u)$ is determined
-together with an auxiliary $m$ by
-\begin{equation}
- \operatorname{artanh}m-m
- =1-\frac1c+\frac12\log\!\left(1+\frac2c\right),
- \qquad u=1+\frac2c-m.
- \label{eq:intro-ro-mixed-parameter}
-\end{equation}
-Here $c$ decreases from $1/\varphi$ to $r$; the auxiliary $m$ is not used by
-the algorithm.
+families that we briefly explain next without defining all details. 
 
-\begin{algorithm}[htbp]
-\caption{\textsc{Raw}$(J,u)$}
-\label{alg:intro-ro-raw}
-\begin{algorithmic}
-\State Fix an arbitrary order of the jobs.
-\State Execute every job untested for the public raw time $u$.
-\end{algorithmic}
-\end{algorithm}
+The first algorithm, Raw(u), simple fixes an arbitrary order of the jobs and executes each one untested for the public raw time $u$. This strategy is optimal for small $u$; for $u \le 1$ it's clearly $1$-competitive and for $u > 1$ it is $u$-competitive (see Fig XX). 
+
+The next algorithm, ForcedPrefixUTE, is essentially a threshold algorithm. However, it additionally executes all optimized jobs for a certain fraction of the first coming jobs. The reason [quick intuition here for why]
 
 \begin{algorithm}[htbp]
 \caption{\textsc{ForcedPrefixUTE}$(J,u)$}
 \label{alg:intro-ro-ute}
 \begin{algorithmic}
 \State Fix a test order $j_1,\ldots,j_n$ and set $Q\gets\varnothing$.
-\State Set $\tau\gets\min\{1,u-1\}$ and
-$b\gets b(u)$ for $u\le u_0$, while $b\gets0$ for $u\ge u_0$.
+\State Set $\tau\gets u-1$ and
+$b\gets b(u) \approx $ [tady dopln aproximativni funkci pro b(u)] for $u\le u_0 \approx 3.14...$, while $b\gets0$ otherwise
 \State For $i=1,\ldots,n$, test $j_i$ and observe $p_{j_i}$.
 \State \quad If $i\le\lfloor bn\rfloor$ or $p_{j_i}\le\tau$, process
 $j_i$ immediately; otherwise add it to $Q$.
@@ -460,51 +424,8 @@ $j_i$ immediately; otherwise add it to $Q$.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}[htbp]
-\caption{\textsc{AdaptiveThreshold}$(J,u)$}
-\label{alg:intro-ro-adaptive}
-\begin{algorithmic}
-\State Set $c\gets c(u)$ for $u\le z_*$ and $c\gets r$ for $u\ge z_*$.
-\State Fix a test order $j_1,\ldots,j_n$; set
-$N\gets0$, $D\gets0$, and $Q\gets\varnothing$.
-\State For $i=1,\ldots,n$, set $x\gets n-i+1$ and
-$y\gets(D-(1+c)N)/x$.
-\State \quad Set
-$a\gets1$ if $y\le-1$, and otherwise set
-$a\gets1+\frac12\log\!\bigl((c+2)/(c-2y)\bigr)$.
-\State \quad Test $j_i$ and observe $p_{j_i}$.
-\State \quad If $p_{j_i}\le a$, process $j_i$ immediately; otherwise add
-it to $Q$ and set $D\gets D+1$.
-\State \quad If $p_{j_i}>0$, set $N\gets N+1$.
-\State Process the jobs of $Q$ in nondecreasing revealed processing time.
-\end{algorithmic}
-\end{algorithm}
+Finally, the last algorithm, AdaptiveThreshold, is essentially our alg1. The difference is that the constant $\rho$ from Line1 is chosen by a somewhat complicated optimization. 
 
-The first policy has ratio $R_{\rm raw}(u)=1$ for $u\le1$ and
-$R_{\rm raw}(u)=u$ for $u\ge1$.  On the range relevant to the lower
-envelope, the second has guarantee
-\[
- R_{\rm UTE}(u)=
- \begin{cases}
-  \rho_I(u),&u_\diamond\le u\le u_0,\\
-  1+1/\sqrt{u-1},&u_0\le u\le\varphi+2,\\
-  \varphi,&u\ge\varphi+2,
- \end{cases}
-\]
-and the third has
-\[
- R_{\rm AT}(u)=
- \begin{cases}
-  1+c(u),&\varphi+2\le u\le z_*,\\
-  1+r,&u\ge z_*.
- \end{cases}
-\]
-Regarding a policy as unavailable before the displayed start of its
-guarantee, the optimal deterministic ratio is exactly
-\[
- V(u)=\min\{R_{\rm raw}(u),R_{\rm UTE}(u),R_{\rm AT}(u)\}.
-\]
-At every transition point the adjacent policies agree.
 
 For randomized algorithms we can say more.  On each fixed bag, the sampling
 principle from blind execution finds the best threshold and the best tested
@@ -552,6 +473,8 @@ minimum.  Testing is pointless on the left.  On the right, both optimal
 curves reach their obligatory-testing values.}
 \label{fig:intro-curves}
 \end{figure}
+[tohle maji byt dva samostatne grafy] -- a ten graf nalevo je ted broken
+
 
 The curves are not monotone.  This is not a contradiction: increasing $u$
 changes both players' options.  For intermediate $u$, the clairvoyant
