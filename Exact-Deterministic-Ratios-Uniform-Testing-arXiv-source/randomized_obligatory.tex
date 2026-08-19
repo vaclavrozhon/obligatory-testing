@@ -44,7 +44,7 @@ we randomly label half zero and half length-two jobs.  A balanced-bridge
 discrepancy bound limits how fast any algorithm can complete them.  The next
 subsection begins the formal proof.
 
-\subsection{The normalized offline objective}
+\subsection{Normalization of the offline pair identity}
 
 For a fixed vector $p$, put
 \begin{align}
@@ -52,7 +52,8 @@ For a fixed vector $p$, put
  &O(p)&=\frac{1+K(p)}2,\label{eq:rand-KO}\\
  D(p)&=\frac{n+\sum_i p_i}{2}.
 \end{align}
-The pair identity \cref{eq:opt-pair} is equivalently
+The symmetric offline pair identity
+\cref{eq:unified-opt-symmetric}, specialized to $q_i=1+p_i$, is equivalently
 \begin{equation}
  \OPT(p)=n^2O(p)+D(p).
  \label{eq:rand-opt-normalized}
@@ -143,11 +144,12 @@ $\theta$ may be assigned to either side.
 \end{lemma}
 
 \begin{proof}
-Removing boundary mass $\delta$ at value $x$ changes the density to
-$(a-\delta)/(1+m-x\delta)$.  Cross multiplication shows that this is larger
-exactly when $x>\theta$, so no selected boundary value can exceed $\theta$.
-The symmetric addition argument excludes an unselected value below
-$\theta$.  Equality preserves the density.
+Apply \cref{lem:maximum-density-module} to the empirical distribution of the
+$p_i$.  Its threshold selector is a processing-time prefix and has density
+$1/\tau$.  At the boundary $p_i=\tau$, adding or removing mass preserves the
+density, so the fractional boundary choice can be replaced by any subset of
+the tied occurrences.  For the resulting whole-occurrence prefix,
+$\theta=(1+m)/a=\tau$, which gives the claim.
 \end{proof}
 
 The next identity is the algebraic source of the constant $4/3$.

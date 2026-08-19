@@ -1230,7 +1230,7 @@ and associate with job $j$ the model-dependent \emph{effective length}
  \label{eq:model-effective-length}
 \end{equation}
 
-\begin{lemma}[Unified offline order]
+\begin{lemma}[Effective lengths and the offline pair identity]
 \label{lem:offline}\label{lem:optional-offline}
 Fix any one of the four models and let
 $q_{(1)}\le\cdots\le q_{(n)}$ be its effective lengths from
@@ -1240,8 +1240,12 @@ in this order and has value
  \OPT
  &=\sum_{k=1}^n\sum_{i=1}^kq_{(i)},
  \label{eq:unified-opt-prefix}\\
- &=\sum_iq_i+\sum_{i<j}\min\{q_i,q_j\}.
- \label{eq:optional-opt-pair}
+ &=\sum_iq_i+\sum_{i<j}\min\{q_i,q_j\},
+ \label{eq:optional-opt-pair}\\
+ &=\frac12\left(
+      \sum_iq_i+\sum_{i,j}\min\{q_i,q_j\}
+    \right).
+ \label{eq:unified-opt-symmetric}
 \end{align}
 In $\mathsf{OT}$ it tests every job.  In $\mathsf{BE}(L)$ it runs every job
 blindly.  In $\mathsf{BO}(u)$ and $\mathsf{RO}(u)$ it uses raw mode when
@@ -1260,7 +1264,8 @@ Choose the mode specified in the lemma, keep each resulting block contiguous,
 and execute the blocks in nondecreasing order of $q_j$.  This schedule is
 feasible in the relevant model and attains equality for every $k$.  Summing
 over $k$ and then collecting the contribution of each unordered pair gives
-the two formulas.
+the first two formulas.  Splitting the double sum into its diagonal and the
+two orientations of every unordered pair gives the symmetric form.
 \end{proof}
 
 The revealing-optimization and blind-optimization models have the same offline
@@ -1297,6 +1302,169 @@ For $\mathsf{BO}(u)$ and $\mathsf{RO}(u)$, $q_j\ge\min\{u,1\}$ gives
 \end{equation}
 There is deliberately no analogous positive lower bound for blind execution:
 an input consisting only of zero jobs has clairvoyant cost zero.
+
+\subsection{Maximum-density modules and fluid completion envelopes}
+\label{sec:common-fluid-envelopes}
+
+Several randomized and instance-optimal arguments use the same fluid
+primitive.  Testing one unit mass of jobs automatically completes its zero
+outcomes and may be followed by immediate processing of selected positive
+outcomes.  We isolate that primitive, its optimal density, and the resulting
+fractional-knapsack envelope here.
+
+Let $D$ be a probability distribution on $[0,\infty)$ with finite mean and
+let $P\sim D$.  For a measurable selector $g(p)\in[0,1]$ on the positive
+values, define its completed mass and work by
+\begin{equation}
+ a_D(g)\defeq D(\{0\})+\EE[g(P)\one_{P>0}],
+ \qquad
+ w_D(g)\defeq 1+\EE[P g(P)\one_{P>0}].
+ \label{eq:common-module-aw}
+\end{equation}
+The zero mass is included automatically because its test completes it.
+
+\begin{lemma}[Maximum-density discovery module]
+\label{lem:maximum-density-module}
+There is a unique $\tau\ge1$ satisfying
+\begin{equation}
+                         \EE(\tau-P)^+=1.
+ \label{eq:common-threshold-equation}
+\end{equation}
+Choose $g_*$ to select every positive $p<\tau$, reject every $p>\tau$,
+and select an arbitrary fraction of an atom at $p=\tau$.  Put
+\begin{equation}
+ a_*=a_D(g_*),\qquad w_*=w_D(g_*),\qquad
+ d\nu(p)=(1-g_*(p))\one_{p>0}\,dD(p),
+ \label{eq:common-module-data}
+\end{equation}
+with $\nu(\{0\})=0$.  Then
+\begin{equation}
+ \frac{a_*}{w_*}=\max_g\frac{a_D(g)}{w_D(g)}=\frac1\tau,
+ \qquad
+ \tau a_D(g)\le w_D(g)\quad\text{for every }g.
+ \label{eq:common-density-dual}
+\end{equation}
+Moreover, $\nu$ has mass $1-a_*$ and is supported on $[\tau,\infty)$.
+\end{lemma}
+
+\begin{proof}
+The function $h(t)=\EE(t-P)^+$ is continuous and nondecreasing, satisfies
+$h(0)=0$, and tends to infinity because $h(t)\ge t-\EE P$.  Once positive it
+is strictly increasing, so $h(t)=1$ has a unique solution; $h(t)\le t$ gives
+$\tau\ge1$.
+
+For an arbitrary selector $g$,
+\[
+ \tau a_D(g)-\EE[P g(P)\one_{P>0}]
+ =\tau D(\{0\})+\EE[(\tau-P)g(P)\one_{P>0}]
+ \le\EE(\tau-P)^+=1.
+\]
+This is the dual inequality in \cref{eq:common-density-dual}.  The threshold
+selector $g_*$ attains equality because it keeps exactly the terms with
+$\tau-p>0$; mass at $p=\tau$ does not affect the equality.  Hence
+$\tau a_*=w_*$ and $g_*$ has maximum density $1/\tau$.  Its unselected
+mass is $1-a_*$ and can occur only at values at least $\tau$.
+\end{proof}
+
+We will also use the continuous analogue of shortest-processing-time pair
+accounting.  Let $M=\sum_k c_k\delta_{v_k}$ be a finitely supported
+probability measure on $[0,\infty)$.  Its divisible completion envelope is
+\begin{equation}
+ K_M(x)\defeq
+ \max\left\{\sum_k z_k:
+       0\le z_k\le c_k,\ \sum_kv_kz_k\le x\right\}.
+ \label{eq:divisible-spt-envelope}
+\end{equation}
+
+\begin{lemma}[Divisible SPT area]
+\label{lem:divisible-spt-area}
+The envelope $K_M$ processes the items in nondecreasing order of $v_k$, and
+\begin{equation}
+ \int_0^\infty\bigl(1-K_M(x)\bigr)\,dx
+ =\frac12\iint\min\{r,s\}\,dM(r)dM(s).
+ \label{eq:divisible-spt-area}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+The ordering assertion is the usual fractional-knapsack exchange.  In a
+block of completion mass $c_k$ and work per completion $v_k$, unfinished
+mass decreases linearly.  After sorting the blocks by $v_k$, its area
+contribution is
+\[
+ v_kc_k\left(1-\sum_{h<k}c_h-\frac{c_k}{2}\right).
+\]
+Summing these terms and collecting each unordered pair gives
+\cref{eq:divisible-spt-area}.
+\end{proof}
+
+Assume from now on that $D$ has finite support and write
+$D_p=D(\{p\})$.  Fix a final tested fraction $q\in[0,1]$ and an independent
+completion mode that uses $v\ge0$ work per completed job.  At a fluid
+schedule prefix, let $t$ be tested mass, $b$ mass completed by the independent
+mode, and $c_p$ processed tested mass of positive class $p$.  Define
+\begin{equation}
+ H^v_{D,q}(x)\defeq
+ \max\left\{
+ D_0t+b+\sum_{p>0}c_p:
+ \begin{array}{l}
+ 0\le t\le q,\quad 0\le b\le1-q,\\
+ 0\le c_p\le D_pt,\\
+ t+vb+\sum_{p>0}pc_p\le x
+ \end{array}\right\}.
+ \label{eq:common-fluid-envelope}
+\end{equation}
+
+\begin{lemma}[Test-module completion envelope]
+\label{lem:test-module-envelope}
+Let $(a_*,\tau,\nu)$ be supplied by
+\cref{lem:maximum-density-module}.  Then
+\begin{equation}
+ H^v_{D,q}=K_{M_{D,q,v}},
+ \qquad
+ M_{D,q,v}\defeq
+  qa_*\delta_\tau+q\nu+(1-q)\delta_v.
+ \label{eq:common-envelope-items}
+\end{equation}
+Consequently,
+\begin{equation}
+ \int_0^\infty\bigl(1-H^v_{D,q}(x)\bigr)\,dx
+ =\frac12\iint\min\{r,s\}\,
+   dM_{D,q,v}(r)dM_{D,q,v}(s).
+ \label{eq:common-envelope-area}
+\end{equation}
+The three terms in $M_{D,q,v}$ are respectively the maximum-density test
+module, the residual tested classes, and the independent completion mode.
+\end{lemma}
+
+\begin{proof}
+Split every positive support class virtually into its $g_*$-selected and
+residual parts.  For a feasible point in
+\cref{eq:common-fluid-envelope}, let $y_L,x_L$ be the completion and work
+contributed by the tests, tested zeros, and processed selected outcomes.
+Applying \cref{eq:common-density-dual} to the processed fractions within the
+first $t$ units of tests gives
+\[
+                         \tau y_L\le x_L,
+ \qquad                  y_L\le a_*t.
+\]
+With $\lambda=y_L/a_*$, replace this part by $\lambda$ full test modules.
+The replacement preserves completed mass, weakly decreases work, and uses
+$0\le\lambda\le t\le q$.  Residual class $p$ has capacity at most
+$q\nu(\{p\})$, while the independent mode has capacity $1-q$.  Thus every
+feasible point maps to the divisible knapsack in
+\cref{eq:common-envelope-items}.
+
+Conversely, order the knapsack items by work per completion, placing the test
+module before residual items at a tie.  The independent item can be run
+whenever its position in this order requires.  A partial test-module item is
+realized by the corresponding fraction of tests and selected outcomes.  Once
+all $q$ test modules have run, every residual capacity is available; this is
+early enough because \cref{lem:maximum-density-module} gives
+$\operatorname{supp}\nu\subseteq[\tau,\infty)$.  Hence the greedy curve is
+feasible at every work budget, proving the envelope identity.  The area
+formula follows from \cref{lem:divisible-spt-area}.
+\end{proof}
 
 \subsection{Competitive-ratio conventions}
 

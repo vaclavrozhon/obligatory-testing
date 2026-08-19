@@ -104,33 +104,20 @@ Let $D$ be a probability distribution on $[0,L]$ and let $P\sim D$.  Write
  \label{eq:blind-mean}
 \end{equation}
 Blind execution completes one unit of job mass using expected work $\mu$.
-The best possible test module is described by
+Apply \cref{lem:maximum-density-module} to $D$, choose its threshold selector
+$g_*$, and let $\nu$ be the resulting residual measure.  The best possible
+test-module density and its reciprocal are
 \begin{equation}
- \rho(D)=\sup_{0\le g\le1}
- \frac{\EE g(P)}{1+\EE[P g(P)]},
- \qquad \tau(D)=\frac1{\rho(D)}.
+ \rho(D)=\max_g\frac{a_D(g)}{w_D(g)}=\frac1{\tau(D)}.
  \label{eq:blind-density}
 \end{equation}
-The function $g$ selects outcomes that will be processed immediately after a
-test.  For every such selection rule,
-\begin{equation}
- \tau\EE g(P)-\EE[P g(P)]
- =\EE[(\tau-P)g(P)]
- \le\EE(\tau-P)^+.
- \label{eq:blind-threshold-dual}
-\end{equation}
-The maximizing rule selects all values below $\tau$, no values above it, and
-an arbitrary fraction of a boundary atom.  At equality,
-\begin{equation}
- \EE(\tau-P)^+=1.
- \label{eq:blind-tau-equation}
-\end{equation}
-This equation has a unique solution: its left side is continuous and, after
-becoming positive, strictly increasing.  If
+The selector processes all positive values below $\tau$ immediately after
+their tests, rejects all values above it, and may split a boundary atom.  With
+that boundary convention, put
 \[
- a=\Pr(P<\tau),\qquad \ell=\EE[P\one_{P<\tau}],
+ a=a_D(g_*),\qquad \ell=\EE[P g_*(P)\one_{P>0}].
 \]
-then, with the boundary convention just described,
+The identities in \cref{lem:maximum-density-module} give
 \begin{equation}
  a\tau-\ell=1,
  \qquad \tau=\frac{1+\ell}{a}.
@@ -202,7 +189,7 @@ where
  \label{eq:blind-B}
 \end{align}
 The envelope proof below implies $B\ge0$.  In the short-test regime
-$\tau<\mu$, monotonicity in \cref{eq:blind-tau-equation} gives $A<0$, and
+$\tau<\mu$, monotonicity in \cref{eq:common-threshold-equation} gives $A<0$, and
 the optimal tested fraction is therefore
 \begin{equation}
  q^*=\begin{cases}
@@ -240,9 +227,9 @@ subject to
  0\le c_i\le D_it.
  \label{eq:blind-revelation-constraints}
 \end{equation}
-Define $H_{D,q}(x)$ as the largest completed mass satisfying these constraints
-with used work at most $x$.  Every fluid schedule that ultimately tests mass
-$q$ obeys this envelope, hence
+Thus $H_{D,q}=H^\mu_{D,q}$ is the common fluid envelope
+\cref{eq:common-fluid-envelope}.  Every fluid schedule that ultimately tests
+mass $q$ obeys this envelope, hence
 \begin{equation}
  \operatorname{cost}\ge\int_0^\infty(1-H_{D,q}(x))\,dx.
  \label{eq:blind-envelope-lower}
@@ -250,56 +237,32 @@ $q$ obeys this envelope, hence
 
 \begin{lemma}[Fixed-$q$ envelope]
 \label{lem:blind-fixed-q-envelope}
-For every $q\in[0,1]$, the right side of
+If $\tau<\mu$, then for every $q\in[0,1]$ the right side of
 \cref{eq:blind-envelope-lower} equals $F_D(q)$ and is attained by the
-four-block fluid policy.  If $\tau\ge\mu$, it is at least $\mu/2$ for every
-$q$, with equality at $q=0$.
+four-block fluid policy.  If $\tau\ge\mu$, that right side is at least
+$\mu/2$ for every $q$, with equality at $q=0$.
 \end{lemma}
 
 \begin{proof}
-Split a boundary atom at $\tau$ into selected and residual virtual classes.
-Let $\mathcal L$ be the selected positive classes and put
+Apply \cref{lem:test-module-envelope} with independent-mode work $v=\mu$.
+The resulting item measure is
 \[
- a=D_0+\sum_{i\in\mathcal L}D_i,\qquad
- w=1+\sum_{i\in\mathcal L}p_iD_i,\qquad w/a=\tau.
+                 qa\delta_\tau+q\nu+(1-q)\delta_\mu.
 \]
-For the low part of any feasible prefix, write
-\[
- y_L=D_0t+\sum_{i\in\mathcal L}c_i,\qquad
- x_L=t+\sum_{i\in\mathcal L}p_ic_i.
-\]
-The density optimality in \cref{eq:blind-threshold-dual} gives
-$y_L/x_L\le a/w$.  With $\lambda=y_L/a$, the revelation constraints imply
-$\lambda\le t\le q$, while density gives $\lambda w\le x_L$.  We may
-therefore replace the entire low prefix by $\lambda$ full test modules,
-preserving completions and weakly reducing work.
+When $\tau<\mu$, sorting these items by work per completion gives exactly
+the low test module, residual classes below $\mu$, the blind module, and
+residual classes above $\mu$, which is the four-block order
+\cref{eq:blind-four-block-order}.  Expanding the common area formula
+\cref{eq:common-envelope-area} across these four blocks gives
+\cref{eq:blind-F}.
 
-Relax each residual capacity from $c_i\le D_it$ to $c_i\le D_iq$.  The
-result is an ordinary divisible knapsack with items
-\begin{center}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-item & completion capacity & work per completion\\
-\midrule
-full test module & $aq$ & $\tau$\\
-residual tested class $i$ & $qD_i^{R}$ & $p_i$\\
-blind module & $1-q$ & $\mu$\\
-\bottomrule
-\end{tabular}
-\end{center}
-The relaxation is pointwise tight.  While greedy is partway through the test
-item, run the corresponding fraction of tests and all selected low outcomes.
-After all $q$ test modules have run, every residual tested capacity is truly
-available.  Greedy therefore realizes the original envelope at every work
-budget.
-
-When $\tau<\mu$, the increasing work-per-completion order is exactly
-\cref{eq:blind-four-block-order}; integrating it gives
-\cref{eq:blind-F}.  When $\tau\ge\mu$, the blind item has no worse density
-than the best test module and every excluded class has $p_i\ge\tau\ge\mu$.
-One all-blind item of capacity one pointwise dominates every $q>0$ solution.
-Finally, feasibility is affine in $q$, so $H_{D,q}(x)$ is concave in $q$ for
-each $x$.  Hence its area complement $F_D(q)$ is convex, proving $B\ge0$.
+When $\tau\ge\mu$, every test and residual item costs at least $\mu$ per
+completion.  The $q=0$ envelope, one blind item of capacity one and cost
+$\mu$, therefore pointwise dominates every $q>0$ envelope and has area
+$\mu/2$.  Finally, feasibility in
+\cref{eq:blind-fluid-work,eq:blind-revelation-constraints} is affine in $q$,
+so $H_{D,q}(x)$ is concave in $q$ for each $x$.  In the short-test regime its
+area complement $F_D(q)$ is convex, proving $B\ge0$.
 \end{proof}
 
 \subsection{Adaptive first touches are a uniform urn}

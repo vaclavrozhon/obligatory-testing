@@ -1,6 +1,6 @@
 % Deterministic revealing-optimization policy curves and their lower envelope.
-% In particular, plot ForcedPrefixUTE also before it becomes optimal; otherwise
-% the coloured pieces merely partition V(u) instead of exhibiting an envelope.
+% The zero-prefix UTE continuation at phi makes the overlap with
+% AdaptiveThreshold, and hence the lower-envelope claim, visible.
 \begingroup
 \tracinglostchars=0
 \pgfmathdeclarefunction{introRhoI}{1}{%
@@ -17,7 +17,7 @@
   xmin=0.2,
   xmax=7.3,
   ymin=0.97,
-  ymax=2.05,
+  ymax=2.08,
   xlabel={raw execution time $u$},
   ylabel={competitive ratio},
   xtick={1,2,3,4,5,6,7},
@@ -36,19 +36,26 @@
   legend style={
     font=\scriptsize,
     draw=none,
-    fill=white,
-    fill opacity=0.9,
-    text opacity=1,
-    at={(0.98,0.98)},
-    anchor=north east,
+    fill=none,
+    at={(0.5,1.04)},
+    anchor=south,
     legend columns=2,
-    /tikz/every even column/.append style={column sep=7pt},
+    /tikz/every even column/.append style={column sep=12pt},
   },
 ]
 
+% Explicit legend images avoid binding entries to individual curve pieces.
+\addlegendimage{black,line width=2.8pt}
+\addlegendentry{optimal ratio}
+\addlegendimage{violet!82!black,densely dotted,line width=1.5pt}
+\addlegendentry{\textsc{Raw}}
+\addlegendimage{teal!78!black,dashed,line width=1.5pt}
+\addlegendentry{\textsc{ForcedPrefixUTE}}
+\addlegendimage{red!78!black,dash dot,line width=1.5pt}
+\addlegendentry{\textsc{AdaptiveThreshold}}
+
 % Exact lower envelope, drawn first as a black outline.
 \addplot[black,line width=2.8pt,domain=0.2:1] {1};
-\addlegendentry{optimal minimum}
 \addplot[black,line width=2.8pt,domain=1:1.86676039917] {x};
 \addplot[black,line width=2.8pt,domain=1.86676039917:3.14789903570]
   {introRhoI(x)};
@@ -83,18 +90,18 @@
 % Individual policy guarantees.
 \addplot[violet!82!black,densely dotted,line width=1.5pt,domain=0.2:1]
   {1};
-\addlegendentry{\textsc{Raw}}
 \addplot[violet!82!black,densely dotted,line width=1.5pt,domain=1:7.3]
   {x};
 \draw[violet!82!black,densely dotted,line width=1.5pt,->]
-  (axis cs:1.93,1.93) -- (axis cs:2.035,2.035);
+  (axis cs:1.92,1.92) -- (axis cs:2.025,2.025);
 
-% ForcedPrefixUTE is shown only on the range covered by its formal guarantees.
+% ForcedPrefixUTE, including the proved zero-prefix phi continuation.
 \addplot[teal!78!black,dashed,line width=1.5pt,
   domain=1.86676039917:3.14789903570] {introRhoI(x)};
-\addlegendentry{\textsc{ForcedPrefixUTE}}
 \addplot[teal!78!black,dashed,line width=1.5pt,
   domain=3.14789903570:3.61803398875] {1+1/sqrt(x-1)};
+\addplot[teal!78!black,dashed,line width=1.5pt,
+  domain=3.61803398875:7.3] {1.61803398875};
 
 \addplot[red!78!black,dash dot,line width=1.5pt,smooth] coordinates {
   (3.61803399,1.61803399)
@@ -119,26 +126,29 @@
   (4.23729031,1.57294709)
   (4.50524150,1.57057410)
 };
-\addlegendentry{\textsc{AdaptiveThreshold}}
 \addplot[red!78!black,dash dot,line width=1.5pt,
   domain=4.50524149579:7.3] {1.57057409665};
 
-\addplot[black!45,densely dotted,thin] coordinates {(1,0.97) (1,2.05)};
+\addplot[black!45,densely dotted,thin] coordinates {(1,0.97) (1,2.08)};
 \addplot[black!45,densely dotted,thin]
-  coordinates {(1.86676039917,0.97) (1.86676039917,2.05)};
+  coordinates {(1.86676039917,0.97) (1.86676039917,2.08)};
 \node[font=\scriptsize,rotate=90,anchor=south]
-  at (axis cs:1.86676039917,1.23) {$u_\diamond$};
+  at (axis cs:1.86676039917,1.18) {$u_\diamond$};
 \addplot[black!45,densely dotted,thin]
-  coordinates {(3.14789903570,0.97) (3.14789903570,2.05)};
+  coordinates {(3.14789903570,0.97) (3.14789903570,2.08)};
 \node[font=\scriptsize,rotate=90,anchor=south]
-  at (axis cs:3.14789903570,1.23) {$u_0$};
+  at (axis cs:3.14789903570,1.18) {$u_0$};
 \addplot[black!45,densely dotted,thin]
-  coordinates {(3.61803398875,0.97) (3.61803398875,2.05)};
+  coordinates {(3.61803398875,0.97) (3.61803398875,2.08)};
+\node[font=\scriptsize,rotate=90,anchor=south]
+  at (axis cs:3.61803398875,1.18) {$\varphi+2$};
 \addplot[black!45,densely dotted,thin]
-  coordinates {(4.50524149579,0.97) (4.50524149579,2.05)};
+  coordinates {(4.50524149579,0.97) (4.50524149579,2.08)};
+\node[font=\scriptsize,rotate=90,anchor=south]
+  at (axis cs:4.50524149579,1.18) {$z_*$};
 \addplot[only marks,mark=*,mark size=1.6pt,black]
   coordinates {(1.86676039917,1.86676039917) (4.50524149579,1.57057409665)};
-\node[font=\scriptsize,anchor=west] at (axis cs:5.25,1.535)
+\node[font=\scriptsize,anchor=west] at (axis cs:5.25,1.525)
   {$1.57\ldots$};
 
 \end{axis}

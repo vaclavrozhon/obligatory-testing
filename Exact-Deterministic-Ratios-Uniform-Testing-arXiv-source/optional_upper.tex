@@ -101,9 +101,9 @@ Write
 \[
  \bar p_i=\min\{p_i,u-1\}.
 \]
-The clairvoyant optional optimum is SPT on jobs of effective lengths
-$1+\bar p_i=\min\{1+p_i,u\}$.  For two jobs tested in the order $i<j$,
-let
+By \cref{eq:optional-effective-length,lem:offline}, the clairvoyant optional
+optimum is SPT on jobs of effective lengths
+$1+\bar p_i=\min\{1+p_i,u\}$.  For two jobs tested in the order $i<j$, let
 \begin{equation}
  e_{ij}=
  \begin{cases}
@@ -117,17 +117,21 @@ let
  \label{eq:opt:pair-excess}
 \end{equation}
 The first line applies whenever $i$ is immediate, regardless of the
-action taken on $j$.  Direct completion-time accounting gives
-\begin{align}
+action taken on $j$.  Pairwise completion-time accounting for the online
+schedule gives
+\begin{equation}
  \operatorname{ALG}
- &=\sum_i(1+p_i)
+ =\sum_i(1+p_i)
    +\sum_{i<j}\bigl(1+\min\{p_i,p_j\}+e_{ij}\bigr),
- \label{eq:opt:alg-pair-decomposition}\\
+ \label{eq:opt:alg-pair-decomposition}
+\end{equation}
+whereas the common offline pair identity \cref{eq:optional-opt-pair} gives
+\begin{equation}
  \operatorname{OPT}
- &=\sum_i(1+\bar p_i)
+ =\sum_i(1+\bar p_i)
    +\sum_{i<j}\bigl(1+\min\{\bar p_i,\bar p_j\}\bigr).
  \label{eq:opt:opt-pair-decomposition}
-\end{align}
+\end{equation}
 It is therefore natural to introduce
 \begin{equation}
  \Gamma_n=\sum_{i<j}

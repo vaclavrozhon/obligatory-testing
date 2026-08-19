@@ -54,74 +54,23 @@ Let $D$ initially have finite support, let $P\sim D$, and put
 \[
  D_0=\Pr(P=0),\qquad \mu=\EE P.
 \]
-A test automatically completes a zero outcome.  For a rule
-$0\le g\le1$ selecting positive outcomes to process immediately, define
+A test automatically completes a zero outcome.  Apply
+\cref{lem:maximum-density-module} and choose its threshold selector $g^*$.
+Write
 \begin{equation}
- A(g)=D_0+\EE[g(P)\one_{P>0}],
- \qquad
- W(g)=1+\EE[P g(P)\one_{P>0}].
- \label{eq:cui-module-density}
-\end{equation}
-Choose $g^*$ maximizing $A(g)/W(g)$, put
-\begin{equation}
- a=A(g^*),\qquad \ell=\EE[P g^*(P)\one_{P>0}],
+ a=a_D(g^*),\qquad \ell=\EE[P g^*(P)\one_{P>0}],
  \qquad \tau=\frac{1+\ell}{a},
  \label{eq:cui-tau}
 \end{equation}
-and interpret the ratio as zero when its numerator vanishes.
-
-\begin{lemma}[Maximum-density threshold]
-\label{lem:cui-threshold}
-There is a maximizer which selects every $p<\tau$, rejects every
-$p>\tau$, and may split an atom at equality.  It satisfies
-\begin{equation}
- \EE(\tau-P)^+=1,
- \qquad
- \tau\bigl(D_0+\EE[g(P)\one_{P>0}]\bigr)
- \le 1+\EE[P g(P)\one_{P>0}]
- \label{eq:cui-density-dual}
-\end{equation}
-for every $0\le g\le1$.
-\end{lemma}
-
-\begin{proof}
-If selected mass $d$ at a positive value $p$ is added to a candidate with
-density $\rho$, cross multiplication says that the density increases exactly
-when $1/p>\rho$.  Removing mass gives the reverse implication.  A maximizer
-may therefore be chosen as a threshold with boundary $1/\rho=\tau$.
-The identity $1+\ell=a\tau$ expands to
-\[
- 1=\tau D_0+\EE[(\tau-P)g^*(P)\one_{P>0}]
-  =\EE(\tau-P)^+.
-\]
-Maximality gives $A(g)/W(g)\le1/\tau$ for every $g$; clearing the positive
-denominators proves the second inequality in
-\cref{eq:cui-density-dual}.
-\end{proof}
-
-Split a boundary atom according to $g^*$.  Let $R_i$ be the residual mass at
-positive support value $p_i$.  Thus
+Let $D_i=D(\{p_i\})$ on the positive support and let $R_i=\nu(\{p_i\})$
+be the residual masses from \cref{lem:maximum-density-module}.  Thus
 \begin{equation}
  \sum_iR_i=1-a,\qquad p_i\ge\tau\text{ whenever }R_i>0.
  \label{eq:cui-residual}
 \end{equation}
-For a fixed final tested fraction $q\in[0,1]$, consider any prefix of a fluid
-schedule and write $t$ for tested mass, $b$ for raw-completed mass, and
-$c_i$ for processed known mass of class $i$.  Its completed mass and work
-are
-\begin{equation}
- y=D_0t+b+\sum_i c_i,\qquad
- x=t+ub+\sum_i p_ic_i,
- \label{eq:cui-prefix}
-\end{equation}
-and every feasible prefix satisfies
-\begin{equation}
- 0\le t\le q,\qquad 0\le b\le1-q,\qquad
- 0\le c_i\le D_it.
- \label{eq:cui-revelation}
-\end{equation}
-Let $H^u_{D,q}(x)$ be the maximum completed mass subject to
-\cref{eq:cui-prefix,eq:cui-revelation} and work at most $x$.
+For a fixed final tested fraction $q\in[0,1]$, let $H^u_{D,q}$ be the common
+fluid envelope \cref{eq:common-fluid-envelope} with independent-mode work
+$v=u$; the independent mode is raw execution.
 
 \begin{lemma}[Fixed-$q$ completion envelope]
 \label{lem:cui-envelope}
@@ -143,29 +92,11 @@ pointwise dominates every choice with $q>0$.
 \end{lemma}
 
 \begin{proof}
-For a feasible prefix, let $y_L,x_L$ be the completion and work contributed
-by the tests, tested zeros, and processed selected positive outcomes.
-Apply \cref{eq:cui-density-dual} to the processed fractions within the first
-$t$ units of tests.  It gives
-\[
- \tau y_L\le x_L,\qquad y_L\le at.
-\]
-With $\lambda=y_L/a$, replacing this part by $\lambda$ full test modules
-preserves completed mass, weakly decreases work, and uses
-$0\le\lambda\le t\le q$.  Residual class $i$ has capacity at most $qR_i$,
-and the raw mass has capacity at most $1-q$.  Thus every feasible prefix maps
-to the displayed knapsack.
-
-Conversely, while greedy is partway through the test-module item, run the
-corresponding fraction of tests and process their selected outcomes.  Once
-all $q$ tests have run, every residual capacity is available; the other
-items can then be processed in greedy order.  A partial final item is
-realized fractionally.  The knapsack curve is therefore the closure of the
-original fluid trajectories.  Fractional knapsack orders items by increasing
-work per completion.  In the short-test regime,
-$\tau\le p_i\le u$, which gives the claimed order.  In the other regime all
-test and residual items cost at least $u$, while one raw item of capacity one
-costs exactly $u$.
+Apply \cref{lem:test-module-envelope} with $v=u$.  It gives exactly the three
+displayed kinds of items.  If $\tau<u$, their work-per-completion values obey
+$\tau\le p_i\le u$.  If $\tau\ge u$, every test and residual item costs at
+least $u$ per completion, while the $q=0$ envelope consists of one raw item
+of capacity one and cost $u$.
 \end{proof}
 
 Put
@@ -174,7 +105,8 @@ Put
  K_R=\sum_{i,j}\min\{p_i,p_j\}R_iR_j.
  \label{eq:cui-residual-moments}
 \end{equation}
-Integrating the envelope of \cref{lem:cui-envelope} gives
+The common area identity \cref{eq:common-envelope-area}, specialized through
+\cref{lem:cui-envelope}, gives
 \begin{equation}
  F_{u,D}(q)
  =(1+\ell)\left(q-\frac{aq^2}{2}\right)

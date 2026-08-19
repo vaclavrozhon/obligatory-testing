@@ -8,23 +8,27 @@ The difference is that optimization does not reveal $p_i$.  An optimized job
 must be started blindly and its duration becomes known only when it finishes.
 We call this the \emph{blind-optimization} model $\mathsf{BO}(u)$.
 
-We study randomized policies against an oblivious adversary.  This is the
-natural setting for learning the input: a private random sample is
-representative under every fixed labeling, whereas an adversary can make any
-predetermined deterministic sample atypical.  We do not pursue a separate
-deterministic worst-case curve for this model.
+We study deterministic worst-case policies, and randomized policies against
+an oblivious adversary.  The deterministic optimum has a particularly
+simple form: run everything raw up to $u=2$, and optimize everything after
+that point.  Proving that no adaptive mixture improves these two policies
+uses the same raw-safe hidden-stopping idea as the revealing-optimization
+lower bound.  Randomization is still essential for learning the input:
+a private random sample is representative under every fixed labeling,
+whereas an adversary can make a deterministic exploration history atypical.
 
 This small change removes the threshold decision entirely.  It also shows
 that the bounded randomized ratio in the revealing model is genuinely an
 information effect.
 
-The goal of this section is to prove two closely related statements.  The
-first, \cref{thm:bo-instance}, is the rigorous version of the informal
-instance-optimality theorem \cref{thm:intro-bo-instance}.  The second,
-\cref{thm:bo-curve}, is the rigorous version of
-\cref{thm:intro-bo-curve} and maximizes that instance-specific value relative
-to the clairvoyant optimum.  Keeping them together avoids repeating the same
-two-block reduction.
+The section first proves that deterministic instance optimality is impossible
+and determines the exact deterministic worst-case curve.  It then proves two
+closely related randomized statements.  The first, \cref{thm:bo-instance},
+is the rigorous version of the informal instance-optimality theorem
+\cref{thm:intro-bo-instance}.  The second, \cref{thm:bo-curve}, is the
+rigorous version of \cref{thm:intro-bo-curve} and maximizes that
+instance-specific value relative to the clairvoyant optimum.  Keeping the
+results together avoids repeating the same blind-block reduction.
 
 For a multiset $M$ let
 \[
@@ -91,6 +95,270 @@ the difference in \cref{eq:bo-det-instance-online} is
 $(m^2+m)/2>n^2/8$.  This proves \cref{eq:bo-det-instance-gap}.
 \end{proof}
 
+An optimization operation reveals no information.  We will repeatedly use
+the following normal form.
+
+\begin{lemma}[Blind-block normal form]
+\label{lem:bo-normal-form}
+For every nonanticipating policy $\mathcal A$ in $\mathsf{BO}(u)$ there is a
+nonanticipating policy $\mathcal A^{\rm nf}$ which completes every optimized
+job as one contiguous block of length $1+p_i$ and satisfies
+\begin{equation}
+ \cost(\mathcal A^{\rm nf},I)\le \cost(\mathcal A,I)
+ \label{eq:bo-normal-form}
+\end{equation}
+on every input $I$.  If $\mathcal A$ is deterministic, then so is
+$\mathcal A^{\rm nf}$.
+\end{lemma}
+
+\begin{proof}
+Maintain a virtual execution of $\mathcal A$.  When the virtual policy
+optimizes a job, record that fact and advance the virtual clock by one unit,
+but perform no physical work.  Immediately before the virtual policy later
+processes that job, perform its postponed optimization physically and then
+process it.  Observations that occur earlier in physical time are buffered
+until the corresponding virtual completion.  Thus the virtual policy sees
+exactly its original history and makes the same decisions.  Moving a unit of
+optimization to the right leaves the optimized job and every later job no
+later than before, while jobs completed in between move one unit earlier.
+Applying this to every separated optimization proves
+\eqref{eq:bo-normal-form}.
+\end{proof}
+
+\subsection{The deterministic worst-case curve}
+
+For $u>1$ define
+\begin{equation}
+ H_{\rm bo}(u)
+ \defeq \frac{\sqrt{4u^3-4u+1}-1}{2(u-1)}.
+ \label{eq:bo-det-H}
+\end{equation}
+The two deterministic policies needed below are \textsc{Raw}, which runs
+every job for time $u$, and \textsc{OptimizeAll}, which fixes an arbitrary
+label order and completes every job as a blind block of length $1+p_i$.
+
+\begin{theorem}[Exact deterministic blind-optimization curve]
+\label{thm:bo-det-curve}
+The optimal deterministic size-asymptotic competitive ratio in
+$\mathsf{BO}(u)$ is
+\begin{equation}
+ R_{\rm bo}^{\rm det}(u)=
+ \begin{cases}
+  1,&0<u\le1,\\[2pt]
+  u,&1\le u\le2,\\[5pt]
+  \displaystyle H_{\rm bo}(u),&u\ge2.
+ \end{cases}
+ \label{eq:bo-det-curve}
+\end{equation}
+The policy \textnormal{\textsc{Raw}} is optimal for $u\le2$, and
+\textnormal{\textsc{OptimizeAll}} is optimal for $u\ge2$; both are optimal
+at $u=2$.
+In particular,
+\begin{equation}
+ R_{\rm bo}^{\rm det}(u)=\sqrt u+o(1)
+ \qquad (u\to\infty).
+ \label{eq:bo-det-asymptotic}
+\end{equation}
+\end{theorem}
+
+We first prove the adaptive lower bound.  Its stopping rule is the direct
+blind-block analogue of \cref{lem:opt:hidden-stopping}.
+
+\begin{lemma}[Blind raw-safe hidden stopping]
+\label{lem:bo-det-hidden-stopping}
+Fix $u>1$, a target $\rho\le u$, and $\alpha\in(0,1)$.  Against every
+deterministic policy there is a fixed binary input with $p_j\in\{0,u\}$ on
+which
+\begin{equation}
+ \ALG-\rho\OPT
+ \ge \frac{n^2}{2}\left((u-\rho)(1-\sigma^2)
+       +\sigma^2 f^{\rm bo}_{u,\rho}(y)\right)-O_u(n),
+ \label{eq:bo-det-stopping-decomposition}
+\end{equation}
+where $\sigma\in[0,1]$, $0\le y-\alpha<1/(\sigma n)$ when
+$\sigma>0$, and
+\begin{equation}
+ f^{\rm bo}_{u,\rho}(y)
+ =1-\rho+2uy-\bigl(u+\rho(u-1)\bigr)y^2.
+ \label{eq:bo-det-stopping-f}
+\end{equation}
+Consequently, if $f^{\rm bo}_{u,\rho}(\alpha)\ge0$, then every
+deterministic policy has size-asymptotic ratio at least $\rho$.
+\end{lemma}
+
+\begin{proof}
+By \cref{lem:bo-normal-form}, it is enough to lower-bound a policy whose
+optimized jobs are contiguous blind blocks.  Start in a long phase.  Give
+value zero to every job completed raw and value $u$ to every optimized job.
+If $v$ raw jobs and $L$ optimized-long jobs have been completed, stop at the
+first completion for which $L>0$ and
+\begin{equation}
+ L\ge\alpha(n-v).
+ \label{eq:bo-det-stopping-line}
+\end{equation}
+Give value zero to all remaining jobs.  The answers are deterministic
+functions of the transcript, so the replay induction of \cref{lem:replay}
+freezes the interaction into one fixed labeled binary input.
+
+If the policy fails to complete all jobs, its ratio is infinite.  Otherwise,
+if the line is never crossed, then $L=0$ after all jobs are completed:
+otherwise $n-v=L$ at the end and $L\ge\alpha L$.  Thus the algorithm ran
+every job raw on the all-zero input and has ratio $u\ge\rho$.
+
+Suppose the line is crossed.  Put $x=n-v-L$.  For a lower bound, discard
+idle time, put the already completed raw blocks before the already completed
+optimized-long blocks, reveal the future, and let all $x$ remaining zero
+jobs be optimized.  These exchanges only favor the algorithm: among the
+past blocks, shortest first is optimal, while no untouched future job could
+have completed before the crossing.  The resulting exact cost and the
+clairvoyant optimum are
+\begin{align}
+ A_{\rm ex}={}&
+ u\left(vn-\frac{v(v-1)}2\right)
+ +(u+1)\left(L(n-v)-\frac{L(L-1)}2\right)
+ +\frac{x(x+1)}2,
+ \label{eq:bo-det-stopping-Aexact}\\
+ O_{\rm ex}={}&
+ \frac{n(n+1)}2+(u-1)\frac{L(L+1)}2.
+ \label{eq:bo-det-stopping-Oexact}
+\end{align}
+Here the offline optimum first completes the $n-L$ zero jobs as unit
+optimized blocks and then runs the $L$ long jobs raw.
+
+Set
+\begin{equation}
+ \sigma=\frac{n-v}{n},
+ \qquad y=\frac{L}{n-v}.
+ \label{eq:bo-det-stopping-coordinates}
+\end{equation}
+Twice the quadratic coefficients of
+\cref{eq:bo-det-stopping-Aexact,eq:bo-det-stopping-Oexact} are
+\begin{align*}
+ \mathcal A
+ &=u(1-\sigma^2)+\sigma^2(1+2uy-uy^2),\\
+ \mathcal O
+ &=(1-\sigma^2)+\sigma^2(1+(u-1)y^2).
+\end{align*}
+Subtracting $\rho\mathcal O$ from $\mathcal A$ gives exactly the bracket in
+\eqref{eq:bo-det-stopping-decomposition}.  Immediately before the crossing,
+$L-\alpha(n-v)<0$.  An optimized completion increases this expression by
+one and a raw completion by $\alpha$, so
+\begin{equation}
+ 0\le y-\alpha<\frac1{n-v}=\frac1{\sigma n}.
+ \label{eq:bo-det-stopping-overshoot}
+\end{equation}
+The quadratic $f^{\rm bo}_{u,\rho}$ is uniformly Lipschitz on $[0,1]$ for
+fixed $u$ and $\rho\le u$.  Hence
+$\sigma^2f^{\rm bo}_{u,\rho}(y)
+\ge\sigma^2f^{\rm bo}_{u,\rho}(\alpha)-O_u(1/n)$.
+The exact diagonal terms contribute another $O_u(n)$ before normalization.
+If $u-\rho$ and $f^{\rm bo}_{u,\rho}(\alpha)$ are nonnegative, this proves
+the claimed lower bound.
+\end{proof}
+
+\begin{proof}[Proof of \cref{thm:bo-det-curve}]
+If $u\le1$, raw execution is an offline-optimal block for every job, so the
+ratio is one.  If $1<u\le2$, use
+\begin{equation}
+ \rho=u,
+ \qquad \alpha=\frac1u.
+\end{equation}
+Then
+$f^{\rm bo}_{u,u}(1/u)=2-u\ge0$, and
+\cref{lem:bo-det-hidden-stopping} gives the lower bound $u$.  Conversely,
+every offline effective length is at least one, whereas \textsc{Raw} has
+cost $u n(n+1)/2$, so its ratio is at most $u$.
+
+Now let $u\ge2$ and put $\rho=H_{\rm bo}(u)$.  The definition
+\eqref{eq:bo-det-H} is equivalently the positive solution of
+\begin{equation}
+ (\rho-1)\bigl(u+\rho(u-1)\bigr)=u^2.
+ \label{eq:bo-det-tangency}
+\end{equation}
+Moreover $\rho\le u$, with equality only at $u=2$.  Choose
+\begin{equation}
+ \alpha=\frac{u}{u+\rho(u-1)}.
+ \label{eq:bo-det-alpha}
+\end{equation}
+This is the maximizer of \cref{eq:bo-det-stopping-f}, and
+\eqref{eq:bo-det-tangency} gives
+\begin{equation}
+ f^{\rm bo}_{u,\rho}(\alpha)
+ =1-\rho+\frac{u^2}{u+\rho(u-1)}=0.
+\end{equation}
+Thus \cref{lem:bo-det-hidden-stopping} proves the lower bound $\rho$.
+
+It remains to analyze \textsc{OptimizeAll}.  Put $a(p)=1+p$ and
+$q(p)=\min\{u,1+p\}$.  For a fixed multiset, its worst label order has the
+$a(p_i)$ in nonincreasing order.  If $P,Q$ are independent draws from the
+empirical distribution, pair accounting and \cref{lem:offline} give
+\begin{align}
+ \cost(\textsc{OptimizeAll})
+ &\le \frac{n^2}{2}\EE\max\{a(P),a(Q)\}
+      +\frac n2\EE a(P),
+ \label{eq:bo-det-optall-online}\\
+ \OPT
+ &=\frac{n^2}{2}\EE\min\{q(P),q(Q)\}
+      +\frac n2\EE q(P).
+ \label{eq:bo-det-optall-offline}
+\end{align}
+Write $H(t)=\Pr(P>t)$ for $0\le t\le u$.  Layer cake yields
+\begin{align}
+ \EE\max\{a(P),a(Q)\}
+ &=1+\int_0^u(2H(t)-H(t)^2)\,dt,
+ \label{eq:bo-det-optall-layer-online}\\
+ \EE\min\{q(P),q(Q)\}
+ &=1+\int_0^{u-1}H(t)^2\,dt.
+ \label{eq:bo-det-optall-layer-offline}
+\end{align}
+Set
+\begin{equation}
+ b=\frac1{u-1}\int_0^{u-1}H(t)\,dt.
+\end{equation}
+Cauchy--Schwarz bounds the square integral on $[0,u-1]$ from below by
+$(u-1)b^2$.  Since $H$ is nonincreasing,
+\begin{equation}
+ T\defeq\int_{u-1}^uH(t)\,dt\le H(u-1)\le b.
+\end{equation}
+The function $h\mapsto2h-h^2$ is increasing and concave on $[0,1]$.
+Cauchy--Schwarz on the prefix and Jensen's inequality on the unit tail
+therefore give
+\begin{align}
+ \EE\max\{a(P),a(Q)\}
+ &\le1+2ub-ub^2,\\
+ \EE\min\{q(P),q(Q)\}
+ &\ge1+(u-1)b^2.
+\end{align}
+Consequently their ratio is at most
+\begin{equation}
+ g_u(b)=\frac{1+2ub-ub^2}{1+(u-1)b^2}.
+ \label{eq:bo-det-optall-envelope}
+\end{equation}
+The derivative of $g_u$ changes sign exactly once on $[0,1]$.  At its
+maximum, if $\rho=g_u(b)$, the stationary equation
+$g_u'(b)=0$ says
+\begin{equation}
+ u(1-b)=\rho(u-1)b,
+ \qquad
+ b=\frac{u}{u+\rho(u-1)}.
+\end{equation}
+Substitution into $g_u(b)=\rho$ gives
+\eqref{eq:bo-det-tangency}.  That equation has the unique positive solution
+$H_{\rm bo}(u)$; hence
+\begin{equation}
+ \max_{0\le b\le1}g_u(b)=H_{\rm bo}(u).
+\end{equation}
+All survival-function inequalities above are tight for a binary multiset
+with a $b$-fraction of values $u$ and the remaining values zero, labeled so
+that the long optimized blocks occur first.
+Equations \eqref{eq:bo-det-optall-online}--
+\eqref{eq:bo-det-optall-envelope} prove
+$\cost(\textsc{OptimizeAll})\le\rho\OPT+O_u(n)$.
+This matches the lower bound and proves \eqref{eq:bo-det-curve}.
+The asymptotic formula \eqref{eq:bo-det-asymptotic} follows directly from
+\eqref{eq:bo-det-H}.
+\end{proof}
+
 \begin{theorem}[Blind-optimization instance optimality]
 \label{thm:bo-instance}
 For every fixed $u<\infty$ there exist a randomized nonanticipating policy
@@ -122,23 +390,15 @@ an adaptive advantage, while a sample estimates the one number $\mu_M$.  The
 first subsection makes this argument formal; the second performs the outer
 worst-case optimization.
 
-\subsection{Proof of instance optimality}
+\subsection{Proof of randomized instance optimality}
 
 In the equivalent random-labeling formulation, the labels are shuffled uniformly
 before the policy starts.  Then the lower half simply says that no policy,
 even one given $M$, beats $n^2\Phi_{\rm bo}(M)-o_u(n^2)$ in expectation.
 
-\paragraph{Normal form.}
-An optimization that is separated from the processing of its job can be
-moved to immediately before that processing operation.  The move reveals no
-information, leaves the completion time of that job and all later jobs
-unchanged, and makes every job completed in between one unit earlier.  A
-policy can perform the same transformation online by remembering the
-optimized state and elapsed time in a virtual copy of its history while
-postponing the physical optimization.  Hence
-we may regard every optimized job as one indivisible block of hidden length
-$1+p_i$.  A raw block has the known length $u$.  Both blocks complete exactly
-one job.
+By \cref{lem:bo-normal-form}, we may regard every optimized job as one
+indivisible block of hidden length $1+p_i$.  A raw block has the known length
+$u$.  Both blocks complete exactly one job.
 
 \paragraph{The announced lower bound.}
 Fix the private seed of a policy and place the announced occurrences

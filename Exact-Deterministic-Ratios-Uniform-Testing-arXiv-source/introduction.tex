@@ -316,6 +316,28 @@ jobs still look the same.
 This is the simplest case.  Randomization is necessary for instance
 optimality: a binary adversarial-labeling argument rules out every
 deterministic policy; see \cref{thm:bo-det-not-instance-optimal}.
+The deterministic worst-case problem nevertheless has an exact and very
+simple answer.  Up to $u=2$, run every job raw.  After $u=2$, optimize and
+run every job immediately in an arbitrary fixed order.  A hidden-stopping
+adversary proves that adaptively mixing the two actions cannot improve this
+choice.
+
+\begin{theorem}[Deterministic blind-optimization curve, informal version of
+\protect\cref{thm:bo-det-curve}]
+\label{thm:intro-bo-det-curve}
+The exact deterministic asymptotic competitive ratio is
+\begin{equation}
+ R_{\rm bo}^{\rm det}(u)=
+ \begin{cases}
+  1,&0<u\le1,\\[2pt]
+  u,&1\le u\le2,\\[5pt]
+  \displaystyle\frac{\sqrt{4u^3-4u+1}-1}{2(u-1)},&u\ge2.
+ \end{cases}
+ \label{eq:intro-bo-det-curve}
+\end{equation}
+It grows as $\sqrt u+o(1)$.
+\end{theorem}
+
 With randomization, we can sample a few jobs to estimate the only number that
 matters: the mean $\mu$ of the optimized lengths.  The policy in
 \cref{alg:intro-blind-optimization} then compares
@@ -351,7 +373,8 @@ and let $\widehat\mu$ be the mean observed length.
 \vspace{0pt}
 \centering
 \input{blind_optimization_curve_tikz}
-\captionof{figure}{The exact randomized ratio for blind optimization.}
+\captionof{figure}{The exact deterministic and randomized ratios for blind
+optimization.}
 \label{fig:intro-bo-curve}
 \end{minipage}
 
@@ -406,10 +429,10 @@ eventually becomes $4/3$.
 \begin{figure}[H]
 \centering
 \input{curves_overview_tikz}
-\caption{The three deterministic policy guarantees as functions of the raw
-execution time $u$, each shown on the range proved in the paper.  Their
-pointwise minimum, shown with a black outline, is the exact deterministic
-ratio.  The arrow on \textsc{Raw} marks its off-scale linear continuation.}
+\caption{The three proved deterministic policy guarantees and their exact
+lower envelope.  The black outline is the optimal ratio.  The arrow on
+\textsc{Raw} marks its off-scale linear continuation; the teal horizontal
+line is the $\varphi$ guarantee of zero-prefix \textsc{ForcedPrefixUTE}.}
 \label{fig:intro-curves-det}
 \end{figure}
 
@@ -434,6 +457,9 @@ shorter unseen jobs.
 The exact parameter $b(u)$ is defined in
 \cref{eq:opt:ute-parameters}; it is nonnegative on
 $[u_\diamond,u_0]$ and vanishes at $u_0$.
+For $u\ge\varphi+2$, the same zero-prefix policy remains
+$\varphi$-competitive by \cref{lem:opt:zero-prefix}; this continuation is
+shown in \cref{fig:intro-curves-det} to make the lower envelope visible.
 
 \begin{algorithm}[htbp]
 \caption{\textsc{ForcedPrefixUTE}$(J,u)$}
@@ -614,8 +640,9 @@ benchmark, proves that arbitrary adaptive policies cannot beat it, and
 removes advance knowledge of the input by sampling; it also explains why no
 finite worst-case ratio is possible without a bound on job lengths.
 \Cref{sec:blind-optimization} studies speedup without revelation, proves the
-corresponding instance-optimal theorem, and maximizes its mean-based benchmark
-to obtain the exact randomized worst-case curve.
+deterministic hidden-stopping lower bound and matching two-policy curve,
+proves the randomized instance-optimal theorem, and maximizes its mean-based
+benchmark to obtain the exact randomized worst-case curve.
 
 The revealing-optimization results occupy the next three sections.
 \Cref{sec:optional} proves the exact deterministic curve, first through a

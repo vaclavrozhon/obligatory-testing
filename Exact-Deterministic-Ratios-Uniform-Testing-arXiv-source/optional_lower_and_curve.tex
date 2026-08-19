@@ -5,14 +5,11 @@ The goal of this section is to prove \cref{thm:optional-curve}, the rigorous
 deterministic part of the informal revealing-optimization curve theorem
 \cref{thm:intro-common-upper-curves}.  We now allow raw execution for a
 finite common time $u$.  All jobs have this same known upper limit, and a
-test reveals $p_j\in[0,u]$.  Thus the offline effective length of job $j$ is
-\begin{equation}
- q_j=\min\{u,1+p_j\},
- \label{eq:opt:effective-length}
-\end{equation}
-and the offline optimum schedules the $q_j$ in nondecreasing order.  We write
-$V(u)$ for the optimal deterministic size-asymptotic ratio at this fixed
-common upper limit.
+test reveals $p_j\in[0,u]$.  By
+\cref{eq:optional-effective-length,lem:offline}, the offline effective length
+is $q_u(p_j)=\min\{u,1+p_j\}$, and the offline optimum schedules these
+effective lengths in nondecreasing order.  We write $V(u)$ for the optimal
+deterministic size-asymptotic ratio at this fixed common upper limit.
 
 The answer has six branches.  We first define their transition points.  Put
 \begin{equation}
@@ -362,8 +359,9 @@ The first policy is formalized in \cref{alg:raw}.
 \end{algorithm}
 
 For $u\le u_\diamond$, use \textsc{Raw}.  It is optimal when $u\le1$;
-when $u>1$, every effective length in
-\cref{eq:opt:effective-length} is at least one, so the ratio is at most $u$.
+when $u>1$, every effective length $q_u(p_j)$ from
+\cref{eq:optional-effective-length} is at least one, so the ratio is at most
+$u$.
 
 For the next interval, let $\rho=\rho_I(u)$, $s=u-1$, and define
 \begin{equation}
@@ -622,13 +620,21 @@ nonpositive.  Diagonals and prefix rounding contribute $O_u(n)$.
 \end{proof}
 
 At $u=u_0$, $b=0$.  The same zero-prefix algorithm remains exact through
-$u=\varphi+2$.
+$u=\varphi+2$ and continues with a $\varphi$ guarantee afterwards.  We state
+the continuation because it makes the three-policy lower envelope in
+\cref{fig:intro-curves-det} literal rather than schematic.
 
 \begin{lemma}[Zero-prefix extension]
 \label{lem:opt:zero-prefix}
-For $u_0\le u\le\varphi+2$,
+For every $u\ge u_0$,
 \textnormal{\textsc{ForcedPrefixUTE}}$(J,u,0)$ from \cref{alg:ute} is
-$\bigl(1+1/\sqrt{u-1}\bigr)$-competitive up to $O_u(n)$.
+\begin{equation}
+ \max\left\{\varphi,1+\frac1{\sqrt{u-1}}\right\}
+ \label{eq:opt:zero-prefix-full-guarantee}
+\end{equation}
+competitive up to $O_u(n)$.  Thus its guarantee is
+$1+1/\sqrt{u-1}$ on $[u_0,\varphi+2]$ and $\varphi$ on
+$[\varphi+2,\infty)$.
 \end{lemma}
 
 \begin{proof}
@@ -653,7 +659,7 @@ fractional-linear in $d^2$, so its maximum is on one of two faces:
 The first one-variable function is maximized at $y=1/\varphi$ and the second
 at $y=1/\sqrt s$, which gives the two displayed constants.
 The second value dominates the first exactly when
-$u\le\varphi+2$.  Binary instances attain it.
+$u\le\varphi+2$.  Binary instances attain the second value.
 \end{proof}
 
 \subsection{The unrestricted mixed lower bound}

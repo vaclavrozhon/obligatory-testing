@@ -73,7 +73,8 @@ is its variant with a slowly growing cutoff.
 The full revealing-optimization instance-optimal proof is Section 7 of the
 manuscript; its outer worst-case optimization is the separate four-piece
 curve in Section 8.  The blind-execution theorem is formalized in Lean.  The
-blind-optimization theorem and its exact curve, which is unbounded as
-$u\to\infty$, are currently analytic only.  For obligatory testing, Lean
+blind-optimization results include the exact deterministic curve and the
+randomized instance-optimal theorem and curve.  Both curves are unbounded as
+$u\to\infty$ and are currently analytic only.  For obligatory testing, Lean
 checks the fixed-cutoff `4/3` theorem and the shared fluid algebra; the
 growing-cutoff instance-optimal variant is currently analytic.

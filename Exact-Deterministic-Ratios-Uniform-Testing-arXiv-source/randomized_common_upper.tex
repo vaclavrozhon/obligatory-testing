@@ -93,24 +93,20 @@ and \cref{lem:offline} give the leading offline coefficient
 \end{align}
 for every empirical distribution $D_M$.
 
-We next recall the maximum-density stationary policy in a form suited to the
-cap.  For a processing-time prefix of mass $a$ and first moment $m$, its
-completion density is $a/(1+m)$.  Choose a maximum-density prefix, include
-all zeros, and put
+We next specialize the maximum-density module
+\cref{lem:maximum-density-module} to a form suited to the cap.  If its
+threshold prefix has mass $a$ and first moment $m$, put
 \begin{equation}
  \tau=\frac{1+m}{a}.
  \label{eq:rcu-tau-density}
 \end{equation}
-The one-point addition/removal test puts every value below $\tau$ in the
-prefix and every value above $\tau$ outside it; an atom at equality may be
-split.  Equivalently,
+The common threshold equation and the layer-cake identity give
 \begin{equation}
  \EE(\tau-P)^+=1,
  \qquad
  \int_0^\tau H(t)\,dt=\tau-1.
  \label{eq:rcu-threshold-equation}
 \end{equation}
-The equation has a unique solution $\tau\ge1$.
 
 The stationary policy tests all jobs in a uniform random order, processes a
 positive prefix outcome immediately after its test, and after the last test

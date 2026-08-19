@@ -148,26 +148,18 @@ the same lower bound.  This proves part~(ii).
 \subsection{The maximum-density benchmark}
 
 We first define the benchmark for an arbitrary finitely supported
-probability distribution $D$ on $[0,\infty)$.  A discovery module is
-described by numbers $g(p)\in[0,1]$ on the support, with $g(0)=1$.  It tests
-one unit mass of jobs and processes the selected positive outcomes.  Its
-completed mass and work are
+probability distribution $D$ on $[0,\infty)$.  Apply the maximum-density
+module \cref{lem:maximum-density-module}, choose its threshold selector
+$g_*$, and put
 \begin{equation}
- a(g)=\int g(p)\,dD(p),\qquad
- w(g)=1+\int p g(p)\,dD(p).
- \label{eq:ot-module-aw}
-\end{equation}
-Choose $g_*$ maximizing $a(g)/w(g)$ and put
-\begin{equation}
+ a_*=a_D(g_*),\qquad w_*=w_D(g_*),\qquad
  \rho_* =\frac{a_*}{w_*},\qquad
- \theta_*=\frac1{\rho_*},\qquad
- \nu=(1-g_*)D.
+ \theta_*=\frac1{\rho_*}=\tau.
  \label{eq:ot-module-threshold}
 \end{equation}
-The one-coordinate addition and removal calculation from
-\cref{lem:rand-density-threshold} shows that $g_*=1$ below $\theta_*$ and
-$g_*=0$ above $\theta_*$.  Only an atom at equality may be split.  For an
-empirical measure one may equivalently sort the occurrences and maximize
+The residual measure $\nu$ from \cref{eq:common-module-data} has mass
+$1-a_*$ and support in $[\theta_*,\infty)$.  For an empirical measure one
+may equivalently sort the occurrences and maximize
 \begin{equation}
  \frac{|E|/n}{1+n^{-1}\sum_{i\in E}p_i}
  \label{eq:ot-empirical-density}
@@ -211,32 +203,26 @@ Moreover,
 \end{lemma}
 
 \begin{proof}
-Let $F^*$ be the completion curve of the claimed schedule.  Up to time
-$w_*$ it is the line $F^*(s)=\rho_*s$.  Afterwards its slopes are $1/p$ for
-the residual processing times in increasing order.  Every residual value is
-at least $\theta_*=1/\rho_*$, so the slopes do not increase at the join.
-Thus $F^*$ is nondecreasing and concave, with $F^*(0)=0$.
-
-Take a feasible point of \cref{eq:ot-envelope}.  If $T=0$ there is nothing
-to prove.  Otherwise put $x_p=c_p/T$.  At $T=1$, a selection whose work is at
-most $w_*$ completes at most $\rho_*$ times its work, by maximality of
-$g_*$.  Above $w_*$, fractional-knapsack optimality says to select processing
-times in increasing order; this is exactly the continuation traced by
-$F^*$.  Hence the completed mass of the corresponding full-test point is at
-most $F^*(1+\sum p x_p)$.  Concavity and $F^*(0)=0$ now give
+The envelope in \cref{eq:ot-envelope} is
+$H^v_{D,1}$ from \cref{eq:common-fluid-envelope}; the independent-mode term
+has zero capacity, so $v$ is immaterial.  By
+\cref{lem:test-module-envelope}, its item measure is
 \[
- F^*\!\left(T\left(1+\sum p x_p\right)\right)
- \ge T F^*\!\left(1+\sum p x_p\right)
- \ge T\left(D(\{0\})+\sum x_p\right).
+                         a_*\delta_{\theta_*}+\nu.
 \]
-Monotonicity proves $F_D\le F^*$.  Conversely, fractional amounts of the
-full module, followed by fractional SPT processing of $\nu$, are feasible in
-\cref{eq:ot-envelope}, so equality holds pointwise.
-
-During discovery, integrating $1-\rho_*s$ from $0$ to $w_*$ gives
-$w_*(1-a_*/2)$.  The remaining SPT area is
-$\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q)$.  This proves
-\cref{eq:ot-Phi-area} and \cref{eq:ot-Phi}.
+The greedy realization first repeats the full maximum-density module and
+then processes $\nu$ in SPT order, proving the pointwise assertion.  Since
+$\nu$ has mass $1-a_*$ and is supported above $\theta_*$, the common area
+formula \cref{eq:common-envelope-area} expands to
+\begin{align*}
+ \int_0^\infty(1-F_D(s))\,ds
+ &=\theta_*\left(\frac{a_*^2}{2}+a_*(1-a_*)\right)
+   +\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q)\\
+ &=w_*\left(1-\frac{a_*}{2}\right)
+   +\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q),
+\end{align*}
+because $w_*=a_*\theta_*$.  This is \cref{eq:ot-Phi} and is unaffected by
+how a boundary atom is split.
 \end{proof}
 
 \subsection{The announced upper bound}

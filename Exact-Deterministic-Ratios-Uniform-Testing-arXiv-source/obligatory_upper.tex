@@ -122,18 +122,13 @@ deferred, it is $2+\min\{p_i,p_j\}$.  Hence
   2+\min\{p_i,p_j\}, & i,j\text{ deferred}.
  \end{cases}
 \end{equation}
-The offline optimum tests and immediately processes jobs in nondecreasing
-order of $p_i$, and therefore
+The obligatory specialization \cref{eq:opt-pair} of the common offline pair
+identity gives
 \begin{equation}
 \label{eq:upper-opt-pair}
  \OPT=\sum_i(1+p_i)
        +\sum_{i<j}\bigl(1+\min\{p_i,p_j\}\bigr).
 \end{equation}
-For completeness, the latter claim follows because the $k$th completed job
-cannot finish before the machine has performed $k$ tests and the processing
-of the $k$ shortest jobs.  The shortest-first schedule attains all these
-lower bounds simultaneously.
-
 We bound the excess
 \[
  F=\ALG-R\OPT.
