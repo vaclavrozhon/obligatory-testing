@@ -412,7 +412,7 @@ and executes every job untested for the public raw time $u$.  Its ratio is
 $1$ for $u\le1$ and $u$ for $u>1$, and it supplies the lower envelope up to
 $u_\diamond=1.866760\ldots$; see \cref{fig:intro-curves-det}.
 
-The second algorithm, \textsc{ForcedPrefixUTE}, tests every job and normally
+The second algorithm, \textsc{ForcedPrefixUTE} from Alg5, tests every job and normally
 processes only outcomes below a fixed threshold.  It makes one deliberate
 exception: every outcome in an initial $b(u)$-fraction of the test order is
 processed immediately.  Without this forced prefix, deferring early long
@@ -420,13 +420,10 @@ outcomes can create a tail that is delayed by almost all later tests; the
 prefix balances this tail cost against the opposite risk of processing a
 long job before shorter unseen jobs.
 
-For intuition, $b(u)$ decreases from $0.287\ldots$ at
-$u_\diamond$ to zero at $u_0=3.147899\ldots$.  Over this interval it is
-well approximated by
-\[
- b(u)\approx0.287
- \left(\frac{u_0-u}{u_0-u_\diamond}\right)^{1.56}.
-\]
+The function $b(u)$ is computed by a rather complicated optimization. Approximately, it's equal to  $b(u)\approx0.287
+ \left(\frac{u_0-u}{u_0-u_\diamond}\right)^{1.56}.$ which means it decreases from $0.287\ldots$ at
+$u_\diamond \approx ??$ to zero at $u_0=3.147899\ldots$.  
+
 The algorithm uses the exact value defined in \cref{eq:opt:ute-parameters},
 not this numerical approximation.
 
@@ -454,11 +451,23 @@ form the deterministic lower envelope in \cref{fig:intro-curves-det}:
 \textsc{AdaptiveThreshold} for large $u$.
 
 
-For randomized algorithms we can say more.  On each fixed bag, the sampling
-principle from blind execution finds the best threshold and the best tested
-fraction $q$.  Unlike blind execution, every tested processing time is at
+For randomized algorithms we can again get instance optimality with an algorithm similar to alg??. 
+
+Unlike blind execution, every tested processing time is at
 most the raw time $u$, so all tested jobs belong before the untouched raw
 block.
+
+
+\begin{theorem}[Revealing-optimization instance optimality, informal version of
+\protect\cref{thm:common-upper-instance}]
+\label{thm:intro-common-upper-instance}
+Fix $u<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
+for every bag $M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
+\[
+ \cost(\mathcal A^*)\le \cost(\mathcal A')+o_u(n^2).
+\]
+
+\end{theorem}
 
 \begin{algorithm}[H]
 \caption{Instance-optimal revealing-optimization policy}
@@ -472,18 +481,9 @@ observed lengths to estimate the bag.
 \State Run every untouched job raw for time $u$.
 \end{algorithmic}
 \end{algorithm}
+[rozepis to podobne jako obdobne algoritmy nahore]
 
-\begin{theorem}[Revealing-optimization instance optimality, informal version of
-\protect\cref{thm:common-upper-instance}]
-\label{thm:intro-common-upper-instance}
-Fix $u<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
-for every bag $M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
-\[
- \cost(\mathcal A^*)\le \cost(\mathcal A')+o_u(n^2).
-\]
-
-\end{theorem}
-
+[obecne -- nelibi se mi "bag", radsi rikej "input", plati to na cely clanek]
 For each bag, this policy attains its best online leading cost.  We obtain the
 competitive ratio by asking which bag maximizes the ratio between that cost
 and the clairvoyant optimum.  The worst bag can be reduced to two job
@@ -497,6 +497,7 @@ execution time $u$.  Their pointwise minimum, shown with a black outline, is
 the exact deterministic ratio.}
 \label{fig:intro-curves-det}
 \end{figure}
+[tenhle obrazek patri nekam nahoru]
 
 \begin{figure}[H]
 \centering
@@ -504,19 +505,12 @@ the exact deterministic ratio.}
 \caption{The exact randomized revealing-optimization ratio as a function of
 the raw execution time $u$.}
 \label{fig:intro-curves-rand}
-\end{figure}
+\end{figure} [tenhle obrazek dej napravo od rand algoritmu]
 
 
-The curves are not monotone.  This is not a contradiction: increasing $u$
-changes both players' options.  For intermediate $u$, the clairvoyant
-scheduler makes especially good use of the choice between raw execution and
-testing.  When $u$ becomes large, both schedulers effectively test
-everything.
+Both curves from figures XX and XX are not monotone.  This is not a contradiction: For very small $u$, testing is clearly useless, while for $u \to \infty$, we are converging to the obligatory setup from sec XX which is again more straightforward for algorithms to navigate. 
 
-The hard bags change along the curves.  In the first regimes, mixtures of
-zero jobs and jobs of length $u$ are enough.  Later, the deterministic lower
-bound becomes a capped form of the decreasing-level construction from
-obligatory testing.  The exact formulas and matching constructions are in
+The exact formulas and matching constructions are in
 \cref{sec:optional,sec:random-common-upper}.
 
 \subsection{Techniques}
