@@ -1,4 +1,6 @@
 % Deterministic revealing-optimization policy curves and their lower envelope.
+% In particular, plot ForcedPrefixUTE also before it becomes optimal; otherwise
+% the coloured pieces merely partition V(u) instead of exhibiting an envelope.
 \begingroup
 \tracinglostchars=0
 \pgfmathdeclarefunction{introRhoI}{1}{%
@@ -15,11 +17,11 @@
   xmin=0.2,
   xmax=7.3,
   ymin=0.97,
-  ymax=1.91,
+  ymax=2.05,
   xlabel={raw execution time $u$},
   ylabel={competitive ratio},
   xtick={1,2,3,4,5,6,7},
-  ytick={1,1.2,1.4,1.6,1.8},
+  ytick={1,1.2,1.4,1.6,1.8,2},
   tick label style={font=\scriptsize},
   label style={font=\small},
   grid=major,
@@ -84,10 +86,17 @@
 \addlegendentry{\textsc{Raw}}
 \addplot[violet!82!black,densely dotted,line width=1.5pt,domain=1:7.3]
   {x};
+\draw[violet!82!black,densely dotted,line width=1.5pt,->]
+  (axis cs:1.93,1.93) -- (axis cs:2.035,2.035);
 
-\addplot[teal!78!black,dashed,line width=1.5pt,
-  domain=1.86676039917:3.14789903570] {introRhoI(x)};
+% The optimized forced-prefix family has limit 2 as u decreases to 1.
+% Its losing branch to the left of u_diamond is essential: it displays the
+% crossing with Raw instead of making the two optimal pieces merely touch.
+\addplot[teal!78!black,dashed,line width=1.5pt]
+  coordinates {(1,2) (1.01,1.99047986077)};
 \addlegendentry{\textsc{ForcedPrefixUTE}}
+\addplot[teal!78!black,dashed,line width=1.5pt,
+  domain=1.01:3.14789903570] {introRhoI(x)};
 \addplot[teal!78!black,dashed,line width=1.5pt,
   domain=3.14789903570:3.61803398875] {1+1/sqrt(x-1)};
 \addplot[teal!78!black,dashed,line width=1.5pt,
@@ -120,15 +129,19 @@
 \addplot[red!78!black,dash dot,line width=1.5pt,
   domain=4.50524149579:7.3] {1.57057409665};
 
-\addplot[black!45,densely dotted,thin] coordinates {(1,0.97) (1,1.91)};
+\addplot[black!45,densely dotted,thin] coordinates {(1,0.97) (1,2.05)};
 \addplot[black!45,densely dotted,thin]
-  coordinates {(1.86676039917,0.97) (1.86676039917,1.91)};
+  coordinates {(1.86676039917,0.97) (1.86676039917,2.05)};
+\node[font=\scriptsize,rotate=90,anchor=south]
+  at (axis cs:1.86676039917,1.23) {$u_\diamond$};
 \addplot[black!45,densely dotted,thin]
-  coordinates {(3.14789903570,0.97) (3.14789903570,1.91)};
+  coordinates {(3.14789903570,0.97) (3.14789903570,2.05)};
+\node[font=\scriptsize,rotate=90,anchor=south]
+  at (axis cs:3.14789903570,1.23) {$u_0$};
 \addplot[black!45,densely dotted,thin]
-  coordinates {(3.61803398875,0.97) (3.61803398875,1.91)};
+  coordinates {(3.61803398875,0.97) (3.61803398875,2.05)};
 \addplot[black!45,densely dotted,thin]
-  coordinates {(4.50524149579,0.97) (4.50524149579,1.91)};
+  coordinates {(4.50524149579,0.97) (4.50524149579,2.05)};
 \addplot[only marks,mark=*,mark size=1.6pt,black]
   coordinates {(1.86676039917,1.86676039917) (4.50524149579,1.57057409665)};
 \node[font=\scriptsize,anchor=west] at (axis cs:5.25,1.535)
