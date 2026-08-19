@@ -8,7 +8,7 @@ prove \cref{thm:common-upper-instance}, the rigorous version of the informal
 revealing-optimization theorem \cref{thm:intro-common-upper-instance}.
 
 For a distribution $D$ on $[0,u]$, we define an explicit value
-$\Phi_u(D)$ in \cref{eq:cui-Phi}.  It is obtained by choosing one threshold
+$\PhiRO(D)$ in \cref{eq:cui-Phi}.  It is obtained by choosing one threshold
 and minimizing a quadratic over the tested fraction $q$.  For a multiset
 $M$, write $D_M$ for its empirical distribution.
 
@@ -21,19 +21,19 @@ $M\subseteq[0,u]$ has the following properties.
 For every fixed labeling $\sigma$,
 \begin{equation}
  \EE\cost(\mathcal A^*_{n,u},\sigma(M))
- \le n^2\Phi_u(D_M)+\eps_u(n)n^2.
+ \le n^2\PhiRO(D_M)+\eps_u(n)n^2.
  \label{eq:cui-upper}
 \end{equation}
 Conversely, for every randomized nonanticipating policy $\mathcal A$, even
 one told $M$, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE\cost(\mathcal A,\sigma(M))
- \ge n^2\Phi_u(D_M)-\eps_u(n)n^2.
+ \ge n^2\PhiRO(D_M)-\eps_u(n)n^2.
  \label{eq:cui-lower}
 \end{equation}
 One may take
 \begin{equation}
- \eps_u(n)=O_u\!\left(n^{-1/6}\sqrt{\log(n+2)}\right).
+ \eps_u(n)=O_u\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right).
  \label{eq:cui-rate}
 \end{equation}
 \end{theorem}
@@ -59,7 +59,7 @@ A test automatically completes a zero outcome.  Apply
 Write
 \begin{equation}
  a=a_D(g^*),\qquad \ell=\EE[P g^*(P)\one_{P>0}],
- \qquad \tau=\frac{1+\ell}{a},
+ \qquad \tau=\tau_D=\frac{1+\ell}{a},
  \label{eq:cui-tau}
 \end{equation}
 Let $D_i=D(\{p_i\})$ on the positive support and let $R_i=\nu(\{p_i\})$
@@ -68,13 +68,13 @@ be the residual masses from \cref{lem:maximum-density-module}.  Thus
  \sum_iR_i=1-a,\qquad p_i\ge\tau\text{ whenever }R_i>0.
  \label{eq:cui-residual}
 \end{equation}
-For a fixed final tested fraction $q\in[0,1]$, let $H^u_{D,q}$ be the common
+For a fixed final tested fraction $q\in[0,1]$, let $\mathcal C^u_{D,q}$ be the common
 fluid envelope \cref{eq:common-fluid-envelope} with independent-mode work
 $v=u$; the independent mode is raw execution.
 
 \begin{lemma}[Fixed-$q$ completion envelope]
 \label{lem:cui-envelope}
-The envelope $H^u_{D,q}$ is the divisible-knapsack curve with items
+The envelope $\mathcal C^u_{D,q}$ is the divisible-knapsack curve with items
 \begin{center}
 \begin{tabular}{@{}lcc@{}}
 \toprule
@@ -108,7 +108,7 @@ Put
 The common area identity \cref{eq:common-envelope-area}, specialized through
 \cref{lem:cui-envelope}, gives
 \begin{equation}
- F_{u,D}(q)
+ F_{\mathsf{RO},u,D}(q)
  =(1+\ell)\left(q-\frac{aq^2}{2}\right)
  +qm_R(1-q)+\frac{q^2K_R}{2}
  +\frac{u(1-q)^2}{2}.
@@ -118,23 +118,23 @@ Indeed, the four terms are respectively the test-module area, residual work
 delaying the raw block, internal residual SPT pairs, and the homogeneous raw
 block.  Define
 \begin{equation}
- \Phi_u(D)=
+ \PhiRO(D)=
  \begin{cases}
-  \displaystyle\min_{0\le q\le1}F_{u,D}(q),&\tau<u,\\[3pt]
+  \displaystyle\min_{0\le q\le1}F_{\mathsf{RO},u,D}(q),&\tau<u,\\[3pt]
   u/2,&\tau\ge u.
  \end{cases}
  \label{eq:cui-Phi}
 \end{equation}
 This is an explicit one-dimensional optimization.  In fact
 \begin{equation}
- F_{u,D}(q)=\frac u2+Aq+Bq^2,\qquad
+ F_{\mathsf{RO},u,D}(q)=\frac u2+Aq+Bq^2,\qquad
  A=1+\mu-u,\qquad
  B=-\frac{a(1+\ell)}2-m_R+\frac{K_R}2+\frac u2.
  \label{eq:cui-quadratic}
 \end{equation}
 For each work budget, convexly combining feasible points for $q_1,q_2$
 gives a feasible point for the corresponding convex combination of the two
-fractions.  Hence $H^u_{D,q}(x)$ is concave in $q$, its remaining-mass area is
+fractions.  Hence $\mathcal C^u_{D,q}(x)$ is concave in $q$, its remaining-mass area is
 convex, and $B\ge0$.  Moreover,
 \[
  \tau<u\quad\Longleftrightarrow\quad\EE(u-P)>1
@@ -148,7 +148,7 @@ Thus the minimizer is
 \end{equation}
 We have proved pathwise at the fluid level that a policy with realized final
 tested fraction $q$ has area at least
-$F_{u,D}(q)\ge\Phi_u(D)$.
+$F_{\mathsf{RO},u,D}(q)\ge\PhiRO(D)$.
 
 \subsection{Adaptive policies and the announced lower bound}
 \label{sec:cui-announced}
@@ -203,7 +203,7 @@ following event is uniform over the policy.
 \label{lem:cui-urn}
 Fix $\delta\in(0,1)$ and put
 \begin{equation}
- e_n=\sqrt{8n\log(n(K+2))},
+ e_n=\sqrt{8n\ln(n(K+2))},
  \qquad
  \Gamma_n=(1+\delta^{-1})e_n.
  \label{eq:cui-Gamma}
@@ -262,7 +262,7 @@ repaired point is feasible for the empirical envelope at the actual work
 budget, while completed mass decreases by at most $(K+1)\gamma_n$.  Hence
 \begin{equation}
  \text{completed fraction at work }x
- \le H^u_{D,q}(x)+(K+1)\gamma_n.
+ \le \mathcal C^u_{D,q}(x)+(K+1)\gamma_n.
  \label{eq:cui-envelope-repair}
 \end{equation}
 Integrating the remaining-mass curve, substituting the realized $q$ only
@@ -270,7 +270,7 @@ after \cref{eq:cui-envelope-repair} is established, and restoring
 \cref{eq:cui-suffix-edit} gives the fixed-grid lower bound
 \begin{equation}
  \frac{C_{\rm original}}{n^2}
- \ge\Phi_u(D)-O_{u,K}(\gamma_n+\delta+1/n).
+ \ge\PhiRO(D)-O_{u,K}(\gamma_n+\delta+1/n).
  \label{eq:cui-fixed-grid-lower}
 \end{equation}
 
@@ -286,7 +286,7 @@ at most $h$, transporting the same fluid policy changes total known
 processing work by at most $h$ and hence changes its remaining-mass area by
 at most $h$.  Therefore
 \begin{equation}
- |\Phi_u(D)-\Phi_u(D')|\le h.
+ |\PhiRO(D)-\PhiRO(D')|\le h.
  \label{eq:cui-rounding-stability}
 \end{equation}
 For the finite repair, raising a processed value to its bin endpoint shifts
@@ -294,17 +294,17 @@ the envelope horizontally by at most $h_n$; deleting $\gamma_n$ from every
 cell creates vertical error $(K_n+1)\gamma_n$.  With the parameters above,
 \begin{equation}
  (K_n+1)\frac{\Gamma_n}{n}
- =O\!\left(n^{-1/6}\sqrt{\log(n+2)}\right).
+ =O\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right).
  \label{eq:cui-grid-error}
 \end{equation}
-On the bad event we use nonnegativity and $0\le\Phi_u\le u/2$.
+On the bad event we use nonnegativity and $0\le\PhiRO\le u/2$.
 Averaging \cref{eq:cui-fixed-grid-lower}, using
 \cref{eq:cui-rounding-stability,eq:cui-grid-error}, and then averaging over
 the private seed proves that every announced policy has uniform-placement
 cost at least
 \begin{equation}
- n^2\Phi_u(D_M)
- -O_u\!\left(n^{11/6}\sqrt{\log(n+2)}\right).
+ n^2\PhiRO(D_M)
+ -O_u\!\left(n^{11/6}\sqrt{\ln(n+2)}\right).
  \label{eq:cui-announced-lower}
 \end{equation}
 At least one placement has seed-expected cost at least this average.  It is
@@ -370,7 +370,7 @@ two-draw expectation.  Inserting an intermediate product measure shows
 \end{equation}
 uniformly over the grid and template.  The same bound holds for the minima.
 The threshold lemma and completion envelope show that the minimum over this
-common template family is exactly $\Phi_u(D)$.
+common template family is exactly $\PhiRO(D)$.
 
 Condition on the sample.  The learned template is fixed and the unused labels
 are uniformly ordered, so \cref{eq:cui-finite-kernel} applies.  The usual
@@ -378,7 +378,7 @@ empirical-minimization sandwich, twice using
 \cref{eq:cui-template-Lipschitz}, bounds the main cost by
 \[
  (n-k_n)^2\left(
- \Phi_u(D_n^R)+O_u(\|\widehat D_n-D_n^R\|_1)\right)+O_u(n).
+ \PhiRO(D_n^R)+O_u(\|\widehat D_n-D_n^R\|_1)\right)+O_u(n).
 \]
 The sample and its final tail contribute $O_u(nk_n)$.  Now apply
 \cref{eq:cui-histogram}, replace the remaining histogram by the full one,
@@ -391,7 +391,7 @@ and use \cref{eq:cui-rounding-stability}.  Since
 the resulting bound is
 \begin{equation}
  \EE\cost(\mathcal A^*_{n,u},\sigma(M))
- \le n^2\Phi_u(D_M)+O_u(n^{11/6})
+ \le n^2\PhiRO(D_M)+O_u(n^{11/6})
  \label{eq:cui-universal-upper}
 \end{equation}
 for every fixed labeling.  Together with the announced lower bound

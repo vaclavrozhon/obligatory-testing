@@ -7,15 +7,15 @@ deterministic part of the informal revealing-optimization curve theorem
 finite common time $u$.  All jobs have this same known upper limit, and a
 test reveals $p_j\in[0,u]$.  By
 \cref{eq:optional-effective-length,lem:offline}, the offline effective length
-is $q_u(p_j)=\min\{u,1+p_j\}$, and the offline optimum schedules these
-effective lengths in nondecreasing order.  We write $V(u)$ for the optimal
+is $\lambda_u(p_j)=\min\{u,1+p_j\}$, and the offline optimum schedules these
+effective lengths in nondecreasing order.  We write $\RdetRO(u)$ for the optimal
 deterministic size-asymptotic ratio at this fixed common upper limit.
 
 The answer has six branches.  We first define their transition points.  Put
 \begin{equation}
  \varphi=\frac{1+\sqrt5}{2},
  \qquad
- u_\diamond=\frac{1+\sqrt{3+2\sqrt5}}2
+ \udiam=\frac{1+\sqrt{3+2\sqrt5}}2
  =1.866760399173862\ldots .
  \label{eq:opt:phi-udiamond}
 \end{equation}
@@ -23,7 +23,7 @@ Let $s_0>1$ be the root of
 \begin{equation}
  s_0^3=(s_0+1)^2,
  \qquad
- u_0=1+s_0=3.147899035704787\ldots .
+ \uzero=1+s_0=3.147899035704787\ldots .
  \label{eq:opt:u0}
 \end{equation}
 For $s=u-1$, put
@@ -46,20 +46,20 @@ Equivalently,
  \label{eq:opt:rhoI-explicit}
 \end{equation}
 
-At the other end, let $z_*>1$ solve $z_*-3=\log z_*$ and define
+At the other end, let $\zstar>1$ solve $\zstar-3=\ln \zstar$ and define
 \begin{equation}
- r=\frac2{z_*-1},
+ r=\frac2{\zstar-1},
  \qquad
- R_{\rm obl}=1+r=1.570574096649395\ldots,
+ \RdetOT=1+r=1.570574096649395\ldots,
  \qquad
- z_*=4.505241495792883\ldots .
+ \zstar=4.505241495792883\ldots .
  \label{eq:opt:obligatory-constant}
 \end{equation}
-For $\varphi+2\le u\le z_*$, define $C_{\rm mix}(u)=1+c$ by the unique
+For $\varphi+2\le u\le \zstar$, define $\Cmix(u)=1+c$ by the unique
 solution $(c,m)$ of
 \begin{equation}
  \operatorname{artanh}m-m
- =1-\frac1c+\frac12\log\!\left(1+\frac2c\right),
+ =1-\frac1c+\frac12\ln\!\left(1+\frac2c\right),
  \qquad
  u=1+\frac2c-m,
  \label{eq:opt:mixed-parametrization}
@@ -68,41 +68,44 @@ with $r\le c\le1/\varphi$ and $0\le m\le1/\varphi$.
 
 \begin{theorem}[Exact revealing-optimization curve]
 \label{thm:optional-curve}
-For every fixed $u>0$, the optimal deterministic size-asymptotic ratio in
+For every fixed $0<u<\infty$, the optimal deterministic size-asymptotic ratio in
 the revealing-optimization model is
 \begin{equation}
 \boxed{
-V(u)=
+\RdetRO(u)=
 \begin{cases}
 1, &0<u\le1,\\[1mm]
-u, &1\le u\le u_\diamond,\\[1mm]
-\rho_I(u), &u_\diamond\le u\le u_0,\\[1mm]
+u, &1\le u\le \udiam,\\[1mm]
+\rho_I(u), &\udiam\le u\le \uzero,\\[1mm]
 \displaystyle 1+\frac1{\sqrt{u-1}},
-   &u_0\le u\le\varphi+2,\\[3mm]
-C_{\rm mix}(u), &\varphi+2\le u\le z_*,\\[1mm]
-R_{\rm obl}, &u\ge z_*.
+   &\uzero\le u\le\varphi+2,\\[3mm]
+\Cmix(u), &\varphi+2\le u\le \zstar,\\[1mm]
+\RdetOT, &u\ge \zstar.
 \end{cases}}
 \label{eq:opt:full-curve}
 \end{equation}
 For every branch there is an explicit deterministic algorithm satisfying
 \[
- \cost(\mathcal A,I)\le V(u)\cost(\OPT,I)+O_u(n).
+ \cost(\mathcal A,I)\le \RdetRO(u)\cost(\OPT,I)+O_u(n).
 \]
-On finite $u\ge z_*$ the remainder is one absolute $O(n)$ term, and
-\cref{thm:det-obligatory} supplies the same algorithm at $u=\infty$.
+On $u\ge \zstar$ the remainder is one absolute $O(n)$ term, uniform over all
+finite $u$.
 Conversely, for every deterministic algorithm $\mathcal A$ and every
 $\epsilon>0$, there are arbitrarily large fixed instances $I$ such that
 \[
  \cost(\mathcal A,I)
- \ge\bigl(V(u)-\epsilon\bigr)\cost(\OPT,I).
+ \ge\bigl(\RdetRO(u)-\epsilon\bigr)\cost(\OPT,I).
 \]
+For $u\ge \zstar$, these lower-bound instances may be chosen cap-free:
+$p_j<u-1$ for every job.  Thus both witnesses on the plateau are uniform in
+the sense needed to pass separately to the obligatory endpoint.
 \end{theorem}
 
 The proof combines two kinds of lower bounds.  Binary hidden-stopping
 instances give the first four branches, while a continuous capped version
 of the harmonic construction gives the mixed branch and the plateau.  Three
 explicit policies match them: raw execution, a forced-prefix uniform
-threshold, and the history-dependent threshold from obligatory testing.
+threshold, and a history-dependent adaptive threshold.
 The upper-bound witness can be read from the following policy map.  The
 algorithms themselves are specified formally in
 \cref{alg:raw,alg:ute,alg:adaptive-threshold}.
@@ -111,15 +114,15 @@ algorithms themselves are specified formally in
 \toprule
 range & policy & parameter choice \\
 \midrule
-$0<u\le u_\diamond$
+$0<u\le \udiam$
  & \textsc{Raw} & none \\
-$u_\diamond<u\le u_0$
+$\udiam<u\le \uzero$
  & \textsc{ForcedPrefixUTE} & $b=b(u)$ from \eqref{eq:opt:ute-parameters} \\
-$u_0<u\le\varphi+2$
+$\uzero<u\le\varphi+2$
  & \textsc{ForcedPrefixUTE} & $b=0$ \\
-$\varphi+2<u<z_*$
+$\varphi+2<u<\zstar$
  & \textsc{AdaptiveThreshold} & $c=c(u)$ from \eqref{eq:opt:mixed-parametrization} \\
-$z_*\le u\le\infty$
+$\zstar\le u<\infty$
  & \textsc{AdaptiveThreshold} & $c=r$ \\
 \bottomrule
 \end{tabular}
@@ -142,13 +145,13 @@ Using $T_s(\rho)=0$, its numerator factors as
  \left(\rho-
  \frac{2s^3+3s^2-2}{2s^3+s^2-1}\right).
 \]
-On the relevant interval $s\ge u_\diamond-1>2/3$, the prefactor is
+On the relevant interval $s\ge \udiam-1>2/3$, the prefactor is
 positive, while the fraction in parentheses is at most $5/3$ because
 $4s^3-4s^2+1>0$.  The sign certificate
 \eqref{eq:opt:T-five-thirds} gives $\rho>5/3$.  Hence
 $\rho_I'(u)<0$.  The reciprocal branch and the mixed parametrization are
 also decreasing, so $V$ attains its global maximum only at
-$u=u_\diamond$.
+$u=\udiam$.
 
 The lower bounds, including the fact that the middle construction is safe
 against raw execution, are proved next.  We then give self-contained upper
@@ -304,14 +307,14 @@ and tangency gives
  \label{eq:opt:zero-b-tangency}
 \end{equation}
 The latter point belongs to the zero-$b$ branch iff
-$(u-1)^3\ge u^2$, with equality at $u=u_0$.
+$(u-1)^3\ge u^2$, with equality at $u=\uzero$.
 
 For $\rho=u$, the maximum in
 \cref{eq:opt:stopping-positive-branch} is nonnegative exactly while
 \begin{equation}
  [u(u-1)]^2-u(u-1)-1\le0,
 \end{equation}
-whose positive equality is $u=u_\diamond$.  We have proved the following
+whose positive equality is $u=\udiam$.  We have proved the following
 binary lower envelope.
 
 \begin{proposition}[Binary lower curve]
@@ -321,9 +324,9 @@ Every deterministic algorithm has size-asymptotic ratio at least
  B(u)=
  \begin{cases}
  1,&0<u\le1,\\
- u,&1\le u\le u_\diamond,\\
- \rho_I(u),&u_\diamond\le u\le u_0,\\[1mm]
- \displaystyle1+\frac1{\sqrt{u-1}},&u\ge u_0.
+ u,&1\le u\le \udiam,\\
+ \rho_I(u),&\udiam\le u\le \uzero,\\[1mm]
+ \displaystyle1+\frac1{\sqrt{u-1}},&u\ge \uzero.
  \end{cases}
  \label{eq:opt:binary-curve}
 \end{equation}
@@ -331,14 +334,14 @@ The lower bound uses only $p_j\in\{0,u\}$.
 \end{proposition}
 
 \begin{proof}
-For $1<u\le u_\diamond$, use $\rho=u$ and the maximizing point of
+For $1<u\le \udiam$, use $\rho=u$ and the maximizing point of
 \cref{eq:opt:stopping-positive-branch}.  For
-$u_\diamond\le u\le u_0$, use the positive root $\rho_I(u)$ and
+$\udiam\le u\le \uzero$, use the positive root $\rho_I(u)$ and
 $\alpha=A_u/D_{u,\rho_I(u)}$; the tangency identity makes the maximum zero.
 The minimizing completion mass is positive in the interior and becomes zero
-at $u=u_0$.  For $u\ge u_0$, use the zero-$b$ tangency point from
+at $u=\uzero$.  For $u\ge \uzero$, use the zero-$b$ tangency point from
 \cref{eq:opt:zero-b-tangency}.  The branch conditions are precisely the two
-inequalities checked above.  Finally, $V(u)\ge1$ is trivial for $u\le1$.
+inequalities checked above.  Finally, $\RdetRO(u)\ge1$ is trivial for $u\le1$.
 In each nontrivial case \cref{lem:opt:hidden-stopping} supplies fixed binary
 instances by replay.
 \end{proof}
@@ -358,8 +361,8 @@ The first policy is formalized in \cref{alg:raw}.
 \end{algorithmic}
 \end{algorithm}
 
-For $u\le u_\diamond$, use \textsc{Raw}.  It is optimal when $u\le1$;
-when $u>1$, every effective length $q_u(p_j)$ from
+For $u\le \udiam$, use \textsc{Raw}.  It is optimal when $u\le1$;
+when $u>1$, every effective length $\lambda_u(p_j)$ from
 \cref{eq:optional-effective-length} is at least one, so the ratio is at most
 $u$.
 
@@ -405,7 +408,7 @@ while $f(1)=-11$ and $f(s_0)<f(13/6)=-95/36$.  Here
 $s_0<13/6$ follows by substituting $13/6$ in
 $s^3-(s+1)^2$.  Thus $\rho>5/3$, while $s>4/5$, and
 $s^2\rho>16/15$.  Finally $K<D$ gives $\alpha<1$.  In particular, $b=0$
-occurs only at $u=u_0$.
+occurs only at $u=\uzero$.
 The remaining two elementary branches use the single procedure in
 \cref{alg:ute}.
 
@@ -415,18 +418,18 @@ The remaining two elementary branches use the single procedure in
 \begin{algorithmic}
 \Statex \textbf{Input:} jobs $J$, finite $u>1$, and $b\in[0,1]$.
 \State Fix a test order $j_1,\ldots,j_n$; set
-       $k\gets\lfloor bn\rfloor$, $\tau\gets\min\{1,u-1\}$,
+       $k\gets\lfloor bn\rfloor$, $\theta_u\gets\min\{1,u-1\}$,
        and $Q\gets\varnothing$.
 \State \textbf{For} $i=1,\ldots,n$ \textbf{do}:
 \State \quad Test $j_i$ for one unit and observe $p_{j_i}$.
-\State \quad \textbf{If} $i\le k$ or $p_{j_i}\le\tau$, process $j_i$
+\State \quad \textbf{If} $i\le k$ or $p_{j_i}\le\theta_u$, process $j_i$
        immediately.
 \State \quad \textbf{Otherwise}, add $j_i$ to $Q$.
 \State Process the jobs of $Q$ in nondecreasing revealed processing time.
 \end{algorithmic}
 \end{algorithm}
 
-On $u_\diamond\le u\le u_0$, use
+On $\udiam\le u\le \uzero$, use
 \textsc{ForcedPrefixUTE} with $b$ from \cref{eq:opt:ute-parameters}.  Rounding
 $bn$ changes the cost by $O_u(n)$.
 
@@ -462,7 +465,7 @@ increasing on $[0,b]$.  Thus $G(x)\le0$ for every $x\in[0,1]$, including
 the limiting case $b=0$.  This proves the binary upper bound without a
 hidden local-versus-global step.
 
-For $u_\diamond\le u\le2$, arbitrary values reduce to binary values by
+For $\udiam\le u\le2$, arbitrary values reduce to binary values by
 independent Bernoulli extremalization, in the following order.  First raise
 \emph{every} suffix-deferred value to $u$.  This cannot lower ALG, while its
 offline effective length was already $u$.  Only after this deterministic
@@ -496,15 +499,15 @@ respectively,
  1+(u-1)p\le1+p,
 \end{equation}
 and $u$ for a deferred value.  Since the minimum is jointly concave,
-$\mathbb E\min(q_i',q_j')\le\min(q_i,q_j)$.  Thus some binary realization
+$\mathbb E\min(\lambda_i',\lambda_j')\le\min(\lambda_i,\lambda_j)$.  Thus some binary realization
 has competitive excess at least that of the original instance.
 
-It remains to justify arbitrary values for $2\le u\le u_0$.  The following
+It remains to justify arbitrary values for $2\le u\le \uzero$.  The following
 quadratic lemma records the entire endpoint calculation.
 
 \begin{lemma}[UTE endpoint game]
 \label{lem:opt:ute-endpoint-game}
-For $2\le u\le u_0$, UTE with the parameters
+For $2\le u\le \uzero$, UTE with the parameters
 \cref{eq:opt:ute-parameters} satisfies
 \begin{equation}
  \ALG\le\rho_I(u)\OPT+O_u(n).
@@ -619,21 +622,21 @@ $3/2-9/320$.  These inequalities prove that every endpoint gap is
 nonpositive.  Diagonals and prefix rounding contribute $O_u(n)$.
 \end{proof}
 
-At $u=u_0$, $b=0$.  The same zero-prefix algorithm remains exact through
+At $u=\uzero$, $b=0$.  The same zero-prefix algorithm remains exact through
 $u=\varphi+2$ and continues with a $\varphi$ guarantee afterwards.  We state
 the continuation because it makes the three-policy lower envelope in
 \cref{fig:intro-curves-det} literal rather than schematic.
 
 \begin{lemma}[Zero-prefix extension]
 \label{lem:opt:zero-prefix}
-For every $u\ge u_0$,
+For every $u\ge \uzero$,
 \textnormal{\textsc{ForcedPrefixUTE}}$(J,u,0)$ from \cref{alg:ute} is
 \begin{equation}
  \max\left\{\varphi,1+\frac1{\sqrt{u-1}}\right\}
  \label{eq:opt:zero-prefix-full-guarantee}
 \end{equation}
 competitive up to $O_u(n)$.  Thus its guarantee is
-$1+1/\sqrt{u-1}$ on $[u_0,\varphi+2]$ and $\varphi$ on
+$1+1/\sqrt{u-1}$ on $[\uzero,\varphi+2]$ and $\varphi$ on
 $[\varphi+2,\infty)$.
 \end{lemma}
 
@@ -662,10 +665,12 @@ The second value dominates the first exactly when
 $u\le\varphi+2$.  Binary instances attain the second value.
 \end{proof}
 
+\input{obligatory_lower}
+
 \subsection{The unrestricted mixed lower bound}
 \label{sec:opt:mixed-lower}
 
-For $\varphi+2<u<z_*$, neither the binary family nor the pure cap-free
+For $\varphi+2<u<\zstar$, neither the binary family nor the pure cap-free
 family is tight.  The correct adversary puts a capped block before a scaled
 harmonic core.  Two lemmas ensure that optional raw
 execution and early processing of caps cannot escape it.
@@ -719,9 +724,9 @@ In particular, $A^{\rm lb}-O=(A_0^{\rm lb}-O_0)+m$.
 Fix $m\in(0,1)$ and a later cap-free block satisfying the hypotheses of
 \cref{lem:opt:cap-deferral}.  Against every deterministic optional algorithm
 there are fixed instances whose asymptotic excess is at least the cap-free
-hybrid benchmark $A^{\rm lb}-CO$ from
+hybrid benchmark $A^{\rm lb}-RO$ from
 \cref{eq:opt:mixed-A,eq:opt:mixed-O} for every target
-$C\le u$.
+$R\le u$.
 \end{lemma}
 
 \begin{proof}
@@ -736,7 +741,7 @@ With $S=n-v$, the overshoot is less than one, so $\ell=mS+O(1)$.  If no
 crossing occurs, no test can have occurred: after all first touches, any
 positive $\ell$ would make the ratio in \cref{eq:opt:mixed-quota} equal one.
 Thus every job was run raw and the all-zero hidden instance has ratio
-$u\ge C$.
+$u\ge R$.
 
 At a crossing, scale the prescribed later instance to the remaining
 $S-\ell$ first touches, absorbing the one-job cap overshoot and integer
@@ -761,9 +766,9 @@ and idles until its virtual $u$-block ends.  Inductively every physical
 completion is no later than its virtual optional completion.  Since the
 finite-cap and cap-free offline lengths are both $1+p$ on the later block,
 \begin{equation}
- \ALG_{\rm opt}-C\OPT_{\rm opt}
- \ge (u-C)Z_v+
- \bigl(\ALG_{\rm hyb}-C\OPT_{\rm hyb}\bigr)-O_u(n).
+ \ALG_{\mathsf{RO}}-R\OPT_{\mathsf{RO}}
+ \ge (u-R)Z_v+
+ \bigl(\ALG_{\rm hyb}-R\OPT_{\rm hyb}\bigr)-O_u(n).
  \label{eq:opt:mixed-raw-decomposition}
 \end{equation}
 The first term is nonnegative.  Finally, record every assigned value on its
@@ -778,14 +783,14 @@ lower ratio
 \begin{equation}
  \mathcal R_u(m,t)=1+
  \frac{m+\frac{(1-m)^2}{2}(1-t^{-2})}
- {\frac{(1-m)^2}{4}(1+t^{-2}+2\log t)
-  +m(1-m)(1+\log t)+\frac u2m^2}.
+ {\frac{(1-m)^2}{4}(1+t^{-2}+2\ln t)
+  +m(1-m)(1+\ln t)+\frac u2m^2}.
  \label{eq:opt:mixed-ratio}
 \end{equation}
 At an interior stationary point with value $1+c$, differentiation and the
 zero-gap equation give
 \begin{equation}
- \log t=u-2-\frac1c,
+ \ln t=u-2-\frac1c,
  \qquad
  t^2=\frac{1-m}{1+m}\left(1+\frac2c\right).
  \label{eq:opt:mixed-stationarity}
@@ -798,19 +803,19 @@ The branch runs from
 \begin{equation}
  (u,m,t)=\left(\varphi+2,\frac1\varphi,1\right)
  \quad\text{to}\quad
- (u,m,t)=(z_*,0,\sqrt{z_*}).
+ (u,m,t)=(\zstar,0,\sqrt{\zstar}).
  \label{eq:opt:mixed-endpoints}
 \end{equation}
-It satisfies $u\ge\varphi+2$, $\log t<1$, and $m\le1/\varphi$.  Therefore
+It satisfies $u\ge\varphi+2$, $\ln t<1$, and $m\le1/\varphi$.  Therefore
 \begin{equation}
- (1-m)(u-1-\log t)
+ (1-m)(u-1-\ln t)
  >(1-m)\varphi\ge\frac1\varphi\ge m,
 \end{equation}
 so \cref{eq:opt:cap-deferral-condition} holds; also $1+p<3<u$ for every
 later positive value in a sufficiently fine finite construction.  The
 functions
 \begin{equation}
- g(c)=1-\frac1c+\frac12\log\!\left(1+\frac2c\right),
+ g(c)=1-\frac1c+\frac12\ln\!\left(1+\frac2c\right),
  \qquad h(m)=\operatorname{artanh}m-m
 \end{equation}
 have $g'(c)=2/[c^2(c+2)]>0$ and
@@ -822,7 +827,7 @@ while
 is strictly decreasing.  The identities $g(r)=h(0)=0$ and
 $g(1/\varphi)=h(1/\varphi)$ give the two endpoints in
 \cref{eq:opt:mixed-endpoints}; consequently every
-$u\in[\varphi+2,z_*]$ has exactly one parameter pair.
+$u\in[\varphi+2,\zstar]$ has exactly one parameter pair.
 
 To pass to fixed finite instances, first approximate $(m,t)$ rationally
 while retaining the strict cap inequalities, then choose a sufficiently
@@ -833,28 +838,28 @@ Send first $H$, then the harmonic depth, and finally the rational
 approximation to their limits.  Together with
 \cref{lem:opt:mixed-raw-safe}, this proves
 \begin{equation}
- V(u)\ge C_{\rm mix}(u)
- \qquad(\varphi+2\le u\le z_*).
+ \RdetRO(u)\ge \Cmix(u)
+ \qquad(\varphi+2\le u\le \zstar).
  \label{eq:opt:mixed-lower-final}
 \end{equation}
 The construction above applies directly in the open interval.  At
-$u=\varphi+2$ and $u=z_*$ the same statement follows by approaching from
+$u=\varphi+2$ and $u=\zstar$ the same statement follows by approaching from
 the interior, so the endpoints are included.
 
 \subsection{The large-upper-limit lower bound by cap-free transfer}
 
 \begin{lemma}[Bounded cap-free transfer]
 \label{lem:opt:obligatory-transfer}
-Let $u\ge1$, and let $V_\infty(P)$ denote the deterministic
+Let $u\ge1$, and let $L_{\mathsf{OT}}(P)$ denote the deterministic
 size-asymptotic value in the cap-free limit, restricted to
 $0\le p_j\le P$.  Then
 \begin{equation}
- V(u)\ge V_\infty(u-1).
+ \RdetRO(u)\ge L_{\mathsf{OT}}(u-1).
  \label{eq:opt:obligatory-transfer}
 \end{equation}
 In particular,
 \begin{equation}
- V(u)\ge R_{\rm obl}
+ \RdetRO(u)\ge \RdetOT
  \qquad
  \left(u\ge1+\frac1r=2.752620747896442\ldots\right).
  \label{eq:opt:high-lower}
@@ -881,18 +886,18 @@ Consequently
 \[
  \CR_\infty(\mathcal A)
  \ge \CR_\infty(\mathcal B; p\le u-1)
- \ge V_\infty(u-1).
+ \ge L_{\mathsf{OT}}(u-1).
 \]
 Taking the infimum over $\mathcal A$ proves
 \cref{eq:opt:obligatory-transfer}.
 
-The harmonic cap-free family attaining $R_{\rm obl}$ has limiting largest
+The harmonic cap-free family attaining $\RdetOT$ has limiting largest
 processing time
 \begin{equation}
- 1+\log(1+y_*)
- =1+\frac12\log z_*
- =\frac{z_*-1}{2}=\frac1r,
- \qquad y_*=\sqrt{z_*}-1.
+ 1+\ln(1+y_*)
+ =1+\frac12\ln \zstar
+ =\frac{\zstar-1}{2}=\frac1r,
+ \qquad y_*=\sqrt{\zstar}-1.
 \end{equation}
 Approximation from below also gives the endpoint, proving
 \cref{eq:opt:high-lower}.
@@ -910,19 +915,19 @@ upper bounds through $\varphi+2$.  The remaining upper bounds are proved in
 
 For clarity, all five joins are exact:
 \begin{align*}
- \rho_I(u_\diamond)&=u_\diamond,\\
- \rho_I(u_0)&=1+\frac1{\sqrt{s_0}}
+ \rho_I(\udiam)&=\udiam,\\
+ \rho_I(\uzero)&=1+\frac1{\sqrt{s_0}}
               =1.682327803828019\ldots,\\
  1+\frac1{\sqrt{(\varphi+2)-1}}&=\varphi
-              =C_{\rm mix}(\varphi+2),\\
- C_{\rm mix}(z_*)&=1+r=R_{\rm obl}.
+              =\Cmix(\varphi+2),\\
+ \Cmix(\zstar)&=1+r=\RdetOT.
 \end{align*}
 At $u=1$, both initial branches equal one.  Representative values of the
 new mixed branch are
 \begin{center}
 \begin{tabular}{@{}rrrr@{}}
 \toprule
-$u$ & $V(u)$ & $m$ & $t$\\
+$u$ & $\RdetRO(u)$ & $m$ & $t$\\
 \midrule
 $3.800000$ & $1.598851588$ & $0.539725635$ & $1.138984621$\\
 $4.000000$ & $1.583283633$ & $0.428863572$ & $1.330517832$\\
@@ -936,8 +941,10 @@ $4.300000$ & $1.571692026$ & $0.198387083$ & $1.734651379$\\
 \label{rem:opt:curve-audit}
 All statements above concern the fixed-$u$ size-asymptotic ratio.  Below the
 plateau, the upper bounds have additive error $O_u(n)$.  On
-$u\in[z_*,\infty]$ the same algorithm has one uniform $O(n)$ error.  We do
-not claim a finite-instance endpoint inequality with one additive constant.
+$u\in[\zstar,\infty)$ the same algorithm has one uniform $O(n)$ error.  The
+unbounded obligatory endpoint is not included in the statement of the
+curve; it is derived after the finite-$u$ proof in
+\cref{sec:obligatory}.
 \end{remark}
 
 The next subsection, \cref{sec:optional-upper}, proves the matching

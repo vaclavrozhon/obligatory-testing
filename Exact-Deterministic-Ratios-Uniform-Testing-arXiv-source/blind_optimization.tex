@@ -30,13 +30,14 @@ rigorous version of \cref{thm:intro-bo-curve} and maximizes that
 instance-specific value relative to the clairvoyant optimum.  Keeping the
 results together avoids repeating the same blind-block reduction.
 
-For a multiset $M$ let
+For a multiset $M$, let $D_M=n^{-1}\sum_i\delta_{p_i}$ be its empirical
+distribution and let
 \[
- \mu_M=\frac1n\sum_{i=1}^n p_i
+ \mu_M=\int p\,dD_M(p)=\frac1n\sum_{i=1}^n p_i
 \]
 and define
 \begin{equation}
- \Phi_{\rm bo}(M)=\frac12\min\{u,1+\mu_M\}.
+ \PhiBO(D_M)=\frac12\min\{u,1+\mu_M\}.
  \label{eq:bo-phi}
 \end{equation}
 The two terms have an immediate meaning.  Running every job raw uses $u$
@@ -129,9 +130,9 @@ Applying this to every separated optimization proves
 
 For $u>1$ define
 \begin{equation}
- H_{\rm bo}(u)
+ G_{\mathsf{BO}}(u)
  \defeq \frac{\sqrt{4u^3-4u+1}-1}{2(u-1)}.
- \label{eq:bo-det-H}
+ \label{eq:bo-det-optall-ratio}
 \end{equation}
 The two deterministic policies needed below are \textsc{Raw}, which runs
 every job for time $u$, and \textsc{OptimizeAll}, which fixes an arbitrary
@@ -142,11 +143,11 @@ label order and completes every job as a blind block of length $1+p_i$.
 The optimal deterministic size-asymptotic competitive ratio in
 $\mathsf{BO}(u)$ is
 \begin{equation}
- R_{\rm bo}^{\rm det}(u)=
+ \RdetBO(u)=
  \begin{cases}
   1,&0<u\le1,\\[2pt]
   u,&1\le u\le2,\\[5pt]
-  \displaystyle H_{\rm bo}(u),&u\ge2.
+  \displaystyle G_{\mathsf{BO}}(u),&u\ge2.
  \end{cases}
  \label{eq:bo-det-curve}
 \end{equation}
@@ -155,7 +156,7 @@ The policy \textnormal{\textsc{Raw}} is optimal for $u\le2$, and
 at $u=2$.
 In particular,
 \begin{equation}
- R_{\rm bo}^{\rm det}(u)=\sqrt u+o(1)
+ \RdetBO(u)=\sqrt u+o(1)
  \qquad (u\to\infty).
  \label{eq:bo-det-asymptotic}
 \end{equation}
@@ -172,17 +173,17 @@ which
 \begin{equation}
  \ALG-\rho\OPT
  \ge \frac{n^2}{2}\left((u-\rho)(1-\sigma^2)
-       +\sigma^2 f^{\rm bo}_{u,\rho}(y)\right)-O_u(n),
+       +\sigma^2 f^{\mathsf{BO}}_{u,\rho}(y)\right)-O_u(n),
  \label{eq:bo-det-stopping-decomposition}
 \end{equation}
 where $\sigma\in[0,1]$, $0\le y-\alpha<1/(\sigma n)$ when
 $\sigma>0$, and
 \begin{equation}
- f^{\rm bo}_{u,\rho}(y)
+ f^{\mathsf{BO}}_{u,\rho}(y)
  =1-\rho+2uy-\bigl(u+\rho(u-1)\bigr)y^2.
  \label{eq:bo-det-stopping-f}
 \end{equation}
-Consequently, if $f^{\rm bo}_{u,\rho}(\alpha)\ge0$, then every
+Consequently, if $f^{\mathsf{BO}}_{u,\rho}(\alpha)\ge0$, then every
 deterministic policy has size-asymptotic ratio at least $\rho$.
 \end{lemma}
 
@@ -247,12 +248,12 @@ one and a raw completion by $\alpha$, so
  0\le y-\alpha<\frac1{n-v}=\frac1{\sigma n}.
  \label{eq:bo-det-stopping-overshoot}
 \end{equation}
-The quadratic $f^{\rm bo}_{u,\rho}$ is uniformly Lipschitz on $[0,1]$ for
+The quadratic $f^{\mathsf{BO}}_{u,\rho}$ is uniformly Lipschitz on $[0,1]$ for
 fixed $u$ and $\rho\le u$.  Hence
-$\sigma^2f^{\rm bo}_{u,\rho}(y)
-\ge\sigma^2f^{\rm bo}_{u,\rho}(\alpha)-O_u(1/n)$.
+$\sigma^2f^{\mathsf{BO}}_{u,\rho}(y)
+\ge\sigma^2f^{\mathsf{BO}}_{u,\rho}(\alpha)-O_u(1/n)$.
 The exact diagonal terms contribute another $O_u(n)$ before normalization.
-If $u-\rho$ and $f^{\rm bo}_{u,\rho}(\alpha)$ are nonnegative, this proves
+If $u-\rho$ and $f^{\mathsf{BO}}_{u,\rho}(\alpha)$ are nonnegative, this proves
 the claimed lower bound.
 \end{proof}
 
@@ -264,13 +265,13 @@ ratio is one.  If $1<u\le2$, use
  \qquad \alpha=\frac1u.
 \end{equation}
 Then
-$f^{\rm bo}_{u,u}(1/u)=2-u\ge0$, and
+$f^{\mathsf{BO}}_{u,u}(1/u)=2-u\ge0$, and
 \cref{lem:bo-det-hidden-stopping} gives the lower bound $u$.  Conversely,
 every offline effective length is at least one, whereas \textsc{Raw} has
 cost $u n(n+1)/2$, so its ratio is at most $u$.
 
-Now let $u\ge2$ and put $\rho=H_{\rm bo}(u)$.  The definition
-\eqref{eq:bo-det-H} is equivalently the positive solution of
+Now let $u\ge2$ and put $\rho=G_{\mathsf{BO}}(u)$.  The definition
+\eqref{eq:bo-det-optall-ratio} is equivalently the positive solution of
 \begin{equation}
  (\rho-1)\bigl(u+\rho(u-1)\bigr)=u^2.
  \label{eq:bo-det-tangency}
@@ -283,13 +284,13 @@ Moreover $\rho\le u$, with equality only at $u=2$.  Choose
 This is the maximizer of \cref{eq:bo-det-stopping-f}, and
 \eqref{eq:bo-det-tangency} gives
 \begin{equation}
- f^{\rm bo}_{u,\rho}(\alpha)
+ f^{\mathsf{BO}}_{u,\rho}(\alpha)
  =1-\rho+\frac{u^2}{u+\rho(u-1)}=0.
 \end{equation}
 Thus \cref{lem:bo-det-hidden-stopping} proves the lower bound $\rho$.
 
-It remains to analyze \textsc{OptimizeAll}.  Put $a(p)=1+p$ and
-$q(p)=\min\{u,1+p\}$.  For a fixed multiset, its worst label order has the
+It remains to analyze \textsc{OptimizeAll}.  Put $a(p)=1+p$.  For a fixed
+multiset, its worst label order has the
 $a(p_i)$ in nonincreasing order.  If $P,Q$ are independent draws from the
 empirical distribution, pair accounting and \cref{lem:offline} give
 \begin{align}
@@ -298,27 +299,27 @@ empirical distribution, pair accounting and \cref{lem:offline} give
       +\frac n2\EE a(P),
  \label{eq:bo-det-optall-online}\\
  \OPT
- &=\frac{n^2}{2}\EE\min\{q(P),q(Q)\}
-      +\frac n2\EE q(P).
+ &=\frac{n^2}{2}\EE\min\{\lambda_u(P),\lambda_u(Q)\}
+      +\frac n2\EE \lambda_u(P).
  \label{eq:bo-det-optall-offline}
 \end{align}
-Write $H(t)=\Pr(P>t)$ for $0\le t\le u$.  Layer cake yields
+Write $S_D(t)=\Pr(P>t)$ for $0\le t\le u$.  Layer cake yields
 \begin{align}
  \EE\max\{a(P),a(Q)\}
- &=1+\int_0^u(2H(t)-H(t)^2)\,dt,
+ &=1+\int_0^u(2S_D(t)-S_D(t)^2)\,dt,
  \label{eq:bo-det-optall-layer-online}\\
- \EE\min\{q(P),q(Q)\}
- &=1+\int_0^{u-1}H(t)^2\,dt.
+ \EE\min\{\lambda_u(P),\lambda_u(Q)\}
+ &=1+\int_0^{u-1}S_D(t)^2\,dt.
  \label{eq:bo-det-optall-layer-offline}
 \end{align}
 Set
 \begin{equation}
- b=\frac1{u-1}\int_0^{u-1}H(t)\,dt.
+ b=\frac1{u-1}\int_0^{u-1}S_D(t)\,dt.
 \end{equation}
 Cauchy--Schwarz bounds the square integral on $[0,u-1]$ from below by
-$(u-1)b^2$.  Since $H$ is nonincreasing,
+$(u-1)b^2$.  Since $S_D$ is nonincreasing,
 \begin{equation}
- T\defeq\int_{u-1}^uH(t)\,dt\le H(u-1)\le b.
+ T\defeq\int_{u-1}^uS_D(t)\,dt\le S_D(u-1)\le b.
 \end{equation}
 The function $h\mapsto2h-h^2$ is increasing and concave on $[0,1]$.
 Cauchy--Schwarz on the prefix and Jensen's inequality on the unit tail
@@ -326,7 +327,7 @@ therefore give
 \begin{align}
  \EE\max\{a(P),a(Q)\}
  &\le1+2ub-ub^2,\\
- \EE\min\{q(P),q(Q)\}
+ \EE\min\{\lambda_u(P),\lambda_u(Q)\}
  &\ge1+(u-1)b^2.
 \end{align}
 Consequently their ratio is at most
@@ -344,9 +345,9 @@ $g_u'(b)=0$ says
 \end{equation}
 Substitution into $g_u(b)=\rho$ gives
 \eqref{eq:bo-det-tangency}.  That equation has the unique positive solution
-$H_{\rm bo}(u)$; hence
+$G_{\mathsf{BO}}(u)$; hence
 \begin{equation}
- \max_{0\le b\le1}g_u(b)=H_{\rm bo}(u).
+ \max_{0\le b\le1}g_u(b)=G_{\mathsf{BO}}(u).
 \end{equation}
 All survival-function inequalities above are tight for a binary multiset
 with a $b$-fraction of values $u$ and the remaining values zero, labeled so
@@ -356,30 +357,30 @@ Equations \eqref{eq:bo-det-optall-online}--
 $\cost(\textsc{OptimizeAll})\le\rho\OPT+O_u(n)$.
 This matches the lower bound and proves \eqref{eq:bo-det-curve}.
 The asymptotic formula \eqref{eq:bo-det-asymptotic} follows directly from
-\eqref{eq:bo-det-H}.
+\eqref{eq:bo-det-optall-ratio}.
 \end{proof}
 
 \begin{theorem}[Blind-optimization instance optimality]
 \label{thm:bo-instance}
 For every fixed $u<\infty$ there exist a randomized nonanticipating policy
-$\mathcal A^{\rm bo}$, depending only on $n,u$, and a sequence
+$\mathcal A_{\mathsf{BO}}$, depending only on $n,u$, and a sequence
 $\eps_u(n)\to0$ such that every size-$n$ multiset $M\subseteq[0,u]$ and every
 fixed labeling $\sigma$ satisfy
 \begin{equation}
- \EE\cost(\mathcal A^{\rm bo},\sigma(M))
- \le n^2\Phi_{\rm bo}(M)+\eps_u(n)n^2.
+ \EE\cost(\mathcal A_{\mathsf{BO}},\sigma(M))
+ \le n^2\PhiBO(D_M)+\eps_u(n)n^2.
  \label{eq:bo-instance-upper}
 \end{equation}
 Conversely, for every randomized nonanticipating policy $\mathcal A$, even
 one told $M$, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE\cost(\mathcal A,\sigma(M))
- \ge n^2\Phi_{\rm bo}(M)-\eps_u(n)n^2.
+ \ge n^2\PhiBO(D_M)-\eps_u(n)n^2.
  \label{eq:bo-instance-lower}
 \end{equation}
 Thus one policy is asymptotically optimal, at the $n^2$ scale, for every
 multiset simultaneously.  Unlike the benchmarks in the preceding sections,
-$\Phi_{\rm bo}$ depends only on the empirical mean.
+$\PhiBO$ depends only on the empirical mean.
 \end{theorem}
 
 The proof is simpler than in the revealing models.  Because optimization
@@ -394,7 +395,7 @@ worst-case optimization.
 
 In the equivalent random-labeling formulation, the labels are shuffled uniformly
 before the policy starts.  Then the lower half simply says that no policy,
-even one given $M$, beats $n^2\Phi_{\rm bo}(M)-o_u(n^2)$ in expectation.
+even one given $M$, beats $n^2\PhiBO(D_M)-o_u(n^2)$ in expectation.
 
 By \cref{lem:bo-normal-form}, we may regard every optimized job as one
 indivisible block of hidden length $1+p_i$.  A raw block has the known length
@@ -434,12 +435,12 @@ This can be made uniform rather than diagonalized.  Take
 $\delta_n=n^{-1/4}$.  The bounded selected-work estimate used in
 \cref{sec:blind-adaptive-urn} has deviation
 \[
- O_u\!\left((1+\delta_n^{-1})\sqrt{n\log(n+2)}\right)
- =O_u\!\left(n^{3/4}\sqrt{\log(n+2)}\right)
+ O_u\!\left((1+\delta_n^{-1})\sqrt{n\ln(n+2)}\right)
+ =O_u\!\left(n^{3/4}\sqrt{\ln(n+2)}\right)
 \]
 and failure probability $o(1)$, simultaneously over all relevant prefixes.
 After division by $n$, both this deviation and the edited suffix contribute
-$O_u(n^{-1/4}\sqrt{\log(n+2)})$ to the normalized completion-area bound.
+$O_u(n^{-1/4}\sqrt{\ln(n+2)})$ to the normalized completion-area bound.
 
 Put $a=1+\mu_M$.  If the final optimized fraction is $q$, the best possible
 fluid ordering puts the cheaper of the two block types first.  When $a\le u$
@@ -473,7 +474,7 @@ The estimate is uniform in the deterministic policy.  Applying
 \cref{lem:finite-yao} and the same relabeling argument as in
 \cref{sec:blind-announced} proves
 \eqref{eq:bo-instance-lower}.  Together with the upper bound below, one may
-take $\eps_u(n)=O_u(n^{-1/4}\sqrt{\log(n+2)})$ after enlarging its constant.
+take $\eps_u(n)=O_u(n^{-1/4}\sqrt{\ln(n+2)})$ after enlarging its constant.
 
 \paragraph{One policy for all multisets.}
 Take $k=\lceil n^{2/3}\rceil$ uniformly random sample jobs.  Optimize each
@@ -490,36 +491,31 @@ from $[0,1]$ to $[0,u]$, gives
 \]
 Choosing the wrong mode can cost at most
 $O(n^2)|\widehat\mu-\mu_M|$, while choosing the correct mode has leading
-cost $n^2\Phi_{\rm bo}(M)$.  This proves
+cost $n^2\PhiBO(D_M)$.  This proves
 \eqref{eq:bo-instance-upper}.  In particular, the universal policy needs to
 learn only one number, not a histogram or a threshold.
 
 \subsection{The exact worst-case curve}
 
-The clairvoyant scheduler knows $p_i$ and uses the shorter block
-\[
- \ell_u(p)=\min\{u,1+p\}.
-\]
-It orders these blocks shortest first.  If $P,Q$ are independent draws from
-a distribution $D$ on $[0,u]$, its leading coefficient is
-\begin{equation}
- \Omega_u(D)=\frac12\EE\min\{\ell_u(P),\ell_u(Q)\}.
- \label{eq:bo-offline-coefficient}
-\end{equation}
+The clairvoyant scheduler knows $p_i$, uses the effective length
+$\lambda_u(p_i)$ from \cref{eq:optional-effective-length}, and orders these
+blocks shortest first.  If $P,Q$ are independent draws from a distribution
+$D$ on $[0,u]$, its leading coefficient is $\Omega_u(D)$ from
+\cref{eq:common-offline-coefficient}.
 Consequently the instance-specific ratio from
 \cref{thm:bo-instance} is
 \begin{equation}
- \alpha_u^{\rm bo}(D)
+ \alpha_{\mathsf{BO},u}(D)
  =\frac{\min\{u,1+\EE P\}}
-        {\EE\min\{\ell_u(P),\ell_u(Q)\}}.
+        {\EE\min\{\lambda_u(P),\lambda_u(Q)\}}.
  \label{eq:bo-instance-ratio}
 \end{equation}
 
-Let $u_{\rm bo}>1$ denote the unique root greater than one of
+Let $u_{\mathsf{BO}}>1$ denote the unique root greater than one of
 \begin{equation}
  u^3-2u^2-u+1=0,
  \qquad
- u_{\rm bo}=2.2469796037\ldots .
+ u_{\mathsf{BO}}=2.2469796037\ldots .
  \label{eq:bo-transition}
 \end{equation}
 
@@ -528,20 +524,20 @@ Let $u_{\rm bo}>1$ denote the unique root greater than one of
 The optimal randomized size-asymptotic competitive ratio in
 $\mathsf{BO}(u)$ against an oblivious adversary is
 \begin{equation}
- R_{\rm bo}(u)=
+ \RrandBO(u)=
  \begin{cases}
   1,&0<u\le1,\\[3pt]
   \displaystyle\frac{u^3}{u^2+(u-1)^3},
-    &1\le u\le u_{\rm bo},\\[9pt]
+    &1\le u\le u_{\mathsf{BO}},\\[9pt]
   \displaystyle\frac12\left(
       1+\sqrt{\frac{u^2+u-1}{u-1}}\right),
-    &u\ge u_{\rm bo}.
+    &u\ge u_{\mathsf{BO}}.
  \end{cases}
  \label{eq:bo-curve}
 \end{equation}
-The two branches agree at $u_{\rm bo}$.  Moreover,
+The two branches agree at $u_{\mathsf{BO}}$.  Moreover,
 \begin{equation}
- R_{\rm bo}(u)=\frac{\sqrt u}{2}+\frac12+o(1)
+ \RrandBO(u)=\frac{\sqrt u}{2}+\frac12+o(1)
  \qquad (u\to\infty).
  \label{eq:bo-curve-asymptotic}
 \end{equation}
@@ -551,29 +547,29 @@ The two branches agree at $u_{\rm bo}$.  Moreover,
 The claim is trivial for $u\le1$, because raw execution is no longer than
 the unit optimization operation.  Assume $u>1$ and let
 \[
- H(t)=\Pr(P>t),\qquad 0\le t\le u.
+ S_D(t)=\Pr(P>t),\qquad 0\le t\le u.
 \]
 The layer-cake identity applied to
-\eqref{eq:bo-offline-coefficient} gives
+\eqref{eq:common-offline-coefficient} gives
 \begin{equation}
  2\Omega_u(D)
- =1+\int_0^{u-1}H(t)^2\,dt.
+ =1+\int_0^{u-1}S_D(t)^2\,dt.
  \label{eq:bo-layer-cake}
 \end{equation}
-Put $S=\int_0^{u-1}H(t)\,dt$.  Since $H$ is nonincreasing,
+Put $S=\int_0^{u-1}S_D(t)\,dt$.  Since $S_D$ is nonincreasing,
 \[
- \int_{u-1}^uH(t)\,dt
- \le H(u-1)
+ \int_{u-1}^uS_D(t)\,dt
+ \le S_D(u-1)
  \le\frac{S}{u-1}.
 \]
-Therefore, writing $\mu=\EE P=\int_0^uH(t)\,dt$,
+Therefore, writing $\mu=\EE P=\int_0^uS_D(t)\,dt$,
 \begin{equation}
  S\ge\frac{u-1}{u}\mu.
  \label{eq:bo-survival-mean}
 \end{equation}
 Cauchy--Schwarz now yields
 \begin{equation}
- \int_0^{u-1}H(t)^2\,dt
+ \int_0^{u-1}S_D(t)^2\,dt
  \ge\frac{S^2}{u-1}
  \ge (u-1)\left(\frac\mu u\right)^2.
  \label{eq:bo-survival-square}
@@ -581,7 +577,7 @@ Cauchy--Schwarz now yields
 Set $b=\mu/u$.  Equations
 \eqref{eq:bo-instance-ratio}--\eqref{eq:bo-survival-square} imply
 \begin{equation}
- \alpha_u^{\rm bo}(D)
+ \alpha_{\mathsf{BO},u}(D)
  \le f_u(b)
  \defeq\frac{\min\{u,1+ub\}}{1+(u-1)b^2}.
  \label{eq:bo-binary-envelope}
@@ -610,7 +606,7 @@ unconstrained maximizer
  \label{eq:bo-b-star}
 \end{equation}
 The equality $b_*(u)=b_0$ is equivalent to
-$u^3-2u^2-u+1=0$.  Hence $b_0$ is optimal up to $u_{\rm bo}$ and $b_*(u)$ is
+$u^3-2u^2-u+1=0$.  Hence $b_0$ is optimal up to $u_{\mathsf{BO}}$ and $b_*(u)$ is
 optimal afterwards.  Substitution gives
 \[
  f_u(b_0)=\frac{u^3}{u^2+(u-1)^3},

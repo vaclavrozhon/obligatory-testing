@@ -1,21 +1,23 @@
-\subsection{Harmonic core and matching lower bound}
+\subsection{The cap-free harmonic core}
 \label{sec:lower}
 
-This subsection proves the lower bound in one self-contained calculation.
-Its notation is local to this subsection.  The construction
+This subsection develops the cap-free construction used by the last two
+branches of the revealing curve.  Its notation is local to this subsection.
+We first record its extremal specialization and then extract the scaled form
+reused by the mixed branch.  The construction
 has many equally large groups of positive jobs, revealed from longest to
 shortest, followed by one large group of zero jobs.  The only design choice is
 the gap between two consecutive positive processing times.  Choosing these
 gaps harmonically will make all decisions of the online algorithm disappear
 from the leading term.
 
-\begin{theorem}[Lower bound]
+\begin{theorem}[Extremal harmonic core]
 \label{thm:lower}
 For every deterministic online algorithm $\mathcal B$ and every $\eps>0$,
 there are arbitrarily large fixed instances $I$ with unit tests and rational
 processing times such that
 \[
-  \ALG_{\mathcal B}(I)\ge (\Rstar-\eps)\OPT(I).
+  \ALG_{\mathcal B}(I)\ge (\RdetOT-\eps)\OPT(I).
 \]
 \end{theorem}
 
@@ -263,8 +265,8 @@ $K\to\infty$.  We restrict to $0<\alpha<e-1$.  Then
 \[
  p_0-p_{K-1}
  =\sum_{r=1}^{K-1}\frac1{\xi+r}
- <\log\!\left(1+\frac K\xi\right)
- =\log(1+\alpha)<1,
+ <\ln\!\left(1+\frac K\xi\right)
+ =\ln(1+\alpha)<1,
 \]
 which verifies \cref{eq:lower-span}.
 
@@ -284,14 +286,14 @@ Riemann integral:
    =\frac{\alpha^2}{2}
     +\frac12\int_0^\alpha\frac{(\alpha-t)^2}{1+t}\,dt
    \nonumber\\
- &=\int_0^\alpha(\alpha-t)\bigl(1+\log(1+t)\bigr)\,dt
+ &=\int_0^\alpha(\alpha-t)\bigl(1+\ln(1+t)\bigr)\,dt
    \nonumber\\
- &=\frac12(1+\alpha)^2\log(1+\alpha)
+ &=\frac12(1+\alpha)^2\ln(1+\alpha)
    -\frac\alpha2-\frac{\alpha^2}{4}.
  \label{eq:lower-I}
 \end{align}
 The second integral form follows either by integration by parts or by summing
-the limiting processing-time curve $1+\log(1+t)$ against the remaining
+the limiting processing-time curve $1+\ln(1+t)$ against the remaining
 positive mass $\alpha-t$.
 The subtraction in \cref{eq:lower-QK} is only $O(K)$, whereas
 $C_K,D_K=\Theta(K^2)$.  Since $C_K-D_K=\xi K+K^2/2$, we obtain
@@ -301,33 +303,33 @@ $C_K,D_K=\Theta(K^2)$.  Since $C_K-D_K=\xi K+K^2/2$, we obtain
  =1+
  \frac{\alpha+\alpha^2/2}
  {\frac12+\frac\alpha2+\frac{\alpha^2}{4}
-  +\frac12(1+\alpha)^2\log(1+\alpha)}.
+  +\frac12(1+\alpha)^2\ln(1+\alpha)}.
  \label{eq:lower-Ralpha}
 \end{equation}
 
 This last one-variable maximization is where the constant in the theorem
 comes from.  Put $z=(1+\alpha)^2$.  Then
 \begin{equation}
-  R(z)=1+\frac{2(z-1)}{1+z+z\log z}.
+  R(z)=1+\frac{2(z-1)}{1+z+z\ln z}.
   \label{eq:lower-Rz}
 \end{equation}
 The derivative of the fraction has the sign of
 \[
-  3-z+\log z.
+  3-z+\ln z.
 \]
 For $z>1$ this expression is strictly decreasing, is positive at $z=1$, and
 tends to $-\infty$.  Hence it has one zero $\zstar$, characterized by
 \[
-  \zstar-3=\log\zstar.
+  \zstar-3=\ln\zstar.
 \]
 The derivative is positive before $\zstar$ and negative afterward, so this is
 the global maximum.  At the root,
 \[
-  1+\zstar+\zstar\log\zstar=(\zstar-1)^2,
+  1+\zstar+\zstar\ln\zstar=(\zstar-1)^2,
 \]
 and therefore
 \[
-  R(\zstar)=1+\frac{2}{\zstar-1}=\Rstar.
+  R(\zstar)=1+\frac{2}{\zstar-1}=\RdetOT.
 \]
 Moreover, $\sqrt{\zstar}-1=1.12255\ldots<e-1$, so the maximizer lies in the
 range where \cref{eq:lower-span} holds.
@@ -336,10 +338,10 @@ range where \cref{eq:lower-span} holds.
 Choose a rational $\alpha$ sufficiently close to
 $\alpha_\star=\sqrt{\zstar}-1$, and choose any rational
 $\gamma\in(0,1)$.  For a sufficiently large $K$, set $\xi=K/\alpha$ and use
-\cref{eq:lower-harmonic}; then $Q_K/D_K>\Rstar-\eps/2$.
+\cref{eq:lower-harmonic}; then $Q_K/D_K>\RdetOT-\eps/2$.
 All parameters are rational.  Let $H$ tend to infinity through multiples of
 their common denominators.  \Cref{eq:lower-QK,eq:lower-DK} make the actual ratio exceed
-$\Rstar-\eps$ for all sufficiently large $H$.  Finally, the replay argument
+$\RdetOT-\eps$ for all sufficiently large $H$.  Finally, the replay argument
 at the beginning of the proof converts the revelation experiment into a fixed
 instance for the given deterministic algorithm.
 \end{proof}
@@ -352,7 +354,7 @@ $M_\nu\to\infty$ and finite rational multilevel instances with
 $sM_\nu+o(M_\nu)$ jobs such that
 \begin{equation}
  \frac{\OPT}{M_\nu^2}\longrightarrow
- O_0=\frac{s^2}{4}(1+t^{-2}+2\log t),
+ O_0=\frac{s^2}{4}(1+t^{-2}+2\ln t),
  \qquad
  \liminf_{\nu\to\infty}\frac{\ALG}{M_\nu^2}
  \ge A_0^{\rm lb}
@@ -361,10 +363,10 @@ $sM_\nu+o(M_\nu)$ jobs such that
 \end{equation}
 Their normalized total positive processing mass converges to
 \begin{equation}
- \frac1{M_\nu}\sum_{j:p_j>0}p_j\longrightarrow L=s\log t,
+ \frac1{M_\nu}\sum_{j:p_j>0}p_j\longrightarrow L=s\ln t,
  \label{eq:opt:harmonic-processing-mass}
 \end{equation}
-and their largest processing time converges to $1+\log t<2$.
+and their largest processing time converges to $1+\ln t<2$.
 The adaptive revelation is converted by replay into a fixed instance.
 \end{lemma}
 
@@ -380,7 +382,7 @@ The phase accounting, harmonic cancellation, and completion of squares in
 degree two in the job masses.  The Riemann-sum limit
 \cref{eq:lower-I} substituted into \cref{eq:lower-DK} therefore gives
 \[
- O_0=\frac{s^2}{4}(1+t^{-2}+2\log t).
+ O_0=\frac{s^2}{4}(1+t^{-2}+2\ln t).
 \]
 Likewise $C_K-D_K=\xi K+K^2/2$, while the $O(K)$ square-completion loss in
 \cref{eq:lower-QK} disappears after division by the quadratic scale.  After
@@ -389,8 +391,8 @@ the same rescaling this gives the guaranteed lower benchmark
  A_0^{\rm lb}-O_0=\frac{s^2}{2}(1-t^{-2}).
 \]
 Finally, summing the limiting processing-time curve
-$1+\log(1+x)$ over the positive mass gives $L=s\log t$, and
-\cref{eq:lower-harmonic} gives $p_0\to1+\log t$.  Rational approximation,
+$1+\ln(1+x)$ over the positive mass gives $L=s\ln t$, and
+\cref{eq:lower-harmonic} gives $p_0\to1+\ln t$.  Rational approximation,
 clearing denominators, and the replay argument used in the theorem produce a
 diagonal sequence of arbitrarily large fixed rational instances with the
 stated limit and liminf bounds.

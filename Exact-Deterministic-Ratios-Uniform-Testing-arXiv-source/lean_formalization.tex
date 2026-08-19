@@ -63,13 +63,13 @@ Lean object & Manuscript object & Meaning \\
   & obligatory testing
   & processing times are nonnegative and raw execution is unavailable \\
 \texttt{exactCurve u}
-  & \(\V(u)\)
+  & \(\RdetRO(u)\)
   & the six branches in \cref{eq:opt:full-curve}, including all five
     verified joins \\
 \texttt{RStar}
-  & \(\Rstar\)
+  & \(\RdetOT\)
   & \(1+2/(\zstar-1)\), where \(\zstar>1\) is the unique solution of
-    \(\zstar-3=\log\zstar\) \\
+    \(\zstar-3=\ln\zstar\) \\
 \texttt{fixedOfflineCost}
   & \(\OPT\)
   & the clairvoyant shortest-first cost of the model-dependent effective
@@ -142,7 +142,7 @@ only exposes one strategy after a cap has been fixed.
 \subsection{Correspondence with the two deterministic theorems}
 
 The first conjunct of \texttt{exact\_ratio\_main} quantifies over every
-finite \(u>0\).  Substituting \(R=\texttt{exactCurve}\ u=\V(u)\), its lower
+finite \(u>0\).  Substituting \(R=\texttt{exactCurve}\ u=\RdetRO(u)\), its lower
 field gives the fixed-instance lower direction of
 \cref{thm:optional-curve}, while its upper field supplies a completing
 strategy and the matching upper direction.  The definition of
@@ -150,7 +150,7 @@ strategy and the matching upper direction.  The definition of
 \cref{eq:opt:full-curve}; the Lean development also proves its joins,
 continuity, plateau, and global maximum at \(\udiam\).
 
-The second conjunct substitutes \(R=\texttt{RStar}=\Rstar\) in the
+The second conjunct substitutes \(R=\texttt{RStar}=\RdetOT\) in the
 obligatory model.  Its lower field gives the lower half of
 \cref{thm:det-obligatory}; its completing upper strategy together with
 \eqref{eq:lean-linear-certificate} gives the upper half.  The common formal

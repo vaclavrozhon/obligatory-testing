@@ -6,19 +6,52 @@ matter.  Besides completing the upper-bound side of the revealing-optimization c
 the proof records explicitly why an outcome on the optional cap cannot be
 treated as an ordinary deferred outcome.  Throughout this subsection,
 \[
- C=1+c,
+ R=1+c,
  \qquad
  \varphi=\frac{1+\sqrt5}{2},
 \]
-and $z_*>1$ is the solution of $z_*-3=\log z_*$.  We also set
+and $\zstar>1$ is the solution of $\zstar-3=\ln \zstar$.  We also set
 \[
- r=\frac{2}{z_*-1}.
+ r=\frac{2}{\zstar-1}.
 \]
+
+For every $c>0$ define the history-dependent threshold
+\begin{equation}
+ a_c(y)=
+ \begin{cases}
+  1, & y\le-1,\\[1mm]
+  \displaystyle
+  1+\frac12\ln\!\left(\frac{c+2}{c-2y}\right),
+      & -1\le y\le0.
+ \end{cases}
+ \label{eq:opt:threshold}
+\end{equation}
+The single algorithm used throughout the last two branches is the following.
+It does not use raw execution and therefore does not depend on $u$.
+
+\begin{algorithm}[H]
+\caption{\textsc{AdaptiveThreshold}$(J,c)$}
+\label{alg:adaptive-threshold}
+\begin{algorithmic}
+\Statex \textbf{Input:} jobs $J$ and parameter $c>0$.
+\State Fix an arbitrary test order $j_1,\ldots,j_n$.
+\State Set $N\gets0$, $N_{\mathrm{def}}\gets0$, and $Q\gets\varnothing$.
+\State \textbf{For} $i=1,\ldots,n$ \textbf{do}:
+\State \quad Set $x\gets n-i+1$ and $y\gets(N_{\mathrm{def}}-(1+c)N)/x$.
+\State \quad Set $a\gets a_c(y)$ according to \cref{eq:opt:threshold}.
+\State \quad Test $j_i$ for one unit and observe $p_{j_i}$.
+\State \quad \textbf{If} $p_{j_i}\le a$, process $j_i$ immediately.
+\State \quad \textbf{Otherwise}, add $j_i$ to $Q$ and set $N_{\mathrm{def}}\gets N_{\mathrm{def}}+1$.
+\State \quad \textbf{If} $p_{j_i}>0$, set $N\gets N+1$.
+\State Process the jobs of $Q$ in nondecreasing order of their revealed
+       processing times.
+\end{algorithmic}
+\end{algorithm}
 
 For $c\in[r,1/\varphi]$, let $m=m(c)\in[0,1/\varphi]$ be determined by
 \begin{equation}
  \operatorname{artanh}m-m
- =1-\frac1c+\frac12\log\!\left(1+\frac2c\right),
+ =1-\frac1c+\frac12\ln\!\left(1+\frac2c\right),
  \qquad
  u=1+\frac2c-m.
  \label{eq:opt:upper-mixed-parametrization}
@@ -29,12 +62,12 @@ $u(c)$ is decreasing.  The endpoints are
 \[
  (c,m,u)=\left(\frac1\varphi,\frac1\varphi,\varphi+2\right)
  \quad\text{and}\quad
- (c,m,u)=(r,0,z_*).
+ (c,m,u)=(r,0,\zstar).
 \]
 
 \begin{theorem}
 \label{thm:opt:optional-middle-upper}
-For every $u\in[\varphi+2,\infty]$, the formally specified algorithm
+For every finite $u\in[\varphi+2,\infty)$, the formally specified algorithm
 \textnormal{\textsc{AdaptiveThreshold}} from
 \cref{alg:adaptive-threshold}
 satisfies
@@ -42,46 +75,33 @@ satisfies
  \operatorname{ALG}\le
  \begin{cases}
   (1+c)\operatorname{OPT}+O_u(n),
-     & \varphi+2\le u\le z_*,
+     & \varphi+2\le u\le \zstar,
        \quad c\text{ given by \eqref{eq:opt:upper-mixed-parametrization}},\\[1mm]
   (1+r)\operatorname{OPT}+O(n),
-     & u\ge z_*.
+     & u\ge \zstar.
  \end{cases}
 \]
-The constant in the last $O(n)$ is absolute and uniform over the extended
-interval $u\in[z_*,\infty]$.
+The constant in the last $O(n)$ is absolute and uniform over
+$u\in[\zstar,\infty)$.
 In particular these are upper bounds on the deterministic
 size-asymptotic competitive ratio.
 \end{theorem}
 
 \noindent\emph{Proof.}
 
-At $u=\infty$ this is \cref{thm:upper}, with the same algorithm and the same
-four-endpoint bank.  For the finite-cap calculations below, fix
-$u<\infty$.
+Fix a finite cap $u$ in the stated range.
 
 \paragraph{The algorithm.}
 Use \textsc{AdaptiveThreshold}$(J,c)$ from
 \cref{alg:adaptive-threshold}; on the high interval use $c=r$.
 For the analysis, immediately before a test let $x$ be the number of jobs not
-yet tested, $N$ the number of earlier strictly positive outcomes, and $D$ the
+yet tested, $N$ the number of earlier strictly positive outcomes, and $N_{\mathrm{def}}$ the
 number of those outcomes deferred to the final tail.  Thus
 \begin{equation}
- y=\frac{D-CN}{x}\le0
+ y=\frac{N_{\mathrm{def}}-RN}{x}\le0
  \label{eq:opt:state-y}
 \end{equation}
-and the threshold is
-\begin{equation}
- a_c(y)=
- \begin{cases}
-  1, & y\le-1,\\[1mm]
-  \displaystyle
-  1+\frac12\log\!\left(\frac{c+2}{c-2y}\right),
-      & -1\le y\le0.
- \end{cases}
- \label{eq:opt:threshold}
-\end{equation}
-This is the same threshold as \cref{eq:upper-A}.  On the mixed interval
+and the threshold is given by \cref{eq:opt:threshold}.  On the mixed interval
 $c\ge r$, and hence
 \[
  a_c(y)\le a_c(0)\le a_r(0)=\frac1r<u-1.
@@ -91,7 +111,7 @@ The same inequality holds on the high interval, where we use $c=r$.
 Thus every outcome in the capped region $[u-1,u]$ is deferred.
 
 The state $y$ never increases.  Indeed, the numerator in
-\eqref{eq:opt:state-y} changes by $0$, $-C$, or $-c$ after a zero, a
+\eqref{eq:opt:state-y} changes by $0$, $-R$, or $-c$ after a zero, a
 positive immediate outcome, or a positive deferred outcome, respectively,
 while $x$ decreases.  This monotonicity will allow us to allocate every
 pair cost when its relevant endpoint becomes known.
@@ -136,15 +156,15 @@ It is therefore natural to introduce
 \begin{equation}
  \Gamma_n=\sum_{i<j}
  \left(e_{ij}+\min\{p_i,p_j\}
-       -C\min\{\bar p_i,\bar p_j\}\right).
+       -R\min\{\bar p_i,\bar p_j\}\right).
  \label{eq:opt:pair-objective}
 \end{equation}
 Equations \eqref{eq:opt:alg-pair-decomposition}--
 \eqref{eq:opt:pair-objective} yield the exact identity
 \begin{equation}
- \operatorname{ALG}-C\operatorname{OPT}
+ \operatorname{ALG}-R\operatorname{OPT}
  =\Gamma_n-c\binom n2
-  +\sum_i\bigl[(1+p_i)-C(1+\bar p_i)\bigr].
+  +\sum_i\bigl[(1+p_i)-R(1+\bar p_i)\bigr].
  \label{eq:opt:gap-decomposition}
 \end{equation}
 The final sum is nonpositive.  Below the cap its $i$-th summand is
@@ -180,38 +200,38 @@ $M,Q,U$.  Let
 \[
  P=\#\{\text{earlier }M,Q,U\},\qquad
  E=\#\{\text{earlier }E\},\qquad
- D=\#\{\text{earlier }Q,U\},
+ N_{\mathrm{def}}=\#\{\text{earlier }Q,U\},
 \]
 and let $K$ be the number of earlier $U$-outcomes.  Among the ordinary
 substantive outcomes, let $I,d$ be the numbers of $M,Q$-outcomes and
 let $A_I,A_D$ be the sums of their processing values.  Thus
-$P=I+d+K$ and $D=d+K$.
+$P=I+d+K$ and $N_{\mathrm{def}}=d+K$.
 
 At a current ordinary endpoint, with $a=a_c(y)$, allocate the relaxed
 local charges
 \begin{equation}
- \ell_Z=\ell_E=D,
+ \ell_Z=\ell_E=N_{\mathrm{def}},
  \qquad
- \ell_M=D+a(x+D-CP),
+ \ell_M=N_{\mathrm{def}}+a(x+N_{\mathrm{def}}-RP),
  \qquad
- \ell_Q=D+a(D-CP).
+ \ell_Q=N_{\mathrm{def}}+a(N_{\mathrm{def}}-RP).
  \label{eq:opt:ordinary-local-charges}
 \end{equation}
 For a capped endpoint the exact charge is instead
 \begin{align}
  \ell_U
- &=D+A_D+uK-C\bigl(A_I+A_D+(u-1)K\bigr)
+ &=N_{\mathrm{def}}+A_D+uK-R\bigl(A_I+A_D+(u-1)K\bigr)
  \notag\\
- &=d-CA_I-cA_D+K h_U,
+ &=d-RA_I-cA_D+K h_U,
  \qquad
- h_U=1+u-C(u-1).
+ h_U=1+u-R(u-1).
  \label{eq:opt:cap-local-charge}
 \end{align}
 These formulae follow by checking the finitely many ordered endpoint
 pairs.  In particular, an earlier immediate outcome already allocated its
 online processing delay when it appeared, so a current cap contributes
-only $-Cp$ against that outcome.  Against an earlier ordinary deferred
-outcome it contributes $p-Cp=-cp$, and against an earlier cap it
+only $-Rp$ against that outcome.  Against an earlier ordinary deferred
+outcome it contributes $p-Rp=-cp$, and against an earlier cap it
 contributes $h_U$.  The same check shows
 \begin{equation}
  \Gamma_n\le\sum_i\ell_i;
@@ -227,7 +247,7 @@ Threshold monotonicity gives $A_I\ge aI$ and $A_D\ge ad$.  Comparing
 same state gives the exact identity
 \begin{align}
  \ell_U-\ell_Q
- &=C(aI-A_I)+c(ad-A_D)
+ &=R(aI-A_I)+c(ad-A_D)
    +K\,[1-c(u-1-a)]
  \notag\\
  &\le K\,[1-c(u-1-a)].
@@ -235,17 +255,16 @@ same state gives the exact identity
 \end{align}
 
 \paragraph{The reusable four-endpoint bank.}
-The next potential is the parameterized form of the cap-free bank from
-\cref{sec:upper}.  The states $Z,E,M,Q$ are the same four ordinary endpoints;
-only their target coefficient changes from $r$ to $c$.  At $c=r$ the formulas
-below coincide term for term with the obligatory certificate.  Keeping the
-parameter visible lets us add the finite-cap reserve without proving a second
-ordinary endpoint theorem.
+The states $Z,E,M,Q$ are the four ordinary, noncap endpoints.  The potential
+below proves their inequalities simultaneously for every target parameter
+$c$ on the mixed interval.  The fifth endpoint $U$ is handled only through
+the extra reserve.  At $c=r$ that reserve vanishes, leaving a cap-free bank
+that will also support the obligatory endpoint without a second proof.
 Define
 \begin{equation}
- \eta=\frac{D-CP}{x},
+ \eta=\frac{N_{\mathrm{def}}-RP}{x},
  \qquad b=\frac Ex,
- \qquad y=\eta-Cb.
+ \qquad y=\eta-Rb.
  \label{eq:opt:eta-b}
 \end{equation}
 For $-1\le y\le0$, put
@@ -253,38 +272,38 @@ For $-1\le y\le0$, put
  f_c(y)
  &=\frac{c+2}{4}
    +\frac{c-2y}{4}
-      \left(\log\frac{c-2y}{c+2}-1\right),
+      \left(\ln\frac{c-2y}{c+2}-1\right),
  \label{eq:opt:f-definition}\\
  h_c(y)&=a_c(y)(1+y),
  \notag\\
- G_c(y,b)&=f_c(y)+b h_c(y)+\frac C2b^2.
+ G_c(y,b)&=f_c(y)+b h_c(y)+\frac R2b^2.
  \label{eq:opt:G-region-one}
 \end{align}
 For $y\le-1$, set instead
 \begin{equation}
  G_c(y,b)=g_c(\eta),
  \qquad
- g_c(\eta)=\frac{(1+\eta)_+^2}{2C}.
+ g_c(\eta)=\frac{(1+\eta)_+^2}{2R}.
  \label{eq:opt:G-region-two}
 \end{equation}
 The two definitions are $C^1$ across $y=-1$.  Indeed, feasibility
-implies $0\le b\le1/C$ there, and both sides have value $Cb^2/2$ and
+implies $0\le b\le1/R$ there, and both sides have value $Rb^2/2$ and
 derivatives
 \[
- (G_y,G_b)=(b,Cb).
+ (G_y,G_b)=(b,Rb).
 \]
 They are also nonnegative: $f_c(-1)=0$,
 $f_c'=a_c-1\ge0$, and $h_c,b,g_c\ge0$.
 
 Use the base potential
 \begin{equation}
- W_{\mathrm{base}}(x,P,E,D)=xD+x^2G_c(y,b).
+ W_{\mathrm{base}}(x,P,E,N_{\mathrm{def}})=xN_{\mathrm{def}}+x^2G_c(y,b).
  \label{eq:opt:base-potential}
 \end{equation}
-In the raw state $(x,P,E,D,K)$, the endpoint directions are
+In the raw state $(x,P,E,N_{\mathrm{def}},K)$, the endpoint directions are
 \begin{equation}
 \begin{array}{c|ccccc}
- &x&P&E&D&K\\ \hline
+ &x&P&E&N_{\mathrm{def}}&K\\ \hline
  v_Z&-1&0&0&0&0\\
  v_E&-1&0&1&0&0\\
  v_M&-1&1&0&0&0\\
@@ -297,7 +316,7 @@ Let $J_T=\ell_T+\nabla W_{\mathrm{base}}\mathbin{\cdot}v_T$, where for
 the moment $T\in\{Z,E,M,Q\}$.  In Region I, direct differentiation and
 the identities
 \begin{align}
- -2f_c+(y-C)f_c'+a_c(1+y)&=0,
+ -2f_c+(y-R)f_c'+a_c(1+y)&=0,
  \notag\\
  1-2f_c+(y-c)f_c'+a_cy&=0
  \label{eq:opt:f-hjb-identities}
@@ -308,18 +327,18 @@ give
  &=(-2f_c+yf_c')+b(-h_c+yh_c'),
  \notag\\
  \frac{J_E}{x}
- &=b[-h_c+(y-C)h_c'+C],
+ &=b[-h_c+(y-R)h_c'+R],
  \notag\\
  \frac{J_M}{x}
- &=b[-h_c+(y-C)h_c'+a_cC],
+ &=b[-h_c+(y-R)h_c'+a_cR],
  \notag\\
  \frac{J_Q}{x}
- &=b[-h_c+(y-c)h_c'+a_cC].
+ &=b[-h_c+(y-c)h_c'+a_cR].
  \label{eq:opt:region-one-drifts}
 \end{align}
 All four quantities are nonpositive.  For the first one,
 \begin{equation}
- -2f_c+yf_c'=a_c(c-y)-C\le0;
+ -2f_c+yf_c'=a_c(c-y)-R\le0;
  \label{eq:opt:zero-drift-sign}
 \end{equation}
 the right-hand side is zero at $y=-1$ and is nonincreasing because
@@ -327,32 +346,32 @@ $a_c'(c-y)-a_c\le1-a_c\le0$.  Also $h_c,h_c'\ge0$.  For the remaining
 three drifts, observe that
 \begin{equation}
  h_c+(c-y)h_c'
- =a_cC+(c-y)(1+y)a_c'\ge a_cC.
+ =a_cR+(c-y)(1+y)a_c'\ge a_cR.
  \label{eq:opt:h-sign-identity}
 \end{equation}
 The $Q$-bracket in \eqref{eq:opt:region-one-drifts} is therefore
 nonpositive; the $M$-bracket is the $Q$-bracket minus $h_c'$, and the
-$E$-bracket is the $M$-bracket minus $C(a_c-1)$.
+$E$-bracket is the $M$-bracket minus $R(a_c-1)$.
 
 In Region II, the same calculation gives
 \begin{align}
  J_Z/x=J_E/x&=-2g_c+\eta g_c',
  \notag\\
- J_M/x&=-2g_c+(\eta-C)g_c'+1+\eta,
+ J_M/x&=-2g_c+(\eta-R)g_c'+1+\eta,
  \notag\\
  J_Q/x&=1-2g_c+(\eta-c)g_c'+\eta.
  \label{eq:opt:region-two-drifts}
 \end{align}
 For $-1\le\eta\le0$, substitution of
-$g_c'=(1+\eta)/C$ makes these values $-(1+\eta)/C$,
-$-(1+\eta)/C$, and $0$, respectively.  For $\eta\le-1$ their signs
+$g_c'=(1+\eta)/R$ makes these values $-(1+\eta)/R$,
+$-(1+\eta)/R$, and $0$, respectively.  For $\eta\le-1$ their signs
 are immediate from $g_c=g_c'=0$.  Hence the base bank pays every
 ordinary endpoint.
 
 \paragraph{The cap reserve.}
 Define
 \begin{equation}
- Z(c)=2+\frac1c+\frac12\log\!\left(1+\frac2c\right),
+ Z(c)=2+\frac1c+\frac12\ln\!\left(1+\frac2c\right),
  \qquad
  \delta=Z(c)-u.
  \label{eq:opt:Z-delta}
@@ -382,7 +401,7 @@ $\beta(m)=0$, this extension is $C^1$.  With
 \end{equation}
 define the full potential
 \begin{equation}
- W=xD+x^2\bigl(G_c(y,b)+\mathcal H(q)\bigr).
+ W=xN_{\mathrm{def}}+x^2\bigl(G_c(y,b)+\mathcal H(q)\bigr).
  \label{eq:opt:full-potential}
 \end{equation}
 It is nonnegative.
@@ -404,9 +423,9 @@ $L_0+\mathcal H'$.  On the active range $\mu\le m$, differentiation of
 \end{equation}
 Thus the reserve can only improve every ordinary drift.
 
-For a cap, feasibility $D\le P$ and $P\ge K$ gives
+For a cap, feasibility $N_{\mathrm{def}}\le P$ and $P\ge K$ gives
 \begin{equation}
- y=\frac{D-C(P+E)}x\le-\frac{cK}{x}=-cq.
+ y=\frac{N_{\mathrm{def}}-R(P+E)}x\le-\frac{cK}{x}=-cq.
  \label{eq:opt:y-cap-bound}
 \end{equation}
 While $\mu\le m$, we have $q\le m/(1-m)\le\varphi$ and hence
@@ -414,13 +433,13 @@ $cq\le1$.  Monotonicity of $a_c$, together with
 \eqref{eq:opt:cap-versus-q}, yields
 \begin{align}
  \frac{\ell_U-\ell_Q}{x}
- &\le cq\left[\delta-\frac12\log(1+2q)\right]
+ &\le cq\left[\delta-\frac12\ln(1+2q)\right]
  =:B(q).
  \label{eq:opt:cap-residual-B}
 \end{align}
 The change of variables in \eqref{eq:opt:reserve-H} satisfies
 \begin{equation}
- \operatorname{artanh}\mu=\frac12\log(1+2q),
+ \operatorname{artanh}\mu=\frac12\ln(1+2q),
  \qquad
  (1+q)\beta(\mu)=B(q).
  \label{eq:opt:B-beta}
@@ -443,7 +462,7 @@ state and for arbitrary interleavings of capped and ordinary outcomes.
 \paragraph{Initial calibration.}
 Initially $y=b=q=0$, and
 \begin{equation}
- f_c(0)=\frac12-\frac c4\log\!\left(1+\frac2c\right).
+ f_c(0)=\frac12-\frac c4\ln\!\left(1+\frac2c\right).
  \label{eq:opt:f-zero}
 \end{equation}
 Elementary integration in \eqref{eq:opt:reserve-integral} gives
@@ -471,40 +490,40 @@ We spell out the regularity needed to pass from the fluid Hamiltonian to
 unit job transitions.  It is important here to restrict attention to
 feasible states.  In Region I, $y\ge-1$ implies
 \begin{equation}
- -xy=C(P+E)-D=cP+(P-D)+CE\le x.
+ -xy=R(P+E)-N_{\mathrm{def}}=cP+(P-N_{\mathrm{def}})+RE\le x.
  \label{eq:opt:feasible-compactness}
 \end{equation}
 All terms in the middle expression are nonnegative.  Hence
-$P/x,D/x,q\le1/c$ and $b\le1/C$, so every normalized derivative of
+$P/x,N_{\mathrm{def}}/x,q\le1/c$ and $b\le1/R$, so every normalized derivative of
 the Region-I perspective in \eqref{eq:opt:base-potential} is bounded on
 the feasible cone.  In Region II the raw base bank is simply
 \begin{equation}
- xD+\frac{(x+D-CP)_+^2}{2C},
+ xN_{\mathrm{def}}+\frac{(x+N_{\mathrm{def}}-RP)_+^2}{2R},
  \label{eq:opt:region-two-raw-bank}
 \end{equation}
 which has bounded one-sided Hessians.  The two pieces are $C^1$ at
 $y=-1$, as verified above, and the positive-part square is $C^1$ at
 $\eta=-1$.
 
-For the reserve $R(x,K)=x^2\mathcal H(K/x)$, on its active cone
+For the reserve $\mathcal R(x,K)=x^2\mathcal H(K/x)$, on its active cone
 $0\le q\le q_*$ one has bounded $\mathcal H''$, and
 \begin{equation}
- R_{xx}=2\mathcal H-2q\mathcal H'+q^2\mathcal H'',
+ \mathcal R_{xx}=2\mathcal H-2q\mathcal H'+q^2\mathcal H'',
  \quad
- R_{xK}=\mathcal H'-q\mathcal H'',
+ \mathcal R_{xK}=\mathcal H'-q\mathcal H'',
  \quad
- R_{KK}=\mathcal H''.
+ \mathcal R_{KK}=\mathcal H''.
  \label{eq:opt:reserve-hessian}
 \end{equation}
-For $q\ge q_*$, $R=0$; moreover
+For $q\ge q_*$, $\mathcal R=0$; moreover
 $\mathcal H(q_*)=\mathcal H'(q_*)=0$.  Thus the join is $C^1$ with
-bounded one-sided Hessians.  At $x=0$, set $R=0$: for $K>0$ it is
+bounded one-sided Hessians.  At $x=0$, set $\mathcal R=0$: for $K>0$ it is
 already locally zero, while at $(x,K)=(0,0)$ two-homogeneity gives zero
 gradient.  Altogether $W$ is $C^{1,1}$ on the feasible state cone.  On the
 mixed interval its regularity constant may depend on the fixed value of $u$.
 When $c=r$ and $m=0$, however, the reserve is identically zero and the base
 bank depends only on the absolute constant $r$; its regularity constant is
-therefore uniform over all $u\ge z_*$.  This includes the last transition
+therefore uniform over all $u\ge \zstar$.  This includes the last transition
 from $x=1$ to $x=0$.
 
 It follows that a unit transition has the Taylor remainder
@@ -530,22 +549,22 @@ Summing \eqref{eq:opt:finite-taylor}, using $W\ge0$, and applying
 Together with \eqref{eq:opt:gap-decomposition} and
 \eqref{eq:opt:pair-allocation-dominates}, this yields
 \begin{align}
- \operatorname{ALG}-C\operatorname{OPT}
+ \operatorname{ALG}-R\operatorname{OPT}
  &\le -c\binom n2+\frac c2n^2+O_u(n)
  =O_u(n).
  \label{eq:opt:mixed-upper-finite}
 \end{align}
 
-At $u=z_*$, one has $c=r$, $m=0$, and
-$Z(r)=z_*$.  The cap reserve is identically zero, while
+At $u=\zstar$, one has $c=r$, $m=0$, and
+$Z(r)=\zstar$.  The cap reserve is identically zero, while
 \eqref{eq:opt:initial-calibration} remains valid.  If $u$ is increased
-above $z_*$, the only adverse fifth-endpoint bracket
+above $\zstar$, the only adverse fifth-endpoint bracket
 $1-r(u-1-a_r(y))$ decreases, and the capped diagonal term in
 \eqref{eq:opt:gap-decomposition} also decreases.
 
 Here is the promised uniform finite calculation.  The base bank and its
 feasible cone contain no $u$, so there is one constant $\kappa$, depending
-only on $r$, for which every ordinary or capped transition with $u\ge z_*$
+only on $r$, for which every ordinary or capped transition with $u\ge \zstar$
 satisfies
 \[
  \ell_i+W_{i+1}-W_i\le\kappa.
@@ -557,9 +576,8 @@ Because $W_0=rn^2/2$ and $W_n=0$, telescoping gives
 \end{equation}
 In the diagonal term of \cref{eq:opt:gap-decomposition}, a value below the
 cap contributes $-r(1+p_i)$.  A capped value contributes at most
-$1-r u\le0$.  With the convention $\bar p_i=p_i$ at $u=\infty$, the first
-formula applies there and the capped endpoint is absent.  Hence the diagonal
-sum is nonpositive uniformly on $[z_*,\infty]$.  Combining
+$1-r u\le0$.  Hence the diagonal sum is nonpositive uniformly on
+$[\zstar,\infty)$.  Combining
 \cref{eq:opt:gap-decomposition,eq:opt:pair-allocation-dominates,eq:opt:uniform-ell}
 now yields
 \begin{align}
@@ -571,7 +589,7 @@ now yields
 Thus, with $B=\kappa+r/2$,
 \begin{equation}
  \operatorname{ALG}\le(1+r)\operatorname{OPT}+B n
- \qquad\text{for every }u\in[z_*,\infty],
+ \qquad\text{for every finite }u\in[\zstar,\infty),
  \label{eq:opt:uniform-high-upper}
 \end{equation}
 and $B$ is independent of $u$.  The estimate is genuinely uniform rather
@@ -583,6 +601,60 @@ $\operatorname{OPT}\ge n(n+1)/2$.  The additive term in
 
 \hfill$\square$
 
+\subsection{The obligatory endpoint}
+\label{sec:obligatory}
+
+The obligatory model is the unbounded endpoint of revealing optimization,
+but the passage to that endpoint is not a formal substitution
+$u=\infty$: both the algorithm and the additive error must be uniform in
+$u$.  The finite curve has just established exactly those two properties,
+so the endpoint now follows by a short transfer.
+
+\begin{theorem}[Deterministic obligatory testing]
+\label{thm:det-obligatory}
+Let $\zstar>1$ be the unique solution of
+$\zstar-3=\ln\zstar$, and set
+\[
+ \RdetOT=1+\frac{2}{\zstar-1}
+ =1.570574096649395\ldots .
+\]
+For every deterministic online algorithm $\mathcal B$ and every $\eps>0$,
+there are arbitrarily large obligatory-testing instances $I$ such that
+\[
+ \cost(\mathcal B,I)\ge(\RdetOT-\eps)\cost(\OPT,I).
+\]
+Conversely, there are a deterministic algorithm $\mathcal A$ and an absolute
+constant $B$ such that every $n$-job obligatory instance satisfies
+\[
+ \cost(\mathcal A,I)\le\RdetOT\cost(\OPT,I)+Bn.
+\]
+Consequently the optimal deterministic size-asymptotic competitive ratio is
+exactly $\RdetOT$.
+\end{theorem}
+
+\begin{proof}
+For the upper bound, use \textsc{AdaptiveThreshold} with $c=r$.  This
+algorithm never runs a job raw and is independent of $u$.  Given a finite
+obligatory instance, choose any finite
+\[
+ u>\max\{\zstar,1+\max_j p_j\}.
+\]
+Its execution is identical in the revealing model with cap $u$, and every
+offline effective length is
+$\min\{u,1+p_j\}=1+p_j$.  Thus the revealing and obligatory optima coincide.
+The constant $B$ in \cref{eq:opt:uniform-high-upper} is independent of $u$,
+so the same inequality holds for the obligatory instance.
+
+For the lower bound, regard an arbitrary obligatory algorithm $\mathcal B$
+as a revealing algorithm at the fixed cap $u=\zstar$ that simply never uses raw
+execution.  The plateau lower bound in \cref{thm:optional-curve} may be
+witnessed by cap-free instances with $p_j<\zstar-1$.  On those instances the
+online transcript is unchanged and
+$\min\{\zstar,1+p_j\}=1+p_j$, so again the two offline optima coincide.  The
+finite-cap lower inequality therefore gives the claimed obligatory lower
+bound for arbitrarily large instances.
+\end{proof}
+
 \newcommand{\capbubblingappendix}{%
 \section{Independent certificate by bubbling caps to a prefix}
 \label{app:cap-bubbling}
@@ -593,12 +665,12 @@ actually been moved.
 
 Work first in normalized fluid mass.  Immediately before an adjacent pair
 $XU$, let $E_0$ be the preceding $E$-mass, $P$ the preceding
-substantive mass, $D$ its deferred submass, $x$ the remaining mass, and
+substantive mass, $N_{\mathrm{def}}$ its deferred submass, $x$ the remaining mass, and
 $w$ the mass of $U$-endpoints strictly after the pair.  Put
 \begin{equation}
- y=\frac{D-C(P+E_0)}x,
+ y=\frac{N_{\mathrm{def}}-R(P+E_0)}x,
  \qquad
- \eta=\frac{D-CP}{x}=y+C\frac{E_0}{x}\le0.
+ \eta=\frac{N_{\mathrm{def}}-RP}{x}=y+R\frac{E_0}{x}\le0.
  \label{eq:opt:bubble-state}
 \end{equation}
 Direct differentiation of the exact pair objective
@@ -606,7 +678,7 @@ Direct differentiation of the exact pair objective
 caps, gives the two nontrivial commutators
 \begin{align}
  UM-MU
- &=1+\left(1+\eta-\frac{Cw}{x}\right)
+ &=1+\left(1+\eta-\frac{Rw}{x}\right)
        (y-c)a_c'(y),
  \label{eq:opt:cap-M-commutator}\\
  UQ-QU
@@ -616,7 +688,7 @@ caps, gives the two nontrivial commutators
 \end{align}
 Here $UX-XU$ means ``new objective after moving $U$ left'' minus the
 old objective.  The second quantity is nonnegative.  For the first, if
-$B=1+\eta-Cw/x\le0$, its second term is nonnegative.  If $B>0$, then
+$B=1+\eta-Rw/x\le0$, its second term is nonnegative.  If $B>0$, then
 $B\le1$, and on $-1<y\le0$
 \[
  \frac{(c-y)B}{c-2y}\le1.
@@ -634,24 +706,24 @@ therefore put all caps into one prefix.
 After that prefix there is no future cap.  Let $e,b,d$ be the preceding
 $E$-mass, substantive mass, and deferred substantive mass, and define
 \[
- y=\frac{d-C(e+b)}x,
+ y=\frac{d-R(e+b)}x,
  \quad v=\frac ex,
- \quad h=d-Cb,
- \quad k=x+d-Cb.
+ \quad h=d-Rb,
+ \quad k=x+d-Rb.
 \]
 The four ordinary commutators are
 \begin{align}
- ME-EM&=a_c+a_c'(C-y)\frac{k}{x},
- &QE-EQ&=1-a_c'(C-y)(-y-Cv),
+ ME-EM&=a_c+a_c'(R-y)\frac{k}{x},
+ &QE-EQ&=1-a_c'(R-y)(-y-Rv),
  \notag\\
  MZ-ZM&=a_c-a_c'y\frac{k}{x},
  &QZ-ZQ&=1-a_c'y\frac{h}{x}.
  \label{eq:opt:ordinary-commutators}
 \end{align}
 They are nonnegative.  Indeed, in the varying region
-$h/x=y+Cv\in[y,0]$ and $k/x\in[0,1]$.  With $t=-y\in[0,1]$,
+$h/x=y+Rv\in[y,0]$ and $k/x\in[0,1]$.  With $t=-y\in[0,1]$,
 \begin{equation}
- a_c'(C-y)t=\frac{t(C+t)}{c+2t}\le1,
+ a_c'(R-y)t=\frac{t(R+t)}{c+2t}\le1,
  \qquad
  a_c't^2=\frac{t^2}{c+2t}\le1;
  \label{eq:opt:ordinary-commutator-signs}
@@ -666,18 +738,18 @@ moved to the tail, and a worst word has the form
 
 On the middle block use the simpler potential
 \[
- \widehat W(x,N,D)=xD+x^2f_c\!\left(\frac{D-CN}{x}\right).
+ \widehat W(x,N,N_{\mathrm{def}})=xN_{\mathrm{def}}+x^2f_c\!\left(\frac{N_{\mathrm{def}}-RN}{x}\right).
 \]
 The identity
 \begin{equation}
  2f_c-yf_c'
- =\max\{0,-Cf_c',-Cf_c'+a_c(1+y),
+ =\max\{0,-Rf_c',-Rf_c'+a_c(1+y),
               1-cf_c'+a_cy\}
  \label{eq:opt:ordinary-HJB}
 \end{equation}
 is a direct rewriting of \eqref{eq:opt:f-hjb-identities}; it pays the
 entire ordinary continuation.  If the cap prefix has mass $\mu$, then
-after it $x=1-\mu$, $N=D=\mu$, and
+after it $x=1-\mu$, $N=N_{\mathrm{def}}=\mu$, and
 $y=-c\mu/(1-\mu)$.  Its internal cap-pair reward plus its worst
 continuation is therefore
 \begin{equation}
@@ -686,7 +758,7 @@ continuation is therefore
  +(1-\mu)^2f_c\!\left(-\frac{c\mu}{1-\mu}\right).
  \label{eq:opt:prefix-objective}
 \end{equation}
-For $0<\mu<1/C$, differentiation gives
+For $0<\mu<1/R$, differentiation gives
 \begin{equation}
  F_{c,u}'(\mu)
  =c\mu\,[Z(c)-u-\operatorname{artanh}\mu].
@@ -699,18 +771,18 @@ $\mu=m$, and
  =f_c(0)+\frac c2(\operatorname{artanh}m-m)=\frac c2.
  \label{eq:opt:prefix-maximum}
 \end{equation}
-Here $m\le1/C$, since $c,m\le1/\varphi$.  On the flat part
-$\mu\ge1/C$,
+Here $m\le1/R$, since $c,m\le1/\varphi$.  On the flat part
+$\mu\ge1/R$,
 \begin{equation}
  F_{c,u}(\mu)=\mu-\frac{c(u-1)}2\mu^2.
  \label{eq:opt:prefix-flat}
 \end{equation}
-Its derivative at $1/C$ is
+Its derivative at $1/R$ is
 \[
- \frac{c(1+m)-1}{C}\le0,
+ \frac{c(1+m)-1}{R}\le0,
 \]
 and only decreases thereafter.  Thus $F_{c,u}(\mu)\le c/2$ on the whole
-unit interval.  At $c=r,m=0,u=z_*$, the same calculation is maximized at
+unit interval.  At $c=r,m=0,u=\zstar$, the same calculation is maximized at
 $\mu=0$, and increasing $u$ only lowers
 \eqref{eq:opt:prefix-objective}.
 

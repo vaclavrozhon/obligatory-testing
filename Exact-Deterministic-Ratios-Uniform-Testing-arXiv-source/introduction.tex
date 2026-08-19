@@ -48,9 +48,9 @@ problem open.  We close both gaps.
 \protect\cref{thm:det-obligatory,thm:rand-obligatory}]
 \label{thm:intro-obligatory}
 In the obligatory-testing model, the best deterministic asymptotic
-competitive ratio is the constant $R=1.570574\ldots$.  Against an adversary
+competitive ratio is $\RdetOT=1.570574\ldots$.  Against an adversary
 that fixes the input before the algorithm draws its random bits, the best
-randomized ratio is $4/3$.  The two optimal policies are sketched in
+randomized ratio is $\RrandOT=4/3$.  The two optimal policies are sketched in
 \cref{alg:intro-obligatory-det,alg:intro-obligatory-rand}.
 \end{theorem}
 
@@ -66,7 +66,7 @@ the shape of the algorithms is.
 \caption{Deterministic threshold}
 \label{alg:intro-obligatory-det}
 \begin{algorithmic}
-\State Put $\rho=0.57\ldots$ and $R=1+\rho$.
+\State Put $c=0.570574\ldots$ and $R=1+c=\RdetOT$.
 \State Before test $i+1$, where $0\le i<n$, let $c_i$ be the number of
 positive jobs processed immediately and $d_i$ the number deferred.
 \State Put
@@ -75,7 +75,7 @@ positive jobs processed immediately and $d_i$ the number deferred.
 \]
 \State Use threshold $T_i=1$ if $y_i\le-1$; otherwise use
 \[
- T_i=1+\frac12\log\frac{\rho+2}{\rho-2y_i}.
+ T_i=1+\frac12\ln\frac{c+2}{c-2y_i}.
 \]
 \State Test the next job.  Process it now if $p\le T_i$; otherwise defer it.
 \State After all tests, finish deferred jobs shortest first.
@@ -117,7 +117,8 @@ threshold.  It reveals positive jobs in decreasing levels while hiding many
 zero jobs until the end.  Processing a positive level immediately delays the
 hidden zeros; postponing it instead creates a costly tail.  The levels can be
 chosen so that these two losses balance at $1.57\ldots$; the formal
-construction is in \cref{sec:obligatory}.
+construction is the cap-free core in \cref{sec:lower}, and
+\cref{sec:obligatory} transfers the resulting plateau to obligatory testing.
 
 Randomization gives the algorithm a global view of the input.  It first tests
 a sublinear random sample and estimates the distribution of job lengths.
@@ -270,29 +271,29 @@ for every input $M\subseteq[0,L]$ and every online algorithm $\mathcal A'$,
 \]
 \end{theorem}
 
-To describe the algorithm, let $X$ be the job length of a random job in the
-input and put $\mu=\mathbb E X$.  Testing is initially worthwhile when the
-threshold $\tau$ determined by
+To describe the algorithm, let $D$ be the empirical distribution of job
+lengths, let $P\sim D$, and put $\mu=\mathbb E P$.  Testing is initially
+worthwhile when the threshold $\tau_D$ determined by
 \[
- \mathbb E(\tau-X)^+=1
+ \mathbb E(\tau_D-P)^+=1
 \]
 is smaller than $\mu$.  Even then, it need not be optimal to test the entire
 input.  The leading cost of testing a fraction $q$ is an explicit quadratic
-$F_X(q)$, given in \cref{eq:blind-F}, and the algorithm chooses its minimum
+$F_{\mathsf{BE},D}(q)$, given in \cref{eq:blind-F}, and the algorithm chooses its minimum
 over $0\le q\le1$.
 
 \begin{algorithm}[H]
 \caption{Instance-optimal blind execution}
 \label{alg:intro-blind}
 \begin{algorithmic}
-\State Shuffle the jobs and test $o(n)$ of them to estimate the random variable
-$X$ of job lengths distributions.
-\State Find $\tau$ from $\mathbb E(\tau-X)^+=1$.
-\State If $\tau\ge\mu$, put $q=0$.  Otherwise $q\in\arg\min_{0\le z\le1}F_X(z)$.
+\State Shuffle the jobs and test $o(n)$ of them to estimate $D$.
+\State Find $\tau_D$ from $\mathbb E(\tau_D-P)^+=1$.
+\State If $\tau_D\ge\mu$, put $q=0$.  Otherwise
+$q\in\arg\min_{0\le z\le1}F_{\mathsf{BE},D}(z)$.
 \State Test a random $q$-fraction of the remaining jobs.  Whenever a test
-reveals $p<\tau$, process that job immediately; defer all other outcomes.
+reveals $p<\tau_D$, process that job immediately; defer all other outcomes.
 \State After the tests stop, process the deferred jobs with
-$\tau\le p<\mu$, shortest first.
+$\tau_D\le p<\mu$, shortest first.
 \State Run every untouched job blindly.
 \State Finish the remaining tested jobs shortest first.
 \end{algorithmic}
@@ -327,7 +328,7 @@ choice.
 \label{thm:intro-bo-det-curve}
 The exact deterministic asymptotic competitive ratio is
 \begin{equation}
- R_{\rm bo}^{\rm det}(u)=
+ \RdetBO(u)=
  \begin{cases}
   1,&0<u\le1,\\[2pt]
   u,&1\le u\le2,\\[5pt]
@@ -390,7 +391,7 @@ and grows on the order of $\sqrt u$.
 \begin{theorem}[Blind-optimization curve, informal version of
 \protect\cref{thm:bo-curve}]
 \label{thm:intro-bo-curve}
-The exact randomized asymptotic competitive ratio is $1$ for $u\le1$ and is
+The exact randomized asymptotic competitive ratio $\RrandBO(u)$ is $1$ for $u\le1$ and is
 given by the explicit two-branch curve in
 \cref{fig:intro-bo-curve} for $u>1$.  It grows as
 $\sqrt u/2+1/2+o(1)$ as $u\to\infty$.
@@ -419,7 +420,7 @@ answer for every $u$, for both deterministic and randomized algorithms.
 \protect\cref{thm:optional-curve,thm:random-common-upper}]
 \label{thm:intro-common-upper-curves}
 For every $u>0$, the exact deterministic and randomized asymptotic
-competitive ratios are the six-piece and four-piece curves in
+competitive ratios $\RdetRO(u)$ and $\RrandRO(u)$ are the six-piece and four-piece curves in
 \cref{fig:intro-curves-det,fig:intro-curves-rand}.  The deterministic curve reaches
 $1.87\ldots$ and then falls to the obligatory value
 $1.57\ldots$.  The randomized curve reaches $1.63\ldots$ and
@@ -443,7 +444,7 @@ families.  We describe their shape here and defer the exact parameters to
 The first algorithm, \textsc{Raw}$(u)$, simply fixes an arbitrary job order
 and executes every job untested for the public raw time $u$.  Its ratio is
 $1$ for $u\le1$ and $u$ for $u>1$, and it supplies the lower envelope up to
-$u_\diamond=1.866760\ldots$; see \cref{fig:intro-curves-det}.
+$\udiam=1.866760\ldots$; see \cref{fig:intro-curves-det}.
 
 The second algorithm, \textsc{ForcedPrefixUTE} in
 \cref{alg:intro-ro-ute}, tests every job and normally processes only
@@ -456,7 +457,7 @@ shorter unseen jobs.
 
 The exact parameter $b(u)$ is defined in
 \cref{eq:opt:ute-parameters}; it is nonnegative on
-$[u_\diamond,u_0]$ and vanishes at $u_0$.
+$[\udiam,\uzero]$ and vanishes at $\uzero$.
 For $u\ge\varphi+2$, the same zero-prefix policy remains
 $\varphi$-competitive by \cref{lem:opt:zero-prefix}; this continuation is
 shown in \cref{fig:intro-curves-det} to make the lower envelope visible.
@@ -466,10 +467,10 @@ shown in \cref{fig:intro-curves-det} to make the lower envelope visible.
 \label{alg:intro-ro-ute}
 \begin{algorithmic}
 \State Fix a test order $j_1,\ldots,j_n$ and set $Q\gets\varnothing$.
-\State Set $\tau\gets\min\{1,u-1\}$ and
-$b\gets b(u)$ for $u\le u_0$, while $b\gets0$ otherwise.
+\State Set $\theta_u\gets\min\{1,u-1\}$ and
+$b\gets b(u)$ for $u\le \uzero$, while $b\gets0$ otherwise.
 \State For $i=1,\ldots,n$, test $j_i$ and observe $p_{j_i}$.
-\State \quad If $i\le\lfloor bn\rfloor$ or $p_{j_i}\le\tau$, process
+\State \quad If $i\le\lfloor bn\rfloor$ or $p_{j_i}\le\theta_u$, process
 $j_i$ immediately; otherwise add it to $Q$.
 \State Process the jobs of $Q$ in nondecreasing revealed processing time.
 \end{algorithmic}
@@ -477,7 +478,7 @@ $j_i$ immediately; otherwise add it to $Q$.
 
 Finally, \textsc{AdaptiveThreshold} is the same history-dependent policy as
 \cref{alg:intro-obligatory-det}.  For finite $u$, only its parameter $c$
-changes: on $\varphi+2\le u\le z_*=4.505241\ldots$ it is chosen by the
+changes: on $\varphi+2\le u\le \zstar=4.505241\ldots$ it is chosen by the
 optimization in \cref{eq:opt:mixed-parametrization}, after which it equals
 the obligatory-testing value $0.570574\ldots$.  The three policies form the
 deterministic lower envelope in \cref{fig:intro-curves-det}:
@@ -628,12 +629,24 @@ $u$.
 
 \Cref{sec:model} formally defines the four models, their information
 structures and adversaries, the corresponding offline optima, and our
-asymptotic competitive-ratio convention.  \Cref{sec:obligatory} then proves
-the exact deterministic obligatory-testing ratio, using a harmonic lower
-bound and the matching adaptive-threshold policy.  The randomized analysis
-in \cref{sec:random-obligatory} gives the sharp $4/3$ ratio, and
-\cref{sec:obligatory-instance} strengthens its algorithmic side to a single
-policy that is asymptotically optimal on every bounded input.
+asymptotic competitive-ratio convention.
+
+\Cref{sec:optional} then proves the exact deterministic
+revealing-optimization curve.  Its cap-free harmonic core and parameterized
+endpoint bank are shared by the mixed branch and the plateau; only after the
+finite curve is complete does \cref{sec:obligatory} derive the deterministic
+obligatory ratio by a uniform endpoint transfer.
+
+\Cref{sec:common-upper-instance} identifies the optimal leading cost
+separately for every bounded revealing input and learns the associated
+threshold policy from a sublinear sample.  \Cref{sec:random-common-upper}
+maximizes this benchmark against the clairvoyant optimum and proves the exact
+four-piece randomized curve.  Its final subsection,
+\cref{sec:random-obligatory}, transfers the lower bound to the unbounded
+obligatory endpoint and supplies the cutoff-and-fallback argument needed for
+a uniform $4/3$ upper bound.  \Cref{sec:obligatory-instance} then strengthens
+that endpoint algorithm to a single policy that is asymptotically optimal on
+every bounded obligatory input.
 
 \Cref{sec:blind} turns to blind execution.  It derives the announced-input
 benchmark, proves that arbitrary adaptive policies cannot beat it, and
@@ -643,16 +656,6 @@ finite worst-case ratio is possible without a bound on job lengths.
 deterministic hidden-stopping lower bound and matching two-policy curve,
 proves the randomized instance-optimal theorem, and maximizes its mean-based
 benchmark to obtain the exact randomized worst-case curve.
-
-The revealing-optimization results occupy the next three sections.
-\Cref{sec:optional} proves the exact deterministic curve, first through a
-binary stopping game and then through the harmonic construction and the
-matching threshold policies.  \Cref{sec:common-upper-instance} identifies
-the optimal leading cost separately for every bounded input and learns the
-associated threshold policy from a sublinear sample.
-\Cref{sec:random-common-upper} maximizes this instance benchmark against the
-clairvoyant optimum; a survival-function reduction and matching binary Yao
-bounds yield the exact four-piece randomized curve.
 
 The appendices document and independently audit the more delicate parts of
 the argument.  \Cref{sec:formalization} states precisely which results are

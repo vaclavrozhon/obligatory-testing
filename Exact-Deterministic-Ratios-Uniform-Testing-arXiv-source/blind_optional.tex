@@ -17,20 +17,20 @@ sequence $\eps_L(n)\to0$ with the following properties.  For every multiset
 $M\subseteq[0,L]$ of size $n$ and every fixed labeling $\sigma$,
 \begin{equation}
  \EE\cost(\mathcal A^*,\sigma(M))
- \le n^2\Phiopt(D_M)+\eps_L(n)n^2.
+ \le n^2\PhiBE(D_M)+\eps_L(n)n^2.
  \label{eq:intro-blind-upper}
 \end{equation}
 For every randomized policy $\mathcal A$, even one told $M$, some fixed
 oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE\cost(\mathcal A,\sigma(M))
- \ge n^2\Phiopt(D_M)-\eps_L(n)n^2.
+ \ge n^2\PhiBE(D_M)-\eps_L(n)n^2.
  \label{eq:intro-blind-lower}
 \end{equation}
-The benchmark $\Phiopt$ is defined explicitly in
+The benchmark $\PhiBE$ is defined explicitly in
 \cref{sec:blind-benchmark}; it is the minimum of a one-variable quadratic.
 One may take
-$\eps_L(n)=O_L(n^{-1/6}\sqrt{\log(n+2)})$.
+$\eps_L(n)=O_L(n^{-1/6}\sqrt{\ln(n+2)})$.
 \end{theorem}
 
 The boundedness assumption in \cref{thm:blind-instance} cannot be removed.
@@ -108,10 +108,10 @@ Apply \cref{lem:maximum-density-module} to $D$, choose its threshold selector
 $g_*$, and let $\nu$ be the resulting residual measure.  The best possible
 test-module density and its reciprocal are
 \begin{equation}
- \rho(D)=\max_g\frac{a_D(g)}{w_D(g)}=\frac1{\tau(D)}.
+ \kappa_D\defeq\max_g\frac{a_D(g)}{w_D(g)}=\frac1{\tau_D}.
  \label{eq:blind-density}
 \end{equation}
-The selector processes all positive values below $\tau$ immediately after
+The selector processes all positive values below $\tau_D$ immediately after
 their tests, rejects all values above it, and may split a boundary atom.  With
 that boundary convention, put
 \[
@@ -119,22 +119,22 @@ that boundary convention, put
 \]
 The identities in \cref{lem:maximum-density-module} give
 \begin{equation}
- a\tau-\ell=1,
- \qquad \tau=\frac{1+\ell}{a}.
+ a\tau_D-\ell=1,
+ \qquad \tau_D=\frac{1+\ell}{a}.
  \label{eq:blind-test-module}
 \end{equation}
 Thus a full unit of tests together with all selected low outcomes is a
 divisible module of completion mass $a$, work $1+\ell$, and work per
-completion $\tau$.
+completion $\tau_D$.
 
-If $\tau\ge\mu$, blind work has at least the completion density of any test
+If $\tau_D\ge\mu$, blind work has at least the completion density of any test
 module, and pure blind execution is optimal at the fluid scale.  Suppose now
-that $\tau<\mu$.  After testing a fraction $q$, the canonical schedule is
+that $\tau_D<\mu$.  After testing a fraction $q$, the canonical schedule is
 \begin{equation}
  \begin{aligned}
- \underbrace{\text{tests with immediate }p<\tau}_{\text{discovery}}
+ \underbrace{\text{tests with immediate }p<\tau_D}_{\text{discovery}}
  &\ \longrightarrow\
- \underbrace{\text{known }\tau<p<\mu\text{ in SPT}}_{\text{medium}}\\[-2pt]
+ \underbrace{\text{known }\tau_D<p<\mu\text{ in SPT}}_{\text{medium}}\\[-2pt]
  &\ \longrightarrow\
  \underbrace{\text{untouched jobs blind}}_{\text{blind block}}
  \ \longrightarrow\
@@ -143,10 +143,10 @@ that $\tau<\mu$.  After testing a fraction $q$, the canonical schedule is
  \label{eq:blind-four-block-order}
 \end{equation}
 
-For the explicit cost, first assume no atom lies at $\tau$ or $\mu$, and put
+For the explicit cost, first assume no atom lies at $\tau_D$ or $\mu$, and put
 \begin{align*}
- \mathcal L&=\{p<\tau\},&
- \mathcal M&=\{\tau<p<\mu\},&
+ \mathcal L&=\{p<\tau_D\},&
+ \mathcal M&=\{\tau_D<p<\mu\},&
  \mathcal H&=\{p>\mu\},\\
  a&=\Pr(P\in\mathcal L),&
  \ell&=\EE[P\one_{\mathcal L}],&
@@ -158,14 +158,14 @@ For the explicit cost, first assume no atom lies at $\tau$ or $\mu$, and put
 where $P,Q$ are independent with law $D$.  For $r=1-q$, remaining-mass
 accounting gives
 \begin{align}
- F_D(q)
+ F_{\mathsf{BE},D}(q)
  &= (1+\ell)\left(q-\frac{aq^2}{2}\right)
     +qm(r+qd)+\frac{q^2K_M}{2}\notag\\
  &\quad+\mu\left(rqd+\frac{r^2}{2}\right)
     +\frac{q^2K_H}{2}.
  \label{eq:blind-F}
 \end{align}
-Atoms at $\tau$ are split between the low module and residual stock; atoms at
+Atoms at $\tau_D$ are split between the low module and residual stock; atoms at
 $\mu$ may be placed on either side of the blind block.  The same formula then
 holds for the resulting virtual classes.
 
@@ -176,7 +176,7 @@ $K_M$ is the internal SPT pair term.  The blind block delays all high jobs and
 itself loses mass linearly.  Finally $K_H$ is the high-tail pair term.
 Expansion gives the quadratic
 \begin{equation}
- F_D(q)=\frac\mu2+Aq+Bq^2,
+ F_{\mathsf{BE},D}(q)=\frac\mu2+Aq+Bq^2,
  \label{eq:blind-quadratic}
 \end{equation}
 where
@@ -189,7 +189,7 @@ where
  \label{eq:blind-B}
 \end{align}
 The envelope proof below implies $B\ge0$.  In the short-test regime
-$\tau<\mu$, monotonicity in \cref{eq:common-threshold-equation} gives $A<0$, and
+$\tau_D<\mu$, monotonicity in \cref{eq:common-threshold-equation} gives $A<0$, and
 the optimal tested fraction is therefore
 \begin{equation}
  q^*=\begin{cases}
@@ -200,10 +200,10 @@ the optimal tested fraction is therefore
 \end{equation}
 We define
 \begin{equation}
- \Phiopt(D)=\min_{0\le q\le1}F_D(q),
+ \PhiBE(D)=\min_{0\le q\le1}F_{\mathsf{BE},D}(q),
  \label{eq:blind-Phi}
 \end{equation}
-with $\Phiopt(D)=\mu/2$ in the regime $\tau\ge\mu$.
+with $\PhiBE(D)=\mu/2$ in the regime $\tau_D\ge\mu$.
 
 \subsection{The fixed-fraction completion envelope}
 
@@ -227,19 +227,19 @@ subject to
  0\le c_i\le D_it.
  \label{eq:blind-revelation-constraints}
 \end{equation}
-Thus $H_{D,q}=H^\mu_{D,q}$ is the common fluid envelope
+Thus $\mathcal C^\mu_{D,q}$ is the common fluid envelope
 \cref{eq:common-fluid-envelope}.  Every fluid schedule that ultimately tests
 mass $q$ obeys this envelope, hence
 \begin{equation}
- \operatorname{cost}\ge\int_0^\infty(1-H_{D,q}(x))\,dx.
+ \operatorname{cost}\ge\int_0^\infty(1-\mathcal C^\mu_{D,q}(x))\,dx.
  \label{eq:blind-envelope-lower}
 \end{equation}
 
 \begin{lemma}[Fixed-$q$ envelope]
 \label{lem:blind-fixed-q-envelope}
-If $\tau<\mu$, then for every $q\in[0,1]$ the right side of
-\cref{eq:blind-envelope-lower} equals $F_D(q)$ and is attained by the
-four-block fluid policy.  If $\tau\ge\mu$, that right side is at least
+If $\tau_D<\mu$, then for every $q\in[0,1]$ the right side of
+\cref{eq:blind-envelope-lower} equals $F_{\mathsf{BE},D}(q)$ and is attained by the
+four-block fluid policy.  If $\tau_D\ge\mu$, that right side is at least
 $\mu/2$ for every $q$, with equality at $q=0$.
 \end{lemma}
 
@@ -247,22 +247,22 @@ $\mu/2$ for every $q$, with equality at $q=0$.
 Apply \cref{lem:test-module-envelope} with independent-mode work $v=\mu$.
 The resulting item measure is
 \[
-                 qa\delta_\tau+q\nu+(1-q)\delta_\mu.
+                 qa\delta_{\tau_D}+q\nu+(1-q)\delta_\mu.
 \]
-When $\tau<\mu$, sorting these items by work per completion gives exactly
+When $\tau_D<\mu$, sorting these items by work per completion gives exactly
 the low test module, residual classes below $\mu$, the blind module, and
 residual classes above $\mu$, which is the four-block order
 \cref{eq:blind-four-block-order}.  Expanding the common area formula
 \cref{eq:common-envelope-area} across these four blocks gives
 \cref{eq:blind-F}.
 
-When $\tau\ge\mu$, every test and residual item costs at least $\mu$ per
+When $\tau_D\ge\mu$, every test and residual item costs at least $\mu$ per
 completion.  The $q=0$ envelope, one blind item of capacity one and cost
 $\mu$, therefore pointwise dominates every $q>0$ envelope and has area
 $\mu/2$.  Finally, feasibility in
 \cref{eq:blind-fluid-work,eq:blind-revelation-constraints} is affine in $q$,
-so $H_{D,q}(x)$ is concave in $q$ for each $x$.  In the short-test regime its
-area complement $F_D(q)$ is convex, proving $B\ge0$.
+so $\mathcal C^\mu_{D,q}(x)$ is concave in $q$ for each $x$.  In the short-test regime its
+area complement $F_{\mathsf{BE},D}(q)$ is convex, proving $B\ge0$.
 \end{proof}
 
 \subsection{Adaptive first touches are a uniform urn}
@@ -317,7 +317,7 @@ For finite support, standard prefix concentration and a predictable
 martingale give the following simultaneous event.  Stop while at least
 $\delta n$ labels remain untouched, and put
 \begin{equation}
- e_n=\sqrt{8n\log n},\qquad
+ e_n=\sqrt{8n\ln n},\qquad
  \Gamma_n=(1+1/\delta)e_n.
  \label{eq:blind-Gamma}
 \end{equation}
@@ -392,7 +392,7 @@ therefore gives, pathwise on the good event,
  \frac{\cost(\mathcal A,M)}{n^2}
  \ge F_{D_n}(Q_{n,\delta})
    -O_{D}(\gamma_n+\delta+1/n)
- \ge\Phiopt(D_n)-O_D(\gamma_n+\delta+1/n).
+ \ge\PhiBE(D_n)-O_D(\gamma_n+\delta+1/n).
  \label{eq:blind-announced-finite-support}
 \end{equation}
 The long-test regime uses the $\mu_n/2$ dominance part of
@@ -423,7 +423,7 @@ processing work by at most $h_n$.  Running corresponding operation words
 therefore changes normalized completion area by at most $h_n$.  In
 particular,
 \begin{equation}
- |\Phiopt(D)-\Phiopt(D^{\rm grid})|\le h_n.
+ |\PhiBE(D)-\PhiBE(D^{\rm grid})|\le h_n.
  \label{eq:blind-rounding-stability}
 \end{equation}
 One way to see this without assuming a stable numerical threshold is to
@@ -444,14 +444,14 @@ where
 \begin{equation}
  \zeta_n=O_L\!\left(
   \frac{(K_n+1)\Gamma_n}{n}+h_n+\delta_n\right)
- =O_L(n^{-1/6}\sqrt{\log(n+2)}).
+ =O_L(n^{-1/6}\sqrt{\ln(n+2)}).
  \label{eq:blind-zeta}
 \end{equation}
 Integrating exactly as above and using nonnegativity on the bad event yields
 the announced lower bound
 \begin{equation}
  \frac{\operatorname{VAL}_{\rm ann}(M)}{n^2}
- \ge\Phiopt(D_M)-O_L(n^{-1/6}\sqrt{\log(n+2)}).
+ \ge\PhiBE(D_M)-O_L(n^{-1/6}\sqrt{\ln(n+2)}).
  \label{eq:blind-announced-lower}
 \end{equation}
 
@@ -469,8 +469,8 @@ uniformly over canonical templates $\pi$.  Together with
 \cref{eq:blind-rounding-stability}, this proves
 \begin{equation}
  \left|\frac{\operatorname{VAL}_{\rm ann}(M)}{n^2}
-       -\Phiopt(D_M)\right|
- \le O_L(n^{-1/6}\sqrt{\log(n+2)}).
+       -\PhiBE(D_M)\right|
+ \le O_L(n^{-1/6}\sqrt{\ln(n+2)}).
  \label{eq:blind-announced-sandwich}
 \end{equation}
 
@@ -514,7 +514,7 @@ optimization sandwich is
      +C_L\|\widehat D_n-D_n^R\|_1\notag\\
  &\le\Psi_{\widehat D_n}(\pi_R)
      +C_L\|\widehat D_n-D_n^R\|_1\notag\\
- &\le\Phiopt(D_n^R)
+ &\le\PhiBE(D_n^R)
      +2C_L\|\widehat D_n-D_n^R\|_1.
  \label{eq:blind-empirical-sandwich}
 \end{align}
@@ -526,8 +526,8 @@ $Lnk_n=O_L(n^{3/2})$.  Combining
 \cref{eq:blind-template-Lipschitz,eq:blind-empirical-sandwich} gives
 \begin{equation}
  \frac{\EE\cost(\mathcal A^*,p)}{n^2}
- \le\Phiopt(D_M)
- +O_L\!\left(n^{-1/6}\sqrt{\log(n+2)}\right)
+ \le\PhiBE(D_M)
+ +O_L\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right)
  \label{eq:blind-unannounced-upper}
 \end{equation}
 uniformly over every fixed labeled vector $p\in[0,L]^n$.
@@ -547,11 +547,11 @@ Let
  \Pr(P=9)=\frac15,\qquad
  \Pr(P=16)=\frac35.
 \]
-Then $\mu=57/5$ and $\tau=5$.  Thus tested zeros are immediate, known
+Then $\mu=57/5$ and $\tau_D=5$.  Thus tested zeros are immediate, known
 nine-jobs precede the blind block, and known sixteen-jobs follow it.  Formula
 \cref{eq:blind-F} becomes
 \[
- F_D(q)=\frac{57}{10}-\frac{44}{25}q+\frac{11}{10}q^2.
+ F_{\mathsf{BE},D}(q)=\frac{57}{10}-\frac{44}{25}q+\frac{11}{10}q^2.
 \]
 Its minimizer is $q^*=4/5$ and its value is $4.996$.  If all tested nonzero
 jobs are instead deferred until after the blind block, the best value is

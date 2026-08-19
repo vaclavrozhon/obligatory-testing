@@ -20,7 +20,7 @@ $\urand>1$ be the unique root of
 For every fixed $u>0$, the optimal randomized size-asymptotic competitive
 ratio against an oblivious adversary is
 \begin{equation}
- \Rrand(u)=
+ \RrandRO(u)=
  \begin{cases}
   1,&0<u\le1,\\[2pt]
   \displaystyle\frac{u^3}{u^2+(u-1)^3},
@@ -36,7 +36,7 @@ $\mathcal A_{n,u}$ and numbers $\eps_u(n)\to0$ such that every fixed labeled
 vector $p\in[0,u]^n$ satisfies
 \begin{equation}
  \EE\cost(\mathcal A_{n,u},p)
- \le \Rrand(u)\cost(\OPT_u,p)+\eps_u(n)n^2.
+ \le \RrandRO(u)\cost(\OPT_u,p)+\eps_u(n)n^2.
  \label{eq:intro-random-common-upper}
 \end{equation}
 Conversely, for every randomized online algorithm $\mathcal A$ and every
@@ -44,12 +44,12 @@ $\eps>0$, there
 are arbitrarily large $n$ and a fixed vector $p\in[0,u]^n$ for which
 \begin{equation}
  \EE\cost(\mathcal A,p)
- \ge\bigl(\Rrand(u)-\eps\bigr)\cost(\OPT_u,p).
+ \ge\bigl(\RrandRO(u)-\eps\bigr)\cost(\OPT_u,p).
  \label{eq:random-common-upper-lower}
 \end{equation}
 The curve is continuous and has global maximum
 \begin{equation}
- \max_{u>0}\Rrand(u)
+ \max_{u>0}\RrandRO(u)
  =\frac{27+6\sqrt3}{23}
  =1.625752384583185\ldots,
  \label{eq:intro-random-common-maximum}
@@ -75,8 +75,8 @@ Assume initially that $u>1$ and write
 Let $D$ be a finite distribution on $[0,u]$, let $P,P'$ be independent with
 law $D$, and use the survival function
 \begin{equation}
- H(t)=\Pr(P\ge t),
- \qquad H(t)=0\quad(t>u).
+ S_D(t)=\Pr(P\ge t),
+ \qquad S_D(t)=0\quad(t>u).
  \label{eq:rcu-survival}
 \end{equation}
 The convention at atoms does not affect any integral below.  Since a
@@ -84,8 +84,7 @@ clairvoyant job has effective length $1+\min\{s,P\}$, the layer-cake identity
 and \cref{lem:offline} give the leading offline coefficient
 \begin{align}
  \Omega_u(D)
- &\defeq \frac12\EE\min\{q_u(P),q_u(P')\}
-  =\frac12\left(1+\int_0^s H(t)^2\,dt\right),
+ &=\frac12\left(1+\int_0^s S_D(t)^2\,dt\right),
  \label{eq:rcu-offline-fluid}\\
  \OPT_u(M)
  &=n^2\Omega_u(D_M)+O_u(n)
@@ -97,21 +96,21 @@ We next specialize the maximum-density module
 \cref{lem:maximum-density-module} to a form suited to the cap.  If its
 threshold prefix has mass $a$ and first moment $m$, put
 \begin{equation}
- \tau=\frac{1+m}{a}.
+ \tau=\tau_D=\frac{1+m}{a}.
  \label{eq:rcu-tau-density}
 \end{equation}
 The common threshold equation and the layer-cake identity give
 \begin{equation}
  \EE(\tau-P)^+=1,
  \qquad
- \int_0^\tau H(t)\,dt=\tau-1.
+ \int_0^\tau S_D(t)\,dt=\tau-1.
  \label{eq:rcu-threshold-equation}
 \end{equation}
 
 The stationary policy tests all jobs in a uniform random order, processes a
 positive prefix outcome immediately after its test, and after the last test
 processes the residual jobs in SPT order.  The following formula is the
-finite-cap analogue of \cref{lem:rand-stationary-cost}.
+stationary pair identity specialized to a finite cap.
 
 \begin{lemma}[Stationary survival formula]
 \label{lem:rcu-stationary-survival}
@@ -119,7 +118,7 @@ The doubled leading coefficient of the stationary policy is
 \begin{equation}
  \mathcal T_u(D)=
  \begin{cases}
-  \displaystyle \tau+\int_\tau^u H(t)^2\,dt,&\tau\le u,\\[6pt]
+  \displaystyle \tau+\int_\tau^u S_D(t)^2\,dt,&\tau\le u,\\[6pt]
   \tau,&\tau>u.
  \end{cases}
  \label{eq:rcu-stationary-survival}
@@ -128,7 +127,7 @@ Consequently the better of the raw and stationary policies has leading
 ratio
 \begin{equation}
  \frac{\min\{u,\mathcal T_u(D)\}}
-      {1+\int_0^sH(t)^2\,dt}.
+      {1+\int_0^sS_D(t)^2\,dt}.
  \label{eq:rcu-announced-ratio}
 \end{equation}
 \end{lemma}
@@ -143,7 +142,7 @@ random-order pair calculation gives the stationary coefficient
 \end{equation}
 If $\tau\le u$, the threshold property gives
 \[
- K_L=\tau h^2+\int_\tau^uH(t)^2\,dt,
+ K_L=\tau h^2+\int_\tau^uS_D(t)^2\,dt,
  \qquad
  (1+m)\left(1-\frac a2\right)
  =\frac\tau2(1-h^2).
@@ -159,11 +158,11 @@ This is where the instance-optimal theorem enters the curve calculation.
 In \cref{eq:cui-F}, $q=0$ is the raw policy and $q=1$ is precisely the
 stationary maximum-density policy.  Hence
 \begin{equation}
- 2\Phi_u(D)\le\min\{u,\mathcal T_u(D)\},
+ 2\PhiRO(D)\le\min\{u,\mathcal T_u(D)\},
  \label{eq:rcu-Phi-endpoint-upper}
 \end{equation}
 and \cref{eq:rcu-announced-ratio} is an upper bound on the
-instance-specific ratio $\Phi_u(D)/\Omega_u(D)$.  Interior values of $q$ can
+instance-specific ratio $\PhiRO(D)/\Omega_u(D)$.  Interior values of $q$ can
 strictly improve individual inputs; the point of the next two subsections is
 that the two endpoint policies already give the sharp value after maximizing
 over all $D$.  The binary lower bounds at the end apply to every policy, not
@@ -177,28 +176,28 @@ first that $1\le\tau\le u$ and put
  y=\frac{\tau-1}{\tau}.
  \label{eq:rcu-y}
 \end{equation}
-By \eqref{eq:rcu-threshold-equation}, $y$ is the average of $H$ on
-$[0,\tau]$.  Since $H$ is nonincreasing, its average on every initial
+By \eqref{eq:rcu-threshold-equation}, $y$ is the average of $S_D$ on
+$[0,\tau]$.  Since $S_D$ is nonincreasing, its average on every initial
 subinterval is at least $y$.  Thus Cauchy--Schwarz gives
 \begin{equation}
- \int_0^aH(t)^2\,dt\ge ay^2
+ \int_0^aS_D(t)^2\,dt\ge ay^2
  \qquad(0\le a\le\tau),
  \label{eq:rcu-initial-cs}
 \end{equation}
-and $H(t)\le y$ almost everywhere for $t>\tau$.
+and $S_D(t)\le y$ almost everywhere for $t>\tau$.
 
-Replace $H$ on $(0,\tau)$ by the constant $y$ and leave its tail unchanged.
+Replace $S_D$ on $(0,\tau)$ by the constant $y$ and leave its tail unchanged.
 This remains a nonincreasing survival function, preserves
 \eqref{eq:rcu-threshold-equation} and $\mathcal T_u(D)$, and by
 \eqref{eq:rcu-initial-cs} can only decrease the offline coefficient.  Hence
 it can only increase the ratio.  We may therefore assume
 \begin{equation}
- H(t)=y\quad(0<t<\tau).
+ S_D(t)=y\quad(0<t<\tau).
  \label{eq:rcu-flat-prefix}
 \end{equation}
 
 If $u-1\le\tau\le u$, the offline integral lies entirely in the flat part,
-and $H(t)^2\le y^2$ on the remaining tail.  It follows that
+and $S_D(t)^2\le y^2$ on the remaining tail.  It follows that
 \begin{equation}
  \frac{\min\{u,\mathcal T_u(D)\}}
       {1+\int_0^sH^2}
@@ -214,8 +213,8 @@ inactive.
 Now suppose $\tau<u-1$.  Put
 \begin{equation}
  L=u-1-\tau,
- \quad E=\int_\tau^{u-1}H(t)^2\,dt,
- \quad G=\int_{u-1}^uH(t)^2\,dt.
+ \quad E=\int_\tau^{u-1}S_D(t)^2\,dt,
+ \quad G=\int_{u-1}^uS_D(t)^2\,dt.
  \label{eq:rcu-EG}
 \end{equation}
 Monotonicity gives
@@ -247,11 +246,11 @@ They are attained by rectangular survival functions: respectively a binary
 distribution on $\{0,\tau\}$ and one on $\{0,u\}$.
 
 It remains to cover $\tau>u$.  Equation
-\eqref{eq:rcu-threshold-equation} and the zero extension of $H$ give
+\eqref{eq:rcu-threshold-equation} and the zero extension of $S_D$ give
 $\int_0^uH=\tau-1\ge u-1$.  The average of a nonincreasing function on
 $[0,u-1]$ is no smaller than its average on $[0,u]$, and hence
 \begin{equation}
- \int_0^{u-1}H(t)^2\,dt
+ \int_0^{u-1}S_D(t)^2\,dt
  \ge (u-1)\left(\frac{\tau-1}{u}\right)^2
  \ge\frac{(u-1)^3}{u^2}.
  \label{eq:rcu-tau-large}
@@ -260,7 +259,7 @@ Here the raw policy is chosen, and its ratio is at most $B_u(u)$.
 We have proved the reduction
 \begin{equation}
  \sup_D\frac{\min\{u,\mathcal T_u(D)\}}
-                 {1+\int_0^sH(t)^2\,dt}
+                 {1+\int_0^sS_D(t)^2\,dt}
  \le
  \max\left\{
   \sup_{1\le\tau\le u-1}A(\tau),
@@ -332,8 +331,8 @@ these observations with \eqref{eq:rcu-binary-reduction} proves the announced
 upper bound
 \begin{equation}
  \frac{\min\{u,\mathcal T_u(D)\}}
-      {1+\int_0^sH(t)^2\,dt}
- \le\Rrand(u)
+      {1+\int_0^sS_D(t)^2\,dt}
+ \le\RrandRO(u)
  \label{eq:rcu-announced-upper}
 \end{equation}
 for every finite distribution $D$.
@@ -404,7 +403,7 @@ Together with \eqref{eq:rcu-offline-finite} and
 \eqref{eq:rcu-announced-upper}, \cref{lem:rcu-pilot-transfer} yields
 \begin{equation}
  \EE\ALG_{\mathcal A_{n,u}}
- \le\Rrand(u)\OPT_u+O_u(n^{11/6}),
+ \le\RrandRO(u)\OPT_u+O_u(n^{11/6}),
  \label{eq:rcu-final-upper}
 \end{equation}
 which is \eqref{eq:intro-random-common-upper} with
@@ -459,7 +458,7 @@ satisfies
  \bigl|N_0(t)-zt\bigr|\le
  \Delta_n,
  \qquad
- \Delta_n=O(\delta_n^{-1}\sqrt{n\log n})=o(n).
+ \Delta_n=O(\delta_n^{-1}\sqrt{n\ln n})=o(n).
  \label{eq:rcu-predictable-urn}
 \end{equation}
 Here $N_0(t)$ is the number of tested zeros.  The event is simultaneous, so

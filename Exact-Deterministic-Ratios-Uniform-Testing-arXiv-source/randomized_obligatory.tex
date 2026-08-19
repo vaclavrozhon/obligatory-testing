@@ -1,11 +1,13 @@
-\section{Randomized obligatory testing: the sharp ratio is
-\texorpdfstring{$4/3$}{4/3}}
+\subsection{The randomized obligatory endpoint}
 \label{sec:random-obligatory}
 
-We keep the obligatory-testing model and now allow private randomization.  The
-adversary fixes the labeled vector $p\in[0,\infty)^n$ before the algorithm
+We now pass from the finite-cap randomized curve to the unbounded obligatory
+endpoint.  The adversary fixes the labeled vector $p\in[0,\infty)^n$ before the algorithm
 draws its random bits.  The multiset is not announced, and no upper bound on
-the processing times is assumed.  The goal of this section is to prove
+the processing times is assumed.  The finite-cap zero--two lower bound
+transfers directly.  The upper bound needs one additional uniformization:
+a fixed cutoff and fallback protect the finite-cap stationary policy from an
+arbitrarily large value missed by its sample.  This subsection proves
 \cref{thm:rand-obligatory},
 the rigorous randomized part of the informal obligatory-testing result
 \cref{thm:intro-obligatory} from the introduction.
@@ -21,17 +23,18 @@ $p\in[0,\infty)^n$ satisfies
  \le\left(\frac43+40756n^{-1/4}\right)\cost(\OPT,p).
  \label{eq:rand-obligatory-upper}
 \end{equation}
-Conversely, for every randomized algorithm $\mathcal A$ and every
-sufficiently large even $n$, some fixed labeling of $n/2$ zero jobs and
-$n/2$ jobs of processing time two satisfies
+Conversely, for every randomized algorithm $\mathcal A$ and every $\eps>0$,
+arbitrarily large even $n$ admit a fixed labeling of $n/2$ zero jobs and
+$n/2$ jobs of processing time two such that
 \begin{equation}
- \EE\cost(\mathcal A,p)\ge n^2-O(n^{3/2}),
+ \EE\cost(\mathcal A,p)
+ \ge\left(\frac43-\eps\right)\cost(\OPT,p),
  \qquad
  \cost(\OPT,p)=\frac34n^2+n.
  \label{eq:rand-obligatory-lower}
 \end{equation}
 Hence the exact randomized size-asymptotic competitive ratio against an
-oblivious adversary is $4/3$.
+oblivious adversary is $\RrandOT=4/3$.
 \end{theorem}
 
 For an announced multiset, the algorithmic core is the processing-time
@@ -39,12 +42,11 @@ prefix with maximum completions per unit discovery work.  Testing jobs in a
 uniformly random order gives an exact pair identity and a $4/3$ algebraic
 certificate.  The universal algorithm learns an approximately separated
 prefix from a sublinear sample; a fixed cutoff and a fallback schedule
-protect it from unbounded values missed by the sample.  For the lower bound,
-we randomly label half zero and half length-two jobs.  A balanced-bridge
-discrepancy bound limits how fast any algorithm can complete them.  The next
-subsection begins the formal proof.
+protect it from unbounded values missed by the sample.  The matching lower
+bound is inherited from the zero--two endpoint of the finite-cap curve.  We
+first prove the uniform upper bound and then give the short transfer.
 
-\subsection{Normalization of the offline pair identity}
+\subsubsection{Normalization of the offline pair identity}
 
 For a fixed vector $p$, put
 \begin{align}
@@ -53,7 +55,7 @@ For a fixed vector $p$, put
  D(p)&=\frac{n+\sum_i p_i}{2}.
 \end{align}
 The symmetric offline pair identity
-\cref{eq:unified-opt-symmetric}, specialized to $q_i=1+p_i$, is equivalently
+\cref{eq:unified-opt-symmetric}, specialized to $\lambda_i=1+p_i$, is equivalently
 \begin{equation}
  \OPT(p)=n^2O(p)+D(p).
  \label{eq:rand-opt-normalized}
@@ -61,7 +63,7 @@ The symmetric offline pair identity
 The linear correction $D(p)$ will be kept rather than hidden: this makes the
 analysis valid for unbounded processing times.
 
-\subsection{Stationary prefixes}
+\subsubsection{Stationary prefixes}
 
 A set $E$ is a \emph{processing-time prefix} if every value in $E$ is at
 most every value outside it.  We require that $E$ contain every zero job;
@@ -228,7 +230,7 @@ If all early values are at most $R\ge1$, then $m\le aR$ and therefore
  \label{eq:rand-bounded-early}
 \end{equation}
 
-\subsection{Learning the prefix from a sublinear sample}
+\subsubsection{Learning the prefix from a sublinear sample}
 
 Fix the universal cutoff
 \begin{equation}
@@ -310,7 +312,7 @@ positive sampled early jobs in SPT order; test the remaining jobs in their
 random order, processing early outcomes immediately; and finish the deferred
 tail in SPT order.  Overflow is never early.
 
-\subsection{Good samples, fallback, and bad-event excess}
+\subsubsection{Good samples, fallback, and bad-event excess}
 
 Put
 \begin{equation}
@@ -415,59 +417,23 @@ For smaller $n$, test-all-then-SPT is covered by the same deliberately loose
 constant.  Finally $\OPT\ge n^2/2$ proves the multiplicative form in
 \cref{eq:rand-obligatory-upper}.
 
-\subsection{The balanced binary lower bound}
+\subsubsection{Transfer of the zero--two lower bound}
 
-Let $n=2m$ and assign $m$ zeros and $m$ twos uniformly to the labels.  Fix a
-deterministic nonanticipating algorithm.  In its adaptive order of new tests,
-let $X_r=1$ for a zero and $X_r=-1$ for a two, and
-$S_k=\sum_{r\le k}X_r$.  Conditional on every history, the untested labels
-remain a uniform subset, so $(S_k)$ is a uniform balanced sign bridge even
-though the test order is adaptive.  Put
-\begin{equation}
- \Delta_0=\frac12\max_{0\le k\le n}|S_k|.
- \label{eq:rand-bridge-discrepancy}
-\end{equation}
-
-\begin{lemma}[Bridge discrepancy]
-\label{lem:rand-bridge-discrepancy}
+Fix the finite cap $u=25/4$.  Any randomized obligatory algorithm can be
+viewed as a revealing-optimization algorithm at this cap that simply never
+uses raw execution.  Apply \cref{lem:rcu-zero-two-lower}.  Its fixed hard
+input has only values zero and two, so every revealing effective length is
 \[
- \EE\Delta_0\le\frac{\sqrt{2}\,n}{\sqrt{n-1}}.
+ \min\{25/4,1+p_j\}=1+p_j.
 \]
-\end{lemma}
-
-\begin{proof}
-For $0\le k\le m$, $M_k=S_k/(n-k)$ is a martingale.  Doob's $L^2$
-inequality \cref{eq:doob-L2} and the hypergeometric variance
-\cref{eq:without-replacement-variance} (with the displayed rescaling)
-$\EE S_m^2=n^2/[4(n-1)]$ give
+The online transcript and the offline optimum are therefore exactly the
+same in the finite-cap and obligatory models.  For even $n$, the common
+offline value is
 \[
- \EE\max_{k\le m}|S_k|^2\le\frac{4n^2}{n-1}.
+ \OPT=\frac34n^2+n,
 \]
-Time reversal gives the same bound for the second half, and Cauchy--Schwarz
-then yields
-$\EE\max_k|S_k|\le2\sqrt{2}\,n/\sqrt{n-1}$.
-\end{proof}
-
-At physical time $t$, suppose the algorithm has completed $k$ tests and $x$
-processing operations of two-jobs.  At most $k/2+\Delta_0+x$ jobs are
-complete, while $k+2x\le t$.  Pathwise,
-\[
- \#\text{completed by }t\le t/2+\Delta_0.
-\]
-The area under the unfinished-job curve therefore gives
-\begin{equation}
- \ALG\ge\int_0^{2(n-\Delta_0)}
-       (n-\Delta_0-t/2)\,dt
- =(n-\Delta_0)^2.
- \label{eq:rand-lower-area}
-\end{equation}
-By \cref{lem:rand-bridge-discrepancy},
-$\EE\ALG\ge n^2-O(n^{3/2})$.  Every input in the distribution has
-\[
- \OPT=3m^2+2m=\frac34n^2+n.
-\]
-Finite Yao selection \cref{lem:finite-yao} shows that one fixed labeling
-attains at least this average for every randomized algorithm.  That labeling
-is chosen before the private seed and is therefore an oblivious input.
-Together with \cref{eq:rand-final-upper}, this
-completes the proof of \cref{thm:rand-obligatory}.
+whereas the selected labeling has expected online cost
+$n^2-o(n^2)$.  Its ratio tends to $4/3$, which proves
+\cref{eq:rand-obligatory-lower}.  Together with
+\cref{eq:rand-final-upper}, this completes the proof of
+\cref{thm:rand-obligatory}.

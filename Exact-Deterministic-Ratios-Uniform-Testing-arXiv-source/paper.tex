@@ -109,11 +109,18 @@
 \newcommand{\OPT}{\operatorname{OPT}}
 \newcommand{\cost}{\operatorname{cost}}
 \newcommand{\CR}{\operatorname{CR}}
-\newcommand{\Rstar}{R_\star}
-\newcommand{\Rrand}{R_{\mathrm{rand}}}
+\newcommand{\RdetOT}{R_{\mathsf{OT}}^{\mathrm{det}}}
+\newcommand{\RrandOT}{R_{\mathsf{OT}}^{\mathrm{rand}}}
+\newcommand{\RdetRO}{R_{\mathsf{RO}}^{\mathrm{det}}}
+\newcommand{\RrandRO}{R_{\mathsf{RO}}^{\mathrm{rand}}}
+\newcommand{\RdetBO}{R_{\mathsf{BO}}^{\mathrm{det}}}
+\newcommand{\RrandBO}{R_{\mathsf{BO}}^{\mathrm{rand}}}
+\newcommand{\PhiOT}{\Phi_{\mathsf{OT}}}
+\newcommand{\PhiBE}{\Phi_{\mathsf{BE}}}
+\newcommand{\PhiBO}{\Phi_{\mathsf{BO},u}}
+\newcommand{\PhiRO}{\Phi_{\mathsf{RO},u}}
 \newcommand{\urand}{u_{\mathrm r}}
 \newcommand{\zstar}{z_\star}
-\newcommand{\V}{V}
 \newcommand{\udiam}{u_\diamond}
 \newcommand{\uzero}{u_0}
 \newcommand{\Cmix}{C_{\mathrm{mix}}}
@@ -125,7 +132,6 @@
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcommand{\EE}{\mathbb{E}}
 \newcommand{\Prob}{\mathbb{P}}
-\newcommand{\Phiopt}{\Phi}
 \newcommand{\Stat}{\mathrm{stat}}
 
 \title{Scheduling with Uniform Tests: Information and Optimization}
@@ -164,963 +170,6 @@ quite simple, which may make them useful in practice.
 
 \input{introduction}
 
-\iffalse
-% Archived intermediate introduction.  Kept temporarily for comparison.
-\section{Introduction and proof intuition}
-
-Imagine a queue of jobs whose lengths are written on folded pieces of paper.
-Opening one piece of paper takes one unit of machine time.  The information
-may be valuable: a tiny job can be finished immediately, while a huge job can
-be put aside.  But opening papers also has a very visible cost.  If one
-hundred jobs are still waiting, one unit spent looking creates one hundred
-units of total waiting time.
-
-This leaves a basic dilemma.  Should we keep learning, or should we stop
-looking and start completing jobs?  The dilemma appears in diagnostic
-testing, query optimization, and any setting where work can be inspected or
-improved before it is executed.  Many of the optimal policies we find are
-surprisingly simple: sample a few jobs, compare two ways of using the
-machine, and then follow a threshold.
-
-This paid-information viewpoint is usually called optimization with
-\emph{explorable uncertainty}; the query model goes back at least to
-Kahan~\cite{Kahan1991}.  Our focus is the scheduling question created when
-every unit spent exploring also delays all unfinished jobs.
-
-There are two reasons why a test can help.  First, it can give
-\emph{information}: we learn the true length before deciding when to run the
-job.  Second, it can perform an \emph{optimization}: the tested version of a
-job may be faster than its raw version.  We study both interpretations.  As a
-warm-up, we also study the clean case in which testing is mandatory.
-
-Throughout the paper, all jobs wait for one machine and our objective is the
-sum of their completion times.  The following table is the whole model
-dictionary; precise definitions come later.
-\begin{center}
-\small
-\begin{tabular}{@{}L{0.20\linewidth}L{0.29\linewidth}L{0.40\linewidth}@{}}
-\toprule
-model & without a test & what the test buys \\
-\midrule
-obligatory testing & the job cannot be run & access to the job \\
-blind execution & run for its hidden length $p_i$ & see $p_i$ before committing \\
-revealing optimization & run for a known time $u$ & replace $u$ by the revealed $p_i\le u$ \\
-blind optimization & run for a known time $u$ & replace $u$ by a still-hidden $p_i\le u$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\subsection{Warm-up: every job must be tested}
-
-Suppose first that there is no choice about testing.  A test takes one unit
-and reveals $p_i$.  If $p_i>0$, the job still needs $p_i$ units of processing;
-if $p_i=0$, the test itself completes it.  The only online decision is now
-easy to state:
-
-This obligatory-test model for total completion time was introduced by
-Dogeas, Erlebach, and Liang~\cite{DogeasErlebachLiang2024}.  Their uniform-test
-bounds, followed by the improved lower bound of Liang and
-Liang~\cite{LiangLiang2026}, left the exact deterministic value open.
-
-\begin{quote}
-After seeing $p_i$, do we finish this job now, or do we test another job and
-leave the first one for later?
-\end{quote}
-
-A threshold is the natural answer.  Short jobs are finished immediately and
-large jobs wait for a final shortest-first tail.  What is not obvious is
-where the threshold should be.  A deterministic algorithm must adjust it as
-the input unfolds.  A randomized algorithm can first look at a small random
-sample and learn a good threshold from it.
-
-\begin{algorithm}[H]
-\caption{Obligatory testing: the two optimal algorithmic shapes}
-\label{alg:intro-obligatory}
-\begin{algorithmic}
-\State \textbf{Deterministic:} test jobs in a fixed order.
-\State After each result, compute a threshold from the history seen so far.
-\State Finish the job now if it is below the threshold; otherwise defer it.
-\State \textbf{Randomized:} first test a sublinear random sample.
-\State Learn one threshold from the sample and use it on the remaining jobs.
-\State In either case, finish all deferred jobs in increasing order of length.
-\end{algorithmic}
-\end{algorithm}
-
-The complete algorithms contain safeguards that are suppressed in
-\cref{alg:intro-obligatory}.  In particular, the randomized algorithm never
-lets one enormous value missed by the sample ruin the schedule.  Still, the
-pseudocode captures the decision that matters.
-
-We judge an online algorithm by its \emph{competitive ratio}: its cost divided
-by the cost of a scheduler that knew all lengths from the beginning.  We care
-about the leading quadratic term, so an additive $o(n^2)$ is ignored.
-
-\begin{theorem}[Obligatory testing, informal]
-\label{thm:intro-obligatory}
-The best deterministic asymptotic competitive ratio is
-$1.5705740966\ldots$.  If the input is fixed before the algorithm draws its
-random bits, the best randomized ratio is $4/3$.  The randomized result holds
-even for unbounded job lengths and without knowing their multiset.
-This is the informal version of
-\cref{thm:det-obligatory,thm:rand-obligatory}.
-\end{theorem}
-
-Such a randomized adversary is called \emph{oblivious}: it fixes the entire
-input before seeing our random choices.
-
-The hard examples are as informative as the algorithms.  A deterministic
-scheduler is shown positive jobs in decreasing levels, while many zero jobs
-are hidden until the end.  Finishing a positive job too early delays the
-zeros; postponing it makes the final tail expensive.  The levels are chosen
-so that these two mistakes balance, giving $1.570574\ldots$.  For a
-randomized scheduler the sharp example is much simpler: half of the jobs
-have length zero and half have length two, all thoroughly shuffled.  Before
-the shuffle is uncovered, one unit of work completes only about half a job.
-The resulting area of unfinished jobs gives $4/3$.  The two proofs are in
-\cref{sec:obligatory,sec:random-obligatory}.
-
-\subsection{One algorithm for every multiset}
-
-A worst-case ratio compresses all inputs into one number.  That is useful,
-but it hides an important feature of our problem.  On some collections of
-job lengths, almost everything should be tested.  On others, almost nothing
-should be tested.  An algorithm optimized only for the worst case need not be
-good on either collection.
-
-We ask for much more: one algorithm that is optimal on every collection.
-Forget the labels for a moment and think of the input as an unlabeled multiset
-$M$ of $n$
-lengths.  Let $n^2\Phi(M)$ be the smallest leading-order cost achievable by
-\emph{any} online policy on this particular input.  The policy used to define
-$\Phi(M)$ may be tailored specifically to $M$.  We nevertheless want one
-universal policy, fixed before $M$ is chosen, that attains this value for all
-inputs simultaneously.
-
-\begin{theorem}[Instance optimality, informal]
-\label{thm:intro-instance-optimality}
-Fix a bound on the job lengths.  In each of the three optional models there
-is a single randomized algorithm, independent of $M$, which on every
-multiset $M$ pays
-\[
-                 n^2\Phi(M)+o(n^2).
-\]
-No online algorithm has a smaller leading cost on $M$.  This holds when an
-untested job runs blindly for its true length, when revealing optimization
-replaces a raw time $u$, and when optimization shortens it without revealing
-the new length.  The three models have different explicit functions $\Phi$.
-This is the informal version of
-\cref{thm:common-upper-instance,thm:blind-instance,thm:bo-instance}.
-\end{theorem}
-
-This is our instance-optimal result: the same algorithm rules them all.  A
-random sample lets it recognize the input it is facing.  The deeper part is
-that there is very little to learn.  Among all adaptive ways of alternating
-tests and executions, a fixed threshold followed by a few ordered blocks is
-enough.  Its only continuous parameter is one number $q$, the fraction of
-jobs to test, and $q$ is obtained by minimizing a quadratic.
-
-There is a useful strengthening hidden in the proof.  Even a competing policy
-that is told the entire input $M$ in advance cannot beat $\Phi(M)$.  This makes
-the lower bound especially clean, but it is not the point of the theorem: the
-point is the existence of one policy that attains the optimum for every $M$.
-The formal fixed-label and oblivious-adversary formulation is given later.
-
-Randomization plays one specific role here.  In the fixed-label formulation,
-an oblivious labelling can make any predetermined sublinear pilot
-unrepresentative; a private shuffle prevents this.  In the equivalent
-random-labeling formulation the shuffle is already part of how a new job is
-accessed, and the policy after that shuffle can be deterministic.  Thus the
-randomness is needed to obtain a representative view of the input, not for the
-subsequent scheduling decisions.
-
-The next two subsections explain the two main forms of $\Phi(M)$ and their
-algorithms; the non-revealing optimization variant appears at the end of the
-second one.  The boundedness assumption belongs only to these
-instance-optimal results.  The randomized obligatory result above allows
-unbounded lengths by using a separate cutoff and fallback argument.
-
-\subsection{Testing for information: blind execution}
-
-In the first optional model, we may start an untested job and simply wait
-until it finishes.  It then runs for its actual hidden length $p_i$.  We call
-this \emph{blind execution}.  Testing does not shorten the job; it only lets
-us see $p_i$ before deciding where the job belongs in the schedule.
-
-The closest earlier adversarial formulation is the processing-time-oracle
-model of Dufoss{\'e} et al.~\cite{DufosseEtAl2022}, which allows blind
-execution but restricts the hidden duration to two possible values.  Here the
-input may contain arbitrary bounded lengths.
-
-Why not compare directly with the usual clairvoyant optimum?  Consider an input
-containing many zeros and a very small number of positive jobs.  The
-clairvoyant scheduler completes every zero at time zero.  An online scheduler
-does not know where the zeros are, and must spend time either testing jobs or
-occasionally running a positive job.  The ratio can therefore be arbitrarily
-large.  The value $\Phi(M)$ asks the more informative question: what is the
-best online cost on this particular input?  Our one policy attains that value
-on every input.
-
-The optimal policy has a particularly concrete form.  Let $\mu$ be the mean
-job length.  A tested job shorter than $\mu$ should go before a random blind
-job; a longer one should go after it.  When testing is useful, there is also
-a threshold $\tau<\mu$ below which a newly tested job should be finished
-immediately.  It is defined by
-\[
-                  \mathbb E(\tau-P)^+=1.
-\]
-The left-hand side is the average saving obtained by moving outcomes shorter
-than $\tau$ forward.  Thus the cutoff is chosen where this saving balances
-the unit cost of a test.  A separate number $q$ decides when testing stops.
-An exact test-prefix/ordered-tail structure also appears in the Bayesian
-i.i.d. model of Levi, Magnanti, and
-Shaposhnik~\cite{LeviMagnantiShaposhnik2019}.  Our theorem instead starts from
-one adversarial input and proves that the same structure is asymptotically
-optimal after a private shuffle.
-
-\begin{algorithm}[H]
-\caption{Instance-optimal policy for blind execution}
-\label{alg:intro-blind}
-\begin{algorithmic}
-\State Run a sublinear random pilot blindly and estimate the length distribution.
-\State Compute $\mu$, the threshold $\tau$, and the best tested fraction $q$.
-\State Test a random $q$-fraction; finish every outcome below $\tau$ at once.
-\State Finish the remaining tested jobs below $\mu$, shortest first.
-\State Run every untouched job blindly.
-\State Finish the remaining tested jobs, shortest first.
-\end{algorithmic}
-\end{algorithm}
-
-Notice the middle block.  A tested job can be too long to interrupt the
-testing phase, yet still shorter than a blind job on average.  Such a job
-waits until testing stops, but is then run before the blind jobs.  This is why
-one threshold followed immediately by a blind block is not always optimal.
-For a fixed $q$, the leading cost of \cref{alg:intro-blind} is a quadratic
-$F_M(q)$, and $\Phi(M)=\min_{0\le q\le1}F_M(q)$.  The full result is
-\cref{thm:blind-instance}.
-
-\subsection{Testing for speed: revealing optimization}
-
-In the second optional model, every job can be run immediately for a known
-raw time $u$.  Testing for one unit reveals an optimized time $p_i\le u$.
-The scheduler may then use the shorter description $p_i$, possibly after
-putting the job aside.  Here a test buys speed as well as information.
-
-This adversarial revealing-optimization model was introduced by D{\"u}rr et
-al.~\cite{DurrErlebachMegowMeissner2020}.  Their bounds already exposed the
-nonmonotone difficulty of intermediate $u$; our two curves give the exact
-deterministic and oblivious-randomized answers for every $u$.
-
-If $u\le1$, testing cannot pay: the test alone costs at least as much as raw
-execution.  If $u$ is enormous, raw execution is unattractive and we are
-essentially back in obligatory testing.  The interesting behavior lies
-between these extremes.
-
-The deterministic optimum uses three algorithmic shapes.  Their exact
-cutoffs are part of the curve theorem; the useful picture is the following.
-
-\begin{algorithm}[H]
-\caption{Deterministic revealing-optimization policies, schematically}
-\label{alg:intro-common-upper-det}
-\begin{algorithmic}
-\State For small $u$, run every job raw and do not test.
-\State For intermediate $u$, test every job and use a fixed prefix and threshold.
-\State For large $u$, use the history-dependent threshold from obligatory testing.
-\State In each testing regime, finish deferred jobs shortest first.
-\end{algorithmic}
-\end{algorithm}
-
-On any fixed input, the randomized instance-optimal policy again has only one
-threshold and one stopping fraction.  Our universal algorithm estimates both
-from its pilot.  The threshold says which tested outcomes are worth
-completing during the testing phase.  Once testing stops, all revealed jobs
-are known to take at most $u$, so they are processed shortest first before
-the untouched jobs are run raw.
-
-\begin{algorithm}[H]
-\caption{Instance-optimal randomized revealing-optimization policy}
-\label{alg:intro-common-upper}
-\begin{algorithmic}
-\State Test a sublinear random pilot and estimate the optimized-length distribution.
-\State Compute the best threshold and the best tested fraction $q$.
-\State Test a random $q$-fraction; finish outcomes below the threshold at once.
-\State Finish all other tested jobs, shortest first.
-\State Run every untouched job raw for time $u$.
-\end{algorithmic}
-\end{algorithm}
-
-This per-input theorem also gives the exact randomized competitive ratio.  For
-each input, divide the cost of \cref{alg:intro-common-upper} by the clairvoyant
-cost, and then ask which input makes this ratio largest.  The worst inputs turn
-out to use only two job lengths.  Solving this last one-variable problem
-gives the randomized curve below.
-
-Matching hard inputs for the deterministic curve move from zero/$u$ mixtures
-to capped versions of the decreasing-level construction from the warm-up.
-
-\begin{theorem}[Revealing-optimization curves, informal]
-\label{thm:intro-common-upper-curves}
-For every $u>0$, the exact deterministic and randomized asymptotic
-competitive ratios are respectively the six-piece and four-piece curves in
-\cref{fig:intro-curves}.  The deterministic curve reaches
-$1.866760\ldots$ and then falls to the obligatory value
-$1.570574\ldots$.  The randomized curve reaches only $1.625752\ldots$ and
-eventually becomes $4/3$.
-This is the informal version of
-\cref{thm:optional-curve,thm:random-common-upper}.
-\end{theorem}
-
-\begin{figure}[H]
-\centering
-\input{curves_overview_tikz}
-\caption{The exact asymptotic competitive ratios as a function of the raw
-execution time $u$.  Testing is pointless on the left.  On the right, both
-curves reach their obligatory-testing values.}
-\label{fig:intro-curves}
-\end{figure}
-
-The curves are not monotone.  Giving the online scheduler the option to run
-a job raw also gives that option to the clairvoyant optimum.  For
-intermediate $u$, the optimum uses this freedom especially well; once $u$ is
-large enough, both sides effectively test everything.  Exact formulas and
-proofs appear in \cref{sec:optional,sec:random-common-upper}.
-
-There is one more natural way to separate information from speed.  Suppose a
-unit-time optimization changes the raw length $u$ to $p_i$, but does not tell
-us $p_i$ before the job runs.  Thresholds are then useless: an optimized job
-cannot be classified as short or long.  One universal algorithm samples the
-mean and then makes a single choice---run every remaining job raw, or
-optimize every remaining job.  This policy is again instance optimal, but
-its worst-case ratio grows as $\sqrt u/2$.  Thus the bounded $4/3$ plateau in
-the revealing model comes from information, not merely from faster jobs.
-The exact statement and curve are in \cref{sec:blind-optimization}.
-
-A related non-revealing optimization appears in the oblivious budget model
-of Damerius et al.~\cite{DameriusEtAl2023}.  There, however, optimization
-consumes an external budget; here its unit cost occupies the machine and
-therefore delays every unfinished job.
-
-\begin{algorithm}[H]
-\caption{Instance-optimal policy when optimization reveals nothing}
-\label{alg:intro-blind-optimization}
-\begin{algorithmic}
-\State Optimize and run a sublinear random pilot; estimate its mean $\widehat\mu$.
-\State If $1+\widehat\mu<u$, optimize and run every remaining job.
-\State Otherwise run every remaining job raw for time $u$.
-\end{algorithmic}
-\end{algorithm}
-
-\subsection{Techniques}
-
-Three simple pictures drive most of the proofs.
-
-\paragraph{Count waiting jobs, not completion times.}
-During one unit of machine work, the objective increases by the number of
-jobs still waiting.  Equivalently, every operation delays every unfinished
-job.  This lets us understand the objective one pair of jobs at a time.  The
-deterministic lower bounds create many pairs in the wrong order; the upper
-bounds keep a small bank account that pays for exactly these inversions.
-
-\paragraph{Order actions by jobs completed per unit of work.}
-Think of a round of tests, together with the short outcomes finished during
-that round, as one large action.  It spends time and completes some fraction
-of the jobs.  Its natural score is therefore
-\[
-              \frac{\text{jobs completed}}{\text{time spent}}.
-\]
-Putting higher-scoring actions first is the continuous analogue of sorting
-jobs by length.  This viewpoint produces the thresholds and the one-variable
-quadratics used by the instance-optimal algorithms.  It also gives lower
-bounds: no adaptive policy can complete jobs faster than the best such
-ordering.
-
-\paragraph{Randomize an adversarial input.}
-The algorithms begin by privately shuffling the labels.  A small prefix then
-estimates the empirical input distribution.  For the lower bound we need the
-same statement for an adaptive policy, which may choose the next label using
-everything seen so far.  The key observation is that its order of first visits is just another
-permutation of the hidden occurrences.  Thus the revealed values still look
-like sampling without replacement.  This is what allows one concentration
-event to control every possible stopping time.
-
-\subsection{Related work}\label{sec:related}
-
-Scheduling with tests is part of optimization with explorable uncertainty,
-where uncertain data can be queried at a cost; the query viewpoint goes back
-at least to Kahan~\cite{Kahan1991}.  Levi, Magnanti, and Shaposhnik study a
-stochastic scheduling model in which tests diagnose random job attributes
-and derive prefix-testing policies followed by an order based on expected
-processing time per unit weight
-~\cite{LeviMagnantiShaposhnik2019,LeviMagnantiShaposhnik2024}.  Our
-four-block blind policy has a similar shape, but our collection of lengths is
-adversarial, need not converge, and is not announced to the universal policy.
-
-The adversarial revealing-optimization model was introduced by Dürr et
-al.~\cite{DurrErlebachMegowMeissner2020}.  For one machine and total
-completion time they obtained deterministic bounds, including the
-$1.8668\ldots$ guarantee for binary values under a common upper bound.
-Our deterministic theorem closes the revealing-optimization gap for arbitrary
-$p_i\in[0,u]$ and every fixed $u$.  Our randomized theorem gives a separate
-exact four-piece curve against an oblivious adversary.  Related variants
-allow nonuniform test times~\cite{AlbersEckl2021,LiuLiuWongZhang2023,
-KrekelbergEtAl2026}.  Damerius et al.'s oblivious budget model likewise
-allows the improved processing time to remain unknown, but its optimization
-cost consumes an external budget rather than time on the scheduling
-machine~\cite{DameriusEtAl2023}.  Other work considers multiple
-machines~\cite{GongChenHayashi2024}, or weights~\cite{BuldSchulz2026}.
-
-Dogeas, Erlebach, and Liang introduced obligatory-test scheduling for total
-completion time~\cite{DogeasErlebachLiang2024}.  For uniform tests they gave
-the SIDLE upper bound $1.58451\ldots$ and the deterministic lower bound
-$\sqrt2$.  Liang and Liang subsequently raised the single-machine lower
-bound to $3/2$ through a completion-threshold framework
-~\cite{LiangLiang2026}.  Our harmonic construction and adaptive threshold
-meet at $1.5705740966\ldots$, while our randomized result resolves the
-oblivious single-machine value at $4/3$.
-
-The processing-time-oracle model of Dufoss{\'e} et
-al.~\cite{DufosseEtAl2022} is close to blind execution: an untested job takes
-its true duration, but only two possible durations are allowed.  We permit an
-arbitrary bounded multiset and obtain a distribution-sensitive benchmark and
-four-block policy.  If no tests are available and processing times are
-revealed only at completion, one obtains the classical nonclairvoyant model
-of Motwani, Phillips, and Torng~\cite{MotwaniPhillipsTorng1994}.  These
-semantics differ from raw execution in revealing optimization, which always lasts the
-declared upper bound, regardless of the hidden optimized value.
-
-The rest of the paper first fixes the models and offline benchmarks in
-\cref{sec:model}.  Each following main section opens with the precise theorem
-it proves and a short proof overview.  We treat deterministic obligatory
-testing and the finite revealing-optimization curve first, then the revealing-optimization
-instance benchmark and its randomized worst-case curve, randomized
-obligatory testing, blind execution, and finally non-revealing optimization.
-The machine-checked scope is summarized in \cref{sec:formalization}.
-\fi
-
-\iffalse
-% Archived pre-rewrite introduction.  Kept in the source for comparison, but
-% deliberately excluded from the paper and from theorem numbering.
-\section{OLD intro}
-
-
-\subsection{The exact answers}
-
-The obligatory endpoint had a gap between the best known deterministic lower
-and upper bounds \cite{DogeasErlebachLiang2024,LiangLiang2026}.  The finite
-revealing-optimization problem likewise had no exact answer for arbitrary revealed
-values \cite{DurrErlebachMegowMeissner2020}.  We close both gaps in the
-natural size-asymptotic convention.
-
-Let $\zstar>1$ be the unique solution of
-\begin{equation}\label{eq:zstar}
- \zstar-3=\log\zstar,
-\end{equation}
-where all logarithms are natural, and put
-\begin{equation}\label{eq:Rstar}
- \Rstar=1+\frac{2}{\zstar-1}
-       =1.570574096649395\ldots,
- \qquad
- \zstar=4.505241495792883\ldots .
-\end{equation}
-
-\begin{theorem}[Obligatory endpoint]\label{thm:main-intro}
-The following matching statements hold for $u=\infty$.
-\begin{enumerate}[label=\textup{(\roman*)}]
-\item For every deterministic online algorithm $\mathcal B$ and every
-      $\eps>0$, there are arbitrarily large instances $I$ for which
-      \[
-        \ALG_{\mathcal B}(I)\ge(\Rstar-\eps)\OPT(I).
-      \]
-\item There is one deterministic algorithm $\mathcal A$ and one absolute
-      constant $C$ such that every $n$-job instance satisfies
-      \[
-        \ALG_{\mathcal A}(I)\le\Rstar\OPT(I)+Cn.
-      \]
-\end{enumerate}
-Consequently the optimal deterministic size-asymptotic value at $u=\infty$
-is exactly $\Rstar$.
-\end{theorem}
-
-For the finite curve, let $\varphi=(1+\sqrt5)/2$ and define
-\[
- \udiam=\frac{1+\sqrt{3+2\sqrt5}}2,
- \qquad
- \uzero=1+s_0,\quad s_0^3=(s_0+1)^2,
-\]
-where $s_0>1$.  For $s=u-1$, let $\rho_I(u)$ be the positive root of
-\[
- s\rho^2+(s^3+s^2+1)\rho-(s^2+s+1)(s+2)=0.
-\]
-On $\varphi+2\le u\le\zstar$, define $\Cmix(u)=1+c$ by the unique pair
-$(c,m)$ satisfying
-\begin{equation}\label{eq:intro-mixed-system}
- \artanh m-m
- =1-\frac1c+\frac12\log\!\left(1+\frac2c\right),
- \qquad
- u=1+\frac2c-m,
-\end{equation}
-with $2/(\zstar-1)\le c\le1/\varphi$ and $0\le m\le1/\varphi$.
-
-\begin{theorem}[Finite revealing-optimization curve]
-\label{thm:optional-intro}
-For every fixed $u>0$, the optimal deterministic size-asymptotic competitive
-ratio is
-\begin{equation}\label{eq:intro-optional-curve}
- \V(u)=
- \begin{cases}
-  1,&0<u\le1,\\
-  u,&1\le u\le\udiam,\\
-  \rho_I(u),&\udiam\le u\le\uzero,\\
-  1+1/\sqrt{u-1},&\uzero\le u\le\varphi+2,\\
-  \Cmix(u),&\varphi+2\le u\le\zstar,\\
-  \Rstar,&u\ge\zstar.
- \end{cases}
-\end{equation}
-Every lower branch holds against arbitrary deterministic algorithms on
-arbitrarily large fixed instances.  Every upper branch is attained up to
-$O_u(n)$.  On the finite part of the last branch, one algorithm and one
-absolute $O(n)$ constant work simultaneously for all $u\ge\zstar$.
-Together with \cref{thm:main-intro}, the same witness covers the endpoint
-$u=\infty$.
-\end{theorem}
-
-The deterministic theorem is only the first part of the landscape.  Against
-an oblivious adversary, private randomization gives the following exact
-four-piece curve.  Let $\urand>1$ be the unique root of
-\begin{equation}
- \urand^3-6\urand^2+5\urand-1=0,
- \qquad
- \urand=5.048917339522306\ldots .
- \label{eq:intro-random-transition}
-\end{equation}
-
-\begin{theorem}[Randomized finite revealing-optimization curve]
-\label{thm:random-common-upper-intro}
-For every fixed $u>0$, the optimal randomized size-asymptotic competitive
-ratio in the revealing-optimization model against an oblivious adversary is
-\begin{equation}
- \Rrand(u)=
- \begin{cases}
-  1,&0<u\le1,\\[2pt]
-  \displaystyle\frac{u^3}{u^2+(u-1)^3},
-    &1\le u\le\urand,\\[8pt]
-  \displaystyle 1+\frac{1}{2(\sqrt u-1)},
-    &\urand\le u\le25/4,\\[8pt]
-  \displaystyle\frac43,&u\ge25/4.
- \end{cases}
- \label{eq:intro-random-common-upper-curve}
-\end{equation}
-More precisely, there are randomized nonanticipating algorithms
-$\mathcal A_{n,u}$ and numbers $\eps_u(n)\to0$ such that every fixed labelled
-vector $p\in[0,u]^n$ satisfies
-\begin{equation}
- \EE\ALG_{\mathcal A_{n,u}}(p)
- \le \Rrand(u)\OPT_u(p)+\eps_u(n)n^2.
- \label{eq:intro-random-common-upper}
-\end{equation}
-Conversely, for every randomized online algorithm and every $\eps>0$, there
-are arbitrarily large $n$ and a fixed vector $p\in[0,u]^n$ for which
-\begin{equation}
- \EE\ALG(p)\ge\bigl(\Rrand(u)-\eps\bigr)\OPT_u(p).
- \label{eq:intro-random-common-lower}
-\end{equation}
-The curve is continuous at all three junctions.  Its global maximum is
-attained at $u=(3+\sqrt3)/2$ and equals
-\begin{equation}
- \max_{u>0}\Rrand(u)
- =\frac{27+6\sqrt3}{23}
- =1.625752384583185\ldots .
- \label{eq:intro-random-common-maximum}
-\end{equation}
-\end{theorem}
-
-Thus randomization improves every nontrivial part of the deterministic
-finite-cap curve.  The last branch already has value $4/3$, but passing to
-$u=\infty$ still requires a proof uniform over unbounded processing times.
-That endpoint remains sharp even when the processing-time multiset is not
-announced.
-
-\begin{theorem}[Randomized obligatory testing]
-\label{thm:random-obligatory-intro}
-There is a universal randomized nonanticipating algorithm, depending only on
-$n$, such that every fixed vector $p\in[0,\infty)^n$ satisfies
-\begin{equation}
- \EE\ALG(p)
- \le \frac43\OPT(p)+20378n^{7/4}
- \le\left(\frac43+40756n^{-1/4}\right)\OPT(p).
- \label{eq:intro-random-upper}
-\end{equation}
-Conversely, for every randomized algorithm and every sufficiently large even
-$n$, some fixed labelling of $n/2$ zero jobs and $n/2$ jobs of processing
-time two satisfies
-\begin{equation}
- \EE\ALG(p)\ge n^2-O(n^{3/2}),
- \qquad
- \OPT(p)=\frac34n^2+n.
- \label{eq:intro-random-lower}
-\end{equation}
-Hence the exact randomized size-asymptotic competitive ratio for obligatory
-testing against an oblivious adversary is $4/3$.
-\end{theorem}
-
-Our third result uses a stronger, instance-dependent comparison.  In the
-blind-execution model, sparse zero-heavy instances may have clairvoyant cost
-$o(n^2)$, so an additive $o(n^2)$ theorem is not a conventional competitive
-ratio.  It instead says that the algorithm learns, at negligible leading
-cost, everything that advance knowledge of the multiset could contribute to
-the oblivious minimax value.
-
-\begin{theorem}[Blind-execution instance optimality]
-\label{thm:blind-instance-intro}
-Fix $L<\infty$.  There are a randomized nonanticipating policy $\mathcal A^*$,
-which knows $n,L$ but not the processing-time multiset, and a deterministic
-sequence $\eps_L(n)\to0$ with the following properties.  For every multiset
-$M\subseteq[0,L]$ of size $n$ and every fixed labelling $\sigma$,
-\begin{equation}
- \EE C_{\mathcal A^*}(\sigma(M))
- \le n^2\Phiopt(D_M)+\eps_L(n)n^2.
- \label{eq:intro-blind-upper}
-\end{equation}
-For every randomized policy $\mathcal A$, even one told $M$, some fixed
-oblivious labelling $\sigma$ satisfies
-\begin{equation}
- \EE C_{\mathcal A}(\sigma(M))
- \ge n^2\Phiopt(D_M)-\eps_L(n)n^2.
- \label{eq:intro-blind-lower}
-\end{equation}
-The benchmark $\Phiopt$, defined in \cref{sec:blind-benchmark}, is the minimum
-of an explicit one-variable quadratic.  One may take
-$\eps_L(n)=O_L(n^{-1/6}\sqrt{\log(n+2)})$ analytically; the formal proof also
-provides a slower explicit vanishing rate using only finite second-moment
-estimates.
-\end{theorem}
-
-\begin{table}[H]
-\centering
-\footnotesize
-\begin{tabular}{@{}L{0.17\linewidth}L{0.22\linewidth}L{0.20\linewidth}L{0.31\linewidth}@{}}
-\toprule
-model & adversary / knowledge & benchmark & result \\
-\midrule
-revealing optimization & deterministic & clairvoyant $\OPT$ & exact six-piece curve $\V(u)$ \\
-revealing optimization & randomized oblivious; unknown $M$ & clairvoyant $\OPT$ & exact four-piece curve $\Rrand(u)$ \\
-obligatory & deterministic & clairvoyant $\OPT$ & exact $\Rstar$ \\
-obligatory & randomized oblivious; unknown $M$ & clairvoyant $\OPT$ & exact asymptotic ratio $4/3$ \\
-blind, $p\le L$ & randomized oblivious; unknown $M$ & announced minimax value & $\Phiopt(D_M)\pm o_L(1)$ after normalization by $n^2$ \\
-blind optimization, $p\le u$ & randomized oblivious; unknown $M$ & clairvoyant $\OPT$ and instance benchmark & exact curve $R_{\rm bo}(u)$; $\Phi_{\rm bo}(M)\pm o_u(1)$ \\
-\bottomrule
-\end{tabular}
-\caption{The four models and their principal guarantees.  The blind-execution
-row is instance optimality at the quadratic scale, not a competitive-ratio
-claim on instances with subquadratic optimum.}
-\label{tab:results}
-\end{table}
-
-The finite curve is continuous, rises from one to its global maximum
-\[
- \V(\udiam)=\udiam=1.866760399173862\ldots,
-\]
-and then decreases to the obligatory value.  In fact it does more than
-converge:
-\begin{equation}
- \V(u)=\V(\infty)=\Rstar
- \qquad\text{for every }u\ge\zstar.
- \label{eq:intro-plateau}
-\end{equation}
-This is equality of size-asymptotic game values, not equality of the finite
-problems.  At any finite $u$, the optimum may still save a test on a job with
-$p\ge u-1$.
-
-\begin{figure}[t]
- \centering
- \includegraphics[width=\textwidth]{curve.pdf}
- \caption{The exact deterministic size-asymptotic ratio for finite common
- upper limit $u$.  The curve stabilizes at the obligatory endpoint value;
- dotted lines mark its five regime changes.}
- \label{fig:optional-curve}
-\end{figure}
-
-\subsection{Why total completion time leads to pair accounting}
-
-The most useful way to think about total completion time is pairwise.  Every
-operation of job $i$ contributes once to $C_i$, and it contributes once more
-for each other job that remains unfinished while that operation is executed.
-Equivalently, the objective consists of diagonal job terms and one delay term
-for every unordered pair of jobs.  The offline pair term is simply the
-shorter effective length.  The online pair term records whether an earlier
-revealed job was processed immediately or left waiting.
-
-This representation explains both sides of our proof.  A lower-bound
-adversary tries to make many pairs wait in the wrong order.  An upper-bound
-algorithm tries to ensure that every expensive local decision can be charged
-to a corresponding offline pair.  Since there are $\Theta(n^2)$ pairs but
-only $n$ diagonal terms, controlling the quadratic pair coefficient gives
-the exact size-asymptotic ratio; bounded rounding errors of $O(1)$ per job
-become only $O(n)$.
-
-\subsection{Lower-bound intuition: hide the short jobs until the end}
-
-At the obligatory endpoint, the adversary reveals equal blocks of positive
-jobs from longer to shorter values and reveals a large zero block last.  The
-algorithm is forced to choose between two risks.  Processing a revealed job
-early may delay many still-hidden zeros.  Deferring it may leave a large tail
-that delays everything completed later.  The adaptive revelation is frozen
-after the interaction, so a standard replay argument produces one fixed
-instance for the chosen deterministic algorithm.
-
-The processing times are separated by harmonic gaps.  This choice is not a
-guess about the final constant.  The zero mass and the number of shorter
-positive blocks give two multiplicities; their sum exactly cancels the
-denominator of each harmonic gap.  After this cancellation, every possible
-postponement made by the algorithm has a nonnegative coefficient and every
-own-phase choice contributes the same completed square.  All algorithmic
-decisions disappear from the leading term.  What remains is a one-variable
-ratio describing the relative positive and zero masses, and its stationary
-equation is \eqref{eq:zstar}.
-
-For finite $u$, two additional adversarial pictures appear.  When $u$ is
-small or moderate, binary values $p\in\{0,u\}$ already suffice: the adversary
-watches how much work the algorithm completes before revealing whether the
-next jobs are zeros or caps.  For the transition to the obligatory value,
-the hard instance is a capped prefix followed by a scaled copy of the
-harmonic core.  The prefix exploits the optimum's ability to skip tests; the
-core exploits uncertainty in the test order.  As $u$ grows, the optimal cap
-mass decreases continuously to zero, leaving exactly the obligatory
-construction.
-
-\subsection{Upper-bound intuition: three policies and one common bank}
-\label{sec:intro-upper-intuition}
-
-The exact upper curve uses three simple algorithmic shapes.  Their formal
-pseudocode appears later; here we describe why they are natural.
-
-\begin{center}
-\begin{tabular}{@{}p{0.24\linewidth}p{0.68\linewidth}@{}}
-\toprule
-approximate range & upper-bound policy at a glance \\
-\midrule
-$u\lesssim1.87$
- & Do not test: execute every job raw. \\
-$1.87\lesssim u\lesssim3.15$
- & Test all jobs; always finish an initial fraction, then use a short/long
-   threshold.  The initial fraction shrinks as $u$ grows. \\
-$3.15\lesssim u\lesssim3.62$
- & Test all jobs; finish values at most one immediately and sort the rest in
-   a final tail. \\
-$3.62\lesssim u\lesssim4.51$
- & Use the history-dependent threshold; the proof adds a reserve for capped
-   outcomes. \\
-$u\gtrsim4.51$, including $\infty$
- & Use the same adaptive threshold, now with no cap reserve. \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\paragraph{Raw policy.}
-When $u$ is very small, information costs at least as much as it can save.
-The algorithm therefore runs every job raw.  Slightly beyond that trivial
-range, raw execution need no longer be clairvoyantly optimal for each job,
-but comparing its length $u$ with the optimum's effective lengths already
-gives the first nontrivial minimax branch.
-
-\paragraph{Forced-prefix threshold policy.}
-In the next regimes the algorithm tests every job.  During an initial
-fraction of the test order it processes every revealed value immediately.
-After that prefix it processes only sufficiently short outcomes and sends
-the rest to a shortest-processing-time tail.  The forced prefix guarantees
-that some jobs finish before too many tests accumulate; the suffix threshold
-protects the schedule from long revealed jobs.  As $u$ increases, the useful
-prefix shrinks continuously to zero.  The algebraic branch is exactly the
-point where the worst binary mixture is tangent to the target ratio; after
-the prefix vanishes, balancing a capped tail against a threshold-one tail
-gives the square-root branch.
-
-\paragraph{Adaptive-threshold policy.}
-For large $u$, a fixed prefix is too rigid.  The algorithm again tests jobs
-in a fixed order, but its immediate-processing threshold reacts to the
-observed history.  It remembers only the number $N$ of positive outcomes and
-the number $D$ of those outcomes that were deferred.  A normalized balance
-of the form
-\[
- \frac{D-(1+c)N}{\text{number of untested jobs}}
-\]
-measures how much future delay has already been promised to the tail.  Near a
-neutral balance the algorithm can afford to process moderately long jobs
-immediately.  Every positive outcome drives the balance downward, while a
-deferral refunds one unit because future tests will also delay that tail job.
-When the normalized balance becomes sufficiently negative, the threshold
-falls toward one.  All deferred jobs are sorted only after the tests finish.
-
-The analysis first fixes the symbolic immediate/deferred path.  Convexity
-then reduces every ordinary revealed value to one of four endpoints: a true
-zero, a positive value tending to zero, the immediate side of the live
-threshold, or its deferred side.  A nonnegative bank potential pays the
-excess pair cost at each endpoint.  The logarithmic threshold is forced by
-making the immediate and deferred boundary equations balance simultaneously;
-the obligatory constant is forced by calibrating the bank's initial value.
-
-Finite $u$ creates exactly one new endpoint: a capped value $p=u$, for which
-the optimum can use raw execution and avoid the test.  On the middle bridge
-this endpoint can temporarily overdraw the ordinary bank, so we add a reserve
-whose balance depends only on the observed cap fraction.  At the end of the
-bridge the reserve becomes zero.  With $r=\Rstar-1$, the worst residual
-charge of the cap endpoint is at most $2-r(u-1)$.
-The right-hand side is nonpositive precisely when
-$u\ge1+2/r=\zstar$.  Thus beyond $\zstar$ the obligatory four-endpoint bank
-already pays for the fifth endpoint.  The plateau in
-\cref{eq:intro-plateau} is a proof-level fact, not merely a numerical
-coincidence.
-
-\subsection{Randomized intuition: completion density and sampling}
-
-The randomized revealing-optimization and obligatory results have a different core.
-Suppose for a moment that the multiset is announced.  Choose a
-processing-time prefix $E$, test jobs in a uniformly random order, process a
-revealed job immediately exactly when it lies in $E$, and sort the remaining
-tail after the last test.  The expected cost of this stationary policy has a
-closed pairwise formula.  The right prefix maximizes
-\[
- \frac{\text{mass completed during discovery}}
-      {\text{test work plus immediate processing work}}.
-\]
-Writing the reciprocal of this density as $\theta$, the optimizer is a
-threshold: early values are at most $\theta$ and late values are at least
-$\theta$.
-
-For a finite cap, the algorithm compares this stationary policy with running
-every job raw.  Writing $H(t)=\Pr(P>t)$ and $s=u-1$, the offline quadratic
-coefficient is
-\[
- \frac12\left(1+\int_0^s H(t)^2\,dt\right).
-\]
-The density threshold satisfies
-$\int_0^\theta(1-H(t))\,dt=1$.  Splitting according to whether
-$\theta\ge s$ or $\theta\le s$ reduces the worst distribution to one of two
-binary endpoints.  The distributions on $\{0,u\}$ give the two middle
-branches of \eqref{eq:intro-random-common-upper-curve}; the balanced
-$\{0,2\}$ distribution gives the $4/3$ plateau.  The first transition occurs
-when the stationary critical point meets the raw/stationary crossing, which
-is exactly the cubic in \eqref{eq:intro-random-transition}; the second occurs
-at $u=25/4$.
-
-At the obligatory endpoint, a short algebraic identity writes
-$4\OPT-3\EE\ALG$ as a sum of three nonnegative terms.  Equality again
-identifies the hard distribution: half of the mass at zero and half at two.
-
-For a finite cap, bounded support makes the announcement easy to remove: a
-pilot of size $n^{2/3}$ selects between raw execution and the stationary
-prefix on a grid of $n^{1/3}$ cells, losing only $O_u(n^{11/6})$.  At the
-unbounded obligatory endpoint, the algorithm instead tests $n^{3/4}$
-uniformly random jobs and learns the threshold on a grid of $n^{1/4}$ cells.
-Closing the chosen sample prefix under its numerical threshold is essential:
-otherwise a cell missed by the sample could violate the population
-separation.  Values above a fixed cutoff are always deferred.  If the learned
-completion density is too small, the algorithm falls back to
-test-all-then-SPT; precisely in that case the offline objective is already
-large enough to pay for the fallback.  This gives the upper bound in
-\cref{eq:intro-random-upper}.  For the lower bound, a uniformly labelled
-half-zero, half-two multiset is a balanced random bridge.  At every time, the
-number of completed jobs is at most one half of the work spent, up to the
-bridge discrepancy.  Integrating this envelope gives
-\cref{eq:intro-random-lower}.
-
-\subsection{Blind execution: from tests to a fractional knapsack}
-
-For a processing-time distribution $D$, let $\mu=\EE P$ and define $\tau$ by
-\[
- \EE(\tau-P)^+=1.
-\]
-A unit mass of tests followed by immediate processing of outcomes below
-$\tau$ completes mass $a=\Pr(P<\tau)$ using work
-$1+\EE[P\one_{P<\tau}]=a\tau$.  It is therefore a divisible completion
-module of work $\tau$ per completed job.  Untested blind jobs form a second
-module of cost $\mu$ per completion; tested residual values form ordinary
-known SPT classes.
-
-For any fixed final tested fraction $q$, a completion-envelope relaxation
-turns these objects into a fractional knapsack.  Its greedy order is
-\[
- \begin{aligned}
- \text{test module}&\ \longrightarrow\
-   \text{known residual values below $\mu$}\ \longrightarrow\
-   \text{blind block}\\[-2pt]
- &\hspace{10em}\longrightarrow\
-   \text{known residual values above $\mu$}.
- \end{aligned}
-\]
-The area below the corresponding unfinished-mass curve is an explicit
-quadratic $F_D(q)$; minimizing it defines $\Phiopt(D)$.  This pointwise
-envelope, rather than a local exchange in an adaptive decision tree, is what
-makes the lower bound robust.
-
-The remaining issue is to compare a completely adaptive finite policy with
-that deterministic fluid picture.  Distinguish equal-valued occurrences and
-map each hidden labelling to the order in which the policy first touches
-them.  Prefix causality makes this reveal map a bijection of the finite
-permutation space.  Hence a uniformly labelled input becomes an ordinary
-without-replacement urn and the test/blind decision at the next touch is
-predictable from the preceding revealed values.  One simultaneous urn event
-then controls every prefix; only after fixing that event do we substitute the
-policy's realized stopping fraction $q$.  Rounding to a growing grid and a
-sublinear blind pilot complete the transfer to an arbitrary bounded,
-unannounced multiset.
-
-\subsection{Why the infinite endpoint needs a uniform proof}
-
-For each fixed processing-time vector, the finite-$u$ offline lengths
-$q_u(p)$ eventually equal $1+p$.  Nevertheless, a competitive-ratio proof
-cannot blindly send $u$ to infinity: the worst instance may choose
-$p\approx u$, the algorithm may depend on $u$, and the hidden constant in an
-$O_u(n)$ estimate may diverge.  We avoid every such interchange.  The lower
-bound uses one bounded harmonic core, which embeds in all sufficiently large
-finite caps.  The high-$u$ upper bound uses one $u$-independent adaptive
-algorithm and one absolute linear remainder.  Consequently the endpoint
-$u=\infty$ and the finite plateau are certified by the same witnesses.
-
-The linear remainder is lower order because
-$\OPT\ge n(n+1)/2$ at $u=\infty$ and, for fixed $u$, the analogous finite
-bound is also quadratic.  It implies an endpoint coefficient
-$\Rstar+\eps$ with a fixed additive constant for every $\eps>0$.  We do
-\emph{not} prove the stronger statement
-$\ALG\le\Rstar\OPT+B$ with one fixed $B$, nor the unrelaxed inequality
-$\ALG\le\Rstar\OPT$ on every finite instance.
-
-\subsection{How to read the proofs}
-
-After the literature review and common framework, \cref{sec:obligatory}
-begins the deterministic part with the cap-free endpoint.  Its lower
-subsection gives the harmonic
-adversary and a reusable scaled-core lemma.  Its upper subsection formally
-states the adaptive algorithm and proves the ordinary four-endpoint bank.
-These are matching and may still be read independently.
-
-\Cref{sec:optional} then treats finite caps.  The binary stopping game and
-the two simple policies prove the first four branches.  The capped-prefix
-lower construction reuses the harmonic core, while the middle/high upper
-bound reuses the ordinary bank and analyzes only the new cap endpoint and
-its reserve.  At $u=\zstar$ both cap corrections vanish.
-\Cref{app:finite-checkpoint,app:cap-bubbling} contain an exact rational
-checkpoint for the cap-free lower construction and an independent
-cap-bubbling certificate.
-
-\Cref{sec:random-common-upper} proves the exact randomized finite-cap curve.
-It first identifies the announced stationary benchmark, reduces the
-distributional maximization to a scalar binary game, then removes announcement
-by a sublinear random pilot and proves the matching oblivious Yao bounds.
-\Cref{sec:random-obligatory} proves the sharp randomized $4/3$ endpoint
-theorem uniformly for unbounded processing times.  It first solves the
-announced stationary problem, then learns the threshold from a sample, and
-finally gives the balanced binary Yao lower bound.
-\Cref{sec:blind} turns to blind execution.  It defines the fluid benchmark,
-proves the fixed-$q$ envelope theorem, transfers the envelope to arbitrary
-adaptive announced policies, and removes announcement by a blind pilot.
-\Cref{sec:blind-optimization} studies optimization without immediate
-revelation.  Its instance benchmark depends only on the mean, and a binary
-survival-function argument gives the exact worst-case curve.
-\Cref{sec:formalization} records the machine-checked scope; detailed
-correspondence for the deterministic theorem remains in
-\cref{app:lean-formalization}.
-
-\fi
 
 \section{Models and common preliminaries}\label{sec:model}
 
@@ -1216,16 +265,16 @@ The offline optimum knows all values $p_j$.  It therefore chooses the shorter
 available way to complete each job and orders the resulting job blocks
 shortest first.  For later use, define
 \begin{equation}\label{eq:optional-effective-length}
- q_u(p)\defeq\min\{u,1+p\}
+ \lambda_u(p)\defeq\min\{u,1+p\}
  \qquad(0<u<\infty),
 \end{equation}
 and associate with job $j$ the model-dependent \emph{effective length}
 \begin{equation}
- q_j\defeq
+ \lambda_j\defeq
  \begin{cases}
   1+p_j, & \mathsf{OT},\\
   p_j, & \mathsf{BE}(L),\\
-  q_u(p_j), & \mathsf{BO}(u)\text{ or }\mathsf{RO}(u).
+  \lambda_u(p_j), & \mathsf{BO}(u)\text{ or }\mathsf{RO}(u).
  \end{cases}
  \label{eq:model-effective-length}
 \end{equation}
@@ -1233,17 +282,17 @@ and associate with job $j$ the model-dependent \emph{effective length}
 \begin{lemma}[Effective lengths and the offline pair identity]
 \label{lem:offline}\label{lem:optional-offline}
 Fix any one of the four models and let
-$q_{(1)}\le\cdots\le q_{(n)}$ be its effective lengths from
+$\lambda_{(1)}\le\cdots\le\lambda_{(n)}$ be its effective lengths from
 \cref{eq:model-effective-length}.  A clairvoyant optimum completes the jobs
 in this order and has value
 \begin{align}
  \OPT
- &=\sum_{k=1}^n\sum_{i=1}^kq_{(i)},
+ &=\sum_{k=1}^n\sum_{i=1}^k\lambda_{(i)},
  \label{eq:unified-opt-prefix}\\
- &=\sum_iq_i+\sum_{i<j}\min\{q_i,q_j\},
+ &=\sum_i\lambda_i+\sum_{i<j}\min\{\lambda_i,\lambda_j\},
  \label{eq:optional-opt-pair}\\
  &=\frac12\left(
-      \sum_iq_i+\sum_{i,j}\min\{q_i,q_j\}
+      \sum_i\lambda_i+\sum_{i,j}\min\{\lambda_i,\lambda_j\}
     \right).
  \label{eq:unified-opt-symmetric}
 \end{align}
@@ -1254,19 +303,30 @@ $u\le1+p_j$ and the unit preliminary action followed by processing otherwise.
 
 \begin{proof}
 Let $C_{[1]}\le\cdots\le C_{[n]}$ be the ordered completion times of any
-feasible schedule.  Completing job $j$ consumes at least $q_j$ units of work
+feasible schedule.  Completing job $j$ consumes at least $\lambda_j$ units of work
 belonging to that job.  Hence, by time $C_{[k]}$, the machine has performed
 the required work of some $k$ jobs, and
 \[
- C_{[k]}\ge\sum_{i=1}^kq_{(i)}.
+ C_{[k]}\ge\sum_{i=1}^k\lambda_{(i)}.
 \]
 Choose the mode specified in the lemma, keep each resulting block contiguous,
-and execute the blocks in nondecreasing order of $q_j$.  This schedule is
+and execute the blocks in nondecreasing order of $\lambda_j$.  This schedule is
 feasible in the relevant model and attains equality for every $k$.  Summing
 over $k$ and then collecting the contribution of each unordered pair gives
 the first two formulas.  Splitting the double sum into its diagonal and the
 two orientations of every unordered pair gives the symmetric form.
 \end{proof}
+
+For a probability distribution $D$ on $[0,u]$, let $P,P'$ be independent
+with law $D$ and define the common clairvoyant leading coefficient
+\begin{equation}
+ \Omega_u(D)\defeq
+ \frac12\EE\min\{\lambda_u(P),\lambda_u(P')\}.
+ \label{eq:common-offline-coefficient}
+\end{equation}
+Thus the blind- and revealing-optimization models have the same offline
+coefficient; their online benchmarks differ because only a revealing test
+exposes $p_j$ before execution.
 
 The revealing-optimization and blind-optimization models have the same offline
 effective lengths.  Their difference is entirely online: a test reveals
@@ -1281,7 +341,7 @@ paying the unit test.  Thus
 This is not the principal benchmark in \cref{thm:blind-instance}.  The
 clairvoyant value may be $o(n^2)$, whereas that theorem compares policies at
 the $n^2$ scale with the optimal announced-multiset online value
-$\Phiopt(D_M)$.
+$\PhiBE(D_M)$.
 
 For obligatory testing, \cref{eq:unified-opt-prefix,eq:optional-opt-pair}
 specialize to
@@ -1296,7 +356,7 @@ In particular,
 \begin{equation}\label{eq:opt-n2}
  \OPT_{\mathsf{OT}}\ge\frac{n(n+1)}2.
 \end{equation}
-For $\mathsf{BO}(u)$ and $\mathsf{RO}(u)$, $q_j\ge\min\{u,1\}$ gives
+For $\mathsf{BO}(u)$ and $\mathsf{RO}(u)$, $\lambda_j\ge\min\{u,1\}$ gives
 \begin{equation}\label{eq:optional-opt-n2}
  \OPT_u\ge\min\{u,1\}\frac{n(n+1)}2.
 \end{equation}
@@ -1325,13 +385,13 @@ The zero mass is included automatically because its test completes it.
 
 \begin{lemma}[Maximum-density discovery module]
 \label{lem:maximum-density-module}
-There is a unique $\tau\ge1$ satisfying
+There is a unique $\tau_D\ge1$ satisfying
 \begin{equation}
-                         \EE(\tau-P)^+=1.
+                         \EE(\tau_D-P)^+=1.
  \label{eq:common-threshold-equation}
 \end{equation}
-Choose $g_*$ to select every positive $p<\tau$, reject every $p>\tau$,
-and select an arbitrary fraction of an atom at $p=\tau$.  Put
+Choose $g_*$ to select every positive $p<\tau_D$, reject every $p>\tau_D$,
+and select an arbitrary fraction of an atom at $p=\tau_D$.  Put
 \begin{equation}
  a_*=a_D(g_*),\qquad w_*=w_D(g_*),\qquad
  d\nu(p)=(1-g_*(p))\one_{p>0}\,dD(p),
@@ -1339,30 +399,30 @@ and select an arbitrary fraction of an atom at $p=\tau$.  Put
 \end{equation}
 with $\nu(\{0\})=0$.  Then
 \begin{equation}
- \frac{a_*}{w_*}=\max_g\frac{a_D(g)}{w_D(g)}=\frac1\tau,
+ \frac{a_*}{w_*}=\max_g\frac{a_D(g)}{w_D(g)}=\frac1{\tau_D},
  \qquad
- \tau a_D(g)\le w_D(g)\quad\text{for every }g.
+ \tau_D a_D(g)\le w_D(g)\quad\text{for every }g.
  \label{eq:common-density-dual}
 \end{equation}
-Moreover, $\nu$ has mass $1-a_*$ and is supported on $[\tau,\infty)$.
+Moreover, $\nu$ has mass $1-a_*$ and is supported on $[\tau_D,\infty)$.
 \end{lemma}
 
 \begin{proof}
 The function $h(t)=\EE(t-P)^+$ is continuous and nondecreasing, satisfies
 $h(0)=0$, and tends to infinity because $h(t)\ge t-\EE P$.  Once positive it
 is strictly increasing, so $h(t)=1$ has a unique solution; $h(t)\le t$ gives
-$\tau\ge1$.
+$\tau_D\ge1$.
 
 For an arbitrary selector $g$,
 \[
- \tau a_D(g)-\EE[P g(P)\one_{P>0}]
- =\tau D(\{0\})+\EE[(\tau-P)g(P)\one_{P>0}]
- \le\EE(\tau-P)^+=1.
+ \tau_D a_D(g)-\EE[P g(P)\one_{P>0}]
+ =\tau_D D(\{0\})+\EE[(\tau_D-P)g(P)\one_{P>0}]
+ \le\EE(\tau_D-P)^+=1.
 \]
 This is the dual inequality in \cref{eq:common-density-dual}.  The threshold
 selector $g_*$ attains equality because it keeps exactly the terms with
-$\tau-p>0$; mass at $p=\tau$ does not affect the equality.  Hence
-$\tau a_*=w_*$ and $g_*$ has maximum density $1/\tau$.  Its unselected
+$\tau_D-p>0$; mass at $p=\tau_D$ does not affect the equality.  Hence
+$\tau_D a_*=w_*$ and $g_*$ has maximum density $1/\tau_D$.  Its unselected
 mass is $1-a_*$ and can occur only at values at least $\tau$.
 \end{proof}
 
@@ -1404,7 +464,7 @@ completion mode that uses $v\ge0$ work per completed job.  At a fluid
 schedule prefix, let $t$ be tested mass, $b$ mass completed by the independent
 mode, and $c_p$ processed tested mass of positive class $p$.  Define
 \begin{equation}
- H^v_{D,q}(x)\defeq
+ \mathcal C^v_{D,q}(x)\defeq
  \max\left\{
  D_0t+b+\sum_{p>0}c_p:
  \begin{array}{l}
@@ -1417,18 +477,18 @@ mode, and $c_p$ processed tested mass of positive class $p$.  Define
 
 \begin{lemma}[Test-module completion envelope]
 \label{lem:test-module-envelope}
-Let $(a_*,\tau,\nu)$ be supplied by
+Let $(a_*,\tau_D,\nu)$ be supplied by
 \cref{lem:maximum-density-module}.  Then
 \begin{equation}
- H^v_{D,q}=K_{M_{D,q,v}},
+ \mathcal C^v_{D,q}=K_{M_{D,q,v}},
  \qquad
  M_{D,q,v}\defeq
-  qa_*\delta_\tau+q\nu+(1-q)\delta_v.
+  qa_*\delta_{\tau_D}+q\nu+(1-q)\delta_v.
  \label{eq:common-envelope-items}
 \end{equation}
 Consequently,
 \begin{equation}
- \int_0^\infty\bigl(1-H^v_{D,q}(x)\bigr)\,dx
+ \int_0^\infty\bigl(1-\mathcal C^v_{D,q}(x)\bigr)\,dx
  =\frac12\iint\min\{r,s\}\,
    dM_{D,q,v}(r)dM_{D,q,v}(s).
  \label{eq:common-envelope-area}
@@ -1445,7 +505,7 @@ contributed by the tests, tested zeros, and processed selected outcomes.
 Applying \cref{eq:common-density-dual} to the processed fractions within the
 first $t$ units of tests gives
 \[
-                         \tau y_L\le x_L,
+                         \tau_D y_L\le x_L,
  \qquad                  y_L\le a_*t.
 \]
 With $\lambda=y_L/a_*$, replace this part by $\lambda$ full test modules.
@@ -1461,7 +521,7 @@ whenever its position in this order requires.  A partial test-module item is
 realized by the corresponding fraction of tests and selected outcomes.  Once
 all $q$ test modules have run, every residual capacity is available; this is
 early enough because \cref{lem:maximum-density-module} gives
-$\operatorname{supp}\nu\subseteq[\tau,\infty)$.  Hence the greedy curve is
+$\operatorname{supp}\nu\subseteq[\tau_D,\infty)$.  Hence the greedy curve is
 feasible at every work budget, proving the envelope identity.  The area
 formula follows from \cref{lem:divisible-spt-area}.
 \end{proof}
@@ -1481,12 +541,12 @@ For a deterministic policy the expectation is omitted.  The optimal ratio
 in a model is the infimum of such $R$ over all admissible policy families.
 
 For obligatory testing and for either model with fixed raw time $u>0$,
-\cref{eq:opt-n2,eq:optional-opt-n2} show that
-$\OPT=\Omega_u(n^2)$.  In these models the definition above is equivalent to
+\cref{eq:opt-n2,eq:optional-opt-n2} show that $\OPT$ is bounded below by a
+positive constant times $n^2$.  In these models the definition above is equivalent to
 the usual worst-case ratio after taking $n\to\infty$.  This equivalence fails
 for blind execution, where $\OPT$ can be $o(n^2)$.  Accordingly,
 \cref{thm:blind-instance} makes the absolute statement
-$\EE\ALG=n^2\Phiopt(D_M)+o_L(n^2)$ and does not claim a bounded ratio to the
+$\EE\ALG=n^2\PhiBE(D_M)+o_L(n^2)$ and does not claim a bounded ratio to the
 clairvoyant optimum on every sparse input.
 
 \subsection{Test-order adversaries}
@@ -1573,7 +633,7 @@ Finally, if $H_{k,j}$ counts class $j$ among the first $k$ entries, then
  &\le 2d(N+1)\exp\!\left(-\frac{2t^2}{N}\right),
  \label{eq:uniform-prefix-hoeffding}\\
  \EE\max_{0\le k\le N}\max_{1\le j\le d}|H_{k,j}-kp_j|
- &\le C\sqrt{N\log(2d(N+1))}
+ &\le C\sqrt{N\ln(2d(N+1))}
  \label{eq:uniform-prefix-mean}
 \end{align}
 for a universal constant $C$.
@@ -1636,53 +696,13 @@ one input in the finite support attains this average.  This is the one-sided
 finite form of Yao's principle~\cite{Yao1977} used in our lower bounds.
 \end{proof}
 
-\section{Deterministic obligatory testing: the exact ratio}
-\label{sec:obligatory}
+\input{optional_lower_and_curve}
 
-The goal of this section is to prove \cref{thm:det-obligatory}, the rigorous
-deterministic part of the informal obligatory-testing result
-\cref{thm:intro-obligatory} from the introduction.  Let $\zstar>1$ be the
-unique solution of
-\begin{equation}
- \zstar-3=\log\zstar,
- \label{eq:zstar}
-\end{equation}
-and put
-\begin{equation}
- \Rstar=1+\frac{2}{\zstar-1}
- =1.570574096649395\ldots .
- \label{eq:Rstar}
-\end{equation}
+\input{optional_upper}
 
-\begin{theorem}[Deterministic obligatory testing]
-\label{thm:det-obligatory}
-For every deterministic online algorithm $\mathcal B$ and every $\eps>0$,
-there are arbitrarily large obligatory-testing instances $I$ such that
-\[
- \cost(\mathcal B,I)\ge(\Rstar-\eps)\cost(\OPT,I).
-\]
-Conversely, there exist a deterministic algorithm $\mathcal A$ and an
-absolute constant $C$ such that every $n$-job instance satisfies
-\[
- \cost(\mathcal A,I)\le\Rstar\cost(\OPT,I)+Cn.
-\]
-Consequently the optimal deterministic size-asymptotic competitive ratio is
-exactly $\Rstar$.
-\end{theorem}
+\input{common_upper_instance}
 
-The proof has two independent halves.  For the lower bound we reveal many
-equal-sized groups of positive jobs from longest to shortest and hide a
-large group of zero jobs until the end.  Harmonic spacing makes the leading
-lower bound independent of the algorithm's choices.  For the upper bound,
-\textsc{AdaptiveThreshold} compares each revealed job with a threshold
-computed from the current history.  A four-endpoint reduction and a
-nonnegative bank account certify its cost.  These are also the two pieces
-reused in the finite-$u$ analysis.  The first subsection proves the lower
-half of the theorem; the second proves the upper half.
-
-\input{obligatory_lower}
-
-\input{obligatory_upper}
+\input{randomized_common_upper}
 
 \input{randomized_obligatory}
 
@@ -1691,14 +711,6 @@ half of the theorem; the second proves the upper half.
 \input{blind_optional}
 
 \input{blind_optimization}
-
-\input{optional_lower_and_curve}
-
-\input{optional_upper}
-
-\input{common_upper_instance}
-
-\input{randomized_common_upper}
 
 \section*{Acknowledgements}
 \addcontentsline{toc}{section}{Acknowledgements}

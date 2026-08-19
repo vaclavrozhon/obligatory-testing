@@ -11,7 +11,7 @@ available even to a policy that is told the input in advance.
 
 For a multiset $M=\{p_1,\ldots,p_n\}$, write $D_M$ for its empirical
 probability measure.  We define below an explicit number
-$\Phi_{\rm OT}(D_M)$.  It is obtained by scanning the processing times in
+$\PhiOT(D_M)$.  It is obtained by scanning the processing times in
 increasing order, choosing the prefix with the largest number of completions
 per unit of discovery work, and evaluating the stationary policy for that
 prefix.
@@ -25,14 +25,14 @@ $\eps_L(n)\to0$ such that, for every size-$n$ multiset
 $M\subseteq[0,L]$ and every fixed labeling $\sigma$,
 \begin{equation}
  \EE\cost(\mathcal A^*,\sigma(M))
- \le n^2\Phi_{\rm OT}(D_M)+\eps_L(n)n^2.
+ \le n^2\PhiOT(D_M)+\eps_L(n)n^2.
  \label{eq:ot-instance-upper}
 \end{equation}
 Conversely, for every randomized policy $\mathcal A$, even one told $M$ in
 advance, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE\cost(\mathcal A,\sigma(M))
- \ge n^2\Phi_{\rm OT}(D_M)-\eps_L(n)n^2.
+ \ge n^2\PhiOT(D_M)-\eps_L(n)n^2.
  \label{eq:ot-instance-lower}
 \end{equation}
 One may take $\eps_L(n)=O_L(n^{-1/5})$.  Thus $\mathcal A^*$ is
@@ -40,7 +40,7 @@ asymptotically instance-optimal, uniformly over all bounded inputs.
 \end{theorem}
 
 The upper estimate will have order $O_L(n^{-1/5})$.  The announced lower
-bound is sharper, of order $O_L(n^{-1/2}\sqrt{\log(n+2)})$; we use the slower
+bound is sharper, of order $O_L(n^{-1/2}\sqrt{\ln(n+2)})$; we use the slower
 common rate only to keep the theorem statement symmetric.
 
 \begin{theorem}[When instance optimality is impossible]
@@ -154,7 +154,7 @@ $g_*$, and put
 \begin{equation}
  a_*=a_D(g_*),\qquad w_*=w_D(g_*),\qquad
  \rho_* =\frac{a_*}{w_*},\qquad
- \theta_*=\frac1{\rho_*}=\tau.
+ \theta_*=\frac1{\rho_*}=\tau_D.
  \label{eq:ot-module-threshold}
 \end{equation}
 The residual measure $\nu$ from \cref{eq:common-module-data} has mass
@@ -170,7 +170,7 @@ class may be placed on either side.
 Define
 \begin{equation}
  \boxed{
- \Phi_{\rm OT}(D)
+ \PhiOT(D)
  =w_*\left(1-\frac{a_*}{2}\right)
   +\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q).}
  \label{eq:ot-Phi}
@@ -184,7 +184,7 @@ policy.
 \label{lem:ot-completion-envelope}
 For scaled time $s\ge0$, let
 \begin{equation}
- F_D(s)=\max\left\{
+ \mathcal C_D(s)=\max\left\{
   D(\{0\})T+\sum_{p>0}c_p:
   \begin{array}{l}
    0\le T\le1,\quad 0\le c_p\le D(\{p\})T,\\
@@ -192,19 +192,19 @@ For scaled time $s\ge0$, let
   \end{array}\right\}.
  \label{eq:ot-envelope}
 \end{equation}
-Then $F_D$ is attained simultaneously at all times by the stationary
+Then $\mathcal C_D$ is attained simultaneously at all times by the stationary
 maximum-density schedule: repeat infinitesimal full modules $g_*$ until all
 jobs have been tested, then process the residual measure $\nu$ in SPT order.
 Moreover,
 \begin{equation}
- \Phi_{\rm OT}(D)=\int_0^\infty(1-F_D(s))\,ds.
+ \PhiOT(D)=\int_0^\infty(1-\mathcal C_D(s))\,ds.
  \label{eq:ot-Phi-area}
 \end{equation}
 \end{lemma}
 
 \begin{proof}
 The envelope in \cref{eq:ot-envelope} is
-$H^v_{D,1}$ from \cref{eq:common-fluid-envelope}; the independent-mode term
+$\mathcal C^v_{D,1}$ from \cref{eq:common-fluid-envelope}; the independent-mode term
 has zero capacity, so $v$ is immaterial.  By
 \cref{lem:test-module-envelope}, its item measure is
 \[
@@ -215,7 +215,7 @@ then processes $\nu$ in SPT order, proving the pointwise assertion.  Since
 $\nu$ has mass $1-a_*$ and is supported above $\theta_*$, the common area
 formula \cref{eq:common-envelope-area} expands to
 \begin{align*}
- \int_0^\infty(1-F_D(s))\,ds
+ \int_0^\infty(1-\mathcal C_D(s))\,ds
  &=\theta_*\left(\frac{a_*^2}{2}+a_*(1-a_*)\right)
    +\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q)\\
  &=w_*\left(1-\frac{a_*}{2}\right)
@@ -234,7 +234,7 @@ identity \cref{eq:rand-stationary-cost} and
 \cref{eq:ot-Phi} give
 \begin{equation}
  \EE\cost(\mathrm{stat},M)
- =n^2\Phi_{\rm OT}(D_M)
+ =n^2\PhiOT(D_M)
   +\frac12\left(|E|+\sum_i p_i\right).
  \label{eq:ot-announced-upper}
 \end{equation}
@@ -270,7 +270,7 @@ indicators $\one_{p_i\le z}$ and union-bound over these thresholds.  This
 gives universal constants $c,C>0$ such that
 \begin{equation}
  \Prob(\Delta\ge u)\le2(n+1)^2e^{-cu^2/n},\qquad
- \EE\Delta\le C\sqrt{n\log(n+2)}.
+ \EE\Delta\le C\sqrt{n\ln(n+2)}.
  \label{eq:ot-discrepancy-concentration}
 \end{equation}
 
@@ -329,15 +329,15 @@ pathwise inequality
  \cost(\mathcal A,M)
  &\ge\int_0^{nH}
    \left[n(1-F_{D_M}(t/n))-\Delta\right]dt\notag\\
- &=n^2\Phi_{\rm OT}(D_M)-Hn\Delta.
+ &=n^2\PhiOT(D_M)-Hn\Delta.
  \label{eq:ot-announced-lower-pathwise}
 \end{align}
 Taking expectations and using
 \cref{eq:ot-discrepancy-concentration}, every deterministic announced policy
 has expected cost at least
 \begin{equation}
- n^2\Phi_{\rm OT}(D_M)
- -O\!\left(Hn^{3/2}\sqrt{\log(n+2)}\right).
+ n^2\PhiOT(D_M)
+ -O\!\left(Hn^{3/2}\sqrt{\ln(n+2)}\right).
  \label{eq:ot-announced-lower}
 \end{equation}
 Finite Yao selection \cref{lem:finite-yao} gives the same lower bound for
@@ -392,14 +392,14 @@ the sample, the standard empirical-optimization sandwich and
 \cref{eq:ot-template-lipschitz} give
 \begin{equation}
  \Psi_{D^+}(\widehat J)
- \le\Phi_{\rm OT}(D^+)+6(L+2)\Delta.
+ \le\PhiOT(D^+)+6(L+2)\Delta.
  \label{eq:ot-learning-sandwich}
 \end{equation}
 Rounding each processing time upward by at most $\eta$ preserves zeros and
 changes the fluid unfinished-mass area by at most $\eta$ under the coupled
 schedule.  Hence
 \begin{equation}
- \Phi_{\rm OT}(D^+)\le\Phi_{\rm OT}(D_M)+\eta.
+ \PhiOT(D^+)\le\PhiOT(D_M)+\eta.
  \label{eq:ot-rounding-stability}
 \end{equation}
 
@@ -424,7 +424,7 @@ Since
 we obtain
 \begin{equation}
  \EE\cost(\mathcal A^*,\sigma(M))
- \le n^2\Phi_{\rm OT}(D_M)+O_L(n^{9/5})
+ \le n^2\PhiOT(D_M)+O_L(n^{9/5})
  \label{eq:ot-instance-upper-rate}
 \end{equation}
 for every fixed labeling $\sigma$.  Together with
@@ -432,7 +432,7 @@ for every fixed labeling $\sigma$.  Together with
 \cref{thm:obligatory-instance}.
 
 Finally, the exact certificate \cref{eq:rand-certificate} says that
-$\Phi_{\rm OT}(D)$ is at most $4/3$ times the leading clairvoyant SPT value
+$\PhiOT(D)$ is at most $4/3$ times the leading clairvoyant SPT value
 for every $D$.  Equality is attained by
 $D=\tfrac12\delta_0+\tfrac12\delta_2$.  Thus the sharp $4/3$ theorem is
 exactly the worst-input consequence of the stronger instance-optimal
