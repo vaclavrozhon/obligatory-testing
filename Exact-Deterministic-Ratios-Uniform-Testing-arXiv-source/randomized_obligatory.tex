@@ -48,82 +48,33 @@ first prove the uniform upper bound and then give the short transfer.
 
 \subsubsection{Normalization of the offline pair identity}
 
-For a fixed vector $p$, put
-\begin{align}
- K(p)&=\frac1{n^2}\sum_{i,j}\min\{p_i,p_j\},
- &O(p)&=\frac{1+K(p)}2,\label{eq:rand-KO}\\
- D(p)&=\frac{n+\sum_i p_i}{2}.
-\end{align}
-The symmetric offline pair identity
-\cref{eq:unified-opt-symmetric}, specialized to $\lambda_i=1+p_i$, is equivalently
+For a fixed vector $p$, use $D_p$ and its minimum kernel $K_p$ from
+\cref{eq:stationary-kernel-split}.  The specialization in
+\cref{eq:model-offline-coefficients} and the exact linear correction are
 \begin{equation}
- \OPT(p)=n^2O(p)+D(p).
+ \Omega_{\mathsf{OT}}(D_p)=\frac{1+K_p}{2},
+ \qquad
+ \Delta_{\mathsf{OT}}(p)=\frac{n+\sum_i p_i}{2}.
+ \label{eq:rand-KO}
+\end{equation}
+The empirical effective-length
+identity \cref{eq:empirical-offline-model}, with $\ell(p)=1+p$, gives
+\begin{equation}
+ \OPT(p)=n^2\Omega_{\mathsf{OT}}(D_p)+\Delta_{\mathsf{OT}}(p).
  \label{eq:rand-opt-normalized}
 \end{equation}
-The linear correction $D(p)$ will be kept rather than hidden: this makes the
-analysis valid for unbounded processing times.
+The linear correction $\Delta_{\mathsf{OT}}(p)$ will be kept rather than
+hidden: this makes the analysis valid for unbounded processing times.
 
 \subsubsection{Stationary prefixes}
 
-A set $E$ is a \emph{processing-time prefix} if every value in $E$ is at
-most every value outside it.  We require that $E$ contain every zero job;
-otherwise a supposedly deferred zero completes at its test and the following
-identity is false.  Write $L=[n]\setminus E$ and
-\begin{equation}
- e=|E|,\quad a=\frac en,\quad h=1-a,\quad
- m=\frac1n\sum_{i\in E}p_i,\quad
- K_X=\frac1{n^2}\sum_{i,j\in X}\min\{p_i,p_j\}.
- \label{eq:rand-prefix-notation}
-\end{equation}
-Every early--late pair has minimum equal to its early value, so
-\begin{equation}
- K(p)=K_E+2hm+K_L.
- \label{eq:rand-K-split}
-\end{equation}
-Define
-\begin{equation}
- P(p,E)=(1+m)\left(1-\frac a2\right)+\frac{K_L}{2}.
- \label{eq:rand-P}
-\end{equation}
-
-The stationary policy for $E$ tests all jobs in a uniformly random order,
-processes a positive early job immediately after its test, and defers every
-late job.  After the final test it processes the late jobs in SPT order.
-
-\begin{lemma}[Exact stationary cost]
-\label{lem:rand-stationary-cost}
-For every processing-time prefix $E$ containing all zero jobs,
-\begin{equation}
- \EE\ALG_{\Stat}(p,E)
- =n^2P(p,E)+\frac{e+\sum_i p_i}{2}.
- \label{eq:rand-stationary-cost}
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-Let
-\[
- W=n+\sum_{i\in E}p_i,
- \qquad L_E=e+\sum_{i\in E}p_i.
-\]
-The discovery phase consists of $n$ blocks: an early block has length
-$1+p_i$ and completes its job, while a late block is its unit test and
-completes no job.  For an early job, each other block precedes it with
-probability $1/2$.  Its expected completion time is
-$W/2+(1+p_i)/2$, and the total early contribution is
-\begin{equation}
- \frac{eW+L_E}{2}.
- \label{eq:rand-early-cost}
-\end{equation}
-Every late job sees the common offset $W$.  Its tail contributes
-\begin{equation}
- (n-e)W+\sum_{i\in L}p_i
- +\sum_{\substack{i<j\\i,j\in L}}\min\{p_i,p_j\}.
- \label{eq:rand-late-cost}
-\end{equation}
-Adding \cref{eq:rand-early-cost,eq:rand-late-cost} and collecting diagonal
-terms gives \cref{eq:rand-stationary-cost}.
-\end{proof}
+Use the processing-time-prefix notation
+\cref{eq:stationary-prefix-notation,eq:stationary-kernel-split} and the
+coefficient $\Psi_{D_p}(E)$ from
+\cref{eq:stationary-leading-coefficient}.  We require that $E$ contain every
+zero job; otherwise a supposedly deferred zero completes at its test.  The
+stationary policy and its exact cost are supplied by the common pair identity
+\cref{lem:stationary-prefix-cost}.
 
 For a nonempty prefix define its completion density by
 \begin{equation}
@@ -137,22 +88,14 @@ Choose a maximum-density prefix and put
 \end{equation}
 All zeros belong to every maximizer: adding a zero increases the numerator
 without increasing the denominator.
-
-\begin{lemma}[Density threshold]
-\label{lem:rand-density-threshold}
-There is a maximum-density prefix for which every early value is at most
-$\theta$ and every late value is at least $\theta$.  Values equal to
-$\theta$ may be assigned to either side.
-\end{lemma}
-
-\begin{proof}
-Apply \cref{lem:maximum-density-module} to the empirical distribution of the
-$p_i$.  Its threshold selector is a processing-time prefix and has density
-$1/\tau$.  At the boundary $p_i=\tau$, adding or removing mass preserves the
-density, so the fractional boundary choice can be replaced by any subset of
-the tied occurrences.  For the resulting whole-occurrence prefix,
-$\theta=(1+m)/a=\tau$, which gives the claim.
-\end{proof}
+The empirical prefix corollary \cref{cor:empirical-density-prefix} lets us
+choose a maximizer with
+\begin{equation}
+ \theta=\tau_{D_p},\qquad
+ p_i\le\theta\ (i\in E),\qquad p_i\ge\theta\ (i\notin E),
+ \label{eq:rand-density-threshold}
+\end{equation}
+where tied occurrences may be assigned to either side.
 
 The next identity is the algebraic source of the constant $4/3$.
 
@@ -161,20 +104,20 @@ The next identity is the algebraic source of the constant $4/3$.
 For every ordered prefix split with $a>0$ and
 $\theta=(1+m)/a$,
 \begin{equation}
- 2\theta(4O-3P)
+ 2\theta\bigl(4\Omega_{\mathsf{OT}}(D_p)-3\Psi_{D_p}(E)\bigr)
   =(\theta-2)^2
    +4(\theta K_E-m^2)
-   +\theta(K_L-\theta h^2).
+   +\theta(K_T-\theta h^2).
  \label{eq:rand-certificate}
 \end{equation}
 Consequently:
 \begin{enumerate}[label=\textup{(\roman*)}]
 \item if early values are at most $\theta$ and late values are at least
-      $\theta$, then $P\le4O/3$;
+      $\theta$, then $\Psi_{D_p}(E)\le4\Omega_{\mathsf{OT}}(D_p)/3$;
 \item if early values are at most $\theta+s$ and late values are at least
       $\theta-s$, where $s\ge0$, then
       \begin{equation}
-       P\le\frac43O+\frac23s.
+       \Psi_{D_p}(E)\le\frac43\Omega_{\mathsf{OT}}(D_p)+\frac23s.
        \label{eq:rand-robust-certificate}
       \end{equation}
 \end{enumerate}
@@ -182,27 +125,28 @@ Consequently:
 
 \begin{proof}
 Expansion using $m=a\theta-1$, $h=1-a$, and
-\cref{eq:rand-K-split} gives \cref{eq:rand-certificate}.  Under exact
+\cref{eq:stationary-kernel-split} gives \cref{eq:rand-certificate}.  Under exact
 separation, $xy\le\theta\min\{x,y\}$ for early $x,y$, hence
 $m^2\le\theta K_E$; for late $x,y$, one has
-$\min\{x,y\}\ge\theta$, hence $K_L\ge\theta h^2$.  This proves (i).
+$\min\{x,y\}\ge\theta$, hence $K_T\ge\theta h^2$.  This proves (i).
 
 Under the relaxed inequalities,
 \[
  \theta K_E-m^2\ge-sK_E,
- \qquad K_L-\theta h^2\ge-sh^2.
+ \qquad K_T-\theta h^2\ge-sh^2.
 \]
 Moreover $K_E\le am\le a^2\theta$.  Substitution into
 \cref{eq:rand-certificate} yields
 \[
- P\le\frac43O+\frac23sa^2+\frac16sh^2
- \le\frac43O+\frac23s,
+ \Psi_{D_p}(E)
+ \le\frac43\Omega_{\mathsf{OT}}(D_p)+\frac23sa^2+\frac16sh^2
+ \le\frac43\Omega_{\mathsf{OT}}(D_p)+\frac23s,
 \]
 because $(2/3)a^2+(1/6)(1-a)^2\le2/3$ on $[0,1]$.
 \end{proof}
 
 Combining the exact certificate with
-\cref{lem:rand-stationary-cost,eq:rand-opt-normalized} already gives a finite
+\cref{lem:stationary-prefix-cost,eq:rand-opt-normalized} already gives a finite
 statement useful below.
 
 \begin{corollary}[Announced multiset]
@@ -214,19 +158,21 @@ prefix satisfies
 \]
 \end{corollary}
 
-Indeed, the correction in \cref{eq:rand-stationary-cost} is at most $D(p)$.
+Indeed, the correction in \cref{eq:stationary-prefix-cost} is at most
+$\Delta_{\mathsf{OT}}(p)$.
 Equality in the quadratic coefficient of \cref{eq:rand-certificate} forces
 $\theta=2$, zero mass $1/2$, and all positive mass at two.  This predicts the
 lower-bound instance before any probabilistic argument is used.
 
 We also use the following tail-safe estimate.  Direct expansion gives
 \begin{equation}
- P-O=\frac{h+am-K_E}{2}.
+ \Psi_{D_p}(E)-\Omega_{\mathsf{OT}}(D_p)
+ =\frac{h+am-K_E}{2}.
  \label{eq:rand-crude-identity}
 \end{equation}
 If all early values are at most $R\ge1$, then $m\le aR$ and therefore
 \begin{equation}
- P(p,E)\le O(p)+\frac R2.
+ \Psi_{D_p}(E)\le \Omega_{\mathsf{OT}}(D_p)+\frac R2.
  \label{eq:rand-bounded-early}
 \end{equation}
 
@@ -286,7 +232,7 @@ $\widehat\theta$, including categories with zero sample count.
 
 \begin{proof}
 The removal/addition calculation in
-\cref{lem:rand-density-threshold} applies to every positive-mass sample
+\cref{cor:empirical-density-prefix} applies to every positive-mass sample
 category.  Empty categories do not change the sample statistics, and adding
 mass at equality preserves the identity
 $1+\widehat m=\widehat a\widehat\theta$.  Closing the prefix therefore
@@ -374,11 +320,14 @@ Therefore, on a good learned sample,
 \end{equation}
 
 On a good fallback sample, comparison of sample and population densities
-shows that the true maximum-density reciprocal satisfies $\theta_*\ge B/4=8$.
+shows that the true maximum-density reciprocal satisfies
+$\tau_{D_p}\ge B/4=8$.
 The exact threshold inequalities imply
 \begin{equation}
- K(p)\ge\frac{(\theta_*-1)^2}{\theta_*},
- \qquad O(p)\ge\frac{\theta_*-1+1/\theta_*}{2}\ge\frac{57}{16}.
+ K_p\ge\frac{(\tau_{D_p}-1)^2}{\tau_{D_p}},
+ \qquad
+ \Omega_{\mathsf{OT}}(D_p)
+ \ge\frac{\tau_{D_p}-1+1/\tau_{D_p}}{2}\ge\frac{57}{16}.
  \label{eq:rand-fallback-opt-large}
 \end{equation}
 For every test order, test-all-then-SPT satisfies

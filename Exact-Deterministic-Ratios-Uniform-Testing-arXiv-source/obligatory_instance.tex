@@ -7,14 +7,14 @@ rigorous version of the ``one algorithm for every input'' statement
 a slight variant of the policy from \cref{sec:random-obligatory}, obtained by
 replacing its fixed cutoff $32$ by a slowly growing cutoff.  The new point is
 that this variant attains, on every bounded input, the best leading cost
-available even to a policy that is told the input in advance.
+available even to an announced policy.
 
-For a multiset $M=\{p_1,\ldots,p_n\}$, write $D_M$ for its empirical
-probability measure.  We define below an explicit number
-$\PhiOT(D_M)$.  It is obtained by scanning the processing times in
-increasing order, choosing the prefix with the largest number of completions
-per unit of discovery work, and evaluating the stationary policy for that
-prefix.
+For a multiset $M=\{p_1,\ldots,p_n\}$, we define below an explicit number
+$\PhiOT(D_M)$, using the common empirical notation
+\cref{eq:empirical-distributions}.  It is obtained by scanning the
+processing times in increasing order, choosing the prefix with the largest
+number of completions per unit of discovery work, and evaluating the
+stationary policy for that prefix.
 
 \begin{theorem}[Obligatory-testing instance optimality]
 \label{thm:obligatory-instance}
@@ -28,8 +28,8 @@ $M\subseteq[0,L]$ and every fixed labeling $\sigma$,
  \le n^2\PhiOT(D_M)+\eps_L(n)n^2.
  \label{eq:ot-instance-upper}
 \end{equation}
-Conversely, for every randomized policy $\mathcal A$, even one told $M$ in
-advance, some fixed oblivious labeling $\sigma$ satisfies
+Conversely, for every randomized policy $\mathcal A$, even an announced
+policy, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE\cost(\mathcal A,\sigma(M))
  \ge n^2\PhiOT(D_M)-\eps_L(n)n^2.
@@ -48,13 +48,13 @@ common rate only to keep the theorem statement symmetric.
 \begin{enumerate}[label=\textnormal{(\roman*)}]
 \item There is no deterministic instance-optimal policy, even when all job
 lengths lie in $[0,2]$.  More precisely, for every deterministic policy
-$\mathcal A$, even one told the input, and every even $n$, there is a fixed
+$\mathcal A$, even an announced one, and every even $n$, there is a fixed
 labeling of the input with $n/2$ zero jobs and $n/2$ length-two jobs for which
 \begin{equation}
  \cost(\mathcal A)\ge\frac98n^2.
  \label{eq:ot-det-not-instance-optimal}
 \end{equation}
-On the same input, a randomized policy $\mathcal A'$ that is told the input has
+On the same input, an announced randomized policy $\mathcal A'$ has
 \[
  \cost(\mathcal A')=n^2+\frac34n.
 \]
@@ -64,8 +64,8 @@ Thus $\cost(\mathcal A)>\cost(\mathcal A')+n^2/8-O(n)$.
 randomized instance-optimal policy with one uniform additive $o(n^2)$ term.
 More precisely, for every randomized policy $\mathcal A$ independent of the
 input and every sufficiently large $n$, there is an input with lengths in
-$[0,n^2]$, a fixed labeling, and a randomized policy $\mathcal A'$ told that
-input such that
+$[0,n^2]$, a fixed labeling, and an announced randomized policy $\mathcal A'$
+such that
 \begin{equation}
  \cost(\mathcal A)\ge\cost(\mathcal A')+\frac18n^2.
  \label{eq:ot-unbounded-not-instance-optimal}
@@ -97,7 +97,7 @@ this remaining work gives
 The comparison policy $\mathcal A'$ tests in a uniformly random order, completes zeros at
 their tests, defers every length-two job, and finally processes the deferred
 jobs.  This is the stationary policy with the zero jobs early.  Its exact
-cost identity \cref{eq:rand-stationary-cost} gives
+cost identity \cref{eq:stationary-prefix-cost} gives
 \[
  \cost(\mathcal A')=n^2+\frac34n.
 \]
@@ -131,7 +131,7 @@ therefore $X_K$ length-$H$ jobs complete before the zero.  From
  \label{eq:ot-zero-rank-completions}
 \end{equation}
 Forcing the zero job behind $X_K$ length-$H$ jobs adds $HX_K$ to the
-clairvoyant SPT lower bound.  On the other hand, a policy told $M^1$ can test
+clairvoyant SPT lower bound.  On the other hand, an announced policy can test
 in a private random order, defer positive jobs until it finds the zero, and
 then finish the positive jobs.  Its completion order is SPT, and moving its
 unit tests away from the corresponding processing operations costs at most
@@ -152,20 +152,15 @@ probability distribution $D$ on $[0,\infty)$.  Apply the maximum-density
 module \cref{lem:maximum-density-module}, choose its threshold selector
 $g_*$, and put
 \begin{equation}
- a_*=a_D(g_*),\qquad w_*=w_D(g_*),\qquad
- \rho_* =\frac{a_*}{w_*},\qquad
- \theta_*=\frac1{\rho_*}=\tau_D.
+ a_*=a_D(g_*),\qquad w_*=w_D(g_*)=a_*\tau_D.
  \label{eq:ot-module-threshold}
 \end{equation}
 The residual measure $\nu$ from \cref{eq:common-module-data} has mass
-$1-a_*$ and support in $[\theta_*,\infty)$.  For an empirical measure one
+$1-a_*$ and support in $[\tau_D,\infty)$.  For an empirical measure one
 may equivalently sort the occurrences and maximize
-\begin{equation}
- \frac{|E|/n}{1+n^{-1}\sum_{i\in E}p_i}
- \label{eq:ot-empirical-density}
-\end{equation}
-over processing-time prefixes $E$ containing all zeros.  A tied boundary
-class may be placed on either side.
+\cref{eq:empirical-prefix-density} over processing-time prefixes $E$
+containing all zeros.  A tied boundary class may be placed on either side,
+by \cref{cor:empirical-density-prefix}.
 
 Define
 \begin{equation}
@@ -176,7 +171,8 @@ Define
  \label{eq:ot-Phi}
 \end{equation}
 For $D=D_M$ and a whole-occurrence maximizing prefix $E$, this is precisely
-$P(p,E)$ from \cref{eq:rand-P}.  The next lemma proves both that the value is
+$\Psi_{D_M}(E)$ from \cref{eq:stationary-leading-coefficient}.  The next
+lemma proves both that the value is
 independent of choices at a tied atom and that it lower-bounds every fluid
 policy.
 
@@ -184,7 +180,7 @@ policy.
 \label{lem:ot-completion-envelope}
 For scaled time $s\ge0$, let
 \begin{equation}
- \mathcal C_D(s)=\max\left\{
+ \mathcal C^{\mathsf{OT}}_D(s)=\max\left\{
   D(\{0\})T+\sum_{p>0}c_p:
   \begin{array}{l}
    0\le T\le1,\quad 0\le c_p\le D(\{p\})T,\\
@@ -192,12 +188,12 @@ For scaled time $s\ge0$, let
   \end{array}\right\}.
  \label{eq:ot-envelope}
 \end{equation}
-Then $\mathcal C_D$ is attained simultaneously at all times by the stationary
+Then $\mathcal C^{\mathsf{OT}}_D$ is attained simultaneously at all times by the stationary
 maximum-density schedule: repeat infinitesimal full modules $g_*$ until all
 jobs have been tested, then process the residual measure $\nu$ in SPT order.
 Moreover,
 \begin{equation}
- \PhiOT(D)=\int_0^\infty(1-\mathcal C_D(s))\,ds.
+ \PhiOT(D)=\int_0^\infty(1-\mathcal C^{\mathsf{OT}}_D(s))\,ds.
  \label{eq:ot-Phi-area}
 \end{equation}
 \end{lemma}
@@ -208,20 +204,20 @@ $\mathcal C^v_{D,1}$ from \cref{eq:common-fluid-envelope}; the independent-mode 
 has zero capacity, so $v$ is immaterial.  By
 \cref{lem:test-module-envelope}, its item measure is
 \[
-                         a_*\delta_{\theta_*}+\nu.
+                         a_*\delta_{\tau_D}+\nu.
 \]
 The greedy realization first repeats the full maximum-density module and
 then processes $\nu$ in SPT order, proving the pointwise assertion.  Since
-$\nu$ has mass $1-a_*$ and is supported above $\theta_*$, the common area
+$\nu$ has mass $1-a_*$ and is supported above $\tau_D$, the common area
 formula \cref{eq:common-envelope-area} expands to
 \begin{align*}
- \int_0^\infty(1-\mathcal C_D(s))\,ds
- &=\theta_*\left(\frac{a_*^2}{2}+a_*(1-a_*)\right)
+ \int_0^\infty(1-\mathcal C^{\mathsf{OT}}_D(s))\,ds
+ &=\tau_D\left(\frac{a_*^2}{2}+a_*(1-a_*)\right)
    +\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q)\\
  &=w_*\left(1-\frac{a_*}{2}\right)
    +\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q),
 \end{align*}
-because $w_*=a_*\theta_*$.  This is \cref{eq:ot-Phi} and is unaffected by
+because $w_*=a_*\tau_D$.  This is \cref{eq:ot-Phi} and is unaffected by
 how a boundary atom is split.
 \end{proof}
 
@@ -230,7 +226,7 @@ how a boundary atom is split.
 Suppose the input is announced but its labeling is not.  Choose a maximizing
 whole-occurrence prefix $E$, test labels in a uniformly random order, process
 an $E$-job immediately, and finish the residual jobs in SPT order.  The exact
-identity \cref{eq:rand-stationary-cost} and
+identity \cref{eq:stationary-prefix-cost} and
 \cref{eq:ot-Phi} give
 \begin{equation}
  \EE\cost(\mathrm{stat},M)
@@ -245,12 +241,11 @@ value plus $O_L(n)$.
 \subsection{No adaptive announced policy has a better leading cost}
 
 Assign the occurrences of $M$ uniformly to the public labels and fix a
-deterministic nonanticipating policy.  In the adaptive order in which it
-tests new labels, the revealed occurrences form a uniform random permutation
-$P_1,\ldots,P_n$ of $M$.  One way to see this without assuming distinct
-processing times is to give equal-valued occurrences temporary private
-tokens: the map from a placement to the order in which the policy first
-reveals these tokens is a bijection of the finite permutation space.
+deterministic nonanticipating policy.  We may assume that it completes every
+job, since otherwise the lower bound is immediate.  In the adaptive order in
+which it tests new labels, the revealed occurrences form a uniform random permutation
+$P_1,\ldots,P_n$ of $M$.  This is \cref{lem:adaptive-first-touch}, with
+equal-valued occurrences kept distinct as temporary tokens.
 
 For every prefix length $k$ and threshold $z$, put
 \begin{equation}
@@ -346,7 +341,7 @@ an oblivious finite input distribution, so some fixed placement has at least
 the average cost.
 When $p_i\le L$, one has $H\le1+L$, uniformly over $M$.
 
-\subsection{The same unannounced policy for every input}
+\subsection{Removing the announcement}
 
 It remains to prove \cref{eq:ot-instance-upper}.  Start with the policy from
 \cref{sec:random-obligatory}, keep its sampling, threshold, and fallback
@@ -388,16 +383,15 @@ product measures.  The displayed loose constant covers the three terms.
 
 By \cref{lem:ot-completion-envelope}, a maximum-density prefix minimizes
 $\Psi_D(J)$ over grid prefixes.  If $\widehat J$ is the prefix learned from
-the sample, the standard empirical-optimization sandwich and
-\cref{eq:ot-template-lipschitz} give
+the sample, \cref{lem:empirical-minimization}, together with
+\cref{eq:ot-template-lipschitz}, gives
 \begin{equation}
  \Psi_{D^+}(\widehat J)
  \le\PhiOT(D^+)+6(L+2)\Delta.
  \label{eq:ot-learning-sandwich}
 \end{equation}
-Rounding each processing time upward by at most $\eta$ preserves zeros and
-changes the fluid unfinished-mass area by at most $\eta$ under the coupled
-schedule.  Hence
+Rounding each processing time upward by at most $\eta$ preserves zeros, so
+\cref{lem:zero-preserving-transport} gives
 \begin{equation}
  \PhiOT(D^+)\le\PhiOT(D_M)+\eta.
  \label{eq:ot-rounding-stability}

@@ -3,17 +3,10 @@
 
 We now prove the upper bounds on the two ranges on which capped outcomes
 matter.  Besides completing the upper-bound side of the revealing-optimization curve,
-the proof records explicitly why an outcome on the optional cap cannot be
+the proof records explicitly why an outcome at the raw cap cannot be
 treated as an ordinary deferred outcome.  Throughout this subsection,
-\[
- R=1+c,
- \qquad
- \varphi=\frac{1+\sqrt5}{2},
-\]
-and $\zstar>1$ is the solution of $\zstar-3=\ln \zstar$.  We also set
-\[
- r=\frac{2}{\zstar-1}.
-\]
+$R=1+c$, and we retain $\varphi$, $\zstar$, and $r$ from
+\cref{eq:opt:phi-udiamond,eq:opt:obligatory-constant}.
 
 For every $c>0$ define the history-dependent threshold
 \begin{equation}
@@ -48,14 +41,9 @@ It does not use raw execution and therefore does not depend on $u$.
 \end{algorithmic}
 \end{algorithm}
 
-For $c\in[r,1/\varphi]$, let $m=m(c)\in[0,1/\varphi]$ be determined by
-\begin{equation}
- \operatorname{artanh}m-m
- =1-\frac1c+\frac12\ln\!\left(1+\frac2c\right),
- \qquad
- u=1+\frac2c-m.
- \label{eq:opt:upper-mixed-parametrization}
-\end{equation}
+For $c\in[r,1/\varphi]$, let $m=m(c)\in[0,1/\varphi]$ and $u=u(c)$ be
+determined by the common parametrization
+\cref{eq:opt:mixed-parametrization}.
 The right-hand side of the first equation is strictly increasing in $c$,
 as is the left-hand side in $m$.  Consequently $m(c)$ is increasing and
 $u(c)$ is decreasing.  The endpoints are
@@ -72,12 +60,12 @@ For every finite $u\in[\varphi+2,\infty)$, the formally specified algorithm
 \cref{alg:adaptive-threshold}
 satisfies
 \[
- \operatorname{ALG}\le
+ \ALG\le
  \begin{cases}
-  (1+c)\operatorname{OPT}+O_u(n),
+  (1+c)\OPT+O_u(n),
      & \varphi+2\le u\le \zstar,
-       \quad c\text{ given by \eqref{eq:opt:upper-mixed-parametrization}},\\[1mm]
-  (1+r)\operatorname{OPT}+O(n),
+       \quad c\text{ given by \eqref{eq:opt:mixed-parametrization}},\\[1mm]
+  (1+r)\OPT+O(n),
      & u\ge \zstar.
  \end{cases}
 \]
@@ -121,7 +109,7 @@ Write
 \[
  \bar p_i=\min\{p_i,u-1\}.
 \]
-By \cref{eq:optional-effective-length,lem:offline}, the clairvoyant optional
+By \cref{eq:optional-effective-length,lem:offline}, the clairvoyant revealing
 optimum is SPT on jobs of effective lengths
 $1+\bar p_i=\min\{1+p_i,u\}$.  For two jobs tested in the order $i<j$, let
 \begin{equation}
@@ -140,14 +128,14 @@ The first line applies whenever $i$ is immediate, regardless of the
 action taken on $j$.  Pairwise completion-time accounting for the online
 schedule gives
 \begin{equation}
- \operatorname{ALG}
+ \ALG
  =\sum_i(1+p_i)
    +\sum_{i<j}\bigl(1+\min\{p_i,p_j\}+e_{ij}\bigr),
  \label{eq:opt:alg-pair-decomposition}
 \end{equation}
 whereas the common offline pair identity \cref{eq:optional-opt-pair} gives
 \begin{equation}
- \operatorname{OPT}
+ \OPT
  =\sum_i(1+\bar p_i)
    +\sum_{i<j}\bigl(1+\min\{\bar p_i,\bar p_j\}\bigr).
  \label{eq:opt:opt-pair-decomposition}
@@ -162,7 +150,7 @@ It is therefore natural to introduce
 Equations \eqref{eq:opt:alg-pair-decomposition}--
 \eqref{eq:opt:pair-objective} yield the exact identity
 \begin{equation}
- \operatorname{ALG}-R\operatorname{OPT}
+ \ALG-R\OPT
  =\Gamma_n-c\binom n2
   +\sum_i\bigl[(1+p_i)-R(1+\bar p_i)\bigr].
  \label{eq:opt:gap-decomposition}
@@ -376,7 +364,7 @@ Define
  \delta=Z(c)-u.
  \label{eq:opt:Z-delta}
 \end{equation}
-On the mixed curve, \eqref{eq:opt:upper-mixed-parametrization} says precisely
+On the mixed curve, \eqref{eq:opt:mixed-parametrization} says precisely
 that
 \begin{equation}
  \delta=\operatorname{artanh}m.
@@ -476,7 +464,7 @@ Indeed,
  \int_0^m t\operatorname{artanh}t\,dt
  =\frac{(m^2-1)\operatorname{artanh}m+m}{2}.
 \]
-Using \eqref{eq:opt:upper-mixed-parametrization} and
+Using \eqref{eq:opt:mixed-parametrization} and
 \eqref{eq:opt:delta-atanh}, we obtain the exact calibration
 \begin{equation}
  f_c(0)+\mathcal H(0)
@@ -532,11 +520,11 @@ It follows that a unit transition has the Taylor remainder
  \label{eq:opt:finite-taylor}
 \end{equation}
 The endpoint $E=0^+$ is interpreted one-sidedly.  For a fixed symbolic
-word, replace all $E$-coordinates by positive values $\epsilon$.  Its
+word, replace all $E$-coordinates by positive values $\eps$.  Its
 state trajectory is unchanged, and the exact finite pair objective, being
 a finite sum of affine and minimum terms, converges as
-$\epsilon\downarrow0$.  Equivalently, retain an
-$O(\epsilon n^2)$ error and take this limit for each fixed $n$.
+$\eps\downarrow0$.  Equivalently, retain an
+$O(\eps n^2)$ error and take this limit for each fixed $n$.
 Therefore the formal $E$-Hamiltonian transfers to genuine outcome
 vectors without an asymptotic loss.
 
@@ -549,7 +537,7 @@ Summing \eqref{eq:opt:finite-taylor}, using $W\ge0$, and applying
 Together with \eqref{eq:opt:gap-decomposition} and
 \eqref{eq:opt:pair-allocation-dominates}, this yields
 \begin{align}
- \operatorname{ALG}-R\operatorname{OPT}
+ \ALG-R\OPT
  &\le -c\binom n2+\frac c2n^2+O_u(n)
  =O_u(n).
  \label{eq:opt:mixed-upper-finite}
@@ -581,14 +569,14 @@ $[\zstar,\infty)$.  Combining
 \cref{eq:opt:gap-decomposition,eq:opt:pair-allocation-dominates,eq:opt:uniform-ell}
 now yields
 \begin{align}
- \operatorname{ALG}-(1+r)\operatorname{OPT}
+ \ALG-(1+r)\OPT
  &\le-r\binom n2+\frac r2n^2+\kappa n
    =\left(\kappa+\frac r2\right)n.
  \label{eq:opt:uniform-high-gap}
 \end{align}
 Thus, with $B=\kappa+r/2$,
 \begin{equation}
- \operatorname{ALG}\le(1+r)\operatorname{OPT}+B n
+ \ALG\le(1+r)\OPT+B n
  \qquad\text{for every finite }u\in[\zstar,\infty),
  \label{eq:opt:uniform-high-upper}
 \end{equation}
@@ -596,7 +584,7 @@ and $B$ is independent of $u$.  The estimate is genuinely uniform rather
 than the result of sending a parameter-dependent remainder to infinity.  This proves
 \cref{thm:opt:optional-middle-upper}.  Finally, because $u>1$ on the
 present range, every effective offline length is at least one and
-$\operatorname{OPT}\ge n(n+1)/2$.  The additive term in
+$\OPT\ge n(n+1)/2$.  The additive term in
 \eqref{eq:opt:mixed-upper-finite} vanishes in the size-asymptotic ratio.
 
 \hfill$\square$
@@ -613,7 +601,7 @@ so the endpoint now follows by a short transfer.
 \begin{theorem}[Deterministic obligatory testing]
 \label{thm:det-obligatory}
 Let $\zstar>1$ be the unique solution of
-$\zstar-3=\ln\zstar$, and set
+$\zstar-3=\ln \zstar$, and set
 \[
  \RdetOT=1+\frac{2}{\zstar-1}
  =1.570574096649395\ldots .
@@ -787,21 +775,21 @@ $\mu=0$, and increasing $u$ only lowers
 \eqref{eq:opt:prefix-objective}.
 
 To make this independent exchange proof finite, fix
-$\varepsilon>0$ and first replace the last
-$\varepsilon n+O(1)$ outcomes by genuine zeros.  Earlier states and
-actions are unchanged, and only $O(\varepsilon n^2+n)$ pair terms are
+$\eps>0$ and first replace the last
+$\eps n+O(1)$ outcomes by genuine zeros.  Earlier states and
+actions are unchanged, and only $O(\eps n^2+n)$ pair terms are
 affected.  All cap and ordinary exchanges in the retained prefix then
-occur with $x\ge\varepsilon$; their displayed fluid commutators have
+occur with $x\ge\eps$; their displayed fluid commutators have
 uniform Taylor remainders there.  More precisely, after assigning mass
 $1/n$ to every job, a normalized adjacent exchange has remainder
-$O_{u,\varepsilon}(n^{-3})$; there are at most $n^2$ exchanges.  At the
+$O_{u,\eps}(n^{-3})$; there are at most $n^2$ exchanges.  At the
 join $y=-1$, split an exchange at the join and use the two one-sided
 formulae, whose values agree.  The artificial zeros already form the
 terminal block, so no unbubbled suffix cap invalidates
 \eqref{eq:opt:ordinary-commutators}.  The normalized one-job remainder in
 the continuation-potential calculation is
-$O_{u,\varepsilon}(n^{-2})$.  For fixed $\varepsilon$, first let
-$n\to\infty$, and then let $\varepsilon\downarrow0$.  Equations
+$O_{u,\eps}(n^{-2})$.  For fixed $\eps$, first let
+$n\to\infty$, and then let $\eps\downarrow0$.  Equations
 \eqref{eq:opt:ordinary-HJB}--\eqref{eq:opt:prefix-maximum} give
 \[
  \Gamma_n\le c\binom n2+o(n^2),

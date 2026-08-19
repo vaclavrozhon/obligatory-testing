@@ -10,7 +10,8 @@ revealing-optimization theorem \cref{thm:intro-common-upper-instance}.
 For a distribution $D$ on $[0,u]$, we define an explicit value
 $\PhiRO(D)$ in \cref{eq:cui-Phi}.  It is obtained by choosing one threshold
 and minimizing a quadratic over the tested fraction $q$.  For a multiset
-$M$, write $D_M$ for its empirical distribution.
+$M$, use the empirical distribution $D_M$ from
+\cref{eq:empirical-distributions}.
 
 \begin{theorem}[Revealing-optimization instance optimality]
 \label{thm:common-upper-instance}
@@ -25,7 +26,7 @@ For every fixed labeling $\sigma$,
  \label{eq:cui-upper}
 \end{equation}
 Conversely, for every randomized nonanticipating policy $\mathcal A$, even
-one told $M$, some fixed oblivious labeling $\sigma$ satisfies
+an announced policy, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE\cost(\mathcal A,\sigma(M))
  \ge n^2\PhiRO(D_M)-\eps_u(n)n^2.
@@ -51,21 +52,19 @@ without announcing the input.  The first subsection begins the formal proof.
 \label{sec:cui-fluid}
 
 Let $D$ initially have finite support, let $P\sim D$, and put
-\[
- D_0=\Pr(P=0),\qquad \mu=\EE P.
-\]
+$\mu=\EE P$.
 A test automatically completes a zero outcome.  Apply
-\cref{lem:maximum-density-module} and choose its threshold selector $g^*$.
+\cref{lem:maximum-density-module} and choose its threshold selector $g_*$.
 Write
 \begin{equation}
- a=a_D(g^*),\qquad \ell=\EE[P g^*(P)\one_{P>0}],
- \qquad \tau=\tau_D=\frac{1+\ell}{a},
+ a=a_D(g_*),\qquad \ell=\EE[P g_*(P)\one_{P>0}],
+ \qquad \tau_D=\frac{1+\ell}{a}.
  \label{eq:cui-tau}
 \end{equation}
-Let $D_i=D(\{p_i\})$ on the positive support and let $R_i=\nu(\{p_i\})$
-be the residual masses from \cref{lem:maximum-density-module}.  Thus
+Let $R_i=\nu(\{p_i\})$ be the residual masses on the positive support from
+\cref{lem:maximum-density-module}.  Thus
 \begin{equation}
- \sum_iR_i=1-a,\qquad p_i\ge\tau\text{ whenever }R_i>0.
+ \sum_iR_i=1-a,\qquad p_i\ge\tau_D\text{ whenever }R_i>0.
  \label{eq:cui-residual}
 \end{equation}
 For a fixed final tested fraction $q\in[0,1]$, let $\mathcal C^u_{D,q}$ be the common
@@ -80,21 +79,21 @@ The envelope $\mathcal C^u_{D,q}$ is the divisible-knapsack curve with items
 \toprule
 item & completion capacity & work per completion\\
 \midrule
-maximum-density test module & $aq$ & $\tau$\\
+maximum-density test module & $aq$ & $\tau_D$\\
 residual tested class $i$ & $qR_i$ & $p_i$\\
 raw module & $1-q$ & $u$\\
 \bottomrule
 \end{tabular}
 \end{center}
-If $\tau<u$, the greedy order is the test module, the residual classes in
-nondecreasing $p_i$, and the raw module.  If $\tau\ge u$, the all-raw curve
+If $\tau_D<u$, the greedy order is the test module, the residual classes in
+nondecreasing $p_i$, and the raw module.  If $\tau_D\ge u$, the all-raw curve
 pointwise dominates every choice with $q>0$.
 \end{lemma}
 
 \begin{proof}
 Apply \cref{lem:test-module-envelope} with $v=u$.  It gives exactly the three
-displayed kinds of items.  If $\tau<u$, their work-per-completion values obey
-$\tau\le p_i\le u$.  If $\tau\ge u$, every test and residual item costs at
+displayed kinds of items.  If $\tau_D<u$, their work-per-completion values obey
+$\tau_D\le p_i\le u$.  If $\tau_D\ge u$, every test and residual item costs at
 least $u$ per completion, while the $q=0$ envelope consists of one raw item
 of capacity one and cost $u$.
 \end{proof}
@@ -120,8 +119,8 @@ block.  Define
 \begin{equation}
  \PhiRO(D)=
  \begin{cases}
-  \displaystyle\min_{0\le q\le1}F_{\mathsf{RO},u,D}(q),&\tau<u,\\[3pt]
-  u/2,&\tau\ge u.
+  \displaystyle\min_{0\le q\le1}F_{\mathsf{RO},u,D}(q),&\tau_D<u,\\[3pt]
+  u/2,&\tau_D\ge u.
  \end{cases}
  \label{eq:cui-Phi}
 \end{equation}
@@ -137,7 +136,7 @@ gives a feasible point for the corresponding convex combination of the two
 fractions.  Hence $\mathcal C^u_{D,q}(x)$ is concave in $q$, its remaining-mass area is
 convex, and $B\ge0$.  Moreover,
 \[
- \tau<u\quad\Longleftrightarrow\quad\EE(u-P)>1
+ \tau_D<u\quad\Longleftrightarrow\quad\EE(u-P)>1
  \quad\Longleftrightarrow\quad A<0.
 \]
 Thus the minimizer is
@@ -155,55 +154,20 @@ $F_{\mathsf{RO},u,D}(q)\ge\PhiRO(D)$.
 
 We now transfer the fluid envelope to a finite policy which may choose labels
 and its stopping time adaptively.  Equal-valued jobs are first distinguished
-as occurrence tokens.  Let $J$ be the public labels, $\Omega$ the tokens,
-$v:\Omega\to[0,u]$ their values, and let a placement
-$\sigma:J\to\Omega$ be a bijection.  Fix the private seed of a completing
-deterministic policy.  In its run on $\sigma$, list the labels in order of
-first touch,
-\[
- \ell_1(\sigma),\ldots,\ell_n(\sigma),
-\]
-where a first touch is a test or a raw execution, and define
-\begin{equation}
- R_{\mathcal A}(\sigma)_k=\sigma(\ell_k(\sigma)).
- \label{eq:cui-reveal-order}
-\end{equation}
-
-\begin{lemma}[Adaptive first-touch bijection]
-\label{lem:cui-trace-bijection}
-The map $\sigma\mapsto R_{\mathcal A}(\sigma)$ is a bijection from placements
-to permutations of $\Omega$.  Whether touch $k$ is a test or a raw execution
-is determined by the preceding hidden values
-$v(R_{\mathcal A}(\sigma)_1),\ldots,
-v(R_{\mathcal A}(\sigma)_{k-1})$.
-\end{lemma}
-
-\begin{proof}
-Suppose two placements have the same occurrence order.  A lockstep induction
-shows that the two runs have the same observable history before every first
-touch.  Between touches, equal histories prescribe the same known-job
-operations.  At the next touch they prescribe the same fresh label and the
-same test/raw choice.  A test then reveals the same next token value; a raw
-operation lasts the same public time $u$ and reveals no value.  Thus the
-first-touch labels agree at every position.  Equality of the occurrence
-orders now gives equality of the placements on a permutation of all labels.
-The map is injective between finite sets of the same cardinality $n!$, hence
-bijective.  The same induction stopped after a common value prefix proves
-predictability.  The hidden value of a raw occurrence is extra analytical
-information and therefore cannot invalidate that conclusion.
-\end{proof}
-
-Under a uniform placement, the occurrence order is consequently a uniform
-permutation.  Partition $[0,u]$ into $K+1$ cells, keeping zero separate, and
-let $D_j$ be the exact mass of cell $j$.  If $X_k$ is the value at touch $k$
-and $A_k$ is the predictable indicator that this touch is a test, the
-following event is uniform over the policy.
+as occurrence tokens.  Fix the private seed of a completing policy and apply
+the common first-touch permutation lemma \cref{lem:adaptive-first-touch}.
+Under a uniform placement, the token values $X_1,\ldots,X_n$ encountered at
+first touches form a uniform random permutation, and the indicator $A_k$
+that touch $k$ is a test is predictable.  Partition $[0,u]$ into $K+1$
+cells, keeping zero separate, and let $d_j$ be the exact mass of cell $j$.
+The following event is therefore uniform over the policy.
 
 \begin{lemma}[Predictable urn discrepancy]
 \label{lem:cui-urn}
 Fix $\delta\in(0,1)$ and put
 \begin{equation}
- e_n=\sqrt{8n\ln(n(K+2))},
+ e_n=E_{n,K+1,1,n^{-2}}
+ =\sqrt{2n\ln\!\bigl(4(K+1)(n+1)n^2\bigr)},
  \qquad
  \Gamma_n=(1+\delta^{-1})e_n.
  \label{eq:cui-Gamma}
@@ -212,26 +176,15 @@ With probability $1-o(1)$, simultaneously for every cell $j$ and every touch
 prefix $m\le(1-\delta)n$,
 \begin{equation}
  \left|\sum_{k\le m}A_k\one_{X_k\in j}
-       -D_j\sum_{k\le m}A_k\right|\le\Gamma_n.
+       -d_j\sum_{k\le m}A_k\right|\le\Gamma_n.
  \label{eq:cui-urn-discrepancy}
 \end{equation}
-If $K$ is polynomial in $n$, the failure probability is inverse polynomial.
+The failure probability is at most $n^{-2}$.
 \end{lemma}
 
 \begin{proof}
-The uniform-prefix sampling bound
-\cref{eq:uniform-prefix-hoeffding}, applied to all cells, gives
-$|N_j(k)-kD_j|\le e_n$ simultaneously, except with inverse-polynomial
-probability.  While $k\le(1-\delta)n$, the remaining proportion
-$R_{k,j}$ therefore obeys
-$|R_{k,j}-D_j|\le e_n/(\delta n)$.  Since $A_k$ is predictable,
-\[
- \sum_{k\le m}A_k(\one_{X_k\in j}-R_{k-1,j})
-\]
-is a martingale with increments bounded by one.  The maximal
-Azuma--Hoeffding bound \cref{eq:maximal-azuma}, again union-bounded over the cells, places its running
-maximum below $e_n$.  Adding the predictable drift gives
-\cref{eq:cui-urn-discrepancy}.
+Apply \cref{lem:predictable-permutation-sampling} to the $(K+1)$-dimensional
+cell-indicator vectors, with $B=1$ and $\eta=n^{-2}$.
 \end{proof}
 
 Stop the first-touch sequence when only $\delta n+O(1)$ labels remain.  In
@@ -282,9 +235,7 @@ For an arbitrary multiset, take
 \end{equation}
 keep zero separate, and round every positive value upward.  If two
 distributions admit a zero-preserving coupling with pointwise displacement
-at most $h$, transporting the same fluid policy changes total known
-processing work by at most $h$ and hence changes its remaining-mass area by
-at most $h$.  Therefore
+at most $h$, the transport lemma \cref{lem:zero-preserving-transport} gives
 \begin{equation}
  |\PhiRO(D)-\PhiRO(D')|\le h.
  \label{eq:cui-rounding-stability}
@@ -307,14 +258,15 @@ cost at least
  -O_u\!\left(n^{11/6}\sqrt{\ln(n+2)}\right).
  \label{eq:cui-announced-lower}
 \end{equation}
-At least one placement has seed-expected cost at least this average.  It is
-chosen before the seed and is therefore a fixed oblivious labeling.  This
-proves \cref{eq:cui-lower}.
+Finite Yao selection \cref{lem:finite-yao} gives a placement whose
+seed-expected cost is at least this average.  It is chosen before the seed
+and is therefore a fixed oblivious labeling.  This proves
+\cref{eq:cui-lower}.
 
-\subsection{A universal policy without the multiset}
+\subsection{Removing the announcement}
 \label{sec:cui-learning}
 
-It remains to attain the benchmark without being told $M$.  We first record
+It remains to attain the benchmark without an announcement.  We first record
 the finite cost of one canonical template: select $r$ labels uniformly,
 test them in random order while immediately processing outcomes in a fixed
 low prefix, then process the tested residual stock in SPT order and finally
@@ -369,12 +321,13 @@ two-draw expectation.  Inserting an intermediate product measure shows
  \label{eq:cui-template-Lipschitz}
 \end{equation}
 uniformly over the grid and template.  The same bound holds for the minima.
-The threshold lemma and completion envelope show that the minimum over this
-common template family is exactly $\PhiRO(D)$.
+The maximum-density and completion-envelope results
+\cref{lem:maximum-density-module,lem:cui-envelope} show that the minimum
+over this common template family is exactly $\PhiRO(D)$.
 
 Condition on the sample.  The learned template is fixed and the unused labels
-are uniformly ordered, so \cref{eq:cui-finite-kernel} applies.  The usual
-empirical-minimization sandwich, twice using
+are uniformly ordered, so \cref{eq:cui-finite-kernel} applies.  The transfer
+lemma \cref{lem:empirical-minimization}, with
 \cref{eq:cui-template-Lipschitz}, bounds the main cost by
 \[
  (n-k_n)^2\left(

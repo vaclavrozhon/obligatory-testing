@@ -243,8 +243,8 @@ notation $\OPT(I)$.
 
 \subsection{Information and adversaries}
 
-The deterministic revealing-optimization results allow the usual adversarial input and
-use adaptive revelation only as a lower-bound device that is frozen by
+The deterministic curve results allow the usual adversarial input and use
+adaptive revelation only as a lower-bound device that is frozen by
 \cref{lem:replay}.  The randomized results use an \emph{oblivious} adversary:
 the labeled processing-time vector is fixed before the algorithm draws its
 private random seed.  Unless explicitly stated otherwise, the algorithm is
@@ -317,16 +317,66 @@ the first two formulas.  Splitting the double sum into its diagonal and the
 two orientations of every unordered pair gives the symmetric form.
 \end{proof}
 
-For a probability distribution $D$ on $[0,u]$, let $P,P'$ be independent
-with law $D$ and define the common clairvoyant leading coefficient
+For a multiset $M=\{p_1,\ldots,p_n\}$ and a labeled vector
+$p=(p_1,\ldots,p_n)$, respectively, write
 \begin{equation}
- \Omega_u(D)\defeq
- \frac12\EE\min\{\lambda_u(P),\lambda_u(P')\}.
+ D_M\defeq\frac1n\sum_{i=1}^n\delta_{p_i},
+ \qquad
+ D_p\defeq\frac1n\sum_{i=1}^n\delta_{p_i}.
+ \label{eq:empirical-distributions}
+\end{equation}
+for their empirical processing-time distributions.  The two notations
+distinguish whether labels are relevant in the surrounding argument.
+
+For a probability distribution $D$ and a nonnegative effective-length map
+$\ell$, let $P,P'$ be independent with law $D$ and define
+\begin{equation}
+ \Omega_\ell(D)\defeq\frac12\EE\min\{\ell(P),\ell(P')\}.
  \label{eq:common-offline-coefficient}
 \end{equation}
-Thus the blind- and revealing-optimization models have the same offline
-coefficient; their online benchmarks differ because only a revealing test
-exposes $p_j$ before execution.
+We use the model-specific abbreviations
+\begin{align}
+ \Omega_{\mathsf{OT}}(D)
+  &\defeq\frac12\EE\min\{1+P,1+P'\},
+ &\Omega_{\mathsf{BE}}(D)
+  &\defeq\frac12\EE\min\{P,P'\},\notag\\
+ \Omega_u(D)
+  &\defeq\frac12\EE\min\{\lambda_u(P),\lambda_u(P')\}.
+ \label{eq:model-offline-coefficients}
+\end{align}
+The last coefficient is common to blind and revealing optimization; their
+online benchmarks differ because only a revealing test exposes $p_j$ before
+execution.
+
+\begin{corollary}[Empirical effective-length identity]
+\label{cor:empirical-offline}
+Let $\Lambda,\Lambda'$ be independent uniform draws from the multiset of
+effective lengths $\{\lambda_1,\ldots,\lambda_n\}$.  Then
+\begin{equation}
+ \OPT=\frac{n^2}{2}\EE\min\{\Lambda,\Lambda'\}
+      +\frac n2\EE\Lambda.
+ \label{eq:empirical-offline}
+\end{equation}
+For a multiset $M$ and the effective-length map $\ell$ of the chosen model,
+\begin{equation}
+ \OPT(M)=n^2\Omega_\ell(D_M)
+       +\frac n2\int\ell(p)\,dD_M(p).
+ \label{eq:empirical-offline-model}
+\end{equation}
+In particular, in $\mathsf{BO}(u)$ or $\mathsf{RO}(u)$,
+\begin{equation}
+ \OPT_u(M)=n^2\Omega_u(D_M)
+       +\frac n2\int\lambda_u(p)\,dD_M(p).
+ \label{eq:empirical-offline-u}
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+Interpret the two sums in \cref{eq:unified-opt-symmetric} as expectations
+under independent uniform draws from the occurrences.  Substituting
+$\lambda_j=\ell(p_j)$ gives \cref{eq:empirical-offline-model}; the capped
+specialization uses $\ell=\lambda_u$.
+\end{proof}
 
 The revealing-optimization and blind-optimization models have the same offline
 effective lengths.  Their difference is entirely online: a test reveals
@@ -334,7 +384,8 @@ $p_j$, whereas optimization does not.  Blind execution is different even
 offline, because a clairvoyant scheduler can run a job for $p_j$ without
 paying the unit test.  Thus
 \begin{equation}
- \OPT_{\mathsf{BE}}(p)
+ \OPT_{\mathsf{BE}}(M)
+ =n^2\Omega_{\mathsf{BE}}(D_M)+\frac n2\int p\,dD_M(p)
  =\sum_i p_i+\sum_{i<j}\min\{p_i,p_j\}.
  \label{eq:blind-offline-opt}
 \end{equation}
@@ -362,6 +413,63 @@ For $\mathsf{BO}(u)$ and $\mathsf{RO}(u)$, $\lambda_j\ge\min\{u,1\}$ gives
 \end{equation}
 There is deliberately no analogous positive lower bound for blind execution:
 an input consisting only of zero jobs has clairvoyant cost zero.
+
+We also isolate the random-order identity used by several revealing
+arguments.  For $p=(p_1,\ldots,p_n)$, a set $E\subseteq[n]$ is a
+\emph{processing-time prefix} if every value in $E$ is at most every value
+outside it.  Suppose that $E$ contains all zero jobs, put $T=[n]\setminus E$,
+and use the normalized quantities
+\begin{equation}
+ e=|E|,\quad a=\frac en,\quad h=1-a,\quad
+ m=\frac1n\sum_{i\in E}p_i,\quad
+ K_X=\frac1{n^2}\sum_{i,j\in X}\min\{p_i,p_j\}.
+ \label{eq:stationary-prefix-notation}
+\end{equation}
+The prefix property gives
+\begin{equation}
+ K_p=K_E+2hm+K_T,
+ \qquad
+ K_p=\frac1{n^2}\sum_{i,j}\min\{p_i,p_j\}.
+ \label{eq:stationary-kernel-split}
+\end{equation}
+Define its stationary leading coefficient by
+\begin{equation}
+ \Psi_{D_p}(E)
+ = (1+m)\left(1-\frac a2\right)+\frac{K_T}{2}.
+ \label{eq:stationary-leading-coefficient}
+\end{equation}
+
+\begin{lemma}[Stationary prefix pair identity]
+\label{lem:stationary-prefix-cost}
+Test all jobs in a uniformly random order, process a positive $E$-job
+immediately after its test, defer every $T$-job, and finally process $T$ in
+SPT order.  The resulting stationary policy satisfies
+\begin{equation}
+ \EE\ALG_{\Stat}(p,E)
+ =n^2\Psi_{D_p}(E)+\frac{e+\sum_i p_i}{2}.
+ \label{eq:stationary-prefix-cost}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Let $W=n+\sum_{i\in E}p_i$ and
+$W_E=e+\sum_{i\in E}p_i$.  The discovery phase has one block per job: an
+$E$-block has length $1+p_i$ and completes its job, whereas a $T$-block is
+its unit test and completes no job.  For an $E$-job, every other block
+precedes it with probability $1/2$, so all $E$-jobs contribute
+\begin{equation}
+ \frac{eW+W_E}{2}.
+ \label{eq:stationary-early-cost}
+\end{equation}
+Every $T$-job sees the common offset $W$, and the final SPT phase contributes
+\begin{equation}
+ (n-e)W+\sum_{i\in T}p_i
+ +\sum_{\substack{i<j\\i,j\in T}}\min\{p_i,p_j\}.
+ \label{eq:stationary-late-cost}
+\end{equation}
+Adding the two displays and collecting the diagonal terms gives
+\cref{eq:stationary-prefix-cost}.
+\end{proof}
 
 \subsection{Maximum-density modules and fluid completion envelopes}
 \label{sec:common-fluid-envelopes}
@@ -423,14 +531,36 @@ This is the dual inequality in \cref{eq:common-density-dual}.  The threshold
 selector $g_*$ attains equality because it keeps exactly the terms with
 $\tau_D-p>0$; mass at $p=\tau_D$ does not affect the equality.  Hence
 $\tau_D a_*=w_*$ and $g_*$ has maximum density $1/\tau_D$.  Its unselected
-mass is $1-a_*$ and can occur only at values at least $\tau$.
+mass is $1-a_*$ and can occur only at values at least $\tau_D$.
+\end{proof}
+
+\begin{corollary}[Empirical maximum-density prefix]
+\label{cor:empirical-density-prefix}
+For an empirical distribution $D_p$ from
+\cref{eq:empirical-distributions}, the maximum of
+\begin{equation}
+ \frac{|E|/n}{1+n^{-1}\sum_{i\in E}p_i}
+ \label{eq:empirical-prefix-density}
+\end{equation}
+over processing-time prefixes $E$ containing all zero jobs is
+$1/\tau_{D_p}$.  It is attained by taking every occurrence below
+$\tau_{D_p}$, no occurrence above it, and any subset of occurrences equal to
+$\tau_{D_p}$.  Thus every selected value is at most $\tau_{D_p}$ and every
+unselected value is at least $\tau_{D_p}$.
+\end{corollary}
+
+\begin{proof}
+Apply \cref{lem:maximum-density-module} to $D_p$.  At the boundary
+$p_i=\tau_{D_p}$, adding or removing an occurrence preserves the ratio
+$1/\tau_{D_p}$, so the fractional boundary selector may be replaced by any
+subset of the tied occurrences.
 \end{proof}
 
 We will also use the continuous analogue of shortest-processing-time pair
-accounting.  Let $M=\sum_k c_k\delta_{v_k}$ be a finitely supported
+accounting.  Let $\mathcal M=\sum_k c_k\delta_{v_k}$ be a finitely supported
 probability measure on $[0,\infty)$.  Its divisible completion envelope is
 \begin{equation}
- K_M(x)\defeq
+ K_{\mathcal M}(x)\defeq
  \max\left\{\sum_k z_k:
        0\le z_k\le c_k,\ \sum_kv_kz_k\le x\right\}.
  \label{eq:divisible-spt-envelope}
@@ -438,10 +568,11 @@ probability measure on $[0,\infty)$.  Its divisible completion envelope is
 
 \begin{lemma}[Divisible SPT area]
 \label{lem:divisible-spt-area}
-The envelope $K_M$ processes the items in nondecreasing order of $v_k$, and
+The envelope $K_{\mathcal M}$ processes the items in nondecreasing order of
+$v_k$, and
 \begin{equation}
- \int_0^\infty\bigl(1-K_M(x)\bigr)\,dx
- =\frac12\iint\min\{r,s\}\,dM(r)dM(s).
+ \int_0^\infty\bigl(1-K_{\mathcal M}(x)\bigr)\,dx
+ =\frac12\iint\min\{r,s\}\,d\mathcal M(r)d\mathcal M(s).
  \label{eq:divisible-spt-area}
 \end{equation}
 \end{lemma}
@@ -459,17 +590,17 @@ Summing these terms and collecting each unordered pair gives
 \end{proof}
 
 Assume from now on that $D$ has finite support and write
-$D_p=D(\{p\})$.  Fix a final tested fraction $q\in[0,1]$ and an independent
+$d_p=D(\{p\})$.  Fix a final tested fraction $q\in[0,1]$ and an independent
 completion mode that uses $v\ge0$ work per completed job.  At a fluid
 schedule prefix, let $t$ be tested mass, $b$ mass completed by the independent
 mode, and $c_p$ processed tested mass of positive class $p$.  Define
 \begin{equation}
  \mathcal C^v_{D,q}(x)\defeq
  \max\left\{
- D_0t+b+\sum_{p>0}c_p:
+ d_0t+b+\sum_{p>0}c_p:
  \begin{array}{l}
  0\le t\le q,\quad 0\le b\le1-q,\\
- 0\le c_p\le D_pt,\\
+ 0\le c_p\le d_pt,\\
  t+vb+\sum_{p>0}pc_p\le x
  \end{array}\right\}.
  \label{eq:common-fluid-envelope}
@@ -480,9 +611,9 @@ mode, and $c_p$ processed tested mass of positive class $p$.  Define
 Let $(a_*,\tau_D,\nu)$ be supplied by
 \cref{lem:maximum-density-module}.  Then
 \begin{equation}
- \mathcal C^v_{D,q}=K_{M_{D,q,v}},
+ \mathcal C^v_{D,q}=K_{\mathcal M_{D,q,v}},
  \qquad
- M_{D,q,v}\defeq
+ \mathcal M_{D,q,v}\defeq
   qa_*\delta_{\tau_D}+q\nu+(1-q)\delta_v.
  \label{eq:common-envelope-items}
 \end{equation}
@@ -490,11 +621,12 @@ Consequently,
 \begin{equation}
  \int_0^\infty\bigl(1-\mathcal C^v_{D,q}(x)\bigr)\,dx
  =\frac12\iint\min\{r,s\}\,
-   dM_{D,q,v}(r)dM_{D,q,v}(s).
+   d\mathcal M_{D,q,v}(r)d\mathcal M_{D,q,v}(s).
  \label{eq:common-envelope-area}
 \end{equation}
-The three terms in $M_{D,q,v}$ are respectively the maximum-density test
-module, the residual tested classes, and the independent completion mode.
+The three terms in $\mathcal M_{D,q,v}$ are respectively the maximum-density
+test module, the residual tested classes, and the independent completion
+mode.
 \end{lemma}
 
 \begin{proof}
@@ -524,6 +656,30 @@ early enough because \cref{lem:maximum-density-module} gives
 $\operatorname{supp}\nu\subseteq[\tau_D,\infty)$.  Hence the greedy curve is
 feasible at every work budget, proving the envelope identity.  The area
 formula follows from \cref{lem:divisible-spt-area}.
+\end{proof}
+
+\begin{lemma}[Zero-preserving transport]
+\label{lem:zero-preserving-transport}
+Suppose distributions $D,D'$ admit a coupling $(P,P')$ such that
+$P=0$ if and only if $P'=0$ and $|P-P'|\le h$ almost surely.  Transporting
+the same fluid policy through this coupling preserves all completion events
+and changes accumulated processing work by at most $h$.  Consequently, each
+model-specific fluid value $\Phi$ defined below satisfies
+\begin{equation}
+ |\Phi(D)-\Phi(D')|\le h.
+ \label{eq:zero-preserving-transport}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Couple each infinitesimal job occurrence and transport decisions using its
+coupled mark, exposing that mark only when the model exposes the corresponding
+processing time.  Zero preservation makes test completions coincide.  At
+every prefix, the total mass that has received processing is at most one, so
+replacing its processing times changes cumulative work by at most $h$.  One
+unfinished-mass curve is therefore contained in a horizontal $h$-shift of
+the other, and its area changes by at most $h$.  Taking the infimum over
+policies gives one inequality; exchanging $D,D'$ gives the other.
 \end{proof}
 
 \subsection{Competitive-ratio conventions}
@@ -579,6 +735,42 @@ All of them are finite-space statements.  We use without further mention the
 union bound, Markov's inequality
 $\Prob(Y\ge t)\le \EE Y/t$ for $Y\ge0$, and the tail identity
 $\EE Y=\int_0^\infty\Prob(Y\ge t)\,dt$.
+
+The next deferred-decisions lemma turns adaptive label choices into sampling
+without replacement.  Occurrence tokens distinguish equal processing times.
+
+\begin{lemma}[Adaptive first-touch permutation]
+\label{lem:adaptive-first-touch}
+\label{lem:blind-trace-bijection}
+Let $J$ be $n$ public labels, let $\Xi$ be $n$ occurrence tokens, and let a
+placement $\sigma:J\to\Xi$ be a bijection.  Fix a deterministic
+nonanticipating policy that eventually first-touches every label.  Write
+$\ell_1(\sigma),\ldots,\ell_n(\sigma)$ for its labels in order of first
+touch and define
+\begin{equation}
+ R_{\mathcal A}(\sigma)_k=\sigma(\ell_k(\sigma)).
+ \label{eq:adaptive-first-touch-map}
+\end{equation}
+Then $\sigma\mapsto R_{\mathcal A}(\sigma)$ is a bijection from placements
+to permutations of $\Xi$.  The action selected at first touch $k$ is a
+function of the preceding tokens and is therefore predictable with respect
+to the analytically exposed token order.  Consequently, a uniform placement
+induces a uniform random permutation of the occurrences.
+\end{lemma}
+
+\begin{proof}
+Suppose two placements induce the same occurrence order.  A lockstep
+induction shows that the runs have the same observable history before each
+first touch: the preceding tokens and actions are the same, and any
+observation made by the model is determined by them.  The deterministic
+policy therefore performs the same intervening operations, chooses the same
+new label, and selects the same action.  Thus all first-touch labels agree.
+Equation~\eqref{eq:adaptive-first-touch-map} then makes the placements equal
+on every label.  The map is injective between two sets of size $n!$, hence
+bijective.  The same induction stopped before touch $k$ proves
+predictability.  Exposing a token value that the policy itself does not see
+only enriches the analytical filtration and does not affect the conclusion.
+\end{proof}
 
 \begin{lemma}[Chernoff bounds]
 \label{lem:chernoff}
@@ -671,6 +863,75 @@ We use the classical forms due to Doob~\cite{Doob1953} and
 Azuma~\cite{Azuma1967}; the maximal version of the latter follows by applying
 the exponential-supermartingale proof at the first crossing time.
 \end{lemma}
+
+\begin{lemma}[Predictable sampling from a random permutation]
+\label{lem:predictable-permutation-sampling}
+Let $X_1,\ldots,X_N$ be a uniform random permutation of fixed vectors
+$x_1,\ldots,x_N\in[0,B]^d$, and let
+$\bar x=N^{-1}\sum_i x_i$.  If $A_k\in[0,1]$ is measurable before $X_k$ is
+exposed, then for $\delta,\eta\in(0,1)$, with probability at least
+$1-\eta$, simultaneously for every coordinate $r$ and every
+$m\le(1-\delta)N$,
+\begin{equation}
+ \left|\sum_{k\le m}A_k(X_{k,r}-\bar x_r)\right|
+ \le(1+\delta^{-1})E_{N,d,B,\eta},
+ \qquad
+ E_{N,d,B,\eta}\defeq
+ B\sqrt{2N\ln\!\left(\frac{4d(N+1)}{\eta}\right)}.
+ \label{eq:predictable-permutation-sampling}
+\end{equation}
+The statement remains valid after conditioning on independent private
+randomness used to choose the predictable sequence.
+\end{lemma}
+
+\begin{proof}
+For each coordinate, apply
+\cref{eq:without-replacement-hoeffding} after scaling by $B$, and union-bound
+over coordinates and prefix lengths.  Except with probability at most
+$\eta/2$, every centered prefix sum has absolute value at most
+$E=E_{N,d,B,\eta}$.  Before draw $k\le(1-\delta)N$, the mean $R_{k-1,r}$ of
+the remaining urn therefore satisfies
+\[
+ |R_{k-1,r}-\bar x_r|\le \frac{E}{\delta N}.
+\]
+For each $r$,
+\[
+ M_{m,r}=\sum_{k\le m}A_k(X_{k,r}-R_{k-1,r})
+\]
+is a martingale with increments bounded by $B$.  The maximal
+Azuma--Hoeffding inequality \cref{eq:maximal-azuma}, followed by a union
+bound over $r$, puts all $|M_{m,r}|$ below $E$ except with probability at
+most $\eta/2$.  The predictable drift is at most $E/\delta$, which proves
+\cref{eq:predictable-permutation-sampling}.  Conditioning and then averaging
+proves the final assertion.
+\end{proof}
+
+\begin{lemma}[Lipschitz empirical minimization]
+\label{lem:empirical-minimization}
+Let $\Pi$ be a common family of templates and let $F_D(\pi)$ be their
+objectives for distributions $D$.  Suppose that, for some metric $d$,
+\begin{equation}
+ \sup_{\pi\in\Pi}|F_D(\pi)-F_E(\pi)|\le Ld(D,E).
+ \label{eq:empirical-objective-lipschitz}
+\end{equation}
+If $\Phi(D)=\min_{\pi\in\Pi}F_D(\pi)$, then
+\begin{equation}
+ |\Phi(D)-\Phi(E)|\le Ld(D,E).
+ \label{eq:empirical-value-lipschitz}
+\end{equation}
+Moreover, if $\pi_E$ minimizes $F_E$, then
+\begin{equation}
+ F_D(\pi_E)\le\Phi(D)+2Ld(D,E).
+ \label{eq:empirical-minimization-transfer}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Evaluating the $E$-objective at a minimizer for $D$, and conversely, proves
+\cref{eq:empirical-value-lipschitz}.  For the second claim, insert
+$F_E(\pi_E)=\Phi(E)$ between $F_D(\pi_E)$ and $\Phi(D)$ and apply
+\cref{eq:empirical-objective-lipschitz,eq:empirical-value-lipschitz}.
+\end{proof}
 
 \begin{lemma}[Finite Yao selection]
 \label{lem:finite-yao}

@@ -91,10 +91,10 @@ For every branch there is an explicit deterministic algorithm satisfying
 On $u\ge \zstar$ the remainder is one absolute $O(n)$ term, uniform over all
 finite $u$.
 Conversely, for every deterministic algorithm $\mathcal A$ and every
-$\epsilon>0$, there are arbitrarily large fixed instances $I$ such that
+$\eps>0$, there are arbitrarily large fixed instances $I$ such that
 \[
  \cost(\mathcal A,I)
- \ge\bigl(\RdetRO(u)-\epsilon\bigr)\cost(\OPT,I).
+ \ge\bigl(\RdetRO(u)-\eps\bigr)\cost(\OPT,I).
 \]
 For $u\ge \zstar$, these lower-bound instances may be chosen cap-free:
 $p_j<u-1$ for every job.  Thus both witnesses on the plateau are uniform in
@@ -672,7 +672,7 @@ $u\le\varphi+2$.  Binary instances attain the second value.
 
 For $\varphi+2<u<\zstar$, neither the binary family nor the pure cap-free
 family is tight.  The correct adversary puts a capped block before a scaled
-harmonic core.  Two lemmas ensure that optional raw
+harmonic core.  Two lemmas ensure that raw
 execution and early processing of caps cannot escape it.
 
 The cap-free construction needed below is exactly the scaled harmonic core
@@ -722,7 +722,7 @@ In particular, $A^{\rm lb}-O=(A_0^{\rm lb}-O_0)+m$.
 \begin{lemma}[Raw-safe quota and replay]
 \label{lem:opt:mixed-raw-safe}
 Fix $m\in(0,1)$ and a later cap-free block satisfying the hypotheses of
-\cref{lem:opt:cap-deferral}.  Against every deterministic optional algorithm
+\cref{lem:opt:cap-deferral}.  Against every deterministic revealing algorithm
 there are fixed instances whose asymptotic excess is at least the cap-free
 hybrid benchmark $A^{\rm lb}-RO$ from
 \cref{eq:opt:mixed-A,eq:opt:mixed-O} for every target
@@ -747,7 +747,7 @@ At a crossing, scale the prescribed later instance to the remaining
 $S-\ell$ first touches, absorbing the one-job cap overshoot and integer
 rounding into its zero group.  A later test reveals the next value in this
 fixed type stream; a later raw action consumes the next value but keeps it
-hidden from the optional algorithm.
+hidden from the revealing algorithm.
 
 Move every initial raw-zero completion to the start.  It has the same length
 $u$ as cap processing, and crossing a unit test only lowers completion cost.
@@ -759,11 +759,11 @@ this prefix contributes $uZ_v$ online and $Z_v$ offline.  Delete it.  The
 remaining $S$ labels consist, up to one-job rounding, of capped fraction $m$
 and the prescribed later cap-free block.
 
-If the optional algorithm later runs a fresh assigned value $p$ raw, a
+If the revealing algorithm later runs a fresh assigned value $p$ raw, a
 physical cap-free simulation tests and immediately processes that job in
-time $1+p\le u$, suppresses the answer from the virtual optional algorithm,
+time $1+p\le u$, suppresses the answer from the virtual revealing algorithm,
 and idles until its virtual $u$-block ends.  Inductively every physical
-completion is no later than its virtual optional completion.  Since the
+completion is no later than its virtual revealing completion.  Since the
 finite-cap and cap-free offline lengths are both $1+p$ on the later block,
 \begin{equation}
  \ALG_{\mathsf{RO}}-R\OPT_{\mathsf{RO}}

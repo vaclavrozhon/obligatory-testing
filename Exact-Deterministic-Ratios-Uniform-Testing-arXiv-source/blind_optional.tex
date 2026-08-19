@@ -1,4 +1,4 @@
-\section{Blind execution: instance-optimal two-phase policies}
+\section{Blind execution: instance-optimal four-block policies}
 \label{sec:blind}
 
 We now turn to $\mathsf{BE}(L)$.  Running an untouched job blindly consumes
@@ -20,8 +20,8 @@ $M\subseteq[0,L]$ of size $n$ and every fixed labeling $\sigma$,
  \le n^2\PhiBE(D_M)+\eps_L(n)n^2.
  \label{eq:intro-blind-upper}
 \end{equation}
-For every randomized policy $\mathcal A$, even one told $M$, some fixed
-oblivious labeling $\sigma$ satisfies
+For every randomized policy $\mathcal A$, even an announced policy, some
+fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE\cost(\mathcal A,\sigma(M))
  \ge n^2\PhiBE(D_M)-\eps_L(n)n^2.
@@ -148,14 +148,14 @@ For the explicit cost, first assume no atom lies at $\tau_D$ or $\mu$, and put
  \mathcal L&=\{p<\tau_D\},&
  \mathcal M&=\{\tau_D<p<\mu\},&
  \mathcal H&=\{p>\mu\},\\
- a&=\Pr(P\in\mathcal L),&
+ a&=\Prob(P\in\mathcal L),&
  \ell&=\EE[P\one_{\mathcal L}],&
  m&=\EE[P\one_{\mathcal M}],\\
- d&=\Pr(P\in\mathcal H),&
- K_M&=\EE[\min(P,Q)\one_{P,Q\in\mathcal M}],&
- K_H&=\EE[\min(P,Q)\one_{P,Q\in\mathcal H}],
+ d&=\Prob(P\in\mathcal H),&
+ K_M&=\EE[\min(P,P')\one_{P,P'\in\mathcal M}],&
+ K_H&=\EE[\min(P,P')\one_{P,P'\in\mathcal H}],
 \end{align*}
-where $P,Q$ are independent with law $D$.  For $r=1-q$, remaining-mass
+where $P,P'$ are independent with law $D$.  For $r=1-q$, remaining-mass
 accounting gives
 \begin{align}
  F_{\mathsf{BE},D}(q)
@@ -209,7 +209,7 @@ with $\PhiBE(D)=\mu/2$ in the regime $\tau_D\ge\mu$.
 
 We first prove that \cref{eq:blind-four-block-order} is globally optimal in a
 fluid relaxation.  Let $D$ have finite support
-$0=p_0<p_1<\cdots<p_s\le L$, with masses $D_i$.  Fix a final tested fraction
+$0=p_0<p_1<\cdots<p_s\le L$, with masses $d_i$.  Fix a final tested fraction
 $q$.  At an arbitrary schedule prefix, let
 \begin{align*}
  t&=\text{tested mass},& b&=\text{blindly completed mass},\\
@@ -217,21 +217,21 @@ $q$.  At an arbitrary schedule prefix, let
 \end{align*}
 The completed mass and idealized work are
 \begin{equation}
- y=D_0t+b+\sum_{i>0}c_i,\qquad
+ y=d_0t+b+\sum_{i>0}c_i,\qquad
  x=t+\mu b+\sum_{i>0}p_ic_i,
  \label{eq:blind-fluid-work}
 \end{equation}
 subject to
 \begin{equation}
  0\le t\le q,\qquad 0\le b\le1-q,\qquad
- 0\le c_i\le D_it.
+ 0\le c_i\le d_it.
  \label{eq:blind-revelation-constraints}
 \end{equation}
 Thus $\mathcal C^\mu_{D,q}$ is the common fluid envelope
 \cref{eq:common-fluid-envelope}.  Every fluid schedule that ultimately tests
 mass $q$ obeys this envelope, hence
 \begin{equation}
- \operatorname{cost}\ge\int_0^\infty(1-\mathcal C^\mu_{D,q}(x))\,dx.
+ \cost\ge\int_0^\infty(1-\mathcal C^\mu_{D,q}(x))\,dx.
  \label{eq:blind-envelope-lower}
 \end{equation}
 
@@ -273,51 +273,17 @@ touch next and when to stop testing as arbitrary functions of its history.
 The next finite lemma is the deferred-decisions statement needed to control
 such a policy.
 
-Distinguish occurrences even when their processing times coincide.  Let $J$
-be the public labels, $\Omega$ the occurrence tokens, and
-$v:\Omega\to[0,L]$ their values.  A placement is a bijection
-$\sigma:J\to\Omega$.  Fix a deterministic proper policy, equivalently fix the
-private seed of a randomized policy.  Its first-touch labels
-$\ell_1(\sigma),\ldots,\ell_n(\sigma)$ form a permutation of $J$.  Define
-\begin{equation}
- R_{\mathcal A}(\sigma)_k
- =\sigma(\ell_k(\sigma)).
- \label{eq:blind-reveal-map}
-\end{equation}
-
-\begin{lemma}[Adaptive-reveal bijection]
-\label{lem:blind-trace-bijection}
-The map $\sigma\mapsto R_{\mathcal A}(\sigma)$ is a bijection from placements
-to permutations of $\Omega$.  Moreover, whether first touch $k$ is a test or
-a blind execution is determined by the preceding revealed values
-$v(R_1),\ldots,v(R_{k-1})$.
-\end{lemma}
-
-\begin{proof}
-Suppose $R_{\mathcal A}(\sigma)=R_{\mathcal A}(\sigma')$.  A lockstep
-induction on $k$ shows that the two executions have the same observable
-history before touch $k$.  They have seen the same preceding values, so the
-deterministic policy performs the same intervening known-job operations,
-chooses the same next new label, and chooses the same test/blind kind.  This
-remains true after blind execution because its realized duration is recorded
-in the public history.  Hence $\ell_k(\sigma)=\ell_k(\sigma')$ for all $k$.
-Now \cref{eq:blind-reveal-map} gives
-$\sigma(\ell_k)=\sigma'(\ell_k)$ for every $k$; since the $\ell_k$ enumerate
-$J$, the placements are equal.  The reveal map is injective between finite
-sets of the same cardinality $n!$, hence bijective.  The same induction under
-only a common revealed prefix proves predictability of the touch kind.
-\end{proof}
-
-Consequently a uniform placement is carried to a uniform random permutation
-of occurrence tokens, and the test indicator is predictable.  No conditional
-suffix compiler is needed.  Duplicate values cause no problem because the
-bijection acts on occurrences.
+Distinguish occurrences even when their processing times coincide and fix a
+deterministic proper policy, equivalently the private seed of a randomized
+policy.  By \cref{lem:adaptive-first-touch}, a uniform placement is carried
+to a uniform random permutation of occurrence tokens, and the test/blind
+choice is predictable.  No conditional suffix compiler is needed.
 
 For finite support, standard prefix concentration and a predictable
 martingale give the following simultaneous event.  Stop while at least
 $\delta n$ labels remain untouched, and put
 \begin{equation}
- e_n=\sqrt{8n\ln n},\qquad
+ e_n=E_{n,n+1,1,n^{-2}},\qquad
  \Gamma_n=(1+1/\delta)e_n.
  \label{eq:blind-Gamma}
 \end{equation}
@@ -331,15 +297,14 @@ class $i$,
  &\le L\Gamma_n.
  \label{eq:blind-work-discrepancy}
 \end{align}
-Indeed, the uniform-prefix bound \cref{eq:uniform-prefix-hoeffding} controls
-the remaining urn proportions.  Multiplying the centered next-draw indicator by
-the predictable test selector gives a martingale with bounded increments;
-\cref{eq:maximal-azuma} controls all stopping prefixes at once.  The same
-argument with the predictable blind selector and bounded values proves
-\cref{eq:blind-work-discrepancy}.  Importantly, we never condition on the
-eventual tested fraction.
+Indeed, apply \cref{lem:predictable-permutation-sampling} first to all class
+indicators and the predictable test selector, and then to the processing
+time and the predictable blind selector.  The second application has $B=L$
+and is bounded by $L\Gamma_n$.  Taking $\eta=n^{-2}$ in both applications
+proves the event with probability $1-o(1)$.  Importantly, we never condition
+on the eventual tested fraction.
 
-\subsection{The announced-multiset lower bound}
+\subsection{The announced lower bound}
 \label{sec:blind-announced}
 
 Fix a policy seed.  Stop after $\lfloor(1-\delta)n\rfloor$ first touches and
@@ -418,18 +383,14 @@ cell, partition $(0,L]$ into
 bins, and round every positive value upward; let $h_n=L/K_n$ be the mesh.
 Zero preservation matters because a tested zero completes at its test.
 
-Coupling each value with its rounded value changes total normalized
-processing work by at most $h_n$.  Running corresponding operation words
-therefore changes normalized completion area by at most $h_n$.  In
-particular,
+Coupling each value with its rounded value and applying
+\cref{lem:zero-preserving-transport} gives
 \begin{equation}
  |\PhiBE(D)-\PhiBE(D^{\rm grid})|\le h_n.
  \label{eq:blind-rounding-stability}
 \end{equation}
-One way to see this without assuming a stable numerical threshold is to
-transport a policy through the coupling: attach a private auxiliary original
-mark to every rounded observation and make all decisions using that mark.
-The zero-preserving coupling makes the completion events coincide.
+This avoids any assumption that the numerical optimizer or threshold is
+stable under rounding.
 
 Apply the predictable urn event to all $K_n+1$ cells and take
 $\delta_n=n^{-1/6}$.  Repairing every class loses at most
@@ -506,18 +467,12 @@ and template,
  \label{eq:blind-template-Lipschitz}
 \end{equation}
 for example with $C_L=20(L+1)$.  If $\widehat\pi$ minimizes the sampled
-objective and $\pi_R$ minimizes the remaining objective, the empirical
-optimization sandwich is
-\begin{align}
+objective, \cref{lem:empirical-minimization} gives
+\begin{equation}
  \Psi_{D_n^R}(\widehat\pi)
- &\le\Psi_{\widehat D_n}(\widehat\pi)
-     +C_L\|\widehat D_n-D_n^R\|_1\notag\\
- &\le\Psi_{\widehat D_n}(\pi_R)
-     +C_L\|\widehat D_n-D_n^R\|_1\notag\\
- &\le\PhiBE(D_n^R)
-     +2C_L\|\widehat D_n-D_n^R\|_1.
+ \le\PhiBE(D_n^R)+2C_L\|\widehat D_n-D_n^R\|_1.
  \label{eq:blind-empirical-sandwich}
-\end{align}
+\end{equation}
 Conditional on the sample, the remaining order is uniform and the learned
 template is fixed, so \cref{eq:blind-finite-kernel} applies.  The sample itself
 has work at most $Lk_n$ and delays at most $n$ jobs, adding at most
@@ -534,8 +489,9 @@ uniformly over every fixed labeled vector $p\in[0,L]^n$.
 
 For the converse, reveal $M$ to an arbitrary policy for free and draw a
 uniform labeling.  The announced lower bound
-\cref{eq:blind-announced-lower} applies seedwise.  Some fixed labeling in
-the support has cost at least the average, which proves
+\cref{eq:blind-announced-lower} applies seedwise.  Finite Yao selection
+\cref{lem:finite-yao} gives a fixed labeling with cost at least the average,
+which proves
 \cref{eq:intro-blind-lower}.  This completes the proof of
 \cref{thm:blind-instance}.
 
@@ -543,9 +499,9 @@ the support has cost at least the average, which proves
 
 Let
 \[
- \Pr(P=0)=\frac15,\qquad
- \Pr(P=9)=\frac15,\qquad
- \Pr(P=16)=\frac35.
+ \Prob(P=0)=\frac15,\qquad
+ \Prob(P=9)=\frac15,\qquad
+ \Prob(P=16)=\frac35.
 \]
 Then $\mu=57/5$ and $\tau_D=5$.  Thus tested zeros are immediate, known
 nine-jobs precede the blind block, and known sixteen-jobs follow it.  Formula

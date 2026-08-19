@@ -75,19 +75,20 @@ Assume initially that $u>1$ and write
 Let $D$ be a finite distribution on $[0,u]$, let $P,P'$ be independent with
 law $D$, and use the survival function
 \begin{equation}
- S_D(t)=\Pr(P\ge t),
+ S_D(t)=\Prob(P>t),
  \qquad S_D(t)=0\quad(t>u).
  \label{eq:rcu-survival}
 \end{equation}
 The convention at atoms does not affect any integral below.  Since a
 clairvoyant job has effective length $1+\min\{s,P\}$, the layer-cake identity
-and \cref{lem:offline} give the leading offline coefficient
+and \cref{cor:empirical-offline} give
 \begin{align}
  \Omega_u(D)
  &=\frac12\left(1+\int_0^s S_D(t)^2\,dt\right),
  \label{eq:rcu-offline-fluid}\\
  \OPT_u(M)
- &=n^2\Omega_u(D_M)+O_u(n)
+ &=n^2\Omega_u(D_M)
+   +\frac n2\int\lambda_u(p)\,dD_M(p)
  \label{eq:rcu-offline-finite}
 \end{align}
 for every empirical distribution $D_M$.
@@ -96,14 +97,14 @@ We next specialize the maximum-density module
 \cref{lem:maximum-density-module} to a form suited to the cap.  If its
 threshold prefix has mass $a$ and first moment $m$, put
 \begin{equation}
- \tau=\tau_D=\frac{1+m}{a}.
+ \tau_D=\frac{1+m}{a}.
  \label{eq:rcu-tau-density}
 \end{equation}
 The common threshold equation and the layer-cake identity give
 \begin{equation}
- \EE(\tau-P)^+=1,
+ \EE(\tau_D-P)^+=1,
  \qquad
- \int_0^\tau S_D(t)\,dt=\tau-1.
+ \int_0^{\tau_D} S_D(t)\,dt=\tau_D-1.
  \label{eq:rcu-threshold-equation}
 \end{equation}
 
@@ -118,8 +119,8 @@ The doubled leading coefficient of the stationary policy is
 \begin{equation}
  \mathcal T_u(D)=
  \begin{cases}
-  \displaystyle \tau+\int_\tau^u S_D(t)^2\,dt,&\tau\le u,\\[6pt]
-  \tau,&\tau>u.
+  \displaystyle \tau_D+\int_{\tau_D}^u S_D(t)^2\,dt,&\tau_D\le u,\\[6pt]
+  \tau_D,&\tau_D>u.
  \end{cases}
  \label{eq:rcu-stationary-survival}
 \end{equation}
@@ -133,23 +134,24 @@ ratio
 \end{lemma}
 
 \begin{proof}
-Let $h=1-a$ be the residual mass and let $K_L$ be the minimum kernel of two
+Let $h=1-a$ be the residual mass and let $K_T$ be the minimum kernel of two
 residual draws, with their subprobability masses left unnormalized.  The
-random-order pair calculation gives the stationary coefficient
+stationary prefix identity \cref{lem:stationary-prefix-cost}, applied first
+to empirical laws and then by continuity, gives the leading coefficient
 \begin{equation}
- (1+m)\left(1-\frac a2\right)+\frac{K_L}{2}.
+ (1+m)\left(1-\frac a2\right)+\frac{K_T}{2}.
  \label{eq:rcu-stationary-pair}
 \end{equation}
-If $\tau\le u$, the threshold property gives
+If $\tau_D\le u$, the threshold property gives
 \[
- K_L=\tau h^2+\int_\tau^uS_D(t)^2\,dt,
+ K_T=\tau_D h^2+\int_{\tau_D}^uS_D(t)^2\,dt,
  \qquad
  (1+m)\left(1-\frac a2\right)
- =\frac\tau2(1-h^2).
+ =\frac{\tau_D}2(1-h^2).
 \]
 Their sum is one half of the first line of
-\eqref{eq:rcu-stationary-survival}.  If $\tau>u$, the whole distribution is
-in the prefix and \eqref{eq:rcu-stationary-pair} equals $\tau/2$.  Raw
+\eqref{eq:rcu-stationary-survival}.  If $\tau_D>u$, the whole distribution is
+in the prefix and \eqref{eq:rcu-stationary-pair} equals $\tau_D/2$.  Raw
 execution has leading coefficient $u/2$, and division by
 \eqref{eq:rcu-offline-fluid} proves \eqref{eq:rcu-announced-ratio}.
 \end{proof}
@@ -171,49 +173,49 @@ only to these endpoints.
 \subsection{Flattening the survival function}
 
 We now maximize \eqref{eq:rcu-announced-ratio} over arbitrary $D$.  Suppose
-first that $1\le\tau\le u$ and put
+first that $1\le\tau_D\le u$ and put
 \begin{equation}
- y=\frac{\tau-1}{\tau}.
+ y=\frac{\tau_D-1}{\tau_D}.
  \label{eq:rcu-y}
 \end{equation}
 By \eqref{eq:rcu-threshold-equation}, $y$ is the average of $S_D$ on
-$[0,\tau]$.  Since $S_D$ is nonincreasing, its average on every initial
+$[0,\tau_D]$.  Since $S_D$ is nonincreasing, its average on every initial
 subinterval is at least $y$.  Thus Cauchy--Schwarz gives
 \begin{equation}
  \int_0^aS_D(t)^2\,dt\ge ay^2
- \qquad(0\le a\le\tau),
+ \qquad(0\le a\le\tau_D),
  \label{eq:rcu-initial-cs}
 \end{equation}
-and $S_D(t)\le y$ almost everywhere for $t>\tau$.
+and $S_D(t)\le y$ almost everywhere for $t>\tau_D$.
 
-Replace $S_D$ on $(0,\tau)$ by the constant $y$ and leave its tail unchanged.
+Replace $S_D$ on $(0,\tau_D)$ by the constant $y$ and leave its tail unchanged.
 This remains a nonincreasing survival function, preserves
 \eqref{eq:rcu-threshold-equation} and $\mathcal T_u(D)$, and by
 \eqref{eq:rcu-initial-cs} can only decrease the offline coefficient.  Hence
 it can only increase the ratio.  We may therefore assume
 \begin{equation}
- S_D(t)=y\quad(0<t<\tau).
+ S_D(t)=y\quad(0<t<\tau_D).
  \label{eq:rcu-flat-prefix}
 \end{equation}
 
-If $u-1\le\tau\le u$, the offline integral lies entirely in the flat part,
+If $u-1\le\tau_D\le u$, the offline integral lies entirely in the flat part,
 and $S_D(t)^2\le y^2$ on the remaining tail.  It follows that
 \begin{equation}
  \frac{\min\{u,\mathcal T_u(D)\}}
-      {1+\int_0^sH^2}
+      {1+\int_0^sS_D(t)^2\,dt}
  \le
- B_u(\tau)
+ B_u(\tau_D)
  \defeq
- \frac{\tau+(u-\tau)y^2}{1+(u-1)y^2}.
+ \frac{\tau_D+(u-\tau_D)y^2}{1+(u-1)y^2}.
  \label{eq:rcu-B-first}
 \end{equation}
 The numerator displayed on the right is at most $u$, so the raw minimum is
 inactive.
 
-Now suppose $\tau<u-1$.  Put
+Now suppose $\tau_D<u-1$.  Put
 \begin{equation}
- L=u-1-\tau,
- \quad E=\int_\tau^{u-1}S_D(t)^2\,dt,
+ L=u-1-\tau_D,
+ \quad E=\int_{\tau_D}^{u-1}S_D(t)^2\,dt,
  \quad G=\int_{u-1}^uS_D(t)^2\,dt.
  \label{eq:rcu-EG}
 \end{equation}
@@ -226,32 +228,32 @@ Monotonicity gives
 Consequently
 \begin{equation}
  \frac{\min\{u,\mathcal T_u(D)\}}
-      {1+\int_0^sH^2}
+      {1+\int_0^sS_D(t)^2\,dt}
  \le
- \frac{\tau+\dfrac{u-\tau}{u-1-\tau}E}
-      {1+\tau y^2+E}.
+ \frac{\tau_D+\dfrac{u-\tau_D}{u-1-\tau_D}E}
+      {1+\tau_D y^2+E}.
  \label{eq:rcu-linear-fractional-E}
 \end{equation}
-For fixed $\tau$ this is linear-fractional in $E$, so its derivative has a
+For fixed $\tau_D$ this is linear-fractional in $E$, so its derivative has a
 constant sign.  Its maximum on $[0,Ly^2]$ occurs at an endpoint.  The two
 endpoint values are
 \begin{align}
- A(\tau)&\defeq\frac{\tau}{1+\tau y^2}
-              =\frac{\tau^2}{\tau^2-\tau+1},
+ A(\tau_D)&\defeq\frac{\tau_D}{1+\tau_D y^2}
+              =\frac{\tau_D^2}{\tau_D^2-\tau_D+1},
  \label{eq:rcu-A}\\
- B_u(\tau)&=\frac{\tau+(u-\tau)y^2}{1+(u-1)y^2}.
+ B_u(\tau_D)&=\frac{\tau_D+(u-\tau_D)y^2}{1+(u-1)y^2}.
  \label{eq:rcu-B}
 \end{align}
 They are attained by rectangular survival functions: respectively a binary
-distribution on $\{0,\tau\}$ and one on $\{0,u\}$.
+distribution on $\{0,\tau_D\}$ and one on $\{0,u\}$.
 
-It remains to cover $\tau>u$.  Equation
+It remains to cover $\tau_D>u$.  Equation
 \eqref{eq:rcu-threshold-equation} and the zero extension of $S_D$ give
-$\int_0^uH=\tau-1\ge u-1$.  The average of a nonincreasing function on
+$\int_0^uS_D(t)\,dt=\tau_D-1\ge u-1$.  The average of a nonincreasing function on
 $[0,u-1]$ is no smaller than its average on $[0,u]$, and hence
 \begin{equation}
  \int_0^{u-1}S_D(t)^2\,dt
- \ge (u-1)\left(\frac{\tau-1}{u}\right)^2
+ \ge (u-1)\left(\frac{\tau_D-1}{u}\right)^2
  \ge\frac{(u-1)^3}{u^2}.
  \label{eq:rcu-tau-large}
 \end{equation}
@@ -344,7 +346,7 @@ $u=25/4$.  Differentiating \eqref{eq:rcu-B-at-u} shows that its only
 interior maximum above one occurs at $u=(3+\sqrt3)/2$; substitution gives
 \eqref{eq:intro-random-common-maximum}.
 
-\subsection{Learning the announced policy}
+\subsection{Removing the announcement by sampling}
 
 The policy used for the upper bound must not know $D$.  The next lemma
 removes this announcement at lower-order cost.
@@ -384,9 +386,11 @@ histograms.  The histogram estimate
 For a fixed prefix, the stationary coefficient is a quadratic polynomial in
 the category masses, with coefficients bounded in terms of $u$.  It is
 therefore $O_u(1)$-Lipschitz in total variation, uniformly over all grid
-prefixes.  The empirical-minimization sandwich loses at most twice the
+prefixes.  The empirical-minimization lemma
+\cref{lem:empirical-minimization} therefore loses at most twice the
 right-hand side of \eqref{eq:rcu-histogram-error}.  Zero-preserving upward
-rounding changes every normalized work and pair kernel by $O_u(1/d)$.
+rounding changes the fluid benchmark by $O_u(1/d)$ by
+\cref{lem:zero-preserving-transport}.
 
 Finally, placing the sample before the main random-order template affects at
 most $O(nk+k^2)$ bounded operation--job pairs.  The already tested sample
@@ -420,7 +424,7 @@ binary random-labeling envelope.
 \label{lem:rcu-binary-lower}
 Fix $u>1$, $x\in[0,1]$, and put $z=1-x$.  Let $M_n$ have $xn+O(1)$ jobs of
 value $u$ and $zn+O(1)$ zero jobs.  For every randomized nonanticipating
-algorithm, even one told $M_n$, some fixed labeling satisfies
+algorithm, even an announced one, some fixed labeling satisfies
 \begin{equation}
  \frac{\EE\ALG}{n^2}\ge
  \begin{cases}
@@ -438,20 +442,17 @@ Every labeling has
 \end{lemma}
 
 \begin{proof}
-First fix a deterministic policy and place the occurrences uniformly on the
-public labels.  List labels in the order in which the policy first touches
-them, by either a test or a raw execution, and expose analytically also the
-hidden value of a raw-touched occurrence.  The map from placements to this
-occurrence word is a bijection: equal word prefixes give equal observable
-histories, hence the same next label and touch kind, and induction recovers
-the whole placement.  The word is therefore a uniform permutation, and the
-test/raw choice before its next entry is predictable from the preceding
-word.
+First fix a deterministic policy.  If it does not complete all jobs, the
+claim is immediate.  Otherwise place the occurrences uniformly on the
+public labels, distinguishing equal-valued occurrences as tokens.  By
+\cref{lem:adaptive-first-touch}, the analytically exposed occurrence word is
+a uniform permutation, and the test/raw choice before its next entry is
+predictable.
 
-Take $\delta_n=n^{-1/4}$.  The uniform-prefix bound
-\cref{eq:uniform-prefix-hoeffding}, followed by the maximal martingale bound
-\cref{eq:maximal-azuma} for the predictably selected tests,
-gives one event of probability $1-o(1)$ on which every first-touch prefix
+Take $\delta_n=n^{-1/4}$.  The predictable-permutation bound
+\cref{lem:predictable-permutation-sampling}, applied to the zero indicator
+and the test selector, gives one event of probability $1-o(1)$ on which
+every first-touch prefix
 ending with at least $\delta_n n$ untouched labels and containing $t$ tests
 satisfies
 \begin{equation}
@@ -572,9 +573,9 @@ raw jobs & $1-q$ & $u$\\
 Every item costs at least two per completion.  Thus the completion envelope
 lies below $\min\{1,t/2\}$ independently of $q$, whose remaining-mass area is
 one.  This proves the online estimate after the $o_u(n^2)$ repairs and finite
-Yao selection \cref{lem:finite-yao}.  Since $u>3$, the two effective lengths are one and
-three; their equally weighted minimum kernel gives offline coefficient
-$3/4$.
+Yao selection \cref{lem:finite-yao}.  Since $u>3$, the two effective lengths
+are one and three; their equally weighted minimum kernel gives offline
+coefficient $3/4$.
 \end{proof}
 
 Equations \eqref{eq:rcu-lower-first-branch} and

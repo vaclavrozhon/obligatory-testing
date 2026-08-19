@@ -30,8 +30,7 @@ rigorous version of \cref{thm:intro-bo-curve} and maximizes that
 instance-specific value relative to the clairvoyant optimum.  Keeping the
 results together avoids repeating the same blind-block reduction.
 
-For a multiset $M$, let $D_M=n^{-1}\sum_i\delta_{p_i}$ be its empirical
-distribution and let
+For a multiset $M$, use $D_M$ from \cref{eq:empirical-distributions} and put
 \[
  \mu_M=\int p\,dD_M(p)=\frac1n\sum_{i=1}^n p_i
 \]
@@ -48,9 +47,9 @@ Randomization is necessary for attaining this benchmark on every input.
 
 \begin{theorem}[No deterministic instance-optimal policy]
 \label{thm:bo-det-not-instance-optimal}
-For every deterministic nonanticipating policy $\mathcal A$ that is not told
-the input multiset and every even $n$, there are a fixed labeled input
-$I\in\{0,2\}^n$ and a randomized policy $\mathcal A'$ told its multiset such
+For every unannounced deterministic nonanticipating policy $\mathcal A$ and
+every even $n$, there are a fixed labeled input $I\in\{0,2\}^n$ and an
+announced randomized policy $\mathcal A'$ such
 that
 \begin{equation}
  \cost(\mathcal A,I)
@@ -291,24 +290,25 @@ Thus \cref{lem:bo-det-hidden-stopping} proves the lower bound $\rho$.
 
 It remains to analyze \textsc{OptimizeAll}.  Put $a(p)=1+p$.  For a fixed
 multiset, its worst label order has the
-$a(p_i)$ in nonincreasing order.  If $P,Q$ are independent draws from the
-empirical distribution, pair accounting and \cref{lem:offline} give
+$a(p_i)$ in nonincreasing order.  If $P,P'$ are independent draws from the
+empirical distribution, online pair accounting and the empirical offline
+identity \cref{cor:empirical-offline} give
 \begin{align}
  \cost(\textsc{OptimizeAll})
- &\le \frac{n^2}{2}\EE\max\{a(P),a(Q)\}
+ &\le \frac{n^2}{2}\EE\max\{a(P),a(P')\}
       +\frac n2\EE a(P),
  \label{eq:bo-det-optall-online}\\
  \OPT
- &=\frac{n^2}{2}\EE\min\{\lambda_u(P),\lambda_u(Q)\}
+ &=\frac{n^2}{2}\EE\min\{\lambda_u(P),\lambda_u(P')\}
       +\frac n2\EE \lambda_u(P).
  \label{eq:bo-det-optall-offline}
 \end{align}
-Write $S_D(t)=\Pr(P>t)$ for $0\le t\le u$.  Layer cake yields
+Write $S_D(t)=\Prob(P>t)$ for $0\le t\le u$.  Layer cake yields
 \begin{align}
- \EE\max\{a(P),a(Q)\}
+ \EE\max\{a(P),a(P')\}
  &=1+\int_0^u(2S_D(t)-S_D(t)^2)\,dt,
  \label{eq:bo-det-optall-layer-online}\\
- \EE\min\{\lambda_u(P),\lambda_u(Q)\}
+ \EE\min\{\lambda_u(P),\lambda_u(P')\}
  &=1+\int_0^{u-1}S_D(t)^2\,dt.
  \label{eq:bo-det-optall-layer-offline}
 \end{align}
@@ -325,9 +325,9 @@ The function $h\mapsto2h-h^2$ is increasing and concave on $[0,1]$.
 Cauchy--Schwarz on the prefix and Jensen's inequality on the unit tail
 therefore give
 \begin{align}
- \EE\max\{a(P),a(Q)\}
+ \EE\max\{a(P),a(P')\}
  &\le1+2ub-ub^2,\\
- \EE\min\{\lambda_u(P),\lambda_u(Q)\}
+ \EE\min\{\lambda_u(P),\lambda_u(P')\}
  &\ge1+(u-1)b^2.
 \end{align}
 Consequently their ratio is at most
@@ -372,7 +372,7 @@ fixed labeling $\sigma$ satisfy
  \label{eq:bo-instance-upper}
 \end{equation}
 Conversely, for every randomized nonanticipating policy $\mathcal A$, even
-one told $M$, some fixed oblivious labeling $\sigma$ satisfies
+an announced one, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE\cost(\mathcal A,\sigma(M))
  \ge n^2\PhiBO(D_M)-\eps_u(n)n^2.
@@ -394,8 +394,8 @@ worst-case optimization.
 \subsection{Proof of randomized instance optimality}
 
 In the equivalent random-labeling formulation, the labels are shuffled uniformly
-before the policy starts.  Then the lower half simply says that no policy,
-even one given $M$, beats $n^2\PhiBO(D_M)-o_u(n^2)$ in expectation.
+before the policy starts.  Then the lower half simply says that no announced
+policy beats $n^2\PhiBO(D_M)-o_u(n^2)$ in expectation.
 
 By \cref{lem:bo-normal-form}, we may regard every optimized job as one
 indivisible block of hidden length $1+p_i$.  A raw block has the known length
@@ -403,22 +403,18 @@ $u$.  Both blocks complete exactly one job.
 
 \paragraph{The announced lower bound.}
 Fix the private seed of a policy and place the announced occurrences
-uniformly behind the labels.  The first-touch argument of
-\cref{lem:blind-trace-bijection} has a direct, slightly simpler analogue.
-Give equal-valued occurrences distinct hidden tokens and map a placement to
-the token order induced by the policy's first touches.  If two placements
-induce the same token order, a lockstep induction gives the same observable
-histories and hence the same first-touch labels; the placements are equal.
-The map is therefore a bijection of the finite placement space.  Notice that
-a raw block does not reveal its token's value to the policy.  We expose that
-value only in the analysis, which gives a richer history; the policy's choice
-between raw and optimized mode is still predictable with respect to this
-richer prefix.  Thus the order of analytically exposed occurrences is a
-uniform permutation and the selector of optimized blocks is predictable.
+uniformly behind the labels.  We may assume that the policy completes every
+job.  Give equal-valued occurrences distinct hidden
+tokens.  The common first-touch lemma \cref{lem:adaptive-first-touch} makes
+their analytically exposed order a uniform permutation and the selector of
+optimized blocks predictable.  A raw block does not reveal its token's value
+to the policy; exposing it only in the analysis enriches the filtration and
+is already allowed by the lemma.
 
 Fix $\delta>0$ and ignore the last $\delta n$ first touches for the moment.
-The same predictable without-replacement estimate as in
-\cref{sec:blind-adaptive-urn} gives one event, of probability $1-o(1)$,
+The predictable-permutation estimate
+\cref{lem:predictable-permutation-sampling}, applied to the processing times
+and the optimized-block selector, gives one event of probability $1-o(1)$
 on which every earlier prefix containing $t n$ completed optimized blocks
 has total hidden processing work
 \begin{equation}
@@ -499,7 +495,7 @@ learn only one number, not a histogram or a threshold.
 
 The clairvoyant scheduler knows $p_i$, uses the effective length
 $\lambda_u(p_i)$ from \cref{eq:optional-effective-length}, and orders these
-blocks shortest first.  If $P,Q$ are independent draws from a distribution
+blocks shortest first.  If $P,P'$ are independent draws from a distribution
 $D$ on $[0,u]$, its leading coefficient is $\Omega_u(D)$ from
 \cref{eq:common-offline-coefficient}.
 Consequently the instance-specific ratio from
@@ -507,7 +503,7 @@ Consequently the instance-specific ratio from
 \begin{equation}
  \alpha_{\mathsf{BO},u}(D)
  =\frac{\min\{u,1+\EE P\}}
-        {\EE\min\{\lambda_u(P),\lambda_u(Q)\}}.
+        {\EE\min\{\lambda_u(P),\lambda_u(P')\}}.
  \label{eq:bo-instance-ratio}
 \end{equation}
 
@@ -547,7 +543,7 @@ The two branches agree at $u_{\mathsf{BO}}$.  Moreover,
 The claim is trivial for $u\le1$, because raw execution is no longer than
 the unit optimization operation.  Assume $u>1$ and let
 \[
- S_D(t)=\Pr(P>t),\qquad 0\le t\le u.
+ S_D(t)=\Prob(P>t),\qquad 0\le t\le u.
 \]
 The layer-cake identity applied to
 \eqref{eq:common-offline-coefficient} gives
@@ -584,9 +580,9 @@ Set $b=\mu/u$.  Equations
 \end{equation}
 Equality is attained by the binary distribution
 \begin{equation}
- \Pr(P=u)=b,
+ \Prob(P=u)=b,
  \qquad
- \Pr(P=0)=1-b.
+ \Prob(P=0)=1-b.
  \label{eq:bo-binary-hard}
 \end{equation}
 Indeed, its survival function is constant $b$ on $[0,u)$, so both
