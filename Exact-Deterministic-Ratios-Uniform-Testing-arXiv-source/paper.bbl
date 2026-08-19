@@ -11,11 +11,26 @@ Susanne Albers and Alexander Eckl.
 \newblock \href {https://doi.org/10.1007/978-3-030-80879-2_9}
   {\path{doi:10.1007/978-3-030-80879-2_9}}.
 
+\bibitem[Azu67]{Azuma1967}
+Kazuoki Azuma.
+\newblock Weighted sums of certain dependent random variables.
+\newblock {\em Tohoku Mathematical Journal}, 19(3):357--367, 1967.
+\newblock \href {https://doi.org/10.2748/tmj/1178243286}
+  {\path{doi:10.2748/tmj/1178243286}}.
+
 \bibitem[BS26]{BuldSchulz2026}
 Felix Buld and Andreas~S. Schulz.
 \newblock Scheduling with testing: Competitive algorithms for minimizing the
   total weighted completion time in the adversarial model, 2026.
 \newblock \href {https://arxiv.org/abs/2606.25166} {\path{arXiv:2606.25166}}.
+
+\bibitem[Che52]{Chernoff1952}
+Herman Chernoff.
+\newblock A measure of asymptotic efficiency for tests of a hypothesis based on
+  the sum of observations.
+\newblock {\em The Annals of Mathematical Statistics}, 23(4):493--507, 1952.
+\newblock \href {https://doi.org/10.1214/aoms/1177729330}
+  {\path{doi:10.1214/aoms/1177729330}}.
 
 \bibitem[DDN{\etalchar{+}}22]{DufosseEtAl2022}
 Fanny Dufoss{\'e}, Christoph D{\"u}rr, No{\"e}l Nadal, Denis Trystram, and
@@ -62,6 +77,11 @@ Leonardo de~Moura and Sebastian Ullrich.
 \newblock \href {https://doi.org/10.1007/978-3-030-79876-5_37}
   {\path{doi:10.1007/978-3-030-79876-5_37}}.
 
+\bibitem[Doo53]{Doob1953}
+Joseph~L. Doob.
+\newblock {\em Stochastic Processes}.
+\newblock Wiley, New York, 1953.
+
 \bibitem[GCH24]{GongChenHayashi2024}
 Mingyang Gong, Zhi-Zhong Chen, and Kuniteru Hayashi.
 \newblock Approximation algorithms for multiprocessor scheduling with testing
@@ -77,6 +97,14 @@ Jan Greb{\'i}k, Pavel Hub{\'a}{\v c}ek, Martin Kouteck{\'y}, Mat{\v e}j
 \newblock Bolzano: Case studies in {LLM}-assisted mathematical research, 2026.
 \newblock URL: \url{https://arxiv.org/abs/2604.16989}, \href
   {https://arxiv.org/abs/2604.16989} {\path{arXiv:2604.16989}}.
+
+\bibitem[Hoe63]{Hoeffding1963}
+Wassily Hoeffding.
+\newblock Probability inequalities for sums of bounded random variables.
+\newblock {\em Journal of the American Statistical Association},
+  58(301):13--30, 1963.
+\newblock \href {https://doi.org/10.1080/01621459.1963.10500830}
+  {\path{doi:10.1080/01621459.1963.10500830}}.
 
 \bibitem[Kah91]{Kahan1991}
 Simon Kahan.
@@ -140,5 +168,13 @@ Rajeev Motwani, Steven~J. Phillips, and Eric Torng.
   Computing Machinery, 2020.
 \newblock \href {https://doi.org/10.1145/3372885.3373824}
   {\path{doi:10.1145/3372885.3373824}}.
+
+\bibitem[Yao77]{Yao1977}
+Andrew Chi-Chih Yao.
+\newblock Probabilistic computations: Toward a unified measure of complexity.
+\newblock In {\em 18th Annual Symposium on Foundations of Computer Science},
+  pages 222--227. IEEE, 1977.
+\newblock \href {https://doi.org/10.1109/SFCS.1977.24}
+  {\path{doi:10.1109/SFCS.1977.24}}.
 
 \end{thebibliography}

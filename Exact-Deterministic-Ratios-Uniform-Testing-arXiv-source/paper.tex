@@ -10,6 +10,7 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{graphicx}
+\usepackage{capt-of}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 \usepgfplotslibrary{groupplots}
@@ -287,12 +288,13 @@ should be tested.  An algorithm optimized only for the worst case need not be
 good on either collection.
 
 We ask for much more: one algorithm that is optimal on every collection.
-Forget the labels for a moment and think of the input as a bag $M$ of $n$
+Forget the labels for a moment and think of the input as an unlabeled multiset
+$M$ of $n$
 lengths.  Let $n^2\Phi(M)$ be the smallest leading-order cost achievable by
-\emph{any} online policy on this particular bag.  The policy used to define
+\emph{any} online policy on this particular input.  The policy used to define
 $\Phi(M)$ may be tailored specifically to $M$.  We nevertheless want one
 universal policy, fixed before $M$ is chosen, that attains this value for all
-bags simultaneously.
+inputs simultaneously.
 
 \begin{theorem}[Instance optimality, informal]
 \label{thm:intro-instance-optimality}
@@ -311,14 +313,14 @@ This is the informal version of
 \end{theorem}
 
 This is our instance-optimal result: the same algorithm rules them all.  A
-random sample lets it recognize the bag it is facing.  The deeper part is
+random sample lets it recognize the input it is facing.  The deeper part is
 that there is very little to learn.  Among all adaptive ways of alternating
 tests and executions, a fixed threshold followed by a few ordered blocks is
 enough.  Its only continuous parameter is one number $q$, the fraction of
 jobs to test, and $q$ is obtained by minimizing a quadratic.
 
 There is a useful strengthening hidden in the proof.  Even a competing policy
-that is told the entire bag $M$ in advance cannot beat $\Phi(M)$.  This makes
+that is told the entire input $M$ in advance cannot beat $\Phi(M)$.  This makes
 the lower bound especially clean, but it is not the point of the theorem: the
 point is the existence of one policy that attains the optimum for every $M$.
 The formal fixed-label and oblivious-adversary formulation is given later.
@@ -326,9 +328,9 @@ The formal fixed-label and oblivious-adversary formulation is given later.
 Randomization plays one specific role here.  In the fixed-label formulation,
 an oblivious labelling can make any predetermined sublinear pilot
 unrepresentative; a private shuffle prevents this.  In the equivalent
-random-bag formulation the shuffle is already part of how a new job is
+random-labeling formulation the shuffle is already part of how a new job is
 accessed, and the policy after that shuffle can be deterministic.  Thus the
-randomness is needed to obtain a representative view of the bag, not for the
+randomness is needed to obtain a representative view of the input, not for the
 subsequent scheduling decisions.
 
 The next two subsections explain the two main forms of $\Phi(M)$ and their
@@ -347,16 +349,16 @@ us see $p_i$ before deciding where the job belongs in the schedule.
 The closest earlier adversarial formulation is the processing-time-oracle
 model of Dufoss{\'e} et al.~\cite{DufosseEtAl2022}, which allows blind
 execution but restricts the hidden duration to two possible values.  Here the
-bag may contain arbitrary bounded lengths.
+input may contain arbitrary bounded lengths.
 
-Why not compare directly with the usual clairvoyant optimum?  Consider a bag
+Why not compare directly with the usual clairvoyant optimum?  Consider an input
 containing many zeros and a very small number of positive jobs.  The
 clairvoyant scheduler completes every zero at time zero.  An online scheduler
 does not know where the zeros are, and must spend time either testing jobs or
 occasionally running a positive job.  The ratio can therefore be arbitrarily
 large.  The value $\Phi(M)$ asks the more informative question: what is the
-best online cost on this particular bag?  Our one policy attains that value
-on every bag.
+best online cost on this particular input?  Our one policy attains that value
+on every input.
 
 The optimal policy has a particularly concrete form.  Let $\mu$ be the mean
 job length.  A tested job shorter than $\mu$ should go before a random blind
@@ -372,14 +374,14 @@ the unit cost of a test.  A separate number $q$ decides when testing stops.
 An exact test-prefix/ordered-tail structure also appears in the Bayesian
 i.i.d. model of Levi, Magnanti, and
 Shaposhnik~\cite{LeviMagnantiShaposhnik2019}.  Our theorem instead starts from
-one adversarial bag and proves that the same structure is asymptotically
+one adversarial input and proves that the same structure is asymptotically
 optimal after a private shuffle.
 
 \begin{algorithm}[H]
 \caption{Instance-optimal policy for blind execution}
 \label{alg:intro-blind}
 \begin{algorithmic}
-\State Run a sublinear random pilot blindly and estimate the bag of lengths.
+\State Run a sublinear random pilot blindly and estimate the length distribution.
 \State Compute $\mu$, the threshold $\tau$, and the best tested fraction $q$.
 \State Test a random $q$-fraction; finish every outcome below $\tau$ at once.
 \State Finish the remaining tested jobs below $\mu$, shortest first.
@@ -427,7 +429,7 @@ cutoffs are part of the curve theorem; the useful picture is the following.
 \end{algorithmic}
 \end{algorithm}
 
-On any fixed bag, the randomized instance-optimal policy again has only one
+On any fixed input, the randomized instance-optimal policy again has only one
 threshold and one stopping fraction.  Our universal algorithm estimates both
 from its pilot.  The threshold says which tested outcomes are worth
 completing during the testing phase.  Once testing stops, all revealed jobs
@@ -438,7 +440,7 @@ the untouched jobs are run raw.
 \caption{Instance-optimal randomized revealing-optimization policy}
 \label{alg:intro-common-upper}
 \begin{algorithmic}
-\State Test a sublinear random pilot and estimate the bag of optimized lengths.
+\State Test a sublinear random pilot and estimate the optimized-length distribution.
 \State Compute the best threshold and the best tested fraction $q$.
 \State Test a random $q$-fraction; finish outcomes below the threshold at once.
 \State Finish all other tested jobs, shortest first.
@@ -446,9 +448,9 @@ the untouched jobs are run raw.
 \end{algorithmic}
 \end{algorithm}
 
-This per-bag theorem also gives the exact randomized competitive ratio.  For
-each bag, divide the cost of \cref{alg:intro-common-upper} by the clairvoyant
-cost, and then ask which bag makes this ratio largest.  The worst bags turn
+This per-input theorem also gives the exact randomized competitive ratio.  For
+each input, divide the cost of \cref{alg:intro-common-upper} by the clairvoyant
+cost, and then ask which input makes this ratio largest.  The worst inputs turn
 out to use only two job lengths.  Solving this last one-variable problem
 gives the randomized curve below.
 
@@ -531,11 +533,11 @@ quadratics used by the instance-optimal algorithms.  It also gives lower
 bounds: no adaptive policy can complete jobs faster than the best such
 ordering.
 
-\paragraph{Turn an adversarial input into a random bag.}
+\paragraph{Randomize an adversarial input.}
 The algorithms begin by privately shuffling the labels.  A small prefix then
-estimates the whole bag.  For the lower bound we need the same statement for
-an adaptive policy, which may choose the next label using everything seen so
-far.  The key observation is that its order of first visits is just another
+estimates the empirical input distribution.  For the lower bound we need the
+same statement for an adaptive policy, which may choose the next label using
+everything seen so far.  The key observation is that its order of first visits is just another
 permutation of the hidden occurrences.  Thus the revealed values still look
 like sampling without replacement.  This is what allows one concentration
 event to control every possible stopping time.
@@ -1205,7 +1207,8 @@ All randomized expectations are over private algorithmic randomness.  A
 uniform random relabeling is private randomness, not a distributional
 assumption on the adversarial multiset.  For lower bounds we use a uniform
 distribution over fixed labelings as a finite Yao distribution and then
-select one labeling whose cost is at least the average.
+select one labeling whose cost is at least the average, as formalized in
+\cref{lem:finite-yao} below.
 
 \subsection{Offline optima and pair accounting}
 
@@ -1293,7 +1296,7 @@ For $\mathsf{BO}(u)$ and $\mathsf{RO}(u)$, $q_j\ge\min\{u,1\}$ gives
  \OPT_u\ge\min\{u,1\}\frac{n(n+1)}2.
 \end{equation}
 There is deliberately no analogous positive lower bound for blind execution:
-a bag of zero jobs has clairvoyant cost zero.
+an input consisting only of zero jobs has clairvoyant cost zero.
 
 \subsection{Competitive-ratio conventions}
 
@@ -1316,7 +1319,7 @@ the usual worst-case ratio after taking $n\to\infty$.  This equivalence fails
 for blind execution, where $\OPT$ can be $o(n^2)$.  Accordingly,
 \cref{thm:blind-instance} makes the absolute statement
 $\EE\ALG=n^2\Phiopt(D_M)+o_L(n^2)$ and does not claim a bounded ratio to the
-clairvoyant optimum on every sparse bag.
+clairvoyant optimum on every sparse input.
 
 \subsection{Test-order adversaries}
 
@@ -1338,6 +1341,131 @@ chooses the same tests, processing operations, and idle intervals on the fixed
 instance.  If the algorithm fails to test or complete some job forever, its
 competitive ratio is already infinite; otherwise every relevant label is
 recorded.
+\end{proof}
+
+\subsection{Probabilistic tools}
+\label{sec:probabilistic-tools}
+
+We collect here the concentration estimates used in the randomized sections.
+All of them are finite-space statements.  We use without further mention the
+union bound, Markov's inequality
+$\Prob(Y\ge t)\le \EE Y/t$ for $Y\ge0$, and the tail identity
+$\EE Y=\int_0^\infty\Prob(Y\ge t)\,dt$.
+
+\begin{lemma}[Chernoff bounds]
+\label{lem:chernoff}
+Let $X=\sum_{i=1}^m X_i$, where the $X_i$ are independent Bernoulli random
+variables, and write $\mu=\EE X$.  For every $\delta>0$,
+\begin{equation}
+ \Prob\bigl(X\ge(1+\delta)\mu\bigr)
+ \le \left(\frac{e^\delta}{(1+\delta)^{1+\delta}}\right)^\mu
+ \le \exp\!\left(-\frac{\delta^2\mu}{2+\delta}\right).
+ \label{eq:chernoff-upper}
+\end{equation}
+For $0\le\delta\le1$,
+\begin{equation}
+ \Prob\bigl(X\le(1-\delta)\mu\bigr)
+ \le \exp\!\left(-\frac{\delta^2\mu}{2}\right).
+ \label{eq:chernoff-lower}
+\end{equation}
+These are the standard exponential-moment bounds of
+Chernoff~\cite{Chernoff1952}.
+\end{lemma}
+
+\begin{lemma}[Sampling without replacement]
+\label{lem:sampling-without-replacement}
+Let $x_1,\ldots,x_N\in[0,1]$, let $X_1,\ldots,X_N$ be a uniformly random
+permutation of these numbers, and put
+$\bar x=N^{-1}\sum_i x_i$.  For $1\le k\le N$ and $t\ge0$,
+\begin{equation}
+ \Prob\left(\left|\sum_{i=1}^kX_i-k\bar x\right|\ge t\right)
+ \le 2\exp\!\left(-\frac{2t^2}{k}\right).
+ \label{eq:without-replacement-hoeffding}
+\end{equation}
+Moreover, if $\widehat x_k=k^{-1}\sum_{i=1}^kX_i$ and
+$\sigma^2=N^{-1}\sum_i(x_i-\bar x)^2$, then, for $N>1$,
+\begin{equation}
+ \operatorname{Var}(\widehat x_k)
+ =\frac{N-k}{k(N-1)}\sigma^2
+ \le\frac{1}{4k}.
+ \label{eq:without-replacement-variance}
+\end{equation}
+If the population is partitioned into $d$ classes with population histogram
+$p$ and sample histogram $\widehat p$, the same variance formula and
+Cauchy--Schwarz give
+\begin{equation}
+ \EE\|\widehat p-p\|_1\le\sqrt{\frac d k}.
+ \label{eq:without-replacement-histogram}
+\end{equation}
+Finally, if $H_{k,j}$ counts class $j$ among the first $k$ entries, then
+\begin{align}
+ \Prob\left(
+   \max_{0\le k\le N}\max_{1\le j\le d}|H_{k,j}-kp_j|\ge t
+ \right)
+ &\le 2d(N+1)\exp\!\left(-\frac{2t^2}{N}\right),
+ \label{eq:uniform-prefix-hoeffding}\\
+ \EE\max_{0\le k\le N}\max_{1\le j\le d}|H_{k,j}-kp_j|
+ &\le C\sqrt{N\log(2d(N+1))}
+ \label{eq:uniform-prefix-mean}
+\end{align}
+for a universal constant $C$.
+\end{lemma}
+
+\begin{proof}
+The estimate \cref{eq:without-replacement-hoeffding} is Hoeffding's
+sampling-without-replacement inequality~\cite[Section~6]{Hoeffding1963}.
+The variance identity is the elementary finite-population correction.  For a
+class of mass $p_j$, it gives
+$\EE|\widehat p_j-p_j|\le\sqrt{p_j/k}$; summing and applying
+Cauchy--Schwarz proves \cref{eq:without-replacement-histogram}.
+Apply \cref{eq:without-replacement-hoeffding} to every binary class indicator
+and union-bound over $k$ and $j$ to obtain
+\cref{eq:uniform-prefix-hoeffding}.  Integrating that tail bound proves
+\cref{eq:uniform-prefix-mean}.
+\end{proof}
+
+\begin{lemma}[Martingale maximal inequalities]
+\label{lem:martingale-maximal}
+Let $(M_k,\mathcal F_k)_{k=0}^N$ be a real martingale with $M_0=0$.
+If it is square integrable, then Doob's inequality gives
+\begin{equation}
+ \EE\max_{0\le k\le N}|M_k|^2\le4\EE|M_N|^2.
+ \label{eq:doob-L2}
+\end{equation}
+If instead $|M_k-M_{k-1}|\le b_k$ almost surely for deterministic $b_k$,
+then maximal Azuma--Hoeffding gives, for every $t\ge0$,
+\begin{equation}
+ \Prob\left(\max_{0\le k\le N}|M_k|\ge t\right)
+ \le2\exp\!\left(-\frac{t^2}{2\sum_{k=1}^N b_k^2}\right).
+ \label{eq:maximal-azuma}
+\end{equation}
+We use the classical forms due to Doob~\cite{Doob1953} and
+Azuma~\cite{Azuma1967}; the maximal version of the latter follows by applying
+the exponential-supermartingale proof at the first crossing time.
+\end{lemma}
+
+\begin{lemma}[Finite Yao selection]
+\label{lem:finite-yao}
+Let $\nu$ be a finite-support distribution on inputs, and let $g(A,I)$ be an
+integrable real payoff.  If
+\begin{equation}
+ \EE_{I\sim\nu}g(A,I)\ge L
+ \label{eq:finite-yao-hypothesis}
+\end{equation}
+for every deterministic strategy $A$, then for every randomized strategy
+$\mathcal A$ there is a fixed $I$ in the support of $\nu$ such that
+\begin{equation}
+ \EE_{A\sim\mathcal A}g(A,I)\ge L.
+ \label{eq:finite-yao-conclusion}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Condition on the random seed of $\mathcal A$ and apply
+\cref{eq:finite-yao-hypothesis}.  Averaging over the seed shows that the
+$\nu$-average of $\EE_{A\sim\mathcal A}g(A,I)$ is at least $L$, so at least
+one input in the finite support attains this average.  This is the one-sided
+finite form of Yao's principle~\cite{Yao1977} used in our lower bounds.
 \end{proof}
 
 \section{Deterministic obligatory testing: the exact ratio}

@@ -45,7 +45,7 @@ policy under a uniform placement into predictable sampling without
 replacement.  One event then controls every touch prefix, so the realized
 stopping fraction can be substituted pathwise.  Finally, a growing grid and
 a sublinear sample make the result uniform over arbitrary bounded multisets
-without announcing the bag.  The first subsection begins the formal proof.
+without announcing the input.  The first subsection begins the formal proof.
 
 \subsection{The fixed-fraction fluid benchmark}
 \label{sec:cui-fluid}
@@ -287,8 +287,8 @@ If $K$ is polynomial in $n$, the failure probability is inverse polynomial.
 \end{lemma}
 
 \begin{proof}
-Hoeffding's inequality for sampling without replacement, followed by a union
-bound over all prefixes and cells, gives
+The uniform-prefix sampling bound
+\cref{eq:uniform-prefix-hoeffding}, applied to all cells, gives
 $|N_j(k)-kD_j|\le e_n$ simultaneously, except with inverse-polynomial
 probability.  While $k\le(1-\delta)n$, the remaining proportion
 $R_{k,j}$ therefore obeys
@@ -296,8 +296,8 @@ $|R_{k,j}-D_j|\le e_n/(\delta n)$.  Since $A_k$ is predictable,
 \[
  \sum_{k\le m}A_k(\one_{X_k\in j}-R_{k-1,j})
 \]
-is a martingale with increments bounded by one.  Maximal
-Azuma--Hoeffding, again union-bounded over the cells, places its running
+is a martingale with increments bounded by one.  The maximal
+Azuma--Hoeffding bound \cref{eq:maximal-azuma}, again union-bounded over the cells, places its running
 maximum below $e_n$.  Adding the predictable drift gives
 \cref{eq:cui-urn-discrepancy}.
 \end{proof}
@@ -419,7 +419,8 @@ template to the remaining labels in their unused random order, then finish
 the positive sample jobs.
 
 Let $D_n$ and $D_n^R$ be the full and remaining rounded histograms.
-Hypergeometric coordinate variances and Cauchy--Schwarz give
+The sampling-without-replacement histogram estimate
+\cref{eq:without-replacement-histogram} gives
 \begin{equation}
  \EE\|\widehat D_n-D_n\|_1
  \le\sqrt{\frac{K_n+1}{k_n}},

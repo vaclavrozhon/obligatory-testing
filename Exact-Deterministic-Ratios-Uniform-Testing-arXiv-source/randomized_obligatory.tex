@@ -254,10 +254,8 @@ For $1\le k<n$,
 \end{lemma}
 
 \begin{proof}
-The count in category $b$ is hypergeometric and its normalized variance is
-at most $\mu_b/k$.  Thus
-$\EE|\widehat\mu_b-\mu_b|\le\sqrt{\mu_b/k}$.  Summation and Cauchy--Schwarz
-give the claim.
+This is \cref{eq:without-replacement-histogram}, with the zero bin and the
+overflow bin included among the $d+2$ categories.
 \end{proof}
 
 For a finite category prefix $J$, define
@@ -317,7 +315,8 @@ Put
  \gamma=\frac1{B(B+1)},\qquad G=\{\Delta\le\gamma\}.
  \label{eq:rand-good-event}
 \end{equation}
-Markov's inequality and \cref{lem:rand-histogram} give
+Markov's inequality, recalled in \cref{sec:probabilistic-tools}, and
+\cref{lem:rand-histogram} give
 \begin{equation}
  \Prob(G^c)\le B(B+1)\sqrt{\frac{d+2}{k}}.
  \label{eq:rand-bad-probability}
@@ -436,7 +435,8 @@ though the test order is adaptive.  Put
 
 \begin{proof}
 For $0\le k\le m$, $M_k=S_k/(n-k)$ is a martingale.  Doob's $L^2$
-inequality and the hypergeometric variance
+inequality \cref{eq:doob-L2} and the hypergeometric variance
+\cref{eq:without-replacement-variance} (with the displayed rescaling)
 $\EE S_m^2=n^2/[4(n-1)]$ give
 \[
  \EE\max_{k\le m}|S_k|^2\le\frac{4n^2}{n-1}.
@@ -464,8 +464,8 @@ $\EE\ALG\ge n^2-O(n^{3/2})$.  Every input in the distribution has
 \[
  \OPT=3m^2+2m=\frac34n^2+n.
 \]
-Conditioning a randomized algorithm on its private seed and averaging over
-the finite placement distribution shows that one fixed labeling attains at
-least this average.  That labeling is chosen before the private seed and is
-therefore an oblivious input.  Together with \cref{eq:rand-final-upper}, this
+Finite Yao selection \cref{lem:finite-yao} shows that one fixed labeling
+attains at least this average for every randomized algorithm.  That labeling
+is chosen before the private seed and is therefore an oblivious input.
+Together with \cref{eq:rand-final-upper}, this
 completes the proof of \cref{thm:rand-obligatory}.

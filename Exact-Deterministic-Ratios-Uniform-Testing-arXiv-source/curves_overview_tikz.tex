@@ -89,18 +89,12 @@
 \draw[violet!82!black,densely dotted,line width=1.5pt,->]
   (axis cs:1.93,1.93) -- (axis cs:2.035,2.035);
 
-% The optimized forced-prefix family has limit 2 as u decreases to 1.
-% Its losing branch to the left of u_diamond is essential: it displays the
-% crossing with Raw instead of making the two optimal pieces merely touch.
-\addplot[teal!78!black,dashed,line width=1.5pt]
-  coordinates {(1,2) (1.01,1.99047986077)};
+% ForcedPrefixUTE is shown only on the range covered by its formal guarantees.
+\addplot[teal!78!black,dashed,line width=1.5pt,
+  domain=1.86676039917:3.14789903570] {introRhoI(x)};
 \addlegendentry{\textsc{ForcedPrefixUTE}}
 \addplot[teal!78!black,dashed,line width=1.5pt,
-  domain=1.01:3.14789903570] {introRhoI(x)};
-\addplot[teal!78!black,dashed,line width=1.5pt,
   domain=3.14789903570:3.61803398875] {1+1/sqrt(x-1)};
-\addplot[teal!78!black,dashed,line width=1.5pt,
-  domain=3.61803398875:7.3] {1.61803398875};
 
 \addplot[red!78!black,dash dot,line width=1.5pt,smooth] coordinates {
   (3.61803399,1.61803399)

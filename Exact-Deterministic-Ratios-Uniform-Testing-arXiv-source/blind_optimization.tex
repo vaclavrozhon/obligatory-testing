@@ -9,7 +9,7 @@ must be started blindly and its duration becomes known only when it finishes.
 We call this the \emph{blind-optimization} model $\mathsf{BO}(u)$.
 
 We study randomized policies against an oblivious adversary.  This is the
-natural setting for learning the bag: a private random sample is
+natural setting for learning the input: a private random sample is
 representative under every fixed labeling, whereas an adversary can make any
 predetermined deterministic sample atypical.  We do not pursue a separate
 deterministic worst-case curve for this model.
@@ -38,6 +38,58 @@ and define
 The two terms have an immediate meaning.  Running every job raw uses $u$
 units per completion.  Optimizing and then blindly processing every job uses
 $1+\mu_M$ units per completion on average.
+
+Randomization is necessary for attaining this benchmark on every input.
+
+\begin{theorem}[No deterministic instance-optimal policy]
+\label{thm:bo-det-not-instance-optimal}
+For every deterministic nonanticipating policy $\mathcal A$ that is not told
+the input multiset and every even $n$, there are a fixed labeled input
+$I\in\{0,2\}^n$ and a randomized policy $\mathcal A'$ told its multiset such
+that
+\begin{equation}
+ \cost(\mathcal A,I)
+ \ge \EE\cost(\mathcal A',I)+\frac18n^2.
+ \label{eq:bo-det-instance-gap}
+\end{equation}
+Consequently no deterministic policy is asymptotically instance-optimal in
+$\mathsf{BO}(2)$.
+\end{theorem}
+
+\begin{proof}
+Run $\mathcal A$ against the following deterministic revelation rule.  Give
+a job value zero if $\mathcal A$ runs it raw, and value two if $\mathcal A$
+optimizes it.  Optimization reveals nothing, and the value two is seen only
+when the optimized job is subsequently processed.  Since $\mathcal A$ is
+deterministic, recording the resulting value of every label produces a fixed
+labeled input with the same transcript.
+
+Let $m$ be the number of optimized jobs on this input.  Every raw job consumes
+two units before completion, whereas every optimized job consumes three.
+Irrespective of interleaving, the completion times are therefore bounded
+below by the shortest-first schedule of $n-m$ blocks of length two and $m$
+blocks of length three.  Hence
+\begin{equation}
+ \cost(\mathcal A,I)
+ \ge n^2+n+\frac{m^2+m}{2}.
+ \label{eq:bo-det-instance-online}
+\end{equation}
+
+The multiset has $n-m$ zeros and $m$ twos.  If $m\le n/2$, let
+$\mathcal A'$ privately permute the jobs and optimize and process them one at
+a time in that order.  Every position sees the average block length
+$(n+2m)/n$, so
+\begin{equation}
+ \EE\cost(\mathcal A',I)=\frac{(n+1)(n+2m)}2.
+ \label{eq:bo-det-instance-comparator-opt}
+\end{equation}
+Subtracting this from \cref{eq:bo-det-instance-online} gives
+$(n-m)(n-m+1)/2\ge n^2/8$.
+
+If $m>n/2$, let $\mathcal A'$ run every job raw.  Its cost is $n(n+1)$, and
+the difference in \cref{eq:bo-det-instance-online} is
+$(m^2+m)/2>n^2/8$.  This proves \cref{eq:bo-det-instance-gap}.
+\end{proof}
 
 \begin{theorem}[Blind-optimization instance optimality]
 \label{thm:bo-instance}
@@ -72,7 +124,7 @@ worst-case optimization.
 
 \subsection{Proof of instance optimality}
 
-In the equivalent random-bag formulation, the labels are shuffled uniformly
+In the equivalent random-labeling formulation, the labels are shuffled uniformly
 before the policy starts.  Then the lower half simply says that no policy,
 even one given $M$, beats $n^2\Phi_{\rm bo}(M)-o_u(n^2)$ in expectation.
 
@@ -157,8 +209,8 @@ choice $\delta=\delta_n$, give
  \frac1{n^2}\EE\cost(\mathcal A,M)
  \ge\frac12\min\{u,1+\mu_M\}-o_u(1).
 \]
-The estimate is uniform in the deterministic policy.  Averaging over its
-private seed and applying the same finite Yao/relabeling argument as in
+The estimate is uniform in the deterministic policy.  Applying
+\cref{lem:finite-yao} and the same relabeling argument as in
 \cref{sec:blind-announced} proves
 \eqref{eq:bo-instance-lower}.  Together with the upper bound below, one may
 take $\eps_u(n)=O_u(n^{-1/4}\sqrt{\log(n+2)})$ after enlarging its constant.
@@ -171,7 +223,8 @@ immediately process every remaining job in fresh random order.  Otherwise
 run every remaining job raw.
 
 The sample contributes at most $O_u(nk)=o_u(n^2)$ beyond the main schedule.
-Sampling without replacement gives
+The variance estimate \cref{eq:without-replacement-variance}, after scaling
+from $[0,1]$ to $[0,u]$, gives
 \[
  \EE|\widehat\mu-\mu_M|=O_u(k^{-1/2}+k/n)=o_u(1).
 \]
@@ -305,9 +358,9 @@ optimal afterwards.  Substitution gives
  f_u(b_*)=\frac12\left(
   1+\sqrt{\frac{u^2+u-1}{u-1}}\right).
 \]
-This proves \eqref{eq:bo-curve}.  The binary distributions
-\eqref{eq:bo-binary-hard}, uniformly relabeled, are oblivious Yao
-distributions.  Together with the universal upper policy of
+This proves \eqref{eq:bo-curve}.  The uniformly relabeled binary distributions
+\eqref{eq:bo-binary-hard}, together with \cref{lem:finite-yao}, give the
+oblivious lower bounds.  Together with the universal upper policy of
 \cref{thm:bo-instance}, they prove both sides of the competitive-ratio claim.
 If the maximizing mass $b$ is irrational, finite multisets use
 $\lfloor bn\rfloor$ copies of $u$; continuity gives the same asymptotic
@@ -316,16 +369,6 @@ Finally,
 $(u^2+u-1)/(u-1)=u+2+1/(u-1)$ gives
 \eqref{eq:bo-curve-asymptotic}.
 \end{proof}
-
-\begin{figure}[H]
- \centering
- \includegraphics[width=0.78\textwidth]{blind_optimization_curve.pdf}
- \caption{Revealing $p_i$ keeps the randomized revealing-optimization ratio bounded and
- eventually gives the $4/3$ plateau.  If optimization changes the processing
- time but does not reveal it before execution, the exact ratio instead grows
- as $\sqrt u/2$.}
- \label{fig:bo-comparison}
-\end{figure}
 
 The hard distribution explains the separation.  Most jobs have optimized
 length zero, while a carefully chosen small fraction have length $u$.  Blind

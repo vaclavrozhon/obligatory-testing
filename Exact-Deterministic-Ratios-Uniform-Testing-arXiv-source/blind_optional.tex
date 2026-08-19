@@ -92,7 +92,7 @@ introduction and gives its exact quadratic cost.  To handle an arbitrary
 adaptive policy, we show that its first-touch order is a bijective
 relabeling of the occurrence permutation; predictable sampling controls all
 touch prefixes at once.  A growing grid extends the bound to arbitrary
-bounded multisets, and a blind sample removes advance knowledge of the bag.
+bounded multisets, and a blind sample removes advance knowledge of the input.
 The next subsection defines the benchmark and begins the formal proof.
 
 \subsection{The distributional benchmark}
@@ -368,10 +368,10 @@ class $i$,
  &\le L\Gamma_n.
  \label{eq:blind-work-discrepancy}
 \end{align}
-Indeed, Hoeffding's inequality for without-replacement prefixes controls the
-remaining urn proportions.  Multiplying the centered next-draw indicator by
+Indeed, the uniform-prefix bound \cref{eq:uniform-prefix-hoeffding} controls
+the remaining urn proportions.  Multiplying the centered next-draw indicator by
 the predictable test selector gives a martingale with bounded increments;
-maximal Azuma--Hoeffding controls all stopping prefixes at once.  The same
+\cref{eq:maximal-azuma} controls all stopping prefixes at once.  The same
 argument with the predictable blind selector and bounded values proves
 \cref{eq:blind-work-discrepancy}.  Importantly, we never condition on the
 eventual tested fraction.
@@ -438,7 +438,7 @@ and then over private seeds proves the same lower bound for every randomized
 announced policy.
 
 The random-labeling and announced minimax values coincide.  A uniform
-labeling is a valid finite Yao distribution, giving one inequality.  For the
+labeling and \cref{lem:finite-yao} give one inequality.  For the
 other, privately relabel the physical jobs before running an optimal
 deterministic urn policy; against every fixed assignment, the policy sees a
 uniform assignment.  Thus the lower bound above applies to the announced
@@ -524,8 +524,8 @@ The policy minimizes the canonical quadratic over every grid threshold,
 blind-block insertion position, and $q\in[0,1]$, then runs the selected
 four-block template on the remaining jobs in the unused random order.
 
-Let $D_n$ and $D_n^R$ be the full and remaining grid histograms.  Sampling
-without replacement gives
+Let $D_n$ and $D_n^R$ be the full and remaining grid histograms.  Applying
+\cref{eq:without-replacement-histogram} to the grid classes gives
 \begin{equation}
  \EE\|\widehat D_n-D_n\|_1
  \le\sqrt{\frac{K_n+1}{k_n}},

@@ -2,12 +2,12 @@
 \label{sec:obligatory-instance}
 
 The goal of this section is to prove \cref{thm:obligatory-instance}, the
-rigorous version of the ``one algorithm for every bag'' statement
+rigorous version of the ``one algorithm for every input'' statement
 \cref{thm:intro-obligatory-instance}.  The algorithm is not a new one: it is
 a slight variant of the policy from \cref{sec:random-obligatory}, obtained by
 replacing its fixed cutoff $32$ by a slowly growing cutoff.  The new point is
-that this variant attains, on every bounded bag, the best leading cost
-available even to a policy that is told the bag in advance.
+that this variant attains, on every bounded input, the best leading cost
+available even to a policy that is told the input in advance.
 
 For a multiset $M=\{p_1,\ldots,p_n\}$, write $D_M$ for its empirical
 probability measure.  We define below an explicit number
@@ -36,7 +36,7 @@ advance, some fixed oblivious labeling $\sigma$ satisfies
  \label{eq:ot-instance-lower}
 \end{equation}
 One may take $\eps_L(n)=O_L(n^{-1/5})$.  Thus $\mathcal A^*$ is
-asymptotically instance-optimal, uniformly over all bounded bags.
+asymptotically instance-optimal, uniformly over all bounded inputs.
 \end{theorem}
 
 The upper estimate will have order $O_L(n^{-1/5})$.  The announced lower
@@ -48,13 +48,13 @@ common rate only to keep the theorem statement symmetric.
 \begin{enumerate}[label=\textnormal{(\roman*)}]
 \item There is no deterministic instance-optimal policy, even when all job
 lengths lie in $[0,2]$.  More precisely, for every deterministic policy
-$\mathcal A$, even one told the bag, and every even $n$, there is a fixed
-labeling of the bag with $n/2$ zero jobs and $n/2$ length-two jobs for which
+$\mathcal A$, even one told the input, and every even $n$, there is a fixed
+labeling of the input with $n/2$ zero jobs and $n/2$ length-two jobs for which
 \begin{equation}
  \cost(\mathcal A)\ge\frac98n^2.
  \label{eq:ot-det-not-instance-optimal}
 \end{equation}
-On the same bag, a randomized policy $\mathcal A'$ that is told the bag has
+On the same input, a randomized policy $\mathcal A'$ that is told the input has
 \[
  \cost(\mathcal A')=n^2+\frac34n.
 \]
@@ -63,9 +63,9 @@ Thus $\cost(\mathcal A)>\cost(\mathcal A')+n^2/8-O(n)$.
 \item If job lengths are not bounded by a fixed constant, there is no
 randomized instance-optimal policy with one uniform additive $o(n^2)$ term.
 More precisely, for every randomized policy $\mathcal A$ independent of the
-bag and every sufficiently large $n$, there are a bag with lengths in
+input and every sufficiently large $n$, there is an input with lengths in
 $[0,n^2]$, a fixed labeling, and a randomized policy $\mathcal A'$ told that
-bag such that
+input such that
 \begin{equation}
  \cost(\mathcal A)\ge\cost(\mathcal A')+\frac18n^2.
  \label{eq:ot-unbounded-not-instance-optimal}
@@ -103,7 +103,7 @@ cost identity \cref{eq:rand-stationary-cost} gives
 \]
 This proves the first claim.
 
-For part~(ii), put $H=n^2$ and first run $\mathcal A$ on the bag $M^0$ in
+For part~(ii), put $H=n^2$ and first run $\mathcal A$ on the input $M^0$ in
 which every job has length $H$.  For a fixed private seed, let $X_k$ be the
 number of completed jobs immediately before the $k$th test.  Every processing
 operation contributes the same $Hn(n+1)/2$ in total, regardless of its
@@ -118,7 +118,7 @@ immediately satisfies
 If this sum has expectation at least $n^2/8$, we are done.
 
 Otherwise, replace one uniformly random label by a zero and leave every
-other length equal to $H$; call the resulting bag $M^1$.  Conditional on the
+other length equal to $H$; call the resulting input $M^1$.  Conditional on the
 seed, the rank $K$ at which the zero label is tested is uniform on
 $\{1,\ldots,n\}$.  Until that test, the run agrees with the all-$H$ run, and
 therefore $X_K$ length-$H$ jobs complete before the zero.  From
@@ -241,7 +241,7 @@ $\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q)$.  This proves
 
 \subsection{The announced upper bound}
 
-Suppose the bag is announced but its labeling is not.  Choose a maximizing
+Suppose the input is announced but its labeling is not.  Choose a maximizing
 whole-occurrence prefix $E$, test labels in a uniformly random order, process
 an $E$-job immediately, and finish the residual jobs in SPT order.  The exact
 identity \cref{eq:rand-stationary-cost} and
@@ -278,8 +278,10 @@ and define
  \label{eq:ot-prefix-discrepancy}
 \end{equation}
 Only the at most $n+1$ thresholds immediately after values of $M$ matter.
-The hypergeometric Hoeffding bound, followed by a union bound over $k$ and
-$z$, gives universal constants $c,C>0$ such that
+Apply the uniform-prefix sampling bound
+\cref{eq:uniform-prefix-hoeffding,eq:uniform-prefix-mean} to the binary
+indicators $\one_{p_i\le z}$ and union-bound over these thresholds.  This
+gives universal constants $c,C>0$ such that
 \begin{equation}
  \Prob(\Delta\ge u)\le2(n+1)^2e^{-cu^2/n},\qquad
  \EE\Delta\le C\sqrt{n\log(n+2)}.
@@ -352,12 +354,13 @@ has expected cost at least
  -O\!\left(Hn^{3/2}\sqrt{\log(n+2)}\right).
  \label{eq:ot-announced-lower}
 \end{equation}
-Yao's principle gives the same lower bound for randomized policies: the
-uniform distribution over occurrence placements is an oblivious finite
-input distribution, so some fixed placement has at least the average cost.
+Finite Yao selection \cref{lem:finite-yao} gives the same lower bound for
+randomized policies: the uniform distribution over occurrence placements is
+an oblivious finite input distribution, so some fixed placement has at least
+the average cost.
 When $p_i\le L$, one has $H\le1+L$, uniformly over $M$.
 
-\subsection{The same unannounced policy for every bag}
+\subsection{The same unannounced policy for every input}
 
 It remains to prove \cref{eq:ot-instance-upper}.  Start with the policy from
 \cref{sec:random-obligatory}, keep its sampling, threshold, and fallback
@@ -446,5 +449,5 @@ Finally, the exact certificate \cref{eq:rand-certificate} says that
 $\Phi_{\rm OT}(D)$ is at most $4/3$ times the leading clairvoyant SPT value
 for every $D$.  Equality is attained by
 $D=\tfrac12\delta_0+\tfrac12\delta_2$.  Thus the sharp $4/3$ theorem is
-exactly the worst-bag consequence of the stronger instance-optimal
+exactly the worst-input consequence of the stronger instance-optimal
 description.

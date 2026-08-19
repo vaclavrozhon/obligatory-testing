@@ -2,8 +2,8 @@
 \label{sec:random-common-upper}
 
 The previous section identified the optimal leading online cost for every
-fixed bag in the revealing-optimization model.  We now compare that cost with the
-clairvoyant optimum and maximize over all bags.  The cap $u$ is fixed, but
+fixed input in the revealing-optimization model.  We now compare that cost with the
+clairvoyant optimum and maximize over all inputs.  The cap $u$ is fixed, but
 the algorithm is not told the processing-time multiset.  This section proves
 \cref{thm:random-common-upper}, the rigorous randomized half of the informal
 curve theorem \cref{thm:intro-common-upper-curves}.  Let
@@ -58,11 +58,11 @@ attained at $u=(3+\sqrt3)/2$.
 \end{theorem}
 
 The preceding instance-optimal theorem identifies the best policy on each
-bag.  Here we compare that value with the clairvoyant minimum kernel and
+input.  Here we compare that value with the clairvoyant minimum kernel and
 maximize over all empirical distributions.  A survival-function flattening
 argument reduces the outer optimization to binary distributions.  Two
 scalar maximizations give the four branches above.  A sublinear sample removes
-advance knowledge of the bag, and binary random labelings give matching Yao
+advance knowledge of the input, and binary random labelings give matching Yao
 lower bounds.  The next subsection starts the formal calculation.
 
 \subsection{Offline and stationary fluid coefficients}
@@ -168,7 +168,7 @@ stationary maximum-density policy.  Hence
 \end{equation}
 and \cref{eq:rcu-announced-ratio} is an upper bound on the
 instance-specific ratio $\Phi_u(D)/\Omega_u(D)$.  Interior values of $q$ can
-strictly improve individual bags; the point of the next two subsections is
+strictly improve individual inputs; the point of the next two subsections is
 that the two endpoint policies already give the sharp value after maximizing
 over all $D$.  The binary lower bounds at the end apply to every policy, not
 only to these endpoints.
@@ -379,8 +379,8 @@ tail in SPT order.  Sampled positive jobs are inserted in the corresponding
 known part of the schedule.
 
 Let $\widehat D$ and $D^{\rm g}$ be the sample and population grid
-histograms.  Hypergeometric variance and Cauchy--Schwarz over the $d+1$
-categories give
+histograms.  The histogram estimate
+\cref{eq:without-replacement-histogram} gives
 \begin{equation}
  \EE\|\widehat D-D^{\rm g}\|_1
  \le\sqrt{\frac{d+1}{k}}=O(n^{-1/6}).
@@ -453,8 +453,9 @@ the whole placement.  The word is therefore a uniform permutation, and the
 test/raw choice before its next entry is predictable from the preceding
 word.
 
-Take $\delta_n=n^{-1/4}$.  Uniform-prefix hypergeometric concentration,
-followed by maximal Azuma--Hoeffding for the predictably selected tests,
+Take $\delta_n=n^{-1/4}$.  The uniform-prefix bound
+\cref{eq:uniform-prefix-hoeffding}, followed by the maximal martingale bound
+\cref{eq:maximal-azuma} for the predictably selected tests,
 gives one event of probability $1-o(1)$ on which every first-touch prefix
 ending with at least $\delta_n n$ untouched labels and containing $t$ tests
 satisfies
@@ -575,8 +576,8 @@ raw jobs & $1-q$ & $u$\\
 \end{center}
 Every item costs at least two per completion.  Thus the completion envelope
 lies below $\min\{1,t/2\}$ independently of $q$, whose remaining-mass area is
-one.  This proves the online estimate after the $o_u(n^2)$ repairs and the
-finite Yao selection.  Since $u>3$, the two effective lengths are one and
+one.  This proves the online estimate after the $o_u(n^2)$ repairs and finite
+Yao selection \cref{lem:finite-yao}.  Since $u>3$, the two effective lengths are one and
 three; their equally weighted minimum kernel gives offline coefficient
 $3/4$.
 \end{proof}
