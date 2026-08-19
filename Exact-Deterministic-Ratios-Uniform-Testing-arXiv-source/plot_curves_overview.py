@@ -58,20 +58,45 @@ segments = [
     (np.linspace(PHI + 2, Z_STAR, 100), lambda u: np.array([c_mix(x) for x in u])),
     (np.linspace(Z_STAR, 7.3, 100), lambda u: np.full_like(u, R_STAR)),
 ]
+# Draw the optimal lower envelope as a black outline.
 for x, fn in segments:
-    left.plot(x, fn(x), color="#2878b5", linewidth=2.5)
+    left.plot(x, fn(x), color="black", linewidth=3.4)
+
+# Draw the three policy guarantees on top of that outline.  UTE and the
+# adaptive policy are shown from the first u for which their stated
+# guarantees apply; unavailable earlier ranges are interpreted as +infinity.
+x = np.linspace(0.2, 1, 80)
+left.plot(x, np.ones_like(x), color="#6f3c9f", linewidth=1.7,
+          linestyle=(0, (1, 2)), label="Raw")
+x = np.linspace(1, 7.3, 300)
+left.plot(x, x, color="#6f3c9f", linewidth=1.7, linestyle=(0, (1, 2)))
+
+ute_segments = [
+    (np.linspace(U_DIAMOND, U_ZERO, 140), rho_i),
+    (np.linspace(U_ZERO, PHI + 2, 100), lambda u: 1 + 1 / np.sqrt(u - 1)),
+    (np.linspace(PHI + 2, 7.3, 140), lambda u: np.full_like(u, PHI)),
+]
+for index, (x, fn) in enumerate(ute_segments):
+    left.plot(x, fn(x), color="#087f8c", linewidth=1.7, linestyle="--",
+              label="ForcedPrefixUTE" if index == 0 else None)
+
+x = np.linspace(PHI + 2, Z_STAR, 100)
+left.plot(x, np.array([c_mix(value) for value in x]), color="#bd2d28",
+          linewidth=1.7, linestyle="-.", label="AdaptiveThreshold")
+x = np.linspace(Z_STAR, 7.3, 100)
+left.plot(x, np.full_like(x, R_STAR), color="#bd2d28", linewidth=1.7,
+          linestyle="-.")
+
+# Dummy handle for the black outline, placed last in the compact legend.
+left.plot([], [], color="black", linewidth=3.4, label="optimal minimum")
 for transition in (1, U_DIAMOND, U_ZERO, PHI + 2, Z_STAR):
     left.axvline(transition, color="0.62", linestyle=(0, (2, 3)), linewidth=0.7)
 left.scatter([U_DIAMOND, Z_STAR], [U_DIAMOND, R_STAR], color="black", s=20, zorder=5)
-left.annotate(
-    r"maximum $1.86676\ldots$",
-    xy=(U_DIAMOND, U_DIAMOND), xytext=(2.45, 1.84),
-    arrowprops={"arrowstyle": "-", "color": "0.35", "linewidth": 0.7},
-    fontsize=8,
-)
-left.annotate(r"$1.57057\ldots$", xy=(6.25, R_STAR), xytext=(5.3, 1.61), fontsize=8)
+left.annotate(r"$1.57057\ldots$", xy=(6.25, R_STAR), xytext=(5.3, 1.535), fontsize=8)
 left.set_title("deterministic")
-left.set_ylabel("optimal competitive ratio")
+left.set_ylabel("competitive ratio")
+left.legend(frameon=False, fontsize=6.5, ncol=2, loc="upper right",
+            handlelength=2.6, columnspacing=0.8)
 
 x = np.linspace(0.2, 1, 80)
 right.plot(x, np.ones_like(x), color="#e87511", linewidth=2.5)

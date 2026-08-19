@@ -1,6 +1,6 @@
 % The introduction curves as native pgfplots graphics.  All explicit
 % branches are plotted from their formulas.  The only tabulated branch is
-% C_mix, which is defined implicitly in Equation (intro-mixed-system).
+% C_mix, which is defined implicitly in Equation (intro-ro-mixed-parameter).
 \begingroup
 % TeX Live 2023's pgfplots emits spurious nullfont diagnostics containing
 % ``0.01pt'' while sampling expressions; no text is actually lost.
@@ -35,20 +35,33 @@
   axis y line*=left,
   samples=90,
   no markers,
-  clip=false,
+  clip=true,
 ]
 
 \nextgroupplot[
   title={deterministic},
-  ylabel={optimal competitive ratio},
+  ylabel={competitive ratio},
+  legend style={
+    font=\tiny,
+    draw=none,
+    fill=white,
+    fill opacity=0.88,
+    text opacity=1,
+    at={(0.98,0.98)},
+    anchor=north east,
+    legend columns=2,
+    /tikz/every even column/.append style={column sep=3pt},
+  },
 ]
-\addplot[blue!72!black,very thick,domain=0.2:1] {1};
-\addplot[blue!72!black,very thick,domain=1:1.86676039917] {x};
-\addplot[blue!72!black,very thick,domain=1.86676039917:3.14789903570]
+% The exact lower envelope, drawn first as a black outline.
+\addplot[black,line width=2.6pt,domain=0.2:1] {1};
+\addlegendentry{optimal minimum}
+\addplot[black,line width=2.6pt,domain=1:1.86676039917] {x};
+\addplot[black,line width=2.6pt,domain=1.86676039917:3.14789903570]
   {introRhoI(x)};
-\addplot[blue!72!black,very thick,domain=3.14789903570:3.61803398875]
+\addplot[black,line width=2.6pt,domain=3.14789903570:3.61803398875]
   {1+1/sqrt(x-1)};
-\addplot[blue!72!black,very thick,smooth] coordinates {
+\addplot[black,line width=2.6pt,smooth] coordinates {
   (3.61803399,1.61803399)
   (3.63837920,1.61566099)
   (3.65923107,1.61328800)
@@ -71,8 +84,51 @@
   (4.23729031,1.57294709)
   (4.50524150,1.57057410)
 };
-\addplot[blue!72!black,very thick,domain=4.50524149579:7.3]
+\addplot[black,line width=2.6pt,domain=4.50524149579:7.3]
   {1.57057409665};
+
+% The three policy guarantees whose pointwise minimum is the black curve.
+\addplot[violet!82!black,densely dotted,line width=1.35pt,domain=0.2:1]
+  {1};
+\addlegendentry{\textsc{Raw}}
+\addplot[violet!82!black,densely dotted,line width=1.35pt,domain=1:7.3]
+  {x};
+
+\addplot[teal!78!black,dashed,line width=1.35pt,
+  domain=1.86676039917:3.14789903570] {introRhoI(x)};
+\addlegendentry{\textsc{ForcedPrefixUTE}}
+\addplot[teal!78!black,dashed,line width=1.35pt,
+  domain=3.14789903570:3.61803398875] {1+1/sqrt(x-1)};
+\addplot[teal!78!black,dashed,line width=1.35pt,
+  domain=3.61803398875:7.3] {1.61803398875};
+
+\addplot[red!78!black,dash dot,line width=1.35pt,smooth] coordinates {
+  (3.61803399,1.61803399)
+  (3.63837920,1.61566099)
+  (3.65923107,1.61328800)
+  (3.68063111,1.61091500)
+  (3.70262731,1.60854201)
+  (3.72527568,1.60616902)
+  (3.74864222,1.60379602)
+  (3.77280560,1.60142303)
+  (3.79786084,1.59905003)
+  (3.82392445,1.59667704)
+  (3.85114178,1.59430404)
+  (3.87969805,1.59193105)
+  (3.90983519,1.58955805)
+  (3.94187917,1.58718506)
+  (3.97628649,1.58481206)
+  (4.01372962,1.58243907)
+  (4.05526944,1.58006608)
+  (4.10275400,1.57769308)
+  (4.15995362,1.57532009)
+  (4.23729031,1.57294709)
+  (4.50524150,1.57057410)
+};
+\addlegendentry{\textsc{AdaptiveThreshold}}
+\addplot[red!78!black,dash dot,line width=1.35pt,
+  domain=4.50524149579:7.3] {1.57057409665};
+
 \addplot[black!45,densely dotted,thin] coordinates {(1,0.97) (1,1.91)};
 \addplot[black!45,densely dotted,thin]
   coordinates {(1.86676039917,0.97) (1.86676039917,1.91)};
@@ -84,10 +140,7 @@
   coordinates {(4.50524149579,0.97) (4.50524149579,1.91)};
 \addplot[only marks,mark=*,mark size=1.45pt,black]
   coordinates {(1.86676039917,1.86676039917) (4.50524149579,1.57057409665)};
-\node[font=\scriptsize,anchor=west] at (axis cs:2.25,1.845)
-  {maximum $1.87\ldots$};
-\draw[black!55,thin] (axis cs:2.21,1.85) -- (axis cs:1.89,1.86676);
-\node[font=\scriptsize,anchor=west] at (axis cs:5.05,1.605)
+\node[font=\scriptsize,anchor=west] at (axis cs:5.25,1.535)
   {$1.57\ldots$};
 
 \nextgroupplot[title={randomized}]
