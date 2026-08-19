@@ -142,11 +142,11 @@ test.  Then the simple strategy that first tests everything and subsequently
 runs the jobs shortest first is nearly optimal.  A worst-case guarantee still
 tells us only that our cost is at most $1.33\ldots$ times the optimum.
 
-A slight variant of \cref{alg:intro-obligatory-rand} satisfies a much stronger
-bag-by-bag guarantee: it is \emph{instance-optimal}.  The variant maximizes
+A slight variant\footnote{ The variant maximizes
 over thresholds up to $O(n^{1/20})$, rather than up to a fixed constant.  It
 is still worst-case optimal, with competitive ratio $4/3$; we presented the
-fixed-cutoff algorithm first because its worst-case analysis is simpler.
+fixed-cutoff algorithm first because its worst-case analysis is simpler.} of \cref{alg:intro-obligatory-rand} satisfies a much stronger
+bag-by-bag guarantee: it is \emph{instance-optimal}. 
 
 \begin{theorem}[Obligatory-testing instance optimality, informal version of
 \protect\cref{thm:obligatory-instance}]
@@ -267,9 +267,6 @@ for every bag $M\subseteq[0,L]$ and every online algorithm $\mathcal A'$,
 \[
  \cost(\mathcal A^*)\le \cost(\mathcal A')+o_L(n^2).
 \]
-Both costs are measured on $M$ and include the algorithms' randomness.
-The competing algorithm $\mathcal A'$ may even be designed specifically for
-$M$ and told the entire bag in advance.
 \end{theorem}
 
 To describe the algorithm, let $X$ be the job length of a random job in the
@@ -287,12 +284,10 @@ over $0\le q\le1$.
 \caption{Instance-optimal blind execution}
 \label{alg:intro-blind}
 \begin{algorithmic}
-\State Shuffle the jobs, run $\lceil\sqrt n\rceil$ of them blindly, and use
-their observed lengths to estimate the random variable $X$.
-\State Treat the estimate as exact and put $\mu=\mathbb E X$.
+\State Shuffle the jobs and test $o(n)$ of them to estimate the random variable
+$X$ of job lengths distributions.
 \State Find $\tau$ from $\mathbb E(\tau-X)^+=1$.
-\State If $\tau\ge\mu$, put $q=0$.  Otherwise choose
-$q\in\arg\min_{0\le z\le1}F_X(z)$.
+\State If $\tau\ge\mu$, put $q=0$.  Otherwise $q\in\arg\min_{0\le z\le1}F_X(z)$.
 \State Test a random $q$-fraction of the remaining jobs.  Whenever a test
 reveals $p<\tau$, process that job immediately; defer all other outcomes.
 \State After the tests stop, process the deferred jobs with
@@ -318,31 +313,23 @@ start with the case in which it does not.  Before execution, all optimized
 jobs still look the same.
 
 This is the simplest case.  Its deterministic version has no useful learning
-mechanism: an adversarial labeling can make any fixed sample unrepresentative.
-In the randomized model, a private sample estimates the one number that
-matters, the mean $\mu$ of the optimized lengths.  The scheduler then compares
+mechanism: an adversarial labeling can make any fixed sample unrepresentative (see
+\cref{sec:blind-optimization}).
+In the randomized model, we can at least sample a few jobs to estimate the only number that
+matters: the mean $\mu$ of the optimized lengths.  The optimal scheduler from algXX then compares
 the two average times per job, $u$ and $1+\mu$, and uses the better action for
-all remaining jobs.  We give the formal discussion in
-\cref{sec:blind-optimization}.
+all remaining jobs.  
 
 \begin{theorem}[Blind-optimization instance optimality, informal version of
 \protect\cref{thm:bo-instance}]
 \label{thm:intro-bo-instance}
-Fix $u<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
+Consider the blind optimization model with some $u<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
 for every bag $M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
 \[
  \cost(\mathcal A^*)\le \cost(\mathcal A')+o_u(n^2).
 \]
-Both costs are measured on $M$ and include the algorithms' randomness.
-The competing algorithm $\mathcal A'$ may even be designed specifically for
-$M$ and told the entire bag in advance.
 \end{theorem}
 
-More precisely, if $\mu_M$ is the mean optimized length in $M$, the best
-possible leading value is
-\[
- \frac{n^2}{2}\min\{u,1+\mu_M\}.
-\]
 
 \noindent
 \begin{minipage}[t]{0.485\textwidth}
@@ -366,9 +353,15 @@ and let $\widehat\mu$ be the mean observed length.
 \label{fig:intro-bo-curve}
 \end{figure}
 \end{minipage}
+[tady dej jenom blind, revealing hod samostatne do pristi kapitoly]
 
+More precisely, if $\mu_M$ is the mean optimized length in $M$, the best
+possible leading value is
+\[
+ \frac{n^2}{2}\min\{u,1+\mu_M\}.
+\]
 Knowing the instance-optimal algorithm does not yet give its competitive
-ratio: we must still find the worst bag.  The resulting ratio is unbounded
+ratio: we must still find the worst input bag of jobs.  The resulting ratio is unbounded
 and grows on the order of $\sqrt u$.
 
 \begin{theorem}[Blind-optimization curve, informal version of
@@ -388,8 +381,8 @@ $\sqrt u/2+1/2+o(1)$ as $u\to\infty$.
 Now assume that optimization also reveals $p_i$.  Thus the unit action buys
 both information and speed.  We call this \emph{revealing optimization}.
 
-The two endpoints are easy to understand.  If $u\leq1$, the test alone costs
-at least as much as raw execution, so we should never test.  If $u$ is very
+The two extreme values of $u$ are easy to understand.  If $u\leq1$, the test alone costs
+at least as much as raw execution, so we should never test.  If $u$ gets very
 large, raw execution is unattractive, so the problem approaches obligatory
 testing.  The interesting question is what happens between these endpoints.
 
@@ -397,6 +390,18 @@ This model was introduced by D{\"u}rr et
 al.~\cite{DurrErlebachMegowMeissner2020}.  Their results already showed that
 intermediate values of $u$ are the difficult ones.  We determine the exact
 answer for every $u$, for both deterministic and randomized algorithms.
+
+
+\begin{theorem}[Revealing-optimization curves, informal version of
+\protect\cref{thm:optional-curve,thm:random-common-upper}]
+\label{thm:intro-common-upper-curves}
+For every $u>0$, the exact deterministic and randomized asymptotic
+competitive ratios are the six-piece and four-piece curves in
+\cref{fig:intro-curves}.  The deterministic curve reaches
+$1.87\ldots$ and then falls to the obligatory value
+$1.57\ldots$.  The randomized curve reaches $1.63\ldots$ and
+eventually becomes $4/3$.
+\end{theorem} 
 
 A deterministic algorithm uses three basic shapes.
 
@@ -438,28 +443,13 @@ for every bag $M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
 \[
  \cost(\mathcal A^*)\le \cost(\mathcal A')+o_u(n^2).
 \]
-Both costs are measured on $M$ and include the algorithms' randomness.  The
-competing algorithm $\mathcal A'$ may even be designed specifically for $M$
-and told the entire bag in advance.  The best leading cost is
-$n^2\Phi_{{\rm RO},u}(M)$, where $\Phi_{{\rm RO},u}$ is obtained by minimizing
-an explicit quadratic over the tested fraction $q$.
+
 \end{theorem}
 
 For each bag, this policy attains its best online leading cost.  We obtain the
 competitive ratio by asking which bag maximizes the ratio between that cost
 and the clairvoyant optimum.  The worst bag can be reduced to two job
 lengths, leaving a one-variable optimization.
-
-\begin{theorem}[Revealing-optimization curves, informal version of
-\protect\cref{thm:optional-curve,thm:random-common-upper}]
-\label{thm:intro-common-upper-curves}
-For every $u>0$, the exact deterministic and randomized asymptotic
-competitive ratios are the six-piece and four-piece curves in
-\cref{fig:intro-curves}.  The deterministic curve reaches
-$1.87\ldots$ and then falls to the obligatory value
-$1.57\ldots$.  The randomized curve reaches $1.63\ldots$ and
-eventually becomes $4/3$.
-\end{theorem}
 
 \begin{figure}[H]
 \centering
