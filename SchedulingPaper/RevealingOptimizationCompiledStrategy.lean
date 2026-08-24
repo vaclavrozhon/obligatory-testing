@@ -123,17 +123,14 @@ def restrictedRawLabel?
   nextRestrictedLabel? n pilot mainOrder
     (fun virtual => decide (quota ≤ virtual.val)) transcript
 
-/-- Main phase after the revealing pilot.  It learns from the first `k`
-public test results, tests the retained virtual quota, drains the tested
-stock by SPT, and runs every retained position outside the quota raw. -/
-def restrictedLearnedMainStrategy
-    {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (n k : ℕ) (category : ι → ℝ → Bool) (price : ι → ℝ) (u : ℝ)
+/-- Restricted main phase for a template already fixed by the completed
+pilot. -/
+def restrictedFixedMainStrategy
+    {ι : Type*} [Fintype ι]
+    (n : ℕ) (category : ι → ℝ → Bool)
+    (T : InstanceLearning.Template ι n)
     (pilot : Finset (Fin n)) (mainOrder : Equiv.Perm (Fin n)) :
     Online.Strategy n := fun transcript =>
-  let histogram := resultHistogram k (publicGridCell category)
-    (transcript.testResults.take k)
-  let T := InstanceLearning.minimizingTemplate (n := n) histogram price u
   match safeLastLowPending? (publicTemplateLow category T) transcript with
   | some job => some (.process job)
   | none =>
@@ -145,6 +142,19 @@ def restrictedLearnedMainStrategy
           | none =>
               (restrictedRawLabel? n T.quota.val pilot mainOrder transcript).map
                 Online.Action.raw
+
+/-- Main phase after the revealing pilot.  It learns from the first `k`
+public test results, tests the retained virtual quota, drains the tested
+stock by SPT, and runs every retained position outside the quota raw. -/
+def restrictedLearnedMainStrategy
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (n k : ℕ) (category : ι → ℝ → Bool) (price : ι → ℝ) (u : ℝ)
+    (pilot : Finset (Fin n)) (mainOrder : Equiv.Perm (Fin n)) :
+    Online.Strategy n := fun transcript =>
+  let histogram := resultHistogram k (publicGridCell category)
+    (transcript.testResults.take k)
+  let T := InstanceLearning.minimizingTemplate (n := n) histogram price u
+  restrictedFixedMainStrategy n category T pilot mainOrder transcript
 
 /-- Complete unknown-input policy.  The policy's closure contains only the
 public grid and two private permutations/position sets. -/
@@ -235,6 +245,84 @@ theorem resultHistogram_revealingPilotTranscript
     (Finset.filter_attach
       (fun job => roundedGridCell G (pilotOrder job) = cell) positions)
   simpa using hattach.symm
+
+@[simp] theorem revealingPilotTranscript_length
+    {n : ℕ} (processing : Fin n → ℝ)
+    (positions : Finset (Fin n)) (pilotOrder : Equiv.Perm (Fin n)) :
+    (revealingPilotTranscript processing positions pilotOrder).length =
+      2 * positions.card := by
+  unfold revealingPilotTranscript PilotCompiler.pilotJobWord
+  simp [Nat.mul_comm]
+
+@[simp] theorem revealingPilotTranscript_testResults_length
+    {n : ℕ} (processing : Fin n → ℝ)
+    (positions : Finset (Fin n)) (pilotOrder : Equiv.Perm (Fin n)) :
+    (revealingPilotTranscript processing positions
+      pilotOrder).testResults.length = positions.card := by
+  unfold revealingPilotTranscript
+  have hlist : ∀ list : List (Fin n),
+      (Online.Transcript.testResults (list.flatMap fun position =>
+        PilotCompiler.pilotJobWord processing
+          (pilotOrder position))).length = list.length := by
+    intro list
+    induction list with
+    | nil => rfl
+    | cons position rest ih =>
+        rw [List.flatMap_cons, Online.Transcript.testResults_append]
+        rw [List.length_append, ih]
+        simp [PilotCompiler.pilotJobWord, Nat.add_comm]
+  simpa using hlist positions.toList
+
+theorem pilot_testResults_take_of_suffix
+    {n : ℕ} (processing : Fin n → ℝ)
+    (positions : Finset (Fin n)) (pilotOrder : Equiv.Perm (Fin n))
+    (suffix : Online.Transcript n) :
+    (Online.Transcript.testResults
+      (revealingPilotTranscript processing positions pilotOrder ++ suffix)
+        ).take positions.card =
+      (revealingPilotTranscript processing positions pilotOrder).testResults := by
+  rw [Online.Transcript.testResults_append]
+  rw [show positions.card =
+      (revealingPilotTranscript processing positions
+        pilotOrder).testResults.length by simp]
+  exact List.take_left
+
+/-- Before the pilot has produced all of its two-observation job words, the
+compiled strategy is exactly the fixed public pilot action list. -/
+theorem compiledLearnedStrategy_before_pilot
+    {n : ℕ} {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (category : ι → ℝ → Bool) (price : ι → ℝ) (u : ℝ)
+    (positions : Finset (Fin n))
+    (pilotOrder mainOrder : Equiv.Perm (Fin n))
+    (transcript : Online.Transcript n)
+    (hpilot : transcript.length < 2 * positions.card) :
+    compiledLearnedStrategy n category price u positions pilotOrder mainOrder
+        transcript =
+      (pilotActions positions pilotOrder)[transcript.length]?.map id := by
+  simp [compiledLearnedStrategy, pilotActions_length, hpilot]
+
+/-- After the literal pilot prefix, the transcript-only learner stabilizes
+to the same fixed template used by the analytic compiler, independently of
+the later suffix. -/
+theorem compiledLearnedStrategy_after_pilot
+    {n : ℕ} {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {processing : Fin n → ℝ} (G : RoundedPositiveGrid ι processing)
+    (u : ℝ) (positions : Finset (Fin n))
+    (pilotOrder mainOrder : Equiv.Perm (Fin n))
+    (suffix : Online.Transcript n) :
+    compiledLearnedStrategy n G.category G.price u positions
+        pilotOrder mainOrder
+        (revealingPilotTranscript processing positions pilotOrder ++ suffix) =
+      restrictedFixedMainStrategy n G.category
+        (learnedTemplate G positions pilotOrder u)
+        (pilotOccurrenceSet positions pilotOrder) mainOrder
+        (revealingPilotTranscript processing positions pilotOrder ++ suffix) := by
+  unfold compiledLearnedStrategy
+  rw [if_neg]
+  · unfold restrictedLearnedMainStrategy learnedTemplate
+    rw [pilot_testResults_take_of_suffix]
+    rw [resultHistogram_revealingPilotTranscript]
+  · simp
 
 end
 
