@@ -151,3 +151,11 @@ unit-time optimization changes a raw duration `u` to a hidden duration
 impossibility and exact curve, universal mean-sampling instance-optimal
 policy, and exact oblivious-randomized curve are all formalized operationally,
 including fixed-input Yao selection and the `sqrt(u)/2` asymptotics.
+
+For revealing optimization, the announced fixed-threshold endpoint and the
+finite binary-family lower bound are connected to literal online runs.  The
+universal-policy development additionally contains the model-specific
+learnable grid templates, their uniform histogram Lipschitz and empirical
+minimization bounds, an executable mixed test/process/raw quota strategy with
+proved termination and exact completion labels, and its bounded finite
+random-placement pair kernel.

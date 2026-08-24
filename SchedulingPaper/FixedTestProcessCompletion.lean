@@ -46,11 +46,11 @@ theorem Config.TestProcessInvariant.tested_value_eq_fixed
   have hmem := (hstruct.tested_iff job p).mp hjob |>.1
   exact hmatch job p hmem
 
-theorem Config.fixedCompletionInvariant_step
+theorem Config.fixedCompletionInvariant_step_of_tested_value
     (cap : Cap) (processingTime : Label n → ℝ)
     {config next : Config n} {action : Action n}
-    (hstruct : config.TestProcessInvariant)
-    (hmatch : config.transcript.TestsMatch processingTime)
+    (htestedValue : ∀ {job : Label n} {p : ℝ},
+      config.jobs job = .tested p → p = processingTime job)
     (hcompletion : config.FixedCompletionInvariant processingTime)
     (hstep :
       config.step cap (fixedOracle processingTime) action = some next) :
@@ -107,7 +107,7 @@ theorem Config.fixedCompletionInvariant_step
           subst next
           have hp :
               p = processingTime job :=
-            hstruct.tested_value_eq_fixed hmatch hjob
+            htestedValue hjob
           by_cases hzero : processingTime job = 0
           · have hmem :
                 job ∈
@@ -203,6 +203,25 @@ theorem Config.fixedCompletionInvariant_step
               simp [Config.step, hjob] at hstep
           | done =>
               simp [Config.step, hjob] at hstep
+
+/-- The generic completion invariant only needs tested states to contain
+their true fixed processing values.  A test/process lifecycle supplies that
+fact through its public test-history invariant. -/
+theorem Config.fixedCompletionInvariant_step
+    (cap : Cap) (processingTime : Label n → ℝ)
+    {config next : Config n} {action : Action n}
+    (hstruct : config.TestProcessInvariant)
+    (hmatch : config.transcript.TestsMatch processingTime)
+    (hcompletion : config.FixedCompletionInvariant processingTime)
+    (hstep :
+      config.step cap (fixedOracle processingTime) action = some next) :
+    next.FixedCompletionInvariant processingTime := by
+  apply Config.fixedCompletionInvariant_step_of_tested_value
+    cap processingTime
+  · intro job p hjob
+    exact hstruct.tested_value_eq_fixed hmatch hjob
+  · exact hcompletion
+  · exact hstep
 
 /-- Work-rank termination while retaining exact completion labels. -/
 theorem runFuel_testProcessStrategy_completed_with_completionInvariant

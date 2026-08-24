@@ -73,6 +73,9 @@ Revealing-optimization instance and randomized curve,
    \path{randomizedCurve_attains_globalMaximum};
    \path{RevealingOptimization.announcedTemplate_curve_upper};
    \path{RevealingOptimization.OperationalUpper.exists_announced_operational_curve_upper};
+   \path{RevealingOptimization.InstanceLearning.uniformSample_minimizingTemplate_le};
+   \path{RevealingOptimization.QuotaStrategy.quotaStrategy_completionLabels_perm};
+   \path{RevealingOptimization.QuotaKernel.quotaKernelCost_product_normalized};
    \path{RevealingOptimization.RandomizedLower.adaptive_binary_families_attain_curve};
    \path{RevealingOptimization.RandomizedYao.finiteSeed_binary_families_attain_curve};
    \path{RevealingOptimization.OperationalCompiler.exists_operational_binary_family_ratio_tendsto_curve};
@@ -91,7 +94,11 @@ Revealing-optimization instance and randomized curve,
    Its denominator is identified exactly
    with the empirical clairvoyant minimum-pair leading term, including the
    nonnegative diagonal correction to the literal finite SPT optimum.  The common
-   completion-area and pilot-learning transfer is checked abstractly.  On
+   completion-area and pilot-learning transfer is checked abstractly.  For the
+   universal upper bound, the model-correct finite grid objective, its uniform
+   histogram stability, empirical minimization, the literal mixed
+   test/process/raw quota policy, completion-label permutation, and the finite
+   random-placement kernel replacement are also checked.  On
    the lower side an exact finite Bellman induction now covers every
    adaptive test--raw--process decision tree and both attaining binary
    families.  The lower tree retains job labels, and a mechanical compiler
