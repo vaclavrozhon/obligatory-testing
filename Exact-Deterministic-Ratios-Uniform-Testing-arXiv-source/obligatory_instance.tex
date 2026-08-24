@@ -241,9 +241,9 @@ value plus $O_L(n)$.
 Assign the occurrences of $M$ uniformly to the public labels and fix a
 deterministic nonanticipating policy.  We may assume that it completes every
 job, since otherwise the lower bound is immediate.  In the adaptive order in
-which it tests new labels, the revealed occurrences form a uniform random permutation
-$P_1,\ldots,P_n$ of $M$.  This is \cref{lem:adaptive-first-touch}, with
-equal-valued occurrences kept distinct as temporary tokens.
+which it tests new labels, the revealed occurrences form a uniform random
+permutation $P_1,\ldots,P_n$ of $M$ by deferred decisions.  Equal-valued
+occurrences may be kept distinct as temporary tokens.
 Because every first touch is a test, no suffix edit is needed and we may use
 the sharper all-prefix sampling bound directly.
 
@@ -293,8 +293,8 @@ policy has uniform-placement expected cost at least
  n^2\PhiOT(D[M])-O_L(n^{9/5}).
  \label{eq:ot-announced-lower}
 \end{equation}
-The finite-Yao conclusion built into
-\cref{thm:completion-curve-transfer} gives the same lower bound on one fixed
+Condition on the policy seed when applying the transfer theorem.  Finite Yao
+selection, \cref{lem:finite-yao}, then gives the same lower bound on one fixed
 oblivious placement for every randomized policy.
 
 \subsection{Removing the announcement}

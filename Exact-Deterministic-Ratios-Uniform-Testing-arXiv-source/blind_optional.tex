@@ -278,7 +278,7 @@ such a policy.
 
 For a size-$n$ multiset whose values lie among
 $0=p_0<p_1<\cdots<p_s\le L$, write $D_n$ for its empirical distribution,
-$D_{n,i}=D_n(\{p_i\})$, and $\mu_n=\int p\,dD_n(p)$.
+$D_{n,i}=D_n(\{p_i\})$, and $\mu_n=\EE P_n$ for $P_n\sim D_n$.
 
 Distinguish occurrences even when their processing times coincide and fix a
 deterministic proper policy, equivalently the private seed of a randomized
@@ -374,7 +374,8 @@ cell, partition $(0,L]$ into
 bins, and round every positive value upward; let $h_n=L/K_n$ be the mesh.
 Zero preservation matters because a tested zero completes at its test.
 Write $D[M]^{\rm grid}$ for the rounded empirical distribution and
-$\mu_M^{\rm grid}=\int p\,dD[M]^{\rm grid}(p)$ for its mean.
+$\mu_M^{\rm grid}=\EE P_M^{\rm grid}$ for
+$P_M^{\rm grid}\sim D[M]^{\rm grid}$.
 
 Coupling each value with its rounded value and applying
 \cref{lem:zero-preserving-transport} gives
