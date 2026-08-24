@@ -340,17 +340,11 @@ $\widehat\tau\le p<\widehat\mu$, shortest first.
 The two remaining models start from the same operation.  Every job takes a
 known raw time $u$, and one unit of optimization reduces its running time to
 $p_i\leq u$.  They differ only in whether optimization reveals $p_i$.  We
-start with the case in which it does not.  Before execution, all optimized
-jobs still look the same.
+start with the case in which it does not: Before execution, all optimized jobs still look the same.
 
-This is the simplest case.  Randomization is necessary for instance
-optimality: a binary adversarial-labeling argument rules out every
-deterministic policy; see \cref{thm:bo-det-not-instance-optimal}.
-The deterministic worst-case problem nevertheless has an exact and very
-simple answer.  Up to $u=2$, run every job raw.  After $u=2$, optimize and
-run every job immediately in an arbitrary fixed order.  A hidden-stopping
-adversary proves that adaptively mixing the two actions cannot improve this
-choice.
+This is the simpler case. Let us first discuss the hardest input for both deterministic and randomized algorithms. It works roughly as follows: Roughly $1/sqrt{u}$ fraction of jobs cannot be optimized at all and the rest is optimized to $0$ length. The online algorithm can't distinguish the two types of jobs apriori, so it essentially pays time $1/sqrt(u) * u = sqrt(u)$ per random job, leading to cost $(n\sqrt(u))^2$. However, the clairvoyant offline optimum pays only $n^2 \cddot u$ by starting by optimizing the easy jobs. 
+
+Still the approximation ratio of randomized algorithms turns out to be twice smaller than deterministicc counterparts; we determine the precise asymptotic ratios in Section XX. 
 
 \begin{theorem}[Deterministic blind-optimization curve, informal version of
 \protect\cref{thm:bo-det-curve}]
@@ -366,13 +360,9 @@ The exact deterministic asymptotic competitive ratio is
  \label{eq:intro-bo-det-curve}
 \end{equation}
 It grows as $\sqrt u+o(1)$.
-\end{theorem}
+\end{theorem} [mergni tohle s rand. worst case teoremem. ]
 
-With randomization, we can sample a few jobs to estimate the only number that
-matters: the mean $\mu$ of the optimized lengths.  The policy in
-\cref{alg:intro-blind-optimization} then compares
-the two average times per job, $u$ and $1+\mu$, and uses the better action for
-all remaining jobs.
+This situation is unsatisfactory, but due to the very specific input. This again raises the question whether the worst-case framework is the right one to analyze this setup -- here again, instance optimality comes to the rescue, proving that the simple alg4 is instance optimal if we treat $u$ as a constant. In this case, the whole setup is very simplistic though -- on every instance, it's always either the "optimize everything" or "optimize nothing" algorithm which is optimal, so alg4 simply draws a sample and chooses the right one out of the two. 
 
 \begin{theorem}[Blind-optimization instance optimality, informal version of
 \protect\cref{thm:bo-instance}]
@@ -392,9 +382,8 @@ $M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
 \caption{Instance-optimal blind optimization}
 \label{alg:intro-blind-optimization}
 \begin{algorithmic}
-\State Shuffle the jobs, optimize and run $\lceil n^{2/3}\rceil$ of them,
+\State Shuffle the jobs, optimize and run $o(n)$ of them,
 and let $\widehat\mu$ be the mean observed length.
-\State Treat $\widehat\mu$ as the true mean of the input.
 \State If $1+\widehat\mu<u$, optimize and then run every remaining job.
 \State Otherwise run every remaining job raw for time $u$.
 \end{algorithmic}
