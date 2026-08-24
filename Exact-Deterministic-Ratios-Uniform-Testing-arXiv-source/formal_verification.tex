@@ -73,6 +73,7 @@ Revealing-optimization instance and randomized curve,
    \path{randomizedCurve_attains_globalMaximum};
    \path{RevealingOptimization.announcedTemplate_curve_upper};
    \path{RevealingOptimization.RandomizedLower.adaptive_binary_families_attain_curve};
+   \path{RevealingOptimization.RandomizedYao.finiteSeed_binary_families_attain_curve};
    \path{FluidToFinite.completion_transfer_uniform};
    \path{FluidToFinite.pilot_learning_transfer}
  & The exact four-piece scalar maximization, its transition root, plateau,
@@ -89,10 +90,13 @@ Revealing-optimization instance and randomized curve,
    completion-area and pilot-learning transfer is checked abstractly.  On
    the lower side an exact finite Bellman induction now covers every
    adaptive test--raw--process decision tree and both attaining binary
-   families.  The model-specific finite revealing-policy envelope and its
-   operational pilot upper bound, together with the label-preserving
-   compiler and finite Yao wrapper for that decision-tree lower bound, are
-   not yet assembled in Lean. \\
+   families.  The lower tree now retains job labels, its recursive
+   expectation is identified with the exact Bernoulli average over fixed
+   labelled inputs, and finite Yao selects one input before an arbitrary
+   finite private seed.  The model-specific finite revealing-policy envelope
+   and operational pilot upper bound, together with the final compiler from
+   a literal transcript-only strategy to this labelled tree, are not yet
+   assembled in Lean. \\
 Blind-optimization results,
 \cref{thm:bo-det-not-instance-optimal,thm:bo-det-curve,thm:bo-instance,thm:bo-curve}
  & \path{BlindOptimization.Adversary.no_deterministic_instance_optimal};
