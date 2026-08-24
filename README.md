@@ -165,3 +165,6 @@ The finite kernel is in turn connected to the empirical fluid objective with
 an explicit normalized `(5u+8)/(2n)` error.  The same bridge compiles finite
 grid templates into executable value selectors and composes the literal
 randomized run with the uniform-pilot template learner.
+For upward zero-preserving grids, the selector is pulled back to the actual
+revealed values and charge monotonicity compares the unrounded literal run
+directly with the rounded learned objective, without an extra mesh loss.
