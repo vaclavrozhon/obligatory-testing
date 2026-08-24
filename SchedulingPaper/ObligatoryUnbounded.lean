@@ -203,6 +203,46 @@ theorem exists_quadratic_instance_gap
       nlinarith [sq_nonneg ((n : ℝ) - 5), sq_nonneg (n : ℝ)]
     exact lt_of_le_of_lt hscale hlabel
 
+/-- Version of `exists_quadratic_instance_gap` with one additional `H=n²`
+administrative remainder.  This is the form produced directly by literal
+online transcripts: the exceptional zero may itself be processed once before
+its test, which loses at most one further long-job charge. -/
+theorem exists_quadratic_instance_gap_two_remainders
+    {n : ℕ} (hn : 7 ≤ n)
+    {Ω : Type*} [Fintype Ω] [Nonempty Ω]
+    (order : Ω → Equiv.Perm (Fin n))
+    (completedBefore : Ω → Fin n → ℕ)
+    (oneZeroGap : Fin n → ℝ)
+    (hone : ∀ label,
+      uniformAverage (fun seed ↦ exceptionalZeroCharge (order seed)
+          (completedBefore seed) ((n : ℝ) ^ 2) label) - 2 * n ^ 2 ≤
+        oneZeroGap label) :
+    (n : ℝ) ^ 2 / 8 ≤ allHighExcess completedBefore ∨
+      ∃ label, (n : ℝ) ^ 2 / 8 < oneZeroGap label := by
+  have hnpos : 0 < n := by omega
+  let shiftedGap : Fin n → ℝ := fun label ↦ oneZeroGap label + n ^ 2
+  have honeShifted : ∀ label,
+      uniformAverage (fun seed ↦ exceptionalZeroCharge (order seed)
+          (completedBefore seed) ((n : ℝ) ^ 2) label) - n ^ 2 ≤
+        shiftedGap label := by
+    intro label
+    dsimp [shiftedGap]
+    nlinarith [hone label]
+  rcases allHigh_or_exists_oblivious_zero hnpos order completedBefore
+      ((n : ℝ) ^ 2) shiftedGap (sq_pos_of_pos (by exact_mod_cast hnpos))
+      honeShifted with hhigh | ⟨label, hlabel⟩
+  · exact Or.inl hhigh
+  · right
+    refine ⟨label, ?_⟩
+    have hnreal : (7 : ℝ) ≤ n := by exact_mod_cast hn
+    have hscale :
+        (n : ℝ) ^ 2 / 8 ≤
+          (n : ℝ) ^ 2 * ((n - 1 : ℝ) / 2 - n / 8) -
+            2 * n ^ 2 := by
+      nlinarith [sq_nonneg ((n : ℝ) - 7), sq_nonneg (n : ℝ)]
+    dsimp [shiftedGap] at hlabel
+    nlinarith
+
 end
 
 end ObligatoryUnbounded

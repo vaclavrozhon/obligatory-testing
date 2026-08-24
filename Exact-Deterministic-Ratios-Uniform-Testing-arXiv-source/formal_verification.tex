@@ -8,12 +8,13 @@ imports every development listed below.  The following table states the proof bo
 \cref{app:lean-formalization} gives the detailed paper--Lean dictionary for
 the deterministic theorem.
 
-\begin{center}
+\begingroup
 \footnotesize
-\begin{tabular}{@{}L{0.27\textwidth}L{0.32\textwidth}L{0.33\textwidth}@{}}
+\begin{longtable}{@{}L{0.27\textwidth}L{0.32\textwidth}L{0.33\textwidth}@{}}
 \toprule
 paper result & Lean export & coverage \\
 \midrule
+\endhead
 Deterministic revealing optimization and obligatory testing,
 \cref{thm:optional-curve,thm:det-obligatory}
  & \path{SchedulingPaper.exact_ratio_main}
@@ -22,17 +23,39 @@ Deterministic revealing optimization and obligatory testing,
 Randomized obligatory testing, \cref{thm:rand-obligatory}
  & \path{unknownMultiset_operational_expectedCost_le_20378};
    \path{oblivious_iid_binary_lower_online_actualOPT}
- & End-to-end sharp worst-case value $4/3$, including the sampled policy,
-   finite error, and a fixed binary lower-bound input. \\
-Obligatory-testing instance optimality,
-\cref{thm:obligatory-instance,thm:ot-instance-impossibility}
+ & End-to-end sharp worst-case value $4/3$ for the fixed-cutoff
+   specialization in \cref{eq:rand-obligatory-fixed-upper}, including its
+   finite error and a fixed binary lower-bound input.  The growing-cutoff
+   extension in \cref{eq:rand-obligatory-upper} is proved in the paper. \\
+Obligatory-testing impossibility,
+\cref{thm:ot-instance-impossibility}
  & \path{ObligatoryInstance.deterministic_balanced_cost_lower};
-   \path{ObligatoryUnbounded.exists_quadratic_instance_gap}
- & The deterministic impossibility is end-to-end: adaptive revelation,
+   \path{finiteSeed_exists_operational_quadratic_gap}
+ & The adversarial-policy side of both parts is end-to-end.  The deterministic proof includes adaptive revelation,
    freezing to one balanced labeled input, termination, and the sharp
-   $9n^2/8$ cost bound.  The finite averaging core of the unbounded
-   randomized impossibility is checked; its operational charging bridge
-   remains analytic. \\
+   $9n^2/8$ cost bound.  The unbounded randomized impossibility is also
+   end-to-end for finite private seeds: literal all-long and one-zero runs
+   are coupled up to the exceptional test, their actual completion costs are
+   charged, and averaging selects one fixed oblivious zero label.  The
+   advertised comparison schedules enter through their checked closed-form
+   cost bounds rather than through a second compiled transcript. \\
+Obligatory-testing instance optimality,
+\cref{thm:obligatory-instance}
+ & \path{RandomizedAnnounced.threshold_maximizes_discovery_density};
+   \path{ObligatoryInstance.empiricalMaximumDensity_completion_le_line};
+   \path{ObligatoryInstance.empiricalPartialCompletion_le_thresholdPrefix};
+   \path{ObligatoryInstance.exists_empiricalObligatoryBenchmark};
+   \path{FluidToFinite.completion_transfer_uniform};
+   \path{FluidToFinite.pilot_learning_transfer}
+ & The maximum-density algebra is instantiated on every concrete nonempty
+   finite input: Lean constructs the threshold, proves its global fractional
+   density certificate and the complete finite fractional pointwise envelope,
+   and identifies the exact uniform cost of the announced stationary
+   operation word, including its linear diagonal remainder.  The two
+   model-independent transfer principles are also checked.  Connecting the
+   fractional envelope to every literal online prefix, the bounded
+   adaptive-policy lower bound, and the growing-cutoff operational learner
+   are not yet assembled in Lean. \\
 Blind-execution results,
 \cref{thm:blind-instance,thm:blind-unbounded-impossible}
  & \path{boundedUniform_blindPilot_concrete_rate};
@@ -48,16 +71,28 @@ Revealing-optimization instance and randomized curve,
  & \path{RevealingOptimization.binaryFamilies_le_curve};
    \path{binaryFamilies_attain_curve};
    \path{randomizedCurve_attains_globalMaximum};
-   \path{RevealingOptimization.middleTail_reduction_le_binary_families};
+   \path{RevealingOptimization.announcedTemplate_curve_upper};
+   \path{RevealingOptimization.RandomizedLower.adaptive_binary_families_attain_curve};
    \path{FluidToFinite.completion_transfer_uniform};
    \path{FluidToFinite.pilot_learning_transfer}
  & The exact four-piece scalar maximization, its transition root, plateau,
-   attainment, and global maximum are checked.  The model-independent
-   completion-area, bad-event, and pilot-learning transfer is checked once
-   and reused; the linear-fractional endpoint step of the RO survival
-   reduction is also checked.  Deriving its integral constraints from an
-   arbitrary survival function and the operational envelope instantiation
-   remain analytic. \\
+   attainment, and global maximum are checked.  The survival reduction now
+   starts from a concrete nonempty finite input, constructs its
+   maximum-density threshold, identifies the exact empirical survival and
+   offline minimum-pair formulas, derives the prefix-energy and adjacent-tail
+   inequalities, and reaches the exact curve
+   in all three threshold regimes.  The resulting announced endpoint is an
+   explicit uniformly permuted stationary-or-raw operation word, and its
+   finite bound retains an explicit linear diagonal remainder.  Its denominator is identified exactly
+   with the empirical clairvoyant minimum-pair leading term, including the
+   nonnegative diagonal correction to the literal finite SPT optimum.  The common
+   completion-area and pilot-learning transfer is checked abstractly.  On
+   the lower side an exact finite Bellman induction now covers every
+   adaptive test--raw--process decision tree and both attaining binary
+   families.  The model-specific finite revealing-policy envelope and its
+   operational pilot upper bound, together with the label-preserving
+   compiler and finite Yao wrapper for that decision-tree lower bound, are
+   not yet assembled in Lean. \\
 Blind-optimization results,
 \cref{thm:bo-det-not-instance-optimal,thm:bo-det-curve,thm:bo-instance,thm:bo-curve}
  & \path{BlindOptimization.Adversary.no_deterministic_instance_optimal};
@@ -87,8 +122,8 @@ Blind-optimization results,
    checked, and Yao selects one fixed labeled input against the entire
    private-seed family at a ratio converging to the advertised curve. \\
 \bottomrule
-\end{tabular}
-\end{center}
+\end{longtable}
+\endgroup
 
 The development contains no \texttt{sorry}, \texttt{admit}, or
 project-defined axiom.  Formal randomized statements use finite uniform

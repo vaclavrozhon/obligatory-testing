@@ -13,7 +13,7 @@ The first policy is formalized in \cref{alg:raw}.
 \end{algorithmic}
 \end{algorithm}
 
-For $u\le \udiam$, use \textsc{Raw}.  It is optimal when $u\le1$;
+For $u\le \uDet{2}$, use \textsc{Raw}.  It is optimal when $u\le\uDet{1}$;
 when $u>1$, every effective length $\lambda_u(p_j)$ from
 \cref{eq:optional-effective-length} is at least one, so the ratio is at most
 $u$.
@@ -60,7 +60,7 @@ while $f(1)=-11$ and $f(s_0)<f(13/6)=-95/36$.  Here
 $s_0<13/6$ follows by substituting $13/6$ in
 $s^3-(s+1)^2$.  Thus $R>5/3$, while $s>4/5$, and
 $s^2R>16/15$.  Finally $K<D$ gives $\alpha<1$.  In particular, $b=0$
-occurs only at $u=\uzero$.
+occurs only at $u=\uDet{3}$.
 The remaining two elementary branches use the single procedure in
 \cref{alg:ute}.
 
@@ -81,7 +81,7 @@ The remaining two elementary branches use the single procedure in
 \end{algorithmic}
 \end{algorithm}
 
-On $\udiam\le u\le \uzero$, use
+On $\uDet{2}\le u\le \uDet{3}$, use
 \textsc{ForcedPrefixUTE} with $b$ from \cref{eq:opt:ute-parameters}.  Rounding
 $bn$ changes the cost by $O_u(n)$.
 
@@ -117,7 +117,7 @@ increasing on $[0,b]$.  Thus $G(x)\le0$ for every $x\in[0,1]$, including
 the limiting case $b=0$.  This proves the binary upper bound without a
 hidden local-versus-global step.
 
-For $\udiam\le u\le2$, arbitrary values reduce to binary values by
+For $\uDet{2}\le u\le2$, arbitrary values reduce to binary values by
 independent Bernoulli extremalization, in the following order.  First raise
 \emph{every} suffix-deferred value to $u$.  This cannot lower ALG, while its
 offline effective length was already $u$.  Only after this deterministic
@@ -154,12 +154,12 @@ and $u$ for a deferred value.  Since the minimum is jointly concave,
 $\EE\min(\lambda_i',\lambda_j')\le\min(\lambda_i,\lambda_j)$.  Thus some binary realization
 has competitive excess at least that of the original instance.
 
-It remains to justify arbitrary values for $2\le u\le \uzero$.  The following
+It remains to justify arbitrary values for $2\le u\le \uDet{3}$.  The following
 quadratic lemma records the entire endpoint calculation.
 
 \begin{lemma}[UTE endpoint game]
 \label{lem:opt:ute-endpoint-game}
-For $2\le u\le \uzero$, UTE with the parameters
+For $2\le u\le \uDet{3}$, UTE with the parameters
 \cref{eq:opt:ute-parameters} satisfies
 \begin{equation}
  \ALG\le\Rquad(u)\OPT+O_u(n).
@@ -273,22 +273,22 @@ $-1/2\le z\le0$, and for $z\ge0$ it is larger than
 $3/2-9/320$.  These inequalities prove that every endpoint gap is
 nonpositive.  Diagonals and prefix rounding contribute $O_u(n)$.
 \end{proof}
-At $u=\uzero$, $b=0$.  The same zero-prefix algorithm remains exact through
-$u=\varphi+2$ and continues with a $\varphi$ guarantee afterwards.  We state
+At $u=\uDet{3}$, $b=0$.  The same zero-prefix algorithm remains exact through
+$u=\uDet{4}$ and continues with a $\varphi$ guarantee afterwards.  We state
 the continuation because it makes the three-policy lower envelope in
 \cref{fig:intro-curves-det} literal rather than schematic.
 
 \begin{lemma}[Zero-prefix extension]
 \label{lem:opt:zero-prefix}
-For every $u\ge \uzero$,
+For every $u\ge \uDet{3}$,
 \textnormal{\textsc{ForcedPrefixUTE}}$(J,u,0)$ from \cref{alg:ute} is
 \begin{equation}
  \max\left\{\varphi,1+\frac1{\sqrt{u-1}}\right\}
  \label{eq:opt:zero-prefix-full-guarantee}
 \end{equation}
 competitive up to $O_u(n)$.  Thus its guarantee is
-$1+1/\sqrt{u-1}$ on $[\uzero,\varphi+2]$ and $\varphi$ on
-$[\varphi+2,\infty)$.
+$1+1/\sqrt{u-1}$ on $[\uDet{3},\uDet{4}]$ and $\varphi$ on
+$[\uDet{4},\infty)$.
 \end{lemma}
 
 \begin{proof}
@@ -313,7 +313,7 @@ fractional-linear in $d^2$, so its maximum is on one of two faces:
 The first one-variable function is maximized at $y=1/\varphi$ and the second
 at $y=1/\sqrt s$, which gives the two displayed constants.
 The second value dominates the first exactly when
-$u\le\varphi+2$.  Binary instances attain the second value.
+$u\le\uDet{4}$.  Binary instances attain the second value.
 \end{proof}
 
 
@@ -324,8 +324,8 @@ We now prove the upper bounds on the two ranges on which capped outcomes
 matter.  Besides completing the upper-bound side of the revealing-optimization curve,
 the proof records explicitly why an outcome at the raw cap cannot be
 treated as an ordinary deferred outcome.  Throughout this subsection,
-$R=1+c$, and we retain $\varphi$, $\zstar$, and $r$ from
-\cref{eq:opt:phi-udiamond,eq:opt:obligatory-constant}.
+$R=1+c$, and we retain $\varphi$, $\uDet{5}$, and $r$ from
+\cref{eq:opt:u1-u2,eq:opt:obligatory-constant}.
 
 For every $c>0$ define the history-dependent threshold
 \begin{equation}
@@ -367,14 +367,14 @@ The right-hand side of the first equation is strictly increasing in $c$,
 as is the left-hand side in $m$.  Consequently $m(c)$ is increasing and
 $u(c)$ is decreasing.  The endpoints are
 \[
- (c,m,u)=\left(\frac1\varphi,\frac1\varphi,\varphi+2\right)
+ (c,m,u)=\left(\frac1\varphi,\frac1\varphi,\uDet{4}\right)
  \quad\text{and}\quad
- (c,m,u)=(r,0,\zstar).
+ (c,m,u)=(r,0,\uDet{5}).
 \]
 
 \begin{theorem}[Middle and high revealing upper bounds]
 \label{thm:opt:optional-middle-upper}
-For every finite $u\in[\varphi+2,\infty)$, the formally specified algorithm
+For every finite $u\in[\uDet{4},\infty)$, the formally specified algorithm
 \textnormal{\textsc{AdaptiveThreshold}} from
 \cref{alg:adaptive-threshold}
 satisfies
@@ -382,14 +382,14 @@ satisfies
  \ALG\le
  \begin{cases}
   (1+c)\OPT+O_u(n),
-     & \varphi+2\le u\le \zstar,
+     & \uDet{4}\le u\le \uDet{5},
        \quad c\text{ given by \eqref{eq:opt:mixed-parametrization}},\\[1mm]
   (1+r)\OPT+O(n),
-     & u\ge \zstar.
+     & u\ge \uDet{5}.
  \end{cases}
 \]
 The constant in the last $O(n)$ is absolute and uniform over
-$u\in[\zstar,\infty)$.
+$u\in[\uDet{5},\infty)$.
 In particular these are upper bounds on the deterministic
 size-asymptotic competitive ratio.
 \end{theorem}
@@ -830,7 +830,7 @@ gradient.  Altogether $W$ is $C^{1,1}$ on the feasible state cone.  On the
 mixed interval its regularity constant may depend on the fixed value of $u$.
 When $c=r$ and $m=0$, however, the reserve is identically zero and the base
 bank depends only on the absolute constant $r$; its regularity constant is
-therefore uniform over all $u\ge \zstar$.  This includes the last transition
+therefore uniform over all $u\ge \uDet{5}$.  This includes the last transition
 from $x=1$ to $x=0$.
 
 It follows that a unit transition has the Taylor remainder
@@ -862,16 +862,16 @@ Together with \eqref{eq:opt:gap-decomposition} and
  \label{eq:opt:mixed-upper-finite}
 \end{align}
 
-At $u=\zstar$, one has $c=r$, $m=0$, and
-$Z(r)=\zstar$.  The cap reserve is identically zero, while
+At $u=\uDet{5}$, one has $c=r$, $m=0$, and
+$Z(r)=\uDet{5}$.  The cap reserve is identically zero, while
 \eqref{eq:opt:initial-calibration} remains valid.  If $u$ is increased
-above $\zstar$, the only adverse fifth-endpoint bracket
+above $\uDet{5}$, the only adverse fifth-endpoint bracket
 $1-r(u-1-a_r(y))$ decreases, and the capped diagonal term in
 \eqref{eq:opt:gap-decomposition} also decreases.
 
 Here is the promised uniform finite calculation.  The base bank and its
 feasible cone contain no $u$, so there is one constant $C_{\rm step}$, depending
-only on $r$, for which every ordinary or capped transition with $u\ge \zstar$
+only on $r$, for which every ordinary or capped transition with $u\ge \uDet{5}$
 satisfies
 \[
  \ell_i+W_{i+1}-W_i\le C_{\rm step}.
@@ -884,7 +884,7 @@ Because $W_0=rn^2/2$ and $W_n=0$, telescoping gives
 In the diagonal term of \cref{eq:opt:gap-decomposition}, a value below the
 cap contributes $-r(1+p_i)$.  A capped value contributes at most
 $1-r u\le0$.  Hence the diagonal sum is nonpositive uniformly on
-$[\zstar,\infty)$.  Combining
+$[\uDet{5},\infty)$.  Combining
 \cref{eq:opt:gap-decomposition,eq:opt:pair-allocation-dominates,eq:opt:uniform-ell}
 now yields
 \begin{align}
@@ -896,7 +896,7 @@ now yields
 Thus, with $B=C_{\rm step}+r/2$,
 \begin{equation}
  \ALG\le(1+r)\OPT+B n
- \qquad\text{for every finite }u\in[\zstar,\infty),
+ \qquad\text{for every finite }u\in[\uDet{5},\infty),
  \label{eq:opt:uniform-high-upper}
 \end{equation}
 and $B$ is independent of $u$.  The estimate is genuinely uniform rather

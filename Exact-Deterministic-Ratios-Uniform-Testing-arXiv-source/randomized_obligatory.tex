@@ -5,23 +5,32 @@ We now pass from the finite-cap randomized curve to the unbounded obligatory
 endpoint.  The adversary fixes the labeled vector $p\in[0,\infty)^n$ before the algorithm
 draws its random bits.  The multiset is not announced, and no upper bound on
 the processing times is assumed.  The finite-cap zero--two lower bound
-transfers directly.  The upper bound needs one additional uniformization:
-a fixed cutoff and fallback protect the finite-cap stationary policy from an
-arbitrarily large value missed by its sample.  This subsection proves
+transfers directly.  The upper bound needs one additional uniformization: a
+cutoff and fallback protect the finite-cap stationary policy from an
+arbitrarily large value missed by its sample.  Letting the cutoff grow slowly
+also makes the same policy instance-optimal on every bounded class.  This
+subsection proves
 \cref{thm:rand-obligatory},
 the rigorous randomized part of the informal obligatory-testing result
 \cref{thm:intro-obligatory} from the introduction.
 
 \begin{theorem}[Randomized obligatory testing]
 \label{thm:rand-obligatory}
-There is a universal randomized nonanticipating algorithm $\mathcal A_n$,
-depending only on $n$, such that every fixed vector
-$p\in[0,\infty)^n$ satisfies
+There are a universal constant $C$ and a randomized nonanticipating
+algorithm $\mathcal A_n^*$, depending only on $n$, such that every fixed
+vector $p\in[0,\infty)^n$ satisfies
 \begin{equation}
- \EE\cost(\mathcal A_n,p)
- \le \frac43\cost(\OPT,p)+20378n^{7/4}
- \le\left(\frac43+40756n^{-1/4}\right)\cost(\OPT,p).
+ \EE\cost(\mathcal A_n^*,p)
+ \le \frac43\cost(\OPT,p)+Cn^{19/10}
+ \le\left(\frac43+2Cn^{-1/10}\right)\cost(\OPT,p).
  \label{eq:rand-obligatory-upper}
+\end{equation}
+Its fixed-cutoff specialization $\mathcal A_n^{(32)}$ satisfies the sharper
+explicit estimate
+\begin{equation}
+ \EE\cost(\mathcal A_n^{(32)},p)
+ \le \frac43\cost(\OPT,p)+20378n^{7/4}.
+ \label{eq:rand-obligatory-fixed-upper}
 \end{equation}
 Conversely, for every randomized algorithm $\mathcal A$ and every $\eps>0$,
 arbitrarily large even $n$ admit a fixed labeling of $n/2$ zero jobs and
@@ -41,8 +50,8 @@ For an announced multiset, the algorithmic core is the processing-time
 prefix with maximum completions per unit discovery work.  Testing jobs in a
 uniformly random order gives an exact pair identity and a $4/3$ algebraic
 certificate.  The universal algorithm learns an approximately separated
-prefix from a sublinear sample; a fixed cutoff and a fallback schedule
-protect it from unbounded values missed by the sample.  The matching lower
+prefix from a sublinear sample; a cutoff and a fallback schedule protect it
+from unbounded values missed by the sample.  The matching lower
 bound is inherited from the zero--two endpoint of the finite-cap curve.  We
 first prove the uniform upper bound and then give the short transfer.
 
@@ -178,9 +187,9 @@ If all early values are at most $L\ge1$, then $\ell_E\le aL$ and therefore
 
 \subsubsection{Learning the prefix from a sublinear sample}
 
-Fix the universal cutoff
+For the main algorithm, set the slowly growing cutoff
 \begin{equation}
- B=32.
+ B=B_n=32+n^{1/20}.
  \label{eq:rand-cutoff}
 \end{equation}
 For an integer $d$, let $\eta=B/d$.  Keep zero as a separate category,
@@ -321,7 +330,7 @@ Therefore, on a good learned sample,
 
 On a good fallback sample, comparison of sample and population densities
 shows that the true maximum-density reciprocal satisfies
-$\tau_{D[p]}\ge B/4=8$.
+$\tau_{D[p]}\ge B/4\ge8$.
 The exact threshold inequalities imply
 \begin{equation}
  K(D[p])\ge\frac{(\tau_{D[p]}-1)^2}{\tau_{D[p]}},
@@ -346,34 +355,46 @@ excess over $4\OPT/3$, not raw cost.  In learned mode every early value is at
 most $B/2$, so \cref{eq:rand-bounded-early} bounds the stationary excess by
 $(B/4)n^2$; in fallback mode \cref{eq:rand-fallback-crude} bounds it by
 $n^2/2$.  Averaging \cref{eq:rand-good-learned} and these bad-event bounds,
-and using \cref{eq:rand-bad-probability}, yields the explicit uniform estimate
+and using \cref{eq:rand-bad-probability}, yields the uniform estimate
 \begin{equation}
  \EE\ALG
  \le\frac43\OPT
- +n^2\!\left[9472\sqrt{\frac{d+2}{k}}+\frac{704}{d}\right]
- +17(nk/2+k^2).
+ +n^2\!\left[
+   \frac{B^2(B+5)}4\sqrt{\frac{d+2}{k}}
+   +\frac{2B(B+1)}{3d}\right]
+ +(1+B/2)(nk/2+k^2).
  \label{eq:rand-explicit-upper}
 \end{equation}
 For $n\ge12^4$, the floors in \cref{eq:rand-parameters} give
 $\sqrt{(d+2)/k}\le2n^{-1/4}$, $1/d\le2n^{-1/4}$, and
-$k\le n^{3/4}$.  The right-hand side of
-\cref{eq:rand-explicit-upper} is at most
-\begin{equation}
- \frac43\OPT+20378n^{7/4}.
- \label{eq:rand-final-upper}
-\end{equation}
-For smaller $n$, test-all-then-SPT is covered by the same deliberately loose
-constant.  Finally $\OPT\ge n^2/2$ proves the multiplicative form in
-\cref{eq:rand-obligatory-upper}.
+$k\le n^{3/4}$.  Since $B_n=O(n^{1/20})$, the three error terms in
+\cref{eq:rand-explicit-upper} are respectively
+$O(n^{19/10})$, $O(n^{37/20})$, and $O(n^{9/5})$.  Enlarging one universal
+constant covers smaller $n$ and proves the first inequality in
+\cref{eq:rand-obligatory-upper}.  The bound $\OPT\ge n^2/2$ gives its
+multiplicative form.
+
+For completeness, taking $B=32$ instead in the same policy reduces
+\cref{eq:rand-explicit-upper} to
+\[
+ \EE\ALG
+ \le\frac43\OPT
+ +n^2\!\left[9472\sqrt{\frac{d+2}{k}}+\frac{704}{d}\right]
+ +17(nk/2+k^2).
+\]
+The preceding floor bounds give
+$\EE\ALG\le4\OPT/3+20378n^{7/4}$, with the same deliberately loose
+constant covering smaller $n$.  This proves
+\cref{eq:rand-obligatory-fixed-upper}.
 
 \subsubsection{Transfer of the zero--two lower bound}
 
-Fix the finite cap $u=25/4$.  Any randomized obligatory algorithm can be
+Fix the finite cap $u=\uRand{3}$.  Any randomized obligatory algorithm can be
 viewed as a revealing-optimization algorithm at this cap that simply never
 uses raw execution.  Apply \cref{lem:rcu-zero-two-lower}.  Its fixed hard
 input has only values zero and two, so every revealing effective length is
 \[
- \min\{25/4,1+p_j\}=1+p_j.
+ \min\{\uRand{3},1+p_j\}=1+p_j.
 \]
 The online transcript and the offline optimum are therefore exactly the
 same in the finite-cap and obligatory models.  For even $n$, the common
@@ -384,5 +405,5 @@ offline value is
 whereas the selected labeling has expected online cost
 $n^2-o(n^2)$.  Its ratio tends to $4/3$, which proves
 \cref{eq:rand-obligatory-lower}.  Together with
-\cref{eq:rand-final-upper}, this completes the proof of
+\cref{eq:rand-obligatory-upper}, this completes the proof of
 \cref{thm:rand-obligatory}.

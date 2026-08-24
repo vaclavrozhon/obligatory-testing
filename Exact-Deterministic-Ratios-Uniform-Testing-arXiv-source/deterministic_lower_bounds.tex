@@ -147,14 +147,14 @@ and tangency gives
  \label{eq:opt:zero-b-tangency}
 \end{equation}
 The latter point belongs to the zero-$b$ branch iff
-$(u-1)^3\ge u^2$, with equality at $u=\uzero$.
+$(u-1)^3\ge u^2$, with equality at $u=\uDet{3}$.
 
 For $R=u$, the maximum in
 \cref{eq:opt:stopping-positive-branch} is nonnegative exactly while
 \begin{equation}
  [u(u-1)]^2-u(u-1)-1\le0,
 \end{equation}
-whose positive equality is $u=\udiam$.  We have proved the following
+whose positive equality is $u=\uDet{2}$.  We have proved the following
 binary lower envelope.
 
 \begin{proposition}[Binary lower curve]
@@ -164,9 +164,9 @@ Every deterministic algorithm has size-asymptotic ratio at least
  B(u)=
  \begin{cases}
  1,&0<u\le1,\\
- u,&1\le u\le \udiam,\\
- \Rquad(u),&\udiam\le u\le \uzero,\\[1mm]
- \displaystyle1+\frac1{\sqrt{u-1}},&u\ge \uzero.
+ u,&\uDet{1}\le u\le \uDet{2},\\
+ \Rquad(u),&\uDet{2}\le u\le \uDet{3},\\[1mm]
+ \displaystyle1+\frac1{\sqrt{u-1}},&u\ge \uDet{3}.
  \end{cases}
  \label{eq:opt:binary-curve}
 \end{equation}
@@ -174,12 +174,12 @@ The lower bound uses only $p_j\in\{0,u\}$.
 \end{proposition}
 
 \begin{proof}
-For $1<u\le \udiam$, use $R=u$ and the maximizing point of
+For $\uDet{1}<u\le \uDet{2}$, use $R=u$ and the maximizing point of
 \cref{eq:opt:stopping-positive-branch}.  For
-$\udiam\le u\le \uzero$, use the positive root $\Rquad(u)$ and
+$\uDet{2}\le u\le \uDet{3}$, use the positive root $\Rquad(u)$ and
 $\alpha=A_u/D_{u,\Rquad(u)}$; the tangency identity makes the maximum zero.
 The minimizing completion mass is positive in the interior and becomes zero
-at $u=\uzero$.  For $u\ge \uzero$, use the zero-$b$ tangency point from
+at $u=\uDet{3}$.  For $u\ge \uDet{3}$, use the zero-$b$ tangency point from
 \cref{eq:opt:zero-b-tangency}.  The branch conditions are precisely the two
 inequalities checked above.  Finally, $\RdetRO(u)\ge1$ is trivial for $u\le1$.
 In each nontrivial case \cref{lem:opt:hidden-stopping} supplies fixed binary
@@ -507,25 +507,25 @@ The derivative of the fraction has the sign of
   3-z+\ln z.
 \]
 For $z>1$ this expression is strictly decreasing, is positive at $z=1$, and
-tends to $-\infty$.  Hence it has one zero $\zstar$, characterized by
+tends to $-\infty$.  Hence it has one zero $\uDet{5}$, characterized by
 \[
-  \zstar-3=\ln \zstar.
+  \uDet{5}-3=\ln \uDet{5}.
 \]
-The derivative is positive before $\zstar$ and negative afterward, so this is
+The derivative is positive before $\uDet{5}$ and negative afterward, so this is
 the global maximum.  At the root,
 \[
-  1+\zstar+\zstar\ln \zstar=(\zstar-1)^2,
+  1+\uDet{5}+\uDet{5}\ln \uDet{5}=(\uDet{5}-1)^2,
 \]
 and therefore
 \[
-  R(\zstar)=1+\frac{2}{\zstar-1}=\RdetOT.
+  R(\uDet{5})=1+\frac{2}{\uDet{5}-1}=\RdetOT.
 \]
-Moreover, $\sqrt{\zstar}-1=1.12255\ldots<e-1$, so the maximizer lies in the
+Moreover, $\sqrt{\uDet{5}}-1=1.12255\ldots<e-1$, so the maximizer lies in the
 range where \cref{eq:lower-span} holds.
 
 \begin{proof}[Proof of \cref{thm:lower}]
 Choose a rational $\alpha$ sufficiently close to
-$\alpha_\star=\sqrt{\zstar}-1$, and choose any rational
+$\alpha_\star=\sqrt{\uDet{5}}-1$, and choose any rational
 $\gamma\in(0,1)$.  For a sufficiently large $K$, set $\xi=K/\alpha$ and use
 \cref{eq:lower-harmonic}; then $Q_K/D_K>\RdetOT-\eps/2$.
 All parameters are rational.  Let $H$ tend to infinity through multiples of
@@ -590,7 +590,7 @@ stated limit and liminf bounds.
 \subsubsection{The unrestricted mixed lower bound}
 \label{sec:opt:mixed-lower}
 
-For $\varphi+2<u<\zstar$, neither the binary family nor the pure cap-free
+For $\uDet{4}<u<\uDet{5}$, neither the binary family nor the pure cap-free
 family is tight.  The correct adversary puts a capped block before a scaled
 harmonic core.  Two lemmas ensure that raw
 execution and early processing of caps cannot escape it.
@@ -721,12 +721,12 @@ $\mathcal R_u(m,t)=1+c$.
 
 The branch runs from
 \begin{equation}
- (u,m,t)=\left(\varphi+2,\frac1\varphi,1\right)
+ (u,m,t)=\left(\uDet{4},\frac1\varphi,1\right)
  \quad\text{to}\quad
- (u,m,t)=(\zstar,0,\sqrt{\zstar}).
+ (u,m,t)=(\uDet{5},0,\sqrt{\uDet{5}}).
  \label{eq:opt:mixed-endpoints}
 \end{equation}
-It satisfies $u\ge\varphi+2$, $\ln t<1$, and $m\le1/\varphi$.  Therefore
+It satisfies $u\ge\uDet{4}$, $\ln t<1$, and $m\le1/\varphi$.  Therefore
 \begin{equation}
  (1-m)(u-1-\ln t)
  >(1-m)\varphi\ge\frac1\varphi\ge m,
@@ -747,7 +747,7 @@ while
 is strictly decreasing.  The identities $g(r)=h(0)=0$ and
 $g(1/\varphi)=h(1/\varphi)$ give the two endpoints in
 \cref{eq:opt:mixed-endpoints}; consequently every
-$u\in[\varphi+2,\zstar]$ has exactly one parameter pair.
+$u\in[\uDet{4},\uDet{5}]$ has exactly one parameter pair.
 
 To pass to fixed finite instances, first approximate $(m,t)$ rationally
 while retaining the strict cap inequalities, then choose a sufficiently
@@ -759,11 +759,11 @@ approximation to their limits.  Together with
 \cref{lem:opt:mixed-raw-safe}, this proves
 \begin{equation}
  \RdetRO(u)\ge \Rmix(u)
- \qquad(\varphi+2\le u\le \zstar).
+ \qquad(\uDet{4}\le u\le \uDet{5}).
  \label{eq:opt:mixed-lower-final}
 \end{equation}
 The construction above applies directly in the open interval.  At
-$u=\varphi+2$ and $u=\zstar$ the same statement follows by approaching from
+$u=\uDet{4}$ and $u=\uDet{5}$ the same statement follows by approaching from
 the interior, so the endpoints are included.
 
 \subsubsection{The large-upper-limit lower bound by cap-free transfer}
@@ -815,9 +815,9 @@ The harmonic cap-free family attaining $\RdetOT$ has limiting largest
 processing time
 \begin{equation}
  1+\ln(1+y_*)
- =1+\frac12\ln \zstar
- =\frac{\zstar-1}{2}=\frac1r,
- \qquad y_*=\sqrt{\zstar}-1.
+ =1+\frac12\ln \uDet{5}
+ =\frac{\uDet{5}-1}{2}=\frac1r,
+ \qquad y_*=\sqrt{\uDet{5}}-1.
 \end{equation}
 Approximation from below also gives the endpoint, proving
 \cref{eq:opt:high-lower}.

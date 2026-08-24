@@ -116,6 +116,84 @@ theorem pairCost_ofFn_eq_finSelfPairSum
       (finSelfPairSum_eq_listPairObjective
         (self := id) (pair := min) values).symm
 
+private theorem sum_row_split_lt
+    {n : ℕ} (f : Fin n → Fin n → ℝ) (i : Fin n) :
+    (∑ j, f i j) =
+      f i i +
+        ∑ j ∈ Finset.univ.filter (fun j ↦ i < j), f i j +
+        ∑ j ∈ Finset.univ.filter (fun j ↦ j < i), f i j := by
+  classical
+  let upper := Finset.univ.filter (fun j : Fin n ↦ i < j)
+  let lower := Finset.univ.filter (fun j : Fin n ↦ j < i)
+  have hdisjoint : Disjoint upper lower := by
+    apply Finset.disjoint_left.mpr
+    intro j hjUpper hjLower
+    simp only [upper, lower, Finset.mem_filter, Finset.mem_univ,
+      true_and] at hjUpper hjLower
+    exact (not_lt_of_ge hjUpper.le hjLower)
+  have hunion : upper ∪ lower = Finset.univ.erase i := by
+    ext j
+    simp only [upper, lower, Finset.mem_union, Finset.mem_filter,
+      Finset.mem_univ, true_and, Finset.mem_erase]
+    constructor
+    · rintro (hij | hji)
+      · exact ⟨ne_of_gt hij, trivial⟩
+      · exact ⟨ne_of_lt hji, trivial⟩
+    · rintro ⟨hji, _⟩
+      rcases lt_trichotomy i j with hij | heq | hji'
+      · exact Or.inl hij
+      · exact (hji heq.symm).elim
+      · exact Or.inr hji'
+  calc
+    (∑ j, f i j) = f i i + ∑ j ∈ Finset.univ.erase i, f i j :=
+      (Finset.add_sum_erase Finset.univ (fun j ↦ f i j)
+        (Finset.mem_univ i)).symm
+    _ = f i i + ((∑ j ∈ upper, f i j) +
+        ∑ j ∈ lower, f i j) := by
+      rw [← Finset.sum_union hdisjoint, hunion]
+    _ = _ := by dsimp [upper, lower]; ring
+
+private theorem sum_lower_triangle_transpose
+    {n : ℕ} (f : Fin n → Fin n → ℝ) :
+    (∑ i, ∑ j ∈ Finset.univ.filter (fun j ↦ j < i), f i j) =
+      ∑ i, ∑ j ∈ Finset.univ.filter (fun j ↦ i < j), f j i := by
+  classical
+  simp only [Finset.sum_filter]
+  rw [Finset.sum_comm]
+
+/-- Split a symmetric ordered double sum into its diagonal and twice its
+strict upper triangle. -/
+theorem symmetric_double_sum
+    {n : ℕ} (f : Fin n → Fin n → ℝ)
+    (hsymm : ∀ i j, f i j = f j i) :
+    (∑ i, ∑ j, f i j) =
+      (∑ i, f i i) + 2 *
+        ∑ i, ∑ j ∈ Finset.univ.filter (fun j ↦ i < j), f i j := by
+  simp_rw [sum_row_split_lt]
+  rw [Finset.sum_add_distrib, Finset.sum_add_distrib,
+    sum_lower_triangle_transpose]
+  have htranspose :
+      (∑ i, ∑ j ∈ Finset.univ.filter (fun j ↦ i < j), f j i) =
+        ∑ i, ∑ j ∈ Finset.univ.filter (fun j ↦ i < j), f i j := by
+    apply Finset.sum_congr rfl
+    intro i _hi
+    apply Finset.sum_congr rfl
+    intro j _hj
+    exact hsymm j i
+  rw [htranspose]
+  ring
+
+/-- Ordered-pair form of the shortest-first objective on a finite vector. -/
+theorem two_mul_pairCost_ofFn {n : ℕ} (values : Fin n → ℝ) :
+    2 * pairCost (List.ofFn values) =
+      (∑ i, ∑ j, min (values i) (values j)) + ∑ i, values i := by
+  rw [pairCost_ofFn_eq_finSelfPairSum]
+  have hdouble := symmetric_double_sum
+    (fun i j ↦ min (values i) (values j))
+    (fun i j ↦ min_comm _ _)
+  simp only [min_self] at hdouble
+  linarith
+
 end
 
 end SchedulingPaper

@@ -68,8 +68,8 @@ Lean object & Manuscript object & Meaning \\
     verified joins \\
 \texttt{RStar}
   & \(\RdetOT\)
-  & \(1+2/(\zstar-1)\), where \(\zstar>1\) is the unique solution of
-    \(\zstar-3=\ln\zstar\) \\
+  & \(1+2/(\uDet{5}-1)\), where \(\uDet{5}>1\) is the unique solution of
+    \(\uDet{5}-3=\ln\uDet{5}\) \\
 \texttt{fixedOfflineCost}
   & \(\OPT\)
   & the clairvoyant shortest-first cost of the model-dependent effective
@@ -133,7 +133,7 @@ input,
 \end{equation}
 The quadratic lower bounds
 \cref{eq:opt-n2,eq:optional-opt-n2} then imply
-\eqref{eq:lean-upper-expansion}.  For \(u\ge\zstar\), the separately verified
+\eqref{eq:lean-upper-expansion}.  For \(u\ge\uDet{5}\), the separately verified
 plateau certificate uses the same strategy and the same \(C\), independent
 of \(u\), including the obligatory limit.  This uniformity is stronger
 than the quantifier order displayed by \texttt{exact\_ratio\_main}, which
@@ -148,7 +148,7 @@ field gives the fixed-instance lower direction of
 strategy and the matching upper direction.  The definition of
 \texttt{exactCurve} is literally the six-way case split in
 \cref{eq:opt:full-curve}; the Lean development also proves its joins,
-continuity, plateau, and global maximum at \(\udiam\).
+continuity, plateau, and global maximum at \(\uDet{2}\).
 
 The second conjunct substitutes \(R=\texttt{RStar}=\RdetOT\) in the
 obligatory model.  Its lower field gives the lower half of

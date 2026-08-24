@@ -11,20 +11,27 @@ is $\lambda_u(p_j)=\min\{u,1+p_j\}$, and the offline optimum schedules these
 effective lengths in nondecreasing order.  We write $\RdetRO(u)$ for the optimal
 deterministic size-asymptotic ratio at this fixed common upper limit.
 
-The answer has six branches.  We first define their transition points.  Put
+The answer has six branches separated by five transition points.  Put
 \begin{equation}
  \varphi=\frac{1+\sqrt5}{2},
  \qquad
- \udiam=\frac{1+\sqrt{3+2\sqrt5}}2
+ \uDet{1}=1,
+ \qquad
+ \uDet{2}=\frac{1+\sqrt{3+2\sqrt5}}2
  =1.866760399173862\ldots .
- \label{eq:opt:phi-udiamond}
+ \label{eq:opt:u1-u2}
 \end{equation}
 Let $s_0>1$ be the root of
 \begin{equation}
  s_0^3=(s_0+1)^2,
  \qquad
- \uzero=1+s_0=3.147899035704787\ldots .
- \label{eq:opt:u0}
+ \uDet{3}=1+s_0=3.147899035704787\ldots .
+ \label{eq:opt:u3}
+\end{equation}
+The fourth transition point is
+\begin{equation}
+ \uDet{4}=\varphi+2=3.618033988749895\ldots .
+ \label{eq:opt:u4}
 \end{equation}
 For $s=u-1$, put
 \begin{equation}
@@ -46,16 +53,18 @@ Equivalently,
  \label{eq:opt:Rquad-explicit}
 \end{equation}
 
-At the other end, let $\zstar>1$ solve $\zstar-3=\ln \zstar$ and define
+At the other end, let $\uDet{5}>1$ solve
+$\uDet{5}-3=\ln \uDet{5}$ and define
 \begin{equation}
- r=\frac2{\zstar-1},
- \qquad
- \RdetOT=1+r=1.570574096649395\ldots,
- \qquad
- \zstar=4.505241495792883\ldots .
- \label{eq:opt:obligatory-constant}
+ \begin{aligned}
+  r&=\frac2{\uDet{5}-1},
+  \qquad
+  \RdetOT=1+r=1.570574096649395\ldots,\\
+  \uDet{5}&=4.505241495792883\ldots .
+ \end{aligned}
+\label{eq:opt:obligatory-constant}
 \end{equation}
-For $\varphi+2\le u\le \zstar$, define $\Rmix(u)=1+c$ by the unique
+For $\uDet{4}\le u\le \uDet{5}$, define $\Rmix(u)=1+c$ by the unique
 solution $(c,m)$ of
 \begin{equation}
  \operatorname{artanh}m-m
@@ -74,13 +83,13 @@ the revealing-optimization model is
 \boxed{
 \RdetRO(u)=
 \begin{cases}
-1, &0<u\le1,\\[1mm]
-u, &1\le u\le \udiam,\\[1mm]
-\Rquad(u), &\udiam\le u\le \uzero,\\[1mm]
+1, &0<u\le\uDet{1},\\[1mm]
+u, &\uDet{1}\le u\le \uDet{2},\\[1mm]
+\Rquad(u), &\uDet{2}\le u\le \uDet{3},\\[1mm]
 \displaystyle 1+\frac1{\sqrt{u-1}},
-   &\uzero\le u\le\varphi+2,\\[3mm]
-\Rmix(u), &\varphi+2\le u\le \zstar,\\[1mm]
-\RdetOT, &u\ge \zstar.
+   &\uDet{3}\le u\le\uDet{4},\\[3mm]
+\Rmix(u), &\uDet{4}\le u\le \uDet{5},\\[1mm]
+\RdetOT, &u\ge \uDet{5}.
 \end{cases}}
 \label{eq:opt:full-curve}
 \end{equation}
@@ -88,7 +97,7 @@ For every branch there is an explicit deterministic algorithm satisfying
 \[
  \cost(\mathcal A,I)\le \RdetRO(u)\cost(\OPT,I)+O_u(n).
 \]
-On $u\ge \zstar$ the remainder is one absolute $O(n)$ term, uniform over all
+On $u\ge \uDet{5}$ the remainder is one absolute $O(n)$ term, uniform over all
 finite $u$.
 Conversely, for every deterministic algorithm $\mathcal A$ and every
 $\eps>0$, there are arbitrarily large fixed instances $I$ such that
@@ -96,7 +105,7 @@ $\eps>0$, there are arbitrarily large fixed instances $I$ such that
  \cost(\mathcal A,I)
  \ge\bigl(\RdetRO(u)-\eps\bigr)\cost(\OPT,I).
 \]
-For $u\ge \zstar$, these lower-bound instances may be chosen cap-free:
+For $u\ge \uDet{5}$, these lower-bound instances may be chosen cap-free:
 $p_j<u-1$ for every job.  Thus both witnesses on the plateau are uniform in
 the sense needed to pass separately to the obligatory endpoint.
 \end{theorem}
@@ -114,15 +123,15 @@ algorithms themselves are specified formally in
 \toprule
 range & policy & parameter choice \\
 \midrule
-$0<u\le \udiam$
+$0<u\le \uDet{2}$
  & \textsc{Raw} & none \\
-$\udiam<u\le \uzero$
+$\uDet{2}<u\le \uDet{3}$
  & \textsc{ForcedPrefixUTE} & $b=b(u)$ from \eqref{eq:opt:ute-parameters} \\
-$\uzero<u\le\varphi+2$
+$\uDet{3}<u\le\uDet{4}$
  & \textsc{ForcedPrefixUTE} & $b=0$ \\
-$\varphi+2<u<\zstar$
+$\uDet{4}<u<\uDet{5}$
  & \textsc{AdaptiveThreshold} & $c=c(u)$ from \eqref{eq:opt:mixed-parametrization} \\
-$\zstar\le u<\infty$
+$\uDet{5}\le u<\infty$
  & \textsc{AdaptiveThreshold} & $c=r$ \\
 \bottomrule
 \end{tabular}

@@ -1,21 +1,5 @@
 \pdfoutput=1
 
-% --------------------------------------------------------------------------
-% Build configuration
-% --------------------------------------------------------------------------
-% paper.tex builds the complete manuscript.  paper-fast.tex defines
-% \fastversion, omits the appendices, and uses cached plot PDFs for quicker
-% Overleaf preview builds.
-\newif\ifbuildappendices
-\newif\ifbuildtikzplots
-\ifdefined\fastversion
-  \buildappendicesfalse
-  \buildtikzplotsfalse
-\else
-  \buildappendicestrue
-  \buildtikzplotstrue
-\fi
-
 \documentclass[11pt]{article}
 
 \usepackage[T1]{fontenc}
@@ -26,13 +10,12 @@
 \usepackage{amsmath,amssymb,amsthm,mathtools}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{longtable}
 \usepackage{graphicx}
 \usepackage{capt-of}
-\ifbuildtikzplots
-  \usepackage{pgfplots}
-  \pgfplotsset{compat=1.18}
-  \usepgfplotslibrary{groupplots}
-\fi
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots}
 \usepackage{enumitem}
 \usepackage{float}
 \usepackage{xcolor}
@@ -139,10 +122,8 @@
 \newcommand{\PhiBE}{\Phi_{\mathsf{BE}}}
 \newcommand{\PhiBO}{\Phi_{\mathsf{BO},u}}
 \newcommand{\PhiRO}{\Phi_{\mathsf{RO},u}}
-\newcommand{\urand}{u_{\mathrm r}}
-\newcommand{\zstar}{z_\star}
-\newcommand{\udiam}{u_\diamond}
-\newcommand{\uzero}{u_0}
+\newcommand{\uDet}[1]{u_{#1}^{\mathrm{det}}}
+\newcommand{\uRand}[1]{u_{#1}^{\mathrm{rand}}}
 \newcommand{\Rmix}{R_{\mathrm{mix}}}
 \newcommand{\artanh}{\operatorname{artanh}}
 \newcommand{\eps}{\varepsilon}
@@ -153,16 +134,6 @@
 \newcommand{\EE}{\mathbb{E}}
 \newcommand{\Prob}{\mathbb{P}}
 \newcommand{\Stat}{\mathrm{stat}}
-
-% The fast build uses PDFs generated from the same TikZ sources.  This avoids
-% evaluating the expensive pgfplots expressions on every Overleaf preview.
-\newcommand{\inputplot}[1]{%
-  \ifbuildtikzplots
-    \input{#1}%
-  \else
-    \includegraphics{figure-cache/#1.pdf}%
-  \fi
-}
 
 \title{Scheduling with Uniform Tests: Information and Optimization}
 
@@ -229,14 +200,12 @@ instance-optimal framework.  The author selected the research directions,
 reviewed and revised the arguments, and takes responsibility for the claims
 in this paper.
 
-\ifbuildappendices
-  \appendix
+\appendix
 
-  \input{formal_verification}
-  \input{finite_checkpoint}
-  \input{cap_bubbling}
-  \input{lean_formalization}
-\fi
+\input{formal_verification}
+\input{finite_checkpoint}
+\input{cap_bubbling}
+\input{lean_formalization}
 
 \bibliographystyle{alphaurl}
 \bibliography{references}

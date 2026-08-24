@@ -12,28 +12,6 @@ latexmk -pdf paper.tex
 ```
 
 from this directory for the complete manuscript, including all appendices.
-For a faster preview build without appendices, run
-
-```sh
-latexmk -pdf paper-fast.tex
-```
-
-On Overleaf, choose `paper-fast.tex` under **Menu > Main document** while
-editing, and switch back to `paper.tex` for the final full build.  The fast
-entry point defines `\fastversion`; `paper.tex` uses it to omit the
-appendices and load cached PDFs for the three pgfplots figures.  The complete
-build always reads the native TikZ sources.
-
-After changing a TikZ figure, refresh its cached PDF from `figure-cache/`:
-
-```sh
-pdflatex -jobname=curves_overview_tikz \
-  "\def\figurefile{../curves_overview_tikz}\def\figurewidth{150mm}\input{build_figure.tex}"
-pdflatex -jobname=randomized_curve_tikz \
-  "\def\figurefile{../randomized_curve_tikz}\def\figurewidth{72.75mm}\input{build_figure.tex}"
-pdflatex -jobname=blind_optimization_curve_tikz \
-  "\def\figurefile{../blind_optimization_curve_tikz}\def\figurewidth{72.75mm}\input{build_figure.tex}"
-```
 
 The build uses only standard LaTeX packages and the
 included vector figures.  The three introduction figures are native

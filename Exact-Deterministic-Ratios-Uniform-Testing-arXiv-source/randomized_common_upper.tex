@@ -6,14 +6,18 @@ fixed input in the revealing-optimization model.  We now compare that cost with 
 clairvoyant optimum and maximize over all inputs.  The cap $u$ is fixed, but
 the algorithm is not told the processing-time multiset.  This section proves
 \cref{thm:random-common-upper}, the rigorous randomized half of the informal
-curve theorem \cref{thm:intro-common-upper-curves}.  Let
-$\urand>1$ be the unique root of
+curve theorem \cref{thm:intro-common-upper-curves}.  Its three transition
+points are
 \begin{equation}
- \urand^3-6\urand^2+5\urand-1=0,
+ \uRand{1}=1,
  \qquad
- \urand=5.048917339522306\ldots .
- \label{eq:intro-random-transition}
+ \uRand{2}=5.048917339522306\ldots,
+ \qquad
+ \uRand{3}=\frac{25}{4}.
+ \label{eq:rand-transition-points}
 \end{equation}
+Here $\uRand{2}>1$ is the unique root of
+$u^3-6u^2+5u-1=0$ above one.
 
 \begin{theorem}[Randomized revealing-optimization curve]
 \label{thm:random-common-upper}
@@ -22,12 +26,12 @@ ratio against an oblivious adversary is
 \begin{equation}
  \RrandRO(u)=
  \begin{cases}
-  1,&0<u\le1,\\[2pt]
+  1,&0<u\le\uRand{1},\\[2pt]
   \displaystyle\frac{u^3}{u^2+(u-1)^3},
-    &1\le u\le\urand,\\[8pt]
+    &\uRand{1}\le u\le\uRand{2},\\[8pt]
   \displaystyle 1+\frac{1}{2(\sqrt u-1)},
-    &\urand\le u\le25/4,\\[8pt]
-  \displaystyle\frac43,&u\ge25/4.
+    &\uRand{2}\le u\le\uRand{3},\\[8pt]
+  \displaystyle\frac43,&u\ge\uRand{3}.
  \end{cases}
  \label{eq:intro-random-common-upper-curve}
 \end{equation}
@@ -309,15 +313,15 @@ identity $\tau_*(u)=u$ is equivalent to
  \label{eq:rcu-transition-cubic}
 \end{equation}
 The cubic is strictly increasing beyond its last critical point and changes
-sign there exactly once; its unique root above one is $\urand$ from
-\eqref{eq:intro-random-transition}.  Hence
+sign there exactly once; its unique root above one is $\uRand{2}$ from
+\eqref{eq:rand-transition-points}.  Hence
 \begin{align}
  \max_{1\le\tau\le u}B_u(\tau)
  &=B_u(u)=\frac{u^3}{u^3-2u^2+3u-1}
-       =\frac{u^3}{u^2+(u-1)^3},&&u\le\urand,
+       =\frac{u^3}{u^2+(u-1)^3},&&u\le\uRand{2},
  \label{eq:rcu-B-at-u}\\
  &=B_u(\tau_*(u))
-       =1+\frac1{2(\sqrt u-1)},&&u\ge\urand.
+       =1+\frac1{2(\sqrt u-1)},&&u\ge\uRand{2}.
  \label{eq:rcu-B-at-star}
 \end{align}
 
@@ -326,9 +330,9 @@ denominators in $B_u(u)-A(u-1)$ and putting $v=u-2$ leaves
 \[
  v^4+3v^3+3v^2+3v+3>0.
 \]
-On $3\le u\le\urand$, one has $B_u(u)>4/3$.  On
-$\urand\le u\le25/4$, \eqref{eq:rcu-B-at-star} is at least $4/3$, with
-equality exactly at $u=25/4$; afterwards $A(2)=4/3$ is larger.  Combining
+On $3\le u\le\uRand{2}$, one has $B_u(u)>4/3$.  On
+$\uRand{2}\le u\le\uRand{3}$, \eqref{eq:rcu-B-at-star} is at least $4/3$,
+with equality exactly at $u=\uRand{3}$; afterwards $A(2)=4/3$ is larger.  Combining
 these observations with \eqref{eq:rcu-binary-reduction} proves the announced
 upper bound
 \begin{equation}
@@ -341,8 +345,8 @@ for every finite distribution $D$.
 
 The junction statements now follow directly.  Equations
 \cref{eq:rcu-transition-cubic,eq:rcu-B-at-u,eq:rcu-B-at-star} give
-continuity at $\urand$, and the square-root branch equals $4/3$ at
-$u=25/4$.  Differentiating \eqref{eq:rcu-B-at-u} shows that its only
+continuity at $\uRand{2}$, and the square-root branch equals $4/3$ at
+$u=\uRand{3}$.  Differentiating \eqref{eq:rcu-B-at-u} shows that its only
 interior maximum above one occurs at $u=(3+\sqrt3)/2$; substitution gives
 \eqref{eq:intro-random-common-maximum}.
 
@@ -464,7 +468,7 @@ $1$ and $u$, so \eqref{eq:rcu-binary-offline} follows from
 \cref{lem:offline}.
 \end{proof}
 
-We now select the binary masses.  If $1<u\le\urand$, take
+We now select the binary masses.  If $\uRand{1}<u\le\uRand{2}$, take
 \begin{equation}
  x=\frac{u-1}{u}.
  \label{eq:rcu-lower-x-crossing}
@@ -476,12 +480,12 @@ and offline coefficients have ratio
  =\frac{u^3}{u^2+(u-1)^3}.
  \label{eq:rcu-lower-first-branch}
 \end{equation}
-If $\urand\le u\le25/4$, take
+If $\uRand{2}\le u\le\uRand{3}$, take
 \begin{equation}
  x=\frac1{\sqrt u-1}.
  \label{eq:rcu-lower-x-stationary}
 \end{equation}
-The definition of $\urand$ is precisely the point from which
+The definition of $\uRand{2}$ is precisely the point from which
 $x\le(u-1)/u$.  Since $(u-1)x^2=1+2x$, the second line of
 \eqref{eq:rcu-binary-fluid-lower} divided by
 \eqref{eq:rcu-binary-offline} becomes
@@ -497,7 +501,7 @@ one.
 
 \begin{lemma}[Balanced zero--two lower bound]
 \label{lem:rcu-zero-two-lower}
-For every $u\ge25/4$ and every randomized algorithm, arbitrarily large even
+For every $u\ge\uRand{3}$ and every randomized algorithm, arbitrarily large even
 $n$ admit a fixed labeling with $n/2$ jobs of value zero and $n/2$ jobs of
 value two such that
 \begin{equation}

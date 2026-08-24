@@ -33,10 +33,16 @@
   {1+1/(2*(sqrt(x)-1))};
 \addplot[orange!88!black,very thick,domain=6.25:7.3] {4/3};
 \addplot[black!45,densely dotted,thin] coordinates {(1,0.97) (1,1.91)};
+\node[font=\scriptsize,rotate=90,anchor=south]
+  at (axis cs:1,1.08) {$\uRand{1}$};
 \addplot[black!45,densely dotted,thin]
   coordinates {(5.04891733952,0.97) (5.04891733952,1.91)};
+\node[font=\scriptsize,rotate=90,anchor=south]
+  at (axis cs:5.04891733952,1.08) {$\uRand{2}$};
 \addplot[black!45,densely dotted,thin]
   coordinates {(6.25,0.97) (6.25,1.91)};
+\node[font=\scriptsize,rotate=90,anchor=south]
+  at (axis cs:6.25,1.08) {$\uRand{3}$};
 \addplot[only marks,mark=*,mark size=1.6pt,black] coordinates {
   (2.36602540378,1.62575238458)
   (5.04891733952,1.39719767662)
