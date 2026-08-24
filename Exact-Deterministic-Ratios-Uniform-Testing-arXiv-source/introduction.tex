@@ -5,7 +5,6 @@ the sum of the times at which they finish.  The length of each job is written
 on a folded piece of paper.  If we knew all the lengths, the right schedule
 would be clear: we would simply run the jobs from shortest to longest.  But
 the papers are folded, and opening one of them takes one unit of machine time.
-
 Should we open another paper, or should we start working?
 
 Opening a paper may reveal a tiny job that we can finish immediately.  It may
@@ -17,32 +16,28 @@ short and completing jobs that are already understood.
 
 Variants of this question have appeared in both stochastic and adversarial
 scheduling with testing
-~\cite{LeviMagnantiShaposhnik2019,DurrErlebachMegowMeissner2020,DogeasErlebachLiang2024}.
-We start with its cleanest version, in which every paper has to be opened.
+~\cite{LeviMagnantiShaposhnik2019,DurrErlebachMegowMeissner2020,DogeasErlebachLiang2024}. This work both improves upon earlier work and studies new models. We start with its cleanest version, in which every paper has to be opened.
 We then allow a job to be run without opening its paper.  Depending on what
-this means, we obtain three further variants.  The same simple
-ideas---random sampling, thresholding, and shortest-first execution---give
-exact answers in all of them.
+this means, we obtain three further variants.  The same algorithmic ideas---random sampling, thresholding, and shortest-first execution---give
+exact asymptotic answers in all of them.
 
 \subsection{Warmup: every job has to be tested}
 \label{sec:intro-obligatory}
 
-There are $n$ jobs.  Testing job $i$ takes one unit of time and reveals a
+Consider the following problem. There are $n$ jobs.  Testing job $i$ takes one unit of time and reveals a
 number $p_i\geq0$.  The job then needs another $p_i$ units of processing; if
-$p_i=0$, it completes with the test.  For now every job has to be tested:
-testing is \emph{obligatory}.  The formal model is given in
+$p_i=0$, it completes with the test.  For now every job has to be tested: testing is \emph{obligatory}.  The formal model is given in
 \cref{sec:model}.
 
 We compare an online scheduler with the shortest-first schedule that knows
 all values $p_i$ in advance.  The \emph{competitive ratio} is the online cost
-divided by this offline optimum.  We care about its asymptotic value, so
-lower-order additive terms of size $o(n^2)$ do not matter.
+divided by this offline optimum.  We care about its asymptotic value. Since nontrivial $p_i$s mean that even optimum pays $\Omega(n^2)$ of cost, we ignore additive terms of size $o(n^2)$. 
 
 The obligatory-testing model for total completion time was introduced by
 Dogeas, Erlebach, and Liang~\cite{DogeasErlebachLiang2024}.  Their work and a
 later lower bound of Liang and Liang~\cite{LiangLiang2026} left a gap between
 the best deterministic upper and lower bounds.  They also left the randomized
-problem open.  We close both gaps.
+problem as an open problem.  We close both gaps.
 
 \begin{theorem}[Obligatory testing, informal version of
 \protect\cref{thm:det-obligatory,thm:rand-obligatory}]
@@ -56,8 +51,7 @@ randomized ratio is $\RrandOT=4/3$.  The two optimal policies are sketched in
 
 Here and below, \emph{shortest first} means processing revealed jobs in
 nondecreasing order of $p_i$.  The following pseudocode gives a little more
-detail about the two policies.  The formulas are not meant to be memorable;
-the shape of the algorithms is.
+detail about the two policies.  The formulas are not meant to be memorable.
 
 \noindent
 \begin{minipage}[t]{0.485\textwidth}
@@ -110,25 +104,16 @@ deferring them otherwise.
 Both algorithms follow the same principle: process short jobs as soon as
 possible and leave long jobs for the end.  The difficult part is choosing the
 threshold.  A deterministic algorithm has no representative view of the
-unseen jobs, so its threshold has to change with the history.  The exact
+unseen jobs; this makes its decisions more complicated and, in fact, its threshold has to change with the history.  The exact
 update is given in steps 3 and 4 of
-\cref{alg:intro-obligatory-det}.  The lower bound explains this moving
-threshold.  It reveals positive jobs in decreasing levels while hiding many
-zero jobs until the end.  Processing a positive level immediately delays the
-hidden zeros; postponing it instead creates a costly tail.  The levels can be
-chosen so that these two losses balance at $1.57\ldots$; the formal
-construction is the cap-free core in \cref{sec:lower}, and
-\cref{sec:obligatory} transfers the resulting plateau to obligatory testing.
+\cref{alg:intro-obligatory-det}.  There is a matching lower bound in \cref{sec:lower} in which the adversary reveals positive jobs with decreasing values of $p_i$ while hiding many zero jobs until the end. 
 
 Randomization gives the algorithm a global view of the input.  It first tests
-a sublinear random sample and estimates the distribution of job lengths.
-This costs only $o(n^2)$ and therefore does not change the asymptotic ratio.
-Up to a small estimation error, the algorithm now knows the remaining input
-distribution and can keep one fixed threshold for the rest of the schedule.  The
-earlier obligatory-testing work studied deterministic algorithms and
-explicitly left randomization open~\cite{DogeasErlebachLiang2024}.
+a sublinear random sample and estimates the distribution of job lengths. This substantially simplifies the argument -- using the law of large numbers, we can see that the distribution of lengths of remaining jobs will likely remain relatively stable during the execution of the algorithm, and similar to what the algorithm observed by sampling. Hence, our algorithm is basically in the same situation all the time, which intuitively explains why it's also more straightforward -- the same threshold works throughout the execution. 
 
-The matching randomized lower bound is correspondingly simple.  Half of the
+The concrete choice of the threshold can be understood as follows. During the main phase of the algorithm, it finishes $n \codt a(t)$ jobs (those that are below the threshold) at the cost of $n + n \cdot m(t)$ (each job is tested and short ones are executed). Thus, we are simply optimizing the average time it takes the algorithm to finish a job.  
+
+The matching randomized lower bound is correspondingly simple: Half of the
 jobs have length zero and half have length two, and their labels are shuffled.
 Until the shuffle is uncovered, one unit of work completes only about half a
 job.  Counting the area under the number of unfinished jobs gives the lower
@@ -140,15 +125,14 @@ bound $4/3$.  The formal argument is in \cref{sec:random-obligatory}.
 Let us return to \cref{alg:intro-obligatory-rand}.  The ratio $4/3$ describes
 only the hardest input.  It says much less on an easy one.  Suppose, for
 example, that all processing times are very large compared with the unit
-test.  Then the simple strategy that first tests everything and subsequently
-runs the jobs shortest first is nearly optimal.  A worst-case guarantee still
+test (perhaps a likely scenario in many situations!).  Then the straightforward strategy that first tests everything and subsequently
+runs the jobs shortest first is nearly optimal.  But the worst-case guarantee of alg2 still
 tells us only that our cost is at most $1.33\ldots$ times the optimum.
 
-A slight variant\footnote{ The variant maximizes
-over thresholds up to $O(n^{1/20})$, rather than up to a fixed constant.  It
-is still worst-case optimal, with competitive ratio $4/3$; we presented the
+However, we show that a slight variant\footnote{ The variant maximizes
+over thresholds up to $O(n^{1/20})$, rather than up to a fixed constant. This instance-optimal algoritihm is naturally also worst-case optimal, with competitive ratio $4/3$.  We presented the
 fixed-cutoff algorithm first because its worst-case analysis is simpler.} of \cref{alg:intro-obligatory-rand} satisfies a much stronger
-per-input guarantee: it is \emph{instance-optimal}.
+per-input guarantee: it is \emph{instance-optimal} if we bound the maximum length of a job. 
 
 \begin{theorem}[Obligatory-testing instance optimality, informal version of
 \protect\cref{thm:obligatory-instance}]
@@ -161,7 +145,7 @@ $M\subseteq[0,L]$ and every online algorithm $\mathcal A'$,
 \]
 where both costs are measured on $M$ and include the algorithms' randomness.
 The competing algorithm $\mathcal A'$ may even be designed specifically for
-$M$ and told the entire multiset in advance, though not its assignment to
+$M$ and told the entire input multiset in advance, though not its assignment to
 the public labels.
 \end{theorem}
 
@@ -180,7 +164,7 @@ algorithm, but also with algorithms optimized for this particular $M$.
 Allowing $\mathcal A'$ to know $M$ makes this strongest possible online
 benchmark explicit.
 
-Hence, the existence of some instance-optimal algorithm is perhaps not so
+The existence of some instance-optimal algorithm is perhaps not so
 surprising.  One could imagine a meta-algorithm that samples the input to
 estimate $M$ and then runs an optimal policy for that estimate.  The
 substantive part of the theorem is that no complicated meta-algorithm is
@@ -199,16 +183,14 @@ two different benefits.  It may reveal the true running time $p_i$ before the
 job is run.  It may also be an optimization procedure that replaces a common
 raw running time $u$ by a shorter time $p_i\leq u$.  For example, a generic
 piece of code solves every task within time $u$, but an AI agent can spend one
-unit adapting the code to a particular input and make it faster.
+unit of time adapting the code to a particular input and make it faster.
 
 These two benefits are independent.  An optimization may reveal its new
 running time $p_i$, giving the scheduler both a faster job and information
 about where the job belongs.  Or it may leave $p_i$ hidden until the optimized
 job finishes.
 
-These choices give the following four models.  The table is a summary rather
-than four new sets of notation; in every row, the preliminary action in the
-third column costs one unit of machine time.
+These choices give the following four models.  
 
 \begin{center}
 \small
@@ -216,7 +198,7 @@ third column costs one unit of machine time.
 \renewcommand{\arraystretch}{1.12}
 \begin{tabular}{@{}|L{0.18\linewidth}|L{0.24\linewidth}|L{0.34\linewidth}|L{\dimexpr0.24\linewidth-8\tabcolsep-5\arrayrulewidth\relax}|@{}}
 \hline
-model & without a test & what the unit action does & where discussed \\
+model & without a test, job... & the unit action... & where discussed \\
 \hline
 obligatory testing & cannot be run & reveals $p_i$ and unlocks the job
  & Intro~\ref{sec:intro-obligatory};
@@ -235,23 +217,13 @@ revealing optimization & runs for raw time $u$ & reveals $p_i$ and replaces $u$ 
 \end{center}
 
 The last three rows separate the two benefits of the unit preliminary action.
-Blind execution studies information without speedup.  Blind optimization
-studies speedup without advance information.  Revealing optimization contains
-both benefits.  This model was introduced by D{\"u}rr et
-al.~\cite{DurrErlebachMegowMeissner2020}.  Blind execution is an
-adversarial-input counterpart of stochastic scheduling with testing
-~\cite{LeviMagnantiShaposhnik2019}; its closest earlier adversarial relative
-is the binary processing-time oracle of Dufoss{\'e} et
-al.~\cite{DufosseEtAl2022}.  Blind optimization is
-closest to the non-revealing optimization studied by Damerius et
-al.~\cite{DameriusEtAl2023}, although their optimization consumes a separate
-budget rather than machine time.
+Blind execution (similar model was studied in \cite{LeviMagnantiShaposhnik2019}) studies information without speedup.  Blind optimization
+(similar model was introduced in ~\cite{DameriusEtAl2023}) studies speedup without advance information.  
+Revealing optimization (introduced by \cite{DurrErlebachMegowMeissner2020}) contains both benefits. 
 
-The three optional models have different optimal policies and different
-input-specific benchmarks.  We therefore state their results separately.  The
-algorithms nevertheless share one simple design principle: privately shuffle
-the jobs, use a sublinear sample to estimate the input distribution, and optimize the rest of
-the schedule as if that estimate were exact.
+The three optional models have somewhat different optimal policies and different
+input-specific benchmarks.  We therefore state their results separately.  The randomized algorithms nevertheless share one simple design principle: privately shuffle
+the jobs, use a sublinear sample to estimate the input distribution, and optimize the rest of the schedule based on that information.
 
 \subsection{Information without speedup: blind execution}
 \label{sec:intro-blind}
@@ -263,8 +235,7 @@ it only tells us $p_i$ before we decide when to run it.  We call this
 
 Without an upper bound on the job lengths, no randomized algorithm has a
 finite competitive ratio, even if we ignore an additive $o(n^2)$ term; see
-\cref{thm:blind-unbounded-impossible}.  For every fixed bound $L$, however,
-sampling again gives one algorithm that is optimal on every bounded multiset.
+\cref{thm:blind-unbounded-impossible} for the simple example.  For every fixed bound $L$, however, sampling again gives one algorithm that is optimal on every bounded multiset.
 
 
 \begin{theorem}[Blind-execution instance optimality, informal version of
