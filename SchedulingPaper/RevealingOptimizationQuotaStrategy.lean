@@ -3,6 +3,8 @@ import SchedulingPaper.RandomizedOptionalStrategy
 import SchedulingPaper.HiddenStoppingGlobalExchange
 import SchedulingPaper.FixedTestProcessCompletion
 import SchedulingPaper.LowBaseline
+import SchedulingPaper.TestProcessPairShape
+import SchedulingPaper.TestProcessPolicyAccounting
 import Mathlib.Tactic
 
 /-!
@@ -55,12 +57,119 @@ def randomizedQuotaStrategy (n q : ℕ) (low : ℝ → Bool) :
 
 /-! ## Reachability invariant -/
 
+/-- Exact owner-only lifecycle word at every reachable configuration. -/
+def SelfProjectionInvariant
+    (processing : Online.Label n → ℝ) (config : Online.Config n) : Prop :=
+  ∀ job,
+    match config.jobs job with
+    | .untouched => config.transcript.pairProjection job job = []
+    | .tested p => config.transcript.pairProjection job job =
+        [.testResult job p]
+    | .done =>
+        config.transcript.pairProjection job job = [.rawCompleted job] ∨
+          ∃ p, config.transcript.pairProjection job job =
+            [.testResult job p, .processed job]
+
+theorem initial_selfProjectionInvariant
+    (processing : Online.Label n → ℝ) :
+    SelfProjectionInvariant processing (Online.Config.initial n) := by
+  intro job
+  simp [SelfProjectionInvariant, Online.Config.initial,
+    Online.Transcript.pairProjection]
+
+theorem selfProjectionInvariant_step
+    {processing : Online.Label n → ℝ} {config next : Online.Config n}
+    {action : Online.Action n}
+    (hself : SelfProjectionInvariant processing config)
+    (hstep : config.step (.finite u) (Online.fixedOracle processing) action =
+      some next) :
+    SelfProjectionInvariant processing next := by
+  cases action with
+  | test testedJob =>
+      cases hstate : config.jobs testedJob with
+      | tested p => simp [Online.Config.step, hstate] at hstep
+      | done => simp [Online.Config.step, hstate] at hstep
+      | untouched =>
+          simp [Online.Config.step, hstate, Online.fixedOracle] at hstep
+          subst next
+          intro job
+          by_cases heq : job = testedJob
+          · subst job
+            have hold := hself testedJob
+            rw [hstate] at hold
+            simp only [Function.update, if_pos rfl]
+            rw [Online.Transcript.pairProjection_append, hold]
+            simp [Online.Transcript.pairProjection,
+              Online.Observation.ownerLabel]
+          · have hold := hself job
+            have hrev : testedJob ≠ job := Ne.symm heq
+            have hsingle : Online.Transcript.pairProjection job job
+                ([.testResult testedJob (processing testedJob)] :
+                  Online.Transcript n) = [] := by
+              simp [Online.Transcript.pairProjection,
+                Online.Observation.ownerLabel, heq, hrev]
+            simpa [Function.update, heq, hrev,
+              Online.Transcript.pairProjection_append, hsingle] using hold
+  | process processedJob =>
+      cases hstate : config.jobs processedJob with
+      | untouched => simp [Online.Config.step, hstate] at hstep
+      | done => simp [Online.Config.step, hstate] at hstep
+      | tested p =>
+          simp [Online.Config.step, hstate] at hstep
+          subst next
+          intro job
+          by_cases heq : job = processedJob
+          · subst job
+            have hold := hself processedJob
+            rw [hstate] at hold
+            simp only [Function.update, if_pos rfl]
+            right
+            refine ⟨p, ?_⟩
+            rw [Online.Transcript.pairProjection_append, hold]
+            simp [Online.Transcript.pairProjection,
+              Online.Observation.ownerLabel]
+          · have hold := hself job
+            have hrev : processedJob ≠ job := Ne.symm heq
+            have hsingle : Online.Transcript.pairProjection job job
+                ([.processed processedJob] : Online.Transcript n) = [] := by
+              simp [Online.Transcript.pairProjection,
+                Online.Observation.ownerLabel, heq, hrev]
+            simpa [Function.update, heq, hrev,
+              Online.Transcript.pairProjection_append, hsingle] using hold
+  | raw rawJob =>
+      cases hstate : config.jobs rawJob with
+      | tested p => simp [Online.Config.step, hstate] at hstep
+      | done => simp [Online.Config.step, hstate] at hstep
+      | untouched =>
+          simp [Online.Config.step, hstate] at hstep
+          subst next
+          intro job
+          by_cases heq : job = rawJob
+          · subst job
+            have hold := hself rawJob
+            rw [hstate] at hold
+            simp only [Function.update, if_pos rfl]
+            left
+            rw [Online.Transcript.pairProjection_append, hold]
+            simp [Online.Transcript.pairProjection,
+              Online.Observation.ownerLabel]
+          · have hold := hself job
+            have hrev : rawJob ≠ job := Ne.symm heq
+            have hsingle : Online.Transcript.pairProjection job job
+                ([.rawCompleted rawJob] : Online.Transcript n) = [] := by
+              simp [Online.Transcript.pairProjection,
+                Online.Observation.ownerLabel, heq, hrev]
+            simpa [Function.update, heq, hrev,
+              Online.Transcript.pairProjection_append, hsingle] using hold
+
 structure Config.Invariant
     (processing : Online.Label n → ℝ) (q : ℕ)
     (config : Online.Config n) : Prop where
   started : config.StartedHistoryInvariant
   process : config.ProcessHistoryInvariant
   testsMatch : config.transcript.TestsMatch processing
+  testOrder : config.transcript.testResults.map (fun result => result.1.val) =
+    List.range config.transcript.testResults.length
   touchOrder : config.transcript.startedLabels.map Fin.val =
     List.range config.transcript.startedLabels.length
   testBound : config.transcript.testResults.length ≤ q
@@ -68,6 +177,7 @@ structure Config.Invariant
     config.transcript.startedLabels.length =
       config.transcript.testResults.length
   completion : config.FixedCompletionInvariant processing
+  selfProjection : SelfProjectionInvariant processing config
 
 theorem Config.initial_invariant
     (processing : Online.Label n → ℝ) (q : ℕ) :
@@ -78,6 +188,7 @@ theorem Config.initial_invariant
   · exact Online.Config.initial_startedHistoryInvariant n
   · exact Online.Config.initial_processHistoryInvariant n
   · exact Online.Config.initial_fixedCompletionInvariant processing
+  · exact initial_selfProjectionInvariant processing
 
 theorem Config.Invariant.touchBound
     {processing : Online.Label n → ℝ} {q : ℕ}
@@ -216,6 +327,15 @@ theorem Config.Invariant.afterTest
       hgood.started hlegal
   · exact Online.Config.step_preserves_testsMatch (.finite u) processing
       hgood.testsMatch hlegal
+  · simp only [Online.Transcript.testResults_append_testResult,
+      List.map_append, List.map_singleton, List.length_append,
+      List.length_singleton]
+    have hjobValue : job.val = config.transcript.testResults.length := by
+      rw [hvalue, hgood.beforeQuota hquota]
+    rw [hjobValue, hgood.testOrder]
+    simpa [Nat.add_comm] using
+      (List.range_succ
+        (n := config.transcript.testResults.length)).symm
   · simp only [Online.Transcript.startedLabels_append_testResult,
       List.map_append, List.map_singleton, List.length_append,
       List.length_singleton]
@@ -234,6 +354,7 @@ theorem Config.Invariant.afterTest
   · exact Online.Config.fixedCompletionInvariant_step_of_tested_value
       (.finite u) processing (fun hstate =>
         hgood.tested_value_eq_fixed hstate) hgood.completion hlegal
+  · exact selfProjectionInvariant_step hgood.selfProjection hlegal
 
 theorem Config.Invariant.afterProcess
     {processing : Online.Label n → ℝ} {q : ℕ}
@@ -253,6 +374,7 @@ theorem Config.Invariant.afterProcess
       hgood.started hlegal
   · exact Online.Config.step_preserves_testsMatch (.finite u) processing
       hgood.testsMatch hlegal
+  · simpa using hgood.testOrder
   · simpa using hgood.touchOrder
   · simpa using hgood.testBound
   · intro hlt
@@ -262,6 +384,7 @@ theorem Config.Invariant.afterProcess
   · exact Online.Config.fixedCompletionInvariant_step_of_tested_value
       (.finite u) processing (fun hstate =>
         hgood.tested_value_eq_fixed hstate) hgood.completion hlegal
+  · exact selfProjectionInvariant_step hgood.selfProjection hlegal
 
 theorem Config.Invariant.afterRaw
     {processing : Online.Label n → ℝ} {q : ℕ}
@@ -285,6 +408,7 @@ theorem Config.Invariant.afterRaw
       hgood.started hlegal
   · exact Online.Config.step_preserves_testsMatch (.finite u) processing
       hgood.testsMatch hlegal
+  · simpa using hgood.testOrder
   · simp only [Online.Transcript.startedLabels_append_rawCompleted,
       List.map_append, List.map_singleton, List.length_append,
       List.length_singleton]
@@ -299,6 +423,7 @@ theorem Config.Invariant.afterRaw
   · exact Online.Config.fixedCompletionInvariant_step_of_tested_value
       (.finite u) processing (fun hstate =>
         hgood.tested_value_eq_fixed hstate) hgood.completion hlegal
+  · exact selfProjectionInvariant_step hgood.selfProjection hlegal
 
 /-! ## Work-rank termination -/
 
@@ -514,6 +639,117 @@ theorem runFuel_quotaStrategy_completed
         simp only [Online.runFuel, hchosen, hlegal]
         apply ih next hnextGood
         omega
+
+/-! ## Exact terminal quota and owner words -/
+
+theorem Config.Invariant.startedLabels_length_eq_of_done
+    {processing : Online.Label n → ℝ} {q : ℕ}
+    {config : Online.Config n} (hgood : Invariant processing q config)
+    (hdone : ∀ job, config.jobs job = .done) :
+    config.transcript.startedLabels.length = n := by
+  have hall : ∀ job : Online.Label n,
+      job ∈ config.transcript.startedLabels := by
+    intro job
+    exact hgood.process.nonuntouchedStarted job (by simp [hdone job])
+  have hcard : config.transcript.startedLabels.toFinset.card = n := by
+    apply Nat.le_antisymm
+    · rw [List.toFinset_card_of_nodup hgood.started.nodup]
+      exact hgood.touchBound
+    · have hsubset : (Finset.univ : Finset (Online.Label n)) ⊆
+          config.transcript.startedLabels.toFinset := by
+        intro job _
+        simpa using hall job
+      simpa using Finset.card_le_card hsubset
+  simpa [List.toFinset_card_of_nodup hgood.started.nodup] using hcard
+
+theorem Config.Invariant.testResults_length_eq_quota_of_done
+    {processing : Online.Label n → ℝ} {q : ℕ} (hq : q ≤ n)
+    {config : Online.Config n} (hgood : Invariant processing q config)
+    (hdone : ∀ job, config.jobs job = .done) :
+    config.transcript.testResults.length = q := by
+  apply Nat.le_antisymm hgood.testBound
+  by_contra hnot
+  have hlt : config.transcript.testResults.length < q :=
+    Nat.lt_of_not_ge hnot
+  have hbefore := hgood.beforeQuota hlt
+  have hstarted := hgood.startedLabels_length_eq_of_done hdone
+  omega
+
+theorem Config.Invariant.testResult_mem_iff_val_lt_of_done
+    {processing : Online.Label n → ℝ} {q : ℕ} (hq : q ≤ n)
+    {config : Online.Config n} (hgood : Invariant processing q config)
+    (hdone : ∀ job, config.jobs job = .done)
+    (job : Online.Label n) :
+    (∃ p, (job, p) ∈ config.transcript.testResults) ↔ job.val < q := by
+  have hlength := hgood.testResults_length_eq_quota_of_done hq hdone
+  constructor
+  · rintro ⟨p, hmem⟩
+    have hval : job.val ∈ config.transcript.testResults.map
+        (fun result => result.1.val) :=
+      List.mem_map.mpr ⟨(job, p), hmem, rfl⟩
+    rw [hgood.testOrder, hlength] at hval
+    simpa using hval
+  · intro hlt
+    have hval : job.val ∈ config.transcript.testResults.map
+        (fun result => result.1.val) := by
+      rw [hgood.testOrder, hlength]
+      simpa using hlt
+    obtain ⟨result, hmem, hvalue⟩ := List.mem_map.mp hval
+    rcases result with ⟨label, p⟩
+    have hlabel : label = job := Fin.ext hvalue
+    subst label
+    exact ⟨p, hmem⟩
+
+theorem Config.Invariant.selfProjection_eq_terminalWord
+    {processing : Online.Label n → ℝ} {q : ℕ} (hq : q ≤ n)
+    {config : Online.Config n} (hgood : Invariant processing q config)
+    (hdone : ∀ job, config.jobs job = .done)
+    (job : Online.Label n) :
+    config.transcript.pairProjection job job =
+      if job.val < q then
+        [.testResult job (processing job), .processed job]
+      else [.rawCompleted job] := by
+  have hword := hgood.selfProjection job
+  rw [hdone job] at hword
+  by_cases hlt : job.val < q
+  · rw [if_pos hlt]
+    obtain ⟨p, htest⟩ :=
+      (hgood.testResult_mem_iff_val_lt_of_done hq hdone job).mpr hlt
+    rcases hword with hraw | ⟨value, htested⟩
+    · have hobservation :
+          Online.Observation.testResult job p ∈ config.transcript :=
+        (Online.testResult_mem_iff_observation_mem
+          config.transcript job p).mp htest
+      have hprojection : Online.Observation.testResult job p ∈
+          config.transcript.pairProjection job job :=
+        List.mem_filter.mpr ⟨hobservation, by
+          simp [Online.Observation.ownerLabel]⟩
+      rw [hraw] at hprojection
+      simp at hprojection
+    · have hvalue : value = processing job :=
+        hgood.testsMatch job value (by
+          apply (Online.testResult_mem_iff_observation_mem
+            config.transcript job value).mpr
+          have hprojection : Online.Observation.testResult job value ∈
+              config.transcript.pairProjection job job := by
+            rw [htested]
+            simp
+          exact (List.mem_filter.mp hprojection).1)
+      simpa [hvalue] using htested
+  · rw [if_neg hlt]
+    rcases hword with hraw | ⟨value, htested⟩
+    · exact hraw
+    · have hprojection : Online.Observation.testResult job value ∈
+          config.transcript.pairProjection job job := by
+        rw [htested]
+        simp
+      have hobservation : Online.Observation.testResult job value ∈
+          config.transcript := (List.mem_filter.mp hprojection).1
+      have htest : (job, value) ∈ config.transcript.testResults :=
+        (Online.testResult_mem_iff_observation_mem
+          config.transcript job value).mpr hobservation
+      exact (hlt ((hgood.testResult_mem_iff_val_lt_of_done hq hdone job).mp
+        ⟨value, htest⟩)).elim
 
 /-- Every fixed quota template legally completes all jobs in the common
 `2n+1` analysis fuel. -/

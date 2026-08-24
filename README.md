@@ -158,4 +158,6 @@ universal-policy development additionally contains the model-specific
 learnable grid templates, their uniform histogram Lipschitz and empirical
 minimization bounds, an executable mixed test/process/raw quota strategy with
 proved termination and exact completion labels, and its bounded finite
-random-placement pair kernel.
+random-placement pair kernel.  The canonical-trace layer now proves the
+literal strategy's exact one- and two-label projection grammar and identifies
+its completion cost exactly with that kernel (including stable SPT ties).
