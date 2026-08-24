@@ -59,6 +59,8 @@ Here and below, \emph{shortest first} means processing revealed jobs in
 nondecreasing order of $p_i$.  The following pseudocode gives a little more
 detail about the two policies.  The formulas are not meant to be memorable.
 
+
+[dej tyhle dva algoritmy normalne pod sebe]
 \noindent
 \begin{minipage}[t]{0.485\textwidth}
 \vspace{0pt}
@@ -87,15 +89,13 @@ positive jobs processed immediately and $d_i$ the number deferred.
 \caption{Learned randomized threshold $\mathcal A_n^*$}
 \label{alg:intro-obligatory-rand}
 \begin{algorithmic}
-\State Set $B_n=32+n^{1/20}$ and $k=\lfloor n^{3/4}\rfloor$.  Shuffle the
-jobs and test $k$ of them to estimate the distribution $\widehat D$ of the
-job length $X$.
+\State Set $B_n=O(n^{1/20})$ and test $O(n^{3/4})$ random jobs to estimate the distribution $X \sim \widehat D$ of the
+job length.
 \State For each candidate threshold $0\le t\le B_n$, put
 \[
  \begin{aligned}
-  a(t)&=\Pr(X\le t),\\
+  a(t)&=\Pr(X\le t), 
   m(t)&=\mathbb E[X\mathbf 1_{X\le t}]
-  \qquad (X\sim\widehat D),
  \end{aligned}
 \]
 and define
@@ -104,8 +104,7 @@ and define
  =\min_{\substack{0\le t\le B_n\\a(t)>0}}
    \frac{1+m(t)}{a(t)}.
 \]
-\State If the minimum is over an empty set, put $\widehat\tau=\infty$.
-\State If $\widehat\tau>B_n/2$, test every remaining job and then finish all
+\State If $\widehat\tau>B_n$, test every remaining job and then finish all
 revealed jobs shortest first.
 \State Otherwise process the sampled jobs with $p\le\widehat\tau$.  Keep
 testing jobs, processing them immediately when $p\le\widehat\tau$ and
@@ -288,8 +287,8 @@ $\mathcal A'$,
 \]
 \end{theorem}
 
-To describe the algorithm, let $\widehat D$ be the estimated distribution,
-let $P\sim\widehat D$, and put $\widehat\mu=\mathbb E P$.  As in
+To describe the algorithm, let $X$ be the estimated distribution of job lenths with distribution $\widehat D$. 
+Put $\widehat\mu=\mathbb E X$.  As in
 \cref{alg:intro-obligatory-rand}, define
 \[
  a(t)=\Pr(P\le t),\qquad
@@ -297,14 +296,14 @@ let $P\sim\widehat D$, and put $\widehat\mu=\mathbb E P$.  As in
  \qquad
  \widehat\tau
  =\min_{\substack{t\ge0\\a(t)>0}}\frac{1+m(t)}{a(t)}.
-\]
-Equivalently, $\widehat\tau$ is determined by
-$\mathbb E(\widehat\tau-P)^+=1$.  Testing is initially worthwhile precisely
-when $\widehat\tau<\widehat\mu$: its best test-and-process module then has
-less work per completion than blind execution.  Even in this case, it need
-not be optimal to test the entire input.  The leading cost of testing a
-fraction $q$ is the explicit quadratic $F_{\mathsf{BE},\widehat D}(q)$ from
-\cref{eq:blind-F}, and the algorithm minimizes it over $0\le q\le1$.
+\] [tady vsude chci X]
+
+The optimal algorithm is however more complicated than alg2 since in some cases the blind execution of jobs is the best strategy. There are situations where the blind execution of all the jobs (after initial subsample) simply wins, but there are even more subtle situations where it helps. 
+
+To see a concrete example, consider the previous alg2 that computes a threshold and then executes jobs with $p$ less than it and postpones the rest. Imagine there are only two lengths of jobs, short that are being executed and long that need to wait. What happens when the last tested job arrives? If it's short, we want to execute it now, while if it's long, we want to add it to the list of long jobs we will execute in arbitrary order next. Hence, it's optimal to execute this job right now anyway, and no testing is needed to know that!
+
+In general, the optimal algorithm tests only a certain fraction $q$ of jobs against the threshold $\tau$ computed as in alg2. Then, it runs the rest of them blindly. Just before that, we also run all the postponed jobs with $p \le \hat\mu$ since those will finish faster than remaining untested jobs; jobs with $p > \hat\mu$ are left until the very end. The right threshold $q$ is computed by a concrete optimization problem postponed to section XX. 
+
 
 \begin{algorithm}[H]
 \caption{Instance-optimal blind execution}
@@ -326,10 +325,6 @@ $\widehat\tau\le p<\widehat\mu$, shortest first.
 \end{algorithmic}
 \end{algorithm}
 
-The block between testing and blind execution is important.  A job can be too
-long to interrupt the test phase and still be shorter than an untouched job
-on average.  Such a job waits until testing stops and is then processed before
-the blind block.
 
 
 \subsection{Blind optimization}
