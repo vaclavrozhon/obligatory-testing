@@ -986,6 +986,448 @@ theorem finiteExpectation_empiricalOfflineCost_binary
     BlindOptimization.RandomizedCompiler.finiteExpectation_binary_offlineCost
       (binaryEffectiveHigh_gt_one hu hpositive)
 
+@[simp] theorem binaryEffectiveHigh_self (u : ℝ) :
+    binaryEffectiveHigh u u = u := by
+  unfold binaryEffectiveHigh
+  rw [min_eq_left (by linarith : u - 1 ≤ u)]
+  ring
+
+theorem binaryEffectiveHigh_eq_add_one
+    {u positive : ℝ} (hpositive : positive ≤ u - 1) :
+    binaryEffectiveHigh u positive = 1 + positive := by
+  unfold binaryEffectiveHigh
+  rw [min_eq_right hpositive]
+
+/-! ## Actual finite runs and weighted Yao selection -/
+
+/-- The literal bounded-fuel run on a revealing binary instance. -/
+def binaryRun (u positive : ℝ) (strategy : Online.Strategy n)
+    (input : BinaryInput n) : Online.RunResult n :=
+  Online.run (.finite u)
+    (Online.fixedOracle (RandomizedYao.binaryProcessing positive input))
+    strategy (2 * n + 1)
+
+/-- Completion cost of `binaryRun`, without any surrogate objective. -/
+def binaryRunCost (u positive : ℝ) (strategy : Online.Strategy n)
+    (input : BinaryInput n) : ℝ :=
+  Online.runCompletionCost (.finite u)
+    (RandomizedYao.binaryProcessing positive input)
+    (binaryRun u positive strategy input)
+
+/-- A strategy completes every job on every assignment from one binary
+family within the canonical `2n+1` fuel bound. -/
+def CompletesBinary (u positive : ℝ) (strategy : Online.Strategy n) : Prop :=
+  ∀ input job, (binaryRun u positive strategy input).config.jobs job = .done
+
+theorem compileInitial_cost_eq_binaryRunCost
+    (strategy : Online.Strategy n) {u positive : ℝ}
+    (hpositive : positive ≠ 0) (input : BinaryInput n)
+    (hcomplete : CompletesBinary u positive strategy) :
+    (compileInitial strategy positive).cost u positive input =
+      binaryRunCost u positive strategy input := by
+  exact compileInitial_cost_eq_runCompletionCost strategy hpositive input
+    (hcomplete input)
+
+/-- Weighted Bernoulli expectation commutes with a finite private-seed
+average. -/
+theorem finiteExpectation_uniformAverage_comm
+    {Inputs Seeds : Type*} [Fintype Inputs]
+    [Fintype Seeds] [Nonempty Seeds]
+    (weight : Inputs → ℝ) (cost : Inputs → Seeds → ℝ) :
+    Randomized.finiteExpectation weight
+        (fun input => Randomized.uniformAverage fun seed => cost input seed) =
+      Randomized.uniformAverage fun seed =>
+        Randomized.finiteExpectation weight fun input => cost input seed := by
+  unfold Randomized.finiteExpectation Randomized.uniformAverage
+  calc
+    (∑ input, weight input *
+        ((∑ seed, cost input seed) / Fintype.card Seeds)) =
+        (∑ input, ∑ seed, weight input * cost input seed) /
+          Fintype.card Seeds := by
+      rw [Finset.sum_div]
+      apply Finset.sum_congr rfl
+      intro input _
+      rw [← Finset.mul_sum, mul_div_assoc]
+    _ = (∑ seed, ∑ input, weight input * cost input seed) /
+          Fintype.card Seeds := by
+      rw [Finset.sum_comm]
+
+/-- Ratio form of weighted finite Yao selection.  It differs from selecting
+only a large numerator: the benchmark may vary with the chosen input. -/
+theorem bernoulli_yao_select_ratio
+    {n : ℕ} {b : ℝ} (hb0 : 0 ≤ b) (hb1 : b ≤ 1)
+    {Seeds : Type*} [Fintype Seeds] [Nonempty Seeds]
+    (cost : BinaryInput n → Seeds → ℝ) (opt : BinaryInput n → ℝ)
+    {L O c : ℝ}
+    (hcost : L ≤ Randomized.finiteExpectation (bernoulliWeight n b)
+      (fun input => Randomized.uniformAverage fun seed => cost input seed))
+    (hopt : Randomized.finiteExpectation (bernoulliWeight n b) opt = O)
+    (hcompare : c * O ≤ L) :
+    ∃ input, c * opt input ≤
+      Randomized.uniformAverage fun seed => cost input seed := by
+  have hjoint : (0 : ℝ) ≤
+      Randomized.finiteExpectation (bernoulliWeight n b)
+        (fun input => Randomized.uniformAverage fun seed =>
+          cost input seed - c * opt input) := by
+    have hsplit : Randomized.finiteExpectation (bernoulliWeight n b)
+        (fun input => Randomized.uniformAverage fun seed =>
+          cost input seed - c * opt input) =
+      Randomized.finiteExpectation (bernoulliWeight n b)
+        (fun input => Randomized.uniformAverage fun seed => cost input seed) +
+      (-c) * Randomized.finiteExpectation (bernoulliWeight n b) opt := by
+      calc
+        Randomized.finiteExpectation (bernoulliWeight n b)
+            (fun input => Randomized.uniformAverage fun seed =>
+              cost input seed - c * opt input) =
+          Randomized.finiteExpectation (bernoulliWeight n b)
+            (fun input =>
+              Randomized.uniformAverage (fun seed => cost input seed) +
+                (-c) * opt input) := by
+            congr 1
+            funext input
+            rw [show (fun seed => cost input seed - c * opt input) =
+                (fun seed => cost input seed + (-(c * opt input))) by
+                  funext seed
+                  ring,
+              Randomized.uniformAverage_add,
+              Randomized.uniformAverage_const]
+            ring
+        _ = Randomized.finiteExpectation (bernoulliWeight n b)
+              (fun input => Randomized.uniformAverage fun seed => cost input seed) +
+            Randomized.finiteExpectation (bernoulliWeight n b)
+              (fun input => (-c) * opt input) := by
+          rw [Randomized.finiteExpectation_add]
+        _ = _ := by
+          rw [Randomized.finiteExpectation_smul]
+    rw [hsplit, hopt]
+    linarith
+  obtain ⟨input, hinput⟩ :=
+    BlindOptimization.RandomizedLower.bernoulli_yao_select_fixed_input
+      hb0 hb1 (fun input seed => cost input seed - c * opt input) hjoint
+  refine ⟨input, ?_⟩
+  have hsplit : Randomized.uniformAverage (fun seed =>
+      cost input seed - c * opt input) =
+      Randomized.uniformAverage (fun seed => cost input seed) - c * opt input := by
+    rw [show (fun seed => cost input seed - c * opt input) =
+        (fun seed => cost input seed + (-(c * opt input))) by
+          funext seed
+          ring,
+      Randomized.uniformAverage_add, Randomized.uniformAverage_const]
+    ring
+  rw [hsplit] at hinput
+  linarith
+
+/-- The exact finite Bernoulli offline denominator is strictly positive. -/
+theorem binaryExpectedOfflineCost_pos
+    {n : ℕ} (hn : 0 < n) {high b : ℝ}
+    (hhigh : 1 < high) (hb0 : 0 ≤ b) :
+    0 < BlindOptimization.RandomizedLower.binaryExpectedOfflineCost n high b := by
+  let pair := 1 + (high - 1) * b ^ 2
+  let diagonal := 1 + (high - 1) * b
+  have hnR : 0 < (n : ℝ) := by exact_mod_cast hn
+  have hnOne : (1 : ℝ) ≤ n := by
+    exact_mod_cast (show 1 ≤ n by omega)
+  have hpair : 0 < pair := by
+    dsimp [pair]
+    have : 0 ≤ (high - 1) * b ^ 2 :=
+      mul_nonneg (by linarith) (sq_nonneg b)
+    linarith
+  have hdiagonal : 0 < diagonal := by
+    dsimp [diagonal]
+    have : 0 ≤ (high - 1) * b := mul_nonneg (by linarith) hb0
+    linarith
+  have hrewrite :
+      BlindOptimization.RandomizedLower.binaryExpectedOfflineCost n high b =
+        (n : ℝ) * ((n : ℝ) - 1) / 2 * pair + (n : ℝ) * diagonal := by
+    dsimp [pair, diagonal]
+    unfold BlindOptimization.RandomizedLower.binaryExpectedOfflineCost
+    ring
+  rw [hrewrite]
+  exact add_pos_of_nonneg_of_pos
+    (mul_nonneg
+      (div_nonneg (mul_nonneg hnR.le (sub_nonneg.mpr hnOne)) (by norm_num))
+      hpair.le)
+    (mul_pos hnR hdiagonal)
+
+/-- Expected operational lower bound for family B, with private seeds moved
+inside the Bernoulli expectation. -/
+theorem familyB_operational_finiteSeed_expected_lower
+    {n : ℕ} {Seeds : Type*} [Fintype Seeds] [Nonempty Seeds]
+    (strategy : Seeds → Online.Strategy n)
+    {u τ : ℝ} (hu : 1 < u) (hτ : 1 ≤ τ) (hτu : τ ≤ u)
+    (hcomplete : ∀ seed, CompletesBinary u u (strategy seed)) :
+    (n : ℝ) ^ 2 / 2 *
+        (familyB u τ * (1 + (u - 1) * survivalMass τ ^ 2)) ≤
+      Randomized.finiteExpectation (bernoulliWeight n (survivalMass τ))
+        (fun input => Randomized.uniformAverage fun seed =>
+          binaryRunCost u u (strategy seed) input) := by
+  rw [finiteExpectation_uniformAverage_comm]
+  calc
+    (n : ℝ) ^ 2 / 2 *
+          (familyB u τ * (1 + (u - 1) * survivalMass τ ^ 2)) =
+        Randomized.uniformAverage (fun _seed : Seeds =>
+          (n : ℝ) ^ 2 / 2 *
+            (familyB u τ * (1 + (u - 1) * survivalMass τ ^ 2))) :=
+      (Randomized.uniformAverage_const _).symm
+    _ ≤ Randomized.uniformAverage (fun seed =>
+        Randomized.finiteExpectation (bernoulliWeight n (survivalMass τ))
+          ((compileInitial (strategy seed) u).cost u u)) := by
+      apply Randomized.uniformAverage_mono
+      intro seed
+      exact (compileInitial (strategy seed) u).familyB_le_finiteExpectation
+        hu hτ hτu
+    _ = Randomized.uniformAverage (fun seed =>
+        Randomized.finiteExpectation (bernoulliWeight n (survivalMass τ))
+          (binaryRunCost u u (strategy seed))) := by
+      apply congrArg Randomized.uniformAverage
+      funext seed
+      apply congrArg (Randomized.finiteExpectation
+        (bernoulliWeight n (survivalMass τ)))
+      funext input
+      exact compileInitial_cost_eq_binaryRunCost (strategy seed)
+        (by linarith : u ≠ 0) input (hcomplete seed)
+
+/-- Expected operational lower bound for family A. -/
+theorem familyA_operational_finiteSeed_expected_lower
+    {n : ℕ} {Seeds : Type*} [Fintype Seeds] [Nonempty Seeds]
+    (strategy : Seeds → Online.Strategy n)
+    {u τ : ℝ} (hu : 1 < u) (hτ : 1 ≤ τ) (hτu : τ ≤ u)
+    (hcomplete : ∀ seed, CompletesBinary u τ (strategy seed)) :
+    (n : ℝ) ^ 2 / 2 *
+        (familyA τ * (1 + τ * survivalMass τ ^ 2)) ≤
+      Randomized.finiteExpectation (bernoulliWeight n (survivalMass τ))
+        (fun input => Randomized.uniformAverage fun seed =>
+          binaryRunCost u τ (strategy seed) input) := by
+  rw [finiteExpectation_uniformAverage_comm]
+  calc
+    (n : ℝ) ^ 2 / 2 *
+          (familyA τ * (1 + τ * survivalMass τ ^ 2)) =
+        Randomized.uniformAverage (fun _seed : Seeds =>
+          (n : ℝ) ^ 2 / 2 *
+            (familyA τ * (1 + τ * survivalMass τ ^ 2))) :=
+      (Randomized.uniformAverage_const _).symm
+    _ ≤ Randomized.uniformAverage (fun seed =>
+        Randomized.finiteExpectation (bernoulliWeight n (survivalMass τ))
+          ((compileInitial (strategy seed) τ).cost u τ)) := by
+      apply Randomized.uniformAverage_mono
+      intro seed
+      exact (compileInitial (strategy seed) τ).familyA_le_finiteExpectation
+        hu hτ hτu
+    _ = Randomized.uniformAverage (fun seed =>
+        Randomized.finiteExpectation (bernoulliWeight n (survivalMass τ))
+          (binaryRunCost u τ (strategy seed))) := by
+      apply congrArg Randomized.uniformAverage
+      funext seed
+      apply congrArg (Randomized.finiteExpectation
+        (bernoulliWeight n (survivalMass τ)))
+      funext input
+      exact compileInitial_cost_eq_binaryRunCost (strategy seed)
+        (by linarith : τ ≠ 0) input (hcomplete seed)
+
+/-- Exact finite ratio supplied by family B before scalar maximization. -/
+def familyBFiniteYaoRatio (n : ℕ) (u τ : ℝ) : ℝ :=
+  ((n : ℝ) ^ 2 / 2 *
+      (familyB u τ * (1 + (u - 1) * survivalMass τ ^ 2))) /
+    BlindOptimization.RandomizedLower.binaryExpectedOfflineCost n u
+      (survivalMass τ)
+
+/-- Exact finite ratio supplied by family A before scalar maximization. -/
+def familyAFiniteYaoRatio (n : ℕ) (τ : ℝ) : ℝ :=
+  ((n : ℝ) ^ 2 / 2 *
+      (familyA τ * (1 + τ * survivalMass τ ^ 2))) /
+    BlindOptimization.RandomizedLower.binaryExpectedOfflineCost n (1 + τ)
+      (survivalMass τ)
+
+/-- Family B produces one fixed literal input whose expected run cost is at
+least the exact finite ratio times the actual clairvoyant optimum. -/
+theorem familyB_operational_yao_ratio
+    {n : ℕ} (hn : 0 < n) {u τ : ℝ}
+    (hu : 1 < u) (hτ : 1 ≤ τ) (hτu : τ ≤ u)
+    {Seeds : Type*} [Fintype Seeds] [Nonempty Seeds]
+    (strategy : Seeds → Online.Strategy n)
+    (hcomplete : ∀ seed, CompletesBinary u u (strategy seed)) :
+    ∃ input : BinaryInput n,
+      familyBFiniteYaoRatio n u τ *
+          empiricalRevealingOfflineCost u
+            (RandomizedYao.binaryProcessing u input) ≤
+        Randomized.uniformAverage fun seed =>
+          binaryRunCost u u (strategy seed) input := by
+  have hτ0 : 0 < τ := by linarith
+  have hx0 : 0 ≤ survivalMass τ := by
+    unfold survivalMass
+    positivity
+  have hx1 : survivalMass τ ≤ 1 := by
+    unfold survivalMass
+    rw [div_le_one hτ0]
+    linarith
+  have hden := binaryExpectedOfflineCost_pos hn hu hx0
+  apply bernoulli_yao_select_ratio hx0 hx1
+  · exact familyB_operational_finiteSeed_expected_lower strategy hu hτ hτu
+      hcomplete
+  · simpa using finiteExpectation_empiricalOfflineCost_binary
+      (n := n) (x := survivalMass τ) hu (by linarith : 0 < u)
+  · unfold familyBFiniteYaoRatio
+    exact le_of_eq (div_mul_cancel₀ _ hden.ne')
+
+/-- Family A produces the analogous fixed literal input. -/
+theorem familyA_operational_yao_ratio
+    {n : ℕ} (hn : 0 < n) {u τ : ℝ}
+    (hu : 1 < u) (hτ : 1 ≤ τ) (hτcap : τ ≤ u - 1)
+    {Seeds : Type*} [Fintype Seeds] [Nonempty Seeds]
+    (strategy : Seeds → Online.Strategy n)
+    (hcomplete : ∀ seed, CompletesBinary u τ (strategy seed)) :
+    ∃ input : BinaryInput n,
+      familyAFiniteYaoRatio n τ *
+          empiricalRevealingOfflineCost u
+            (RandomizedYao.binaryProcessing τ input) ≤
+        Randomized.uniformAverage fun seed =>
+          binaryRunCost u τ (strategy seed) input := by
+  have hτ0 : 0 < τ := by linarith
+  have hτu : τ ≤ u := by linarith
+  have hx0 : 0 ≤ survivalMass τ := by
+    unfold survivalMass
+    positivity
+  have hx1 : survivalMass τ ≤ 1 := by
+    unfold survivalMass
+    rw [div_le_one hτ0]
+    linarith
+  have hhigh : 1 < 1 + τ := by linarith
+  have hden := binaryExpectedOfflineCost_pos hn hhigh hx0
+  apply bernoulli_yao_select_ratio hx0 hx1
+  · exact familyA_operational_finiteSeed_expected_lower strategy hu hτ hτu
+      hcomplete
+  · rw [finiteExpectation_empiricalOfflineCost_binary hu hτ0,
+      binaryEffectiveHigh_eq_add_one hτcap]
+  · unfold familyAFiniteYaoRatio
+    exact le_of_eq (div_mul_cancel₀ _ hden.ne')
+
+/-! ## Vanishing diagonal correction and curve assembly -/
+
+/-- A quadratic leading lower bound divided by the exact binary offline
+expectation converges to its fluid coefficient. -/
+theorem leadingBinaryFiniteRatio_tendsto
+    {high b coefficient : ℝ} (hhigh : 1 < high) :
+    Filter.Tendsto
+      (fun n : ℕ =>
+        ((n : ℝ) ^ 2 / 2 *
+            (coefficient * (1 + (high - 1) * b ^ 2))) /
+          BlindOptimization.RandomizedLower.binaryExpectedOfflineCost n high b)
+      Filter.atTop (nhds coefficient) := by
+  let pair := 1 + (high - 1) * b ^ 2
+  let correction :=
+    2 * (1 + (high - 1) * b) - (1 + (high - 1) * b ^ 2)
+  have hpair : 0 < pair := by
+    dsimp [pair]
+    have : 0 ≤ (high - 1) * b ^ 2 :=
+      mul_nonneg (by linarith) (sq_nonneg b)
+    linarith
+  have hinv : Filter.Tendsto (fun n : ℕ => (1 : ℝ) / n)
+      Filter.atTop (nhds 0) :=
+    Filter.Tendsto.const_div_atTop
+      (tendsto_natCast_atTop_atTop : Filter.Tendsto
+        (fun n : ℕ => (n : ℝ)) Filter.atTop Filter.atTop) 1
+  have hdenominator : Filter.Tendsto
+      (fun n : ℕ => pair / 2 + ((1 : ℝ) / n) * correction / 2)
+      Filter.atTop (nhds (pair / 2)) := by
+    have hcorrection : Filter.Tendsto
+        (fun n : ℕ => ((1 : ℝ) / n) * correction / 2)
+        Filter.atTop (nhds 0) := by
+      simpa using (hinv.mul_const correction).div_const 2
+    simpa using (tendsto_const_nhds.add hcorrection : Filter.Tendsto
+      (fun n : ℕ => pair / 2 + ((1 : ℝ) / n) * correction / 2)
+      Filter.atTop (nhds (pair / 2 + 0)))
+  have hnormalized : Filter.Tendsto
+      (fun n : ℕ =>
+        (coefficient * pair / 2) /
+          (pair / 2 + ((1 : ℝ) / n) * correction / 2))
+      Filter.atTop (nhds coefficient) := by
+    convert (tendsto_const_nhds : Filter.Tendsto
+      (fun _n : ℕ => coefficient * pair / 2) Filter.atTop
+        (nhds (coefficient * pair / 2))).div hdenominator
+          (by positivity : pair / 2 ≠ 0) using 1 <;>
+      field_simp [hpair.ne'] <;> ring
+  have heq :
+      (fun n : ℕ =>
+        ((n : ℝ) ^ 2 / 2 *
+            (coefficient * (1 + (high - 1) * b ^ 2))) /
+          BlindOptimization.RandomizedLower.binaryExpectedOfflineCost n high b) =ᶠ[
+        Filter.atTop]
+      (fun n : ℕ =>
+        (coefficient * pair / 2) /
+          (pair / 2 + ((1 : ℝ) / n) * correction / 2)) := by
+    filter_upwards [Filter.eventually_ge_atTop (1 : ℕ)] with n hn
+    have hnR : (n : ℝ) ≠ 0 := by
+      exact_mod_cast (by omega : n ≠ 0)
+    unfold BlindOptimization.RandomizedLower.binaryExpectedOfflineCost
+    dsimp [pair, correction]
+    field_simp [hnR]
+    <;> ring
+  exact hnormalized.congr' heq.symm
+
+theorem familyBFiniteYaoRatio_tendsto
+    {u τ : ℝ} (hu : 1 < u) :
+    Filter.Tendsto (fun n : ℕ => familyBFiniteYaoRatio n u τ)
+      Filter.atTop (nhds (familyB u τ)) := by
+  simpa [familyBFiniteYaoRatio] using
+    (leadingBinaryFiniteRatio_tendsto
+      (high := u) (b := survivalMass τ) (coefficient := familyB u τ) hu)
+
+theorem familyAFiniteYaoRatio_tendsto
+    {τ : ℝ} (hτ : 0 < τ) :
+    Filter.Tendsto (fun n : ℕ => familyAFiniteYaoRatio n τ)
+      Filter.atTop (nhds (familyA τ)) := by
+  simpa [familyAFiniteYaoRatio] using
+    (leadingBinaryFiniteRatio_tendsto
+      (high := 1 + τ) (b := survivalMass τ) (coefficient := familyA τ)
+      (by linarith))
+
+/-- End-to-end finite operational lower bound for the advertised randomized
+revealing-optimization curve.  In the selected branch the adversarial input
+is fixed before the private seed, the denominator is the literal
+clairvoyant optimum, and the exact finite coefficient converges to the curve. -/
+theorem finiteSeed_operational_binary_families_attain_curve
+    {n : ℕ} (hn : 0 < n) {u : ℝ} (hu : 1 < u)
+    {Seeds : Type*} [Fintype Seeds] [Nonempty Seeds]
+    (strategy : Seeds → Online.Strategy n)
+    (hcomplete : ∀ seed positive, 0 < positive → positive ≤ u →
+      CompletesBinary u positive (strategy seed)) :
+    (∃ τ ∈ Set.Icc (1 : ℝ) u,
+      familyB u τ = randomizedCurve u ∧
+      Filter.Tendsto (fun jobs : ℕ => familyBFiniteYaoRatio jobs u τ)
+        Filter.atTop (nhds (randomizedCurve u)) ∧
+      ∃ input : BinaryInput n,
+        familyBFiniteYaoRatio n u τ *
+            empiricalRevealingOfflineCost u
+              (RandomizedYao.binaryProcessing u input) ≤
+          Randomized.uniformAverage fun seed =>
+            binaryRunCost u u (strategy seed) input) ∨
+    (∃ τ ∈ Set.Icc (1 : ℝ) (u - 1),
+      familyA τ = randomizedCurve u ∧
+      Filter.Tendsto (fun jobs : ℕ => familyAFiniteYaoRatio jobs τ)
+        Filter.atTop (nhds (randomizedCurve u)) ∧
+      ∃ input : BinaryInput n,
+        familyAFiniteYaoRatio n τ *
+            empiricalRevealingOfflineCost u
+              (RandomizedYao.binaryProcessing τ input) ≤
+          Randomized.uniformAverage fun seed =>
+            binaryRunCost u τ (strategy seed) input) := by
+  rcases binaryFamilies_attain_curve hu with hB | hA
+  · left
+    rcases hB with ⟨τ, hτ, hattain⟩
+    have hratio := familyB_operational_yao_ratio hn hu hτ.1 hτ.2 strategy
+      (fun seed => hcomplete seed u (by linarith) le_rfl)
+    refine ⟨τ, hτ, hattain, ?_, hratio⟩
+    simpa [hattain] using familyBFiniteYaoRatio_tendsto
+      (τ := τ) hu
+  · right
+    rcases hA with ⟨τ, hτ, hattain⟩
+    have hτpos : 0 < τ := by linarith [hτ.1]
+    have hτu : τ ≤ u := by linarith [hτ.2]
+    have hratio := familyA_operational_yao_ratio hn hu hτ.1 hτ.2 strategy
+      (fun seed => hcomplete seed τ hτpos hτu)
+    refine ⟨τ, hτ, hattain, ?_, hratio⟩
+    simpa [hattain] using familyAFiniteYaoRatio_tendsto hτpos
+
 /-- The compiler can be plugged directly into the two binary families and
 the checked finite-Yao theorem. -/
 theorem finiteSeed_compiled_binary_families_attain_curve
