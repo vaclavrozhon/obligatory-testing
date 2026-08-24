@@ -361,24 +361,13 @@ beginning of the schedule.  The exact ratios are as follows.
 \protect\cref{thm:bo-det-curve,thm:bo-curve}]
 \label{thm:intro-bo-det-curve}
 \label{thm:intro-bo-curve}
-The exact deterministic asymptotic competitive ratio is
-\begin{equation}
- \RdetBO(u)=
- \begin{cases}
-  1,&0<u\le1,\\[2pt]
-  u,&1\le u\le2,\\[5pt]
-  \displaystyle\frac{\sqrt{4u^3-4u+1}-1}{2(u-1)},&u\ge2.
- \end{cases}
- \label{eq:intro-bo-det-curve}
-\end{equation}
-The exact randomized asymptotic competitive ratio $\RrandBO(u)$ is $1$ for
-$u\le1$ and is given by the explicit two-branch curve in
-\cref{fig:intro-bo-curve} for $u>1$.  As $u\to\infty$, the two ratios satisfy
+The exact deterministic asymptotic competitive ratio and the exact randomized asymptotic competitive ratio $\RrandBO(u)$ satisfy
 \[
  \RdetBO(u)=\sqrt u+o(1),
  \qquad
  \RrandBO(u)=\frac{\sqrt u}{2}+\frac12+o(1).
 \]
+More precisely, they follow the curves from \cref{fig:??}. 
 \end{theorem}
 
 This poor worst-case behavior is driven by a very specific family of inputs,
@@ -420,9 +409,9 @@ and let $\widehat\mu$ be the mean observed length.
 \centering
 \input{blind_optimization_curve_tikz}
 \captionof{figure}{The exact deterministic and randomized ratios for blind
-optimization.}
+optimization. See section XX for concrete definition}
 \label{fig:intro-bo-curve}
-\end{minipage}
+\end{minipage} [udelej jednu krivku modrou druhou cervenou, obe plne. ]
 
 More precisely, if $\mu_M$ is the mean optimized length in $M$, the best
 possible leading value is
@@ -484,6 +473,7 @@ lower envelope.  The black outline is the optimal ratio.  The arrow on
 line is the $\varphi$ guarantee of zero-prefix \textsc{ForcedPrefixUTE}.}
 \label{fig:intro-curves-det}
 \end{figure}
+[tady vyznac jen tri algoritmy, dropni vyznaceni optimal ratio. taky y osu protahni az do 3, trochu zvetsi obrazek]
 
 The deterministic curve is the lower envelope of three explicit policy
 families.  We describe their shape here and defer the exact parameters to
