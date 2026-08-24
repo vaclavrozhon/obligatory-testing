@@ -176,3 +176,7 @@ The literal learned policy now goes one step further: it recomputes its quota
 and selector solely from the first `k` public test-result records, stabilizes
 after that pilot prefix, and terminates with the empirical grid-minimizing
 template without receiving the input histogram as hidden advice.
+Its analysis identifies the entire learned execution with the realized fixed
+pilot/quota run and proves that the histogram read from the public transcript
+is exactly the standard without-replacement sample histogram under private
+random relabelling.
