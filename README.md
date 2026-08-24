@@ -168,3 +168,7 @@ randomized run with the uniform-pilot template learner.
 For upward zero-preserving grids, the selector is pulled back to the actual
 revealed values and charge monotonicity compares the unrounded literal run
 directly with the rounded learned objective, without an extra mesh loss.
+The operational layer also supports a public-transcript-dependent selector:
+its pilot/quota specialization completes the first pilot outcomes immediately,
+then uses a supplied post-pilot selector, and is proved to terminate after
+`2n+1` steps under every private relabelling.
