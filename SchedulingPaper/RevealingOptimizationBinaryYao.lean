@@ -178,8 +178,7 @@ theorem LabelledPolicy.finiteExpectation_cost_eq_expectedCost
         finiteExpectation_add,
         finiteExpectation_const _
           (BlindOptimization.RandomizedLower.bernoulliWeight_mass n x)]
-      rw [SchedulingPaper.BlindOptimization.RandomizedCompiler.
-          finiteExpectation_fresh_bernoulli_branch x job
+      rw [_root_.SchedulingPaper.BlindOptimization.RandomizedCompiler.finiteExpectation_fresh_bernoulli_branch x job
           (zeroBranch.cost rawDuration processDuration)
           (positiveBranch.cost rawDuration processDuration)
           (fun input => zeroBranch.cost_flip_of_not_fresh
