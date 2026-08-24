@@ -340,15 +340,27 @@ $\widehat\tau\le p<\widehat\mu$, shortest first.
 The two remaining models start from the same operation.  Every job takes a
 known raw time $u$, and one unit of optimization reduces its running time to
 $p_i\leq u$.  They differ only in whether optimization reveals $p_i$.  We
-start with the case in which it does not: Before execution, all optimized jobs still look the same.
+start with the case in which it does not.  Before execution, all optimized
+jobs still look the same.
 
-This is the simpler case. Let us first discuss the hardest input for both deterministic and randomized algorithms. It works roughly as follows: Roughly $1/sqrt{u}$ fraction of jobs cannot be optimized at all and the rest is optimized to $0$ length. The online algorithm can't distinguish the two types of jobs apriori, so it essentially pays time $1/sqrt(u) * u = sqrt(u)$ per random job, leading to cost $(n\sqrt(u))^2$. However, the clairvoyant offline optimum pays only $n^2 \cddot u$ by starting by optimizing the easy jobs. 
+This is the simpler case.  Let us first describe the hardest inputs for both
+deterministic and randomized algorithms.  Roughly a $1/\sqrt u$ fraction of
+the jobs cannot be shortened at all: they have $p_i=u$.  The remaining jobs
+are optimized to length zero.  Even if an online algorithm knows these
+proportions, it cannot distinguish the two types before committing to a job.
+An optimized job therefore has expected length of order
+$(1/\sqrt u)u=\sqrt u$, giving total completion cost
+$\Theta(n^2\sqrt u)$.  The clairvoyant optimum first optimizes the zero-length
+jobs and then runs the hard jobs raw, paying only $\Theta(n^2)$.
 
-Still the approximation ratio of randomized algorithms turns out to be twice smaller than deterministicc counterparts; we determine the precise asymptotic ratios in Section XX. 
+Randomization improves the asymptotic ratio by a factor of two, because a
+private shuffle prevents the hard jobs from being concentrated at the
+beginning of the schedule.  The exact ratios are as follows.
 
-\begin{theorem}[Deterministic blind-optimization curve, informal version of
-\protect\cref{thm:bo-det-curve}]
+\begin{theorem}[Blind-optimization worst-case curves, informal version of
+\protect\cref{thm:bo-det-curve,thm:bo-curve}]
 \label{thm:intro-bo-det-curve}
+\label{thm:intro-bo-curve}
 The exact deterministic asymptotic competitive ratio is
 \begin{equation}
  \RdetBO(u)=
@@ -359,10 +371,24 @@ The exact deterministic asymptotic competitive ratio is
  \end{cases}
  \label{eq:intro-bo-det-curve}
 \end{equation}
-It grows as $\sqrt u+o(1)$.
-\end{theorem} [mergni tohle s rand. worst case teoremem. ]
+The exact randomized asymptotic competitive ratio $\RrandBO(u)$ is $1$ for
+$u\le1$ and is given by the explicit two-branch curve in
+\cref{fig:intro-bo-curve} for $u>1$.  As $u\to\infty$, the two ratios satisfy
+\[
+ \RdetBO(u)=\sqrt u+o(1),
+ \qquad
+ \RrandBO(u)=\frac{\sqrt u}{2}+\frac12+o(1).
+\]
+\end{theorem}
 
-This situation is unsatisfactory, but due to the very specific input. This again raises the question whether the worst-case framework is the right one to analyze this setup -- here again, instance optimality comes to the rescue, proving that the simple alg4 is instance optimal if we treat $u$ as a constant. In this case, the whole setup is very simplistic though -- on every instance, it's always either the "optimize everything" or "optimize nothing" algorithm which is optimal, so alg4 simply draws a sample and chooses the right one out of the two. 
+This poor worst-case behavior is driven by a very specific family of inputs,
+which again raises the question of whether the worst-case ratio is the right
+way to evaluate this model.  Instance optimality gives a more informative
+answer.  For every fixed $u$, the simple policy in
+\cref{alg:intro-blind-optimization} is instance-optimal.  The structure of
+the optimal policy is particularly simple: at the leading $n^2$ scale, it
+always either optimizes every job or optimizes none.  The algorithm therefore
+samples the input and chooses between these two options.
 
 \begin{theorem}[Blind-optimization instance optimality, informal version of
 \protect\cref{thm:bo-instance}]
@@ -403,20 +429,9 @@ possible leading value is
 \[
  \frac{n^2}{2}\min\{u,1+\mu_M\}.
 \]
-Knowing the instance-optimal algorithm does not yet give its competitive
-ratio: we must still find the worst input.  The resulting ratio is unbounded
-and grows on the order of $\sqrt u$.
-
-\begin{theorem}[Blind-optimization curve, informal version of
-\protect\cref{thm:bo-curve}]
-\label{thm:intro-bo-curve}
-The exact randomized asymptotic competitive ratio $\RrandBO(u)$ is $1$ for $u\le1$ and is
-given by the explicit two-branch curve in
-\cref{fig:intro-bo-curve} for $u>1$.  It grows as
-$\sqrt u/2+1/2+o(1)$ as $u\to\infty$.
-\end{theorem}
-
-
+The two terms correspond respectively to running every job raw and to
+optimizing every job.  Thus the mean $\mu_M$ is the only statistic that the
+algorithm needs to estimate.
 
 \subsection{Revealing optimization}
 \label{sec:intro-revealing-optimization}
