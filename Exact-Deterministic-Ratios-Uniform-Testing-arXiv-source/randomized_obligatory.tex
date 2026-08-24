@@ -48,11 +48,11 @@ first prove the uniform upper bound and then give the short transfer.
 
 \subsubsection{Normalization of the offline pair identity}
 
-For a fixed vector $p$, use $D_p$ and its minimum kernel $K_p$ from
+For a fixed vector $p$, use $D[p]$ and its minimum kernel $K(D[p])$ from
 \cref{eq:stationary-kernel-split}.  The specialization in
 \cref{eq:model-offline-coefficients} and the exact linear correction are
 \begin{equation}
- \Omega_{\mathsf{OT}}(D_p)=\frac{1+K_p}{2},
+ \Omega_{\mathsf{OT}}(D[p])=\frac{1+K(D[p])}{2},
  \qquad
  \Delta_{\mathsf{OT}}(p)=\frac{n+\sum_i p_i}{2}.
  \label{eq:rand-KO}
@@ -60,7 +60,7 @@ For a fixed vector $p$, use $D_p$ and its minimum kernel $K_p$ from
 The empirical effective-length
 identity \cref{eq:empirical-offline-model}, with $\ell(p)=1+p$, gives
 \begin{equation}
- \OPT(p)=n^2\Omega_{\mathsf{OT}}(D_p)+\Delta_{\mathsf{OT}}(p).
+ \OPT(p)=n^2\Omega_{\mathsf{OT}}(D[p])+\Delta_{\mathsf{OT}}(p).
  \label{eq:rand-opt-normalized}
 \end{equation}
 The linear correction $\Delta_{\mathsf{OT}}(p)$ will be kept rather than
@@ -70,7 +70,7 @@ hidden: this makes the analysis valid for unbounded processing times.
 
 Use the processing-time-prefix notation
 \cref{eq:stationary-prefix-notation,eq:stationary-kernel-split} and the
-coefficient $\Psi_{D_p}(E)$ from
+coefficient $F_{\mathsf{OT},D[p]}(E)$ from
 \cref{eq:stationary-leading-coefficient}.  We require that $E$ contain every
 zero job; otherwise a supposedly deferred zero completes at its test.  The
 stationary policy and its exact cost are supplied by the common pair identity
@@ -78,21 +78,21 @@ stationary policy and its exact cost are supplied by the common pair identity
 
 For a nonempty prefix define its completion density by
 \begin{equation}
- \rho(E)=\frac{a}{1+m}.
+ \kappa(E)=\frac{a}{1+\ell_E}.
  \label{eq:rand-density}
 \end{equation}
 Choose a maximum-density prefix and put
 \begin{equation}
- \theta=\frac{1+m}{a}=\frac1{\rho(E)}.
- \label{eq:rand-theta}
+ \tau=\frac{1+\ell_E}{a}=\frac1{\kappa(E)}.
+ \label{eq:rand-tau}
 \end{equation}
 All zeros belong to every maximizer: adding a zero increases the numerator
 without increasing the denominator.
 The empirical prefix corollary \cref{cor:empirical-density-prefix} lets us
 choose a maximizer with
 \begin{equation}
- \theta=\tau_{D_p},\qquad
- p_i\le\theta\ (i\in E),\qquad p_i\ge\theta\ (i\notin E),
+ \tau=\tau_{D[p]},\qquad
+ p_i\le\tau\ (i\in E),\qquad p_i\ge\tau\ (i\notin E),
  \label{eq:rand-density-threshold}
 \end{equation}
 where tied occurrences may be assigned to either side.
@@ -102,45 +102,45 @@ The next identity is the algebraic source of the constant $4/3$.
 \begin{lemma}[Exact and robust certificates]
 \label{lem:rand-four-thirds-certificate}
 For every ordered prefix split with $a>0$ and
-$\theta=(1+m)/a$,
+$\tau=(1+\ell_E)/a$,
 \begin{equation}
- 2\theta\bigl(4\Omega_{\mathsf{OT}}(D_p)-3\Psi_{D_p}(E)\bigr)
-  =(\theta-2)^2
-   +4(\theta K_E-m^2)
-   +\theta(K_T-\theta h^2).
+ 2\tau\bigl(4\Omega_{\mathsf{OT}}(D[p])-3F_{\mathsf{OT},D[p]}(E)\bigr)
+  =(\tau-2)^2
+   +4(\tau K_E-\ell_E^2)
+   +\tau(K_T-\tau h^2).
  \label{eq:rand-certificate}
 \end{equation}
 Consequently:
 \begin{enumerate}[label=\textup{(\roman*)}]
-\item if early values are at most $\theta$ and late values are at least
-      $\theta$, then $\Psi_{D_p}(E)\le4\Omega_{\mathsf{OT}}(D_p)/3$;
-\item if early values are at most $\theta+s$ and late values are at least
-      $\theta-s$, where $s\ge0$, then
+\item if early values are at most $\tau$ and late values are at least
+      $\tau$, then $F_{\mathsf{OT},D[p]}(E)\le4\Omega_{\mathsf{OT}}(D[p])/3$;
+\item if early values are at most $\tau+s$ and late values are at least
+      $\tau-s$, where $s\ge0$, then
       \begin{equation}
-       \Psi_{D_p}(E)\le\frac43\Omega_{\mathsf{OT}}(D_p)+\frac23s.
+       F_{\mathsf{OT},D[p]}(E)\le\frac43\Omega_{\mathsf{OT}}(D[p])+\frac23s.
        \label{eq:rand-robust-certificate}
       \end{equation}
 \end{enumerate}
 \end{lemma}
 
 \begin{proof}
-Expansion using $m=a\theta-1$, $h=1-a$, and
+Expansion using $\ell_E=a\tau-1$, $h=1-a$, and
 \cref{eq:stationary-kernel-split} gives \cref{eq:rand-certificate}.  Under exact
-separation, $xy\le\theta\min\{x,y\}$ for early $x,y$, hence
-$m^2\le\theta K_E$; for late $x,y$, one has
-$\min\{x,y\}\ge\theta$, hence $K_T\ge\theta h^2$.  This proves (i).
+separation, $xy\le\tau\min\{x,y\}$ for early $x,y$, hence
+$\ell_E^2\le\tau K_E$; for late $x,y$, one has
+$\min\{x,y\}\ge\tau$, hence $K_T\ge\tau h^2$.  This proves (i).
 
 Under the relaxed inequalities,
 \[
- \theta K_E-m^2\ge-sK_E,
- \qquad K_T-\theta h^2\ge-sh^2.
+ \tau K_E-\ell_E^2\ge-sK_E,
+ \qquad K_T-\tau h^2\ge-sh^2.
 \]
-Moreover $K_E\le am\le a^2\theta$.  Substitution into
+Moreover $K_E\le a\ell_E\le a^2\tau$.  Substitution into
 \cref{eq:rand-certificate} yields
 \[
- \Psi_{D_p}(E)
- \le\frac43\Omega_{\mathsf{OT}}(D_p)+\frac23sa^2+\frac16sh^2
- \le\frac43\Omega_{\mathsf{OT}}(D_p)+\frac23s,
+ F_{\mathsf{OT},D[p]}(E)
+ \le\frac43\Omega_{\mathsf{OT}}(D[p])+\frac23sa^2+\frac16sh^2
+ \le\frac43\Omega_{\mathsf{OT}}(D[p])+\frac23s,
 \]
 because $(2/3)a^2+(1/6)(1-a)^2\le2/3$ on $[0,1]$.
 \end{proof}
@@ -161,18 +161,18 @@ prefix satisfies
 Indeed, the correction in \cref{eq:stationary-prefix-cost} is at most
 $\Delta_{\mathsf{OT}}(p)$.
 Equality in the quadratic coefficient of \cref{eq:rand-certificate} forces
-$\theta=2$, zero mass $1/2$, and all positive mass at two.  This predicts the
+$\tau=2$, zero mass $1/2$, and all positive mass at two.  This predicts the
 lower-bound instance before any probabilistic argument is used.
 
 We also use the following tail-safe estimate.  Direct expansion gives
 \begin{equation}
- \Psi_{D_p}(E)-\Omega_{\mathsf{OT}}(D_p)
- =\frac{h+am-K_E}{2}.
+ F_{\mathsf{OT},D[p]}(E)-\Omega_{\mathsf{OT}}(D[p])
+ =\frac{h+a\ell_E-K_E}{2}.
  \label{eq:rand-crude-identity}
 \end{equation}
-If all early values are at most $R\ge1$, then $m\le aR$ and therefore
+If all early values are at most $L\ge1$, then $\ell_E\le aL$ and therefore
 \begin{equation}
- \Psi_{D_p}(E)\le \Omega_{\mathsf{OT}}(D_p)+\frac R2.
+ F_{\mathsf{OT},D[p]}(E)\le \Omega_{\mathsf{OT}}(D[p])+\frac L2.
  \label{eq:rand-bounded-early}
 \end{equation}
 
@@ -211,23 +211,23 @@ overflow bin included among the $d+2$ categories.
 For a finite category prefix $J$, define
 \[
  \widehat a(J)=\sum_{b\in J}\widehat\mu_b,\qquad
- \widehat m(J)=\sum_{b\in J}q_b\widehat\mu_b,\qquad
- \widehat\rho(J)=\frac{\widehat a(J)}{1+\widehat m(J)}.
+ \widehat\ell(J)=\sum_{b\in J}q_b\widehat\mu_b,\qquad
+ \widehat\kappa(J)=\frac{\widehat a(J)}{1+\widehat\ell(J)}.
 \]
-Let $\widehat\rho$ be the maximum and
-$\widehat\theta=1/\widehat\rho$.  The learned early set is not an arbitrary
+Let $\widehat\kappa$ be the maximum and
+$\widehat\tau=1/\widehat\kappa$.  The learned early set is not an arbitrary
 maximizing category prefix.  It is its \emph{threshold closure}
 \begin{equation}
- \widehat J=\{\text{finite categories }b:q_b\le\widehat\theta\}.
+ \widehat J=\{\text{finite categories }b:q_b\le\widehat\tau\}.
  \label{eq:rand-threshold-closure}
 \end{equation}
 
 \begin{lemma}[Threshold closure]
 \label{lem:rand-threshold-closure}
 The prefix \cref{eq:rand-threshold-closure} has the same maximum sample
-density.  Every category in it has endpoint at most $\widehat\theta$, and
+density.  Every category in it has endpoint at most $\widehat\tau$, and
 every finite category outside it has endpoint greater than
-$\widehat\theta$, including categories with zero sample count.
+$\widehat\tau$, including categories with zero sample count.
 \end{lemma}
 
 \begin{proof}
@@ -235,7 +235,7 @@ The removal/addition calculation in
 \cref{cor:empirical-density-prefix} applies to every positive-mass sample
 category.  Empty categories do not change the sample statistics, and adding
 mass at equality preserves the identity
-$1+\widehat m=\widehat a\widehat\theta$.  Closing the prefix therefore
+$1+\widehat\ell=\widehat a\widehat\tau$.  Closing the prefix therefore
 preserves optimality and makes the two pointwise assertions tautological.
 \end{proof}
 
@@ -249,7 +249,7 @@ The algorithm draws a uniform permutation and first tests its first $k$ jobs,
 leaving positive sample jobs pending.  It computes the closed sample prefix.
 If
 \begin{equation}
- \widehat\rho<\frac2B,
+ \widehat\kappa<\frac2B,
  \label{eq:rand-fallback-test}
 \end{equation}
 it enters \emph{fallback mode}: test every remaining job and then process all
@@ -273,22 +273,22 @@ Markov's inequality, recalled in \cref{sec:probabilistic-tools}, and
 \end{equation}
 
 Assume $G$ and learned mode.  Let $E$ be the population set selected by the
-closed category prefix, and let $a,m,\theta=(1+m)/a$ be its true statistics.
-Since $\widehat\theta\le B/2$ and
-$\widehat a=(1+\widehat m)/\widehat\theta\ge2/B$, we have $a\ge1/B$.  For
+closed category prefix, and let $a,\ell_E,\tau=(1+\ell_E)/a$ be its true statistics.
+Since $\widehat\tau\le B/2$ and
+$\widehat a=(1+\widehat\ell)/\widehat\tau\ge2/B$, we have $a\ge1/B$.  For
 this fixed category set,
 \[
  |a-\widehat a|\le\Delta,\qquad
- |m-\widehat m|\le B\Delta+\eta.
+ |\ell_E-\widehat\ell|\le B\Delta+\eta.
 \]
 Consequently
 \begin{equation}
- |\theta-\widehat\theta|
+ |\tau-\widehat\tau|
  \le\frac32B^2\Delta+B\eta.
  \label{eq:rand-threshold-transfer}
 \end{equation}
-Every early actual value is at most $\widehat\theta$, while every late value
-is greater than $\widehat\theta-\eta$.  Thus the robust certificate applies
+Every early actual value is at most $\widehat\tau$, while every late value
+is greater than $\widehat\tau-\eta$.  Thus the robust certificate applies
 with
 \begin{equation}
  s=\frac32B^2\Delta+B\eta+\eta.
@@ -297,15 +297,15 @@ with
 
 The sample-first order is not exactly the fully stationary comparator, but
 the difference is only lower order.  Conditional on the unordered sample,
-write $e_S,e_R$ for the early counts and
+write $e_S,e_T$ for the sample and remaining early counts and
 \[
  W_S=k+\sum_{i\in E\cap S}p_i,\qquad
- W_R=n-k+\sum_{i\in E\setminus S}p_i.
+ W_T=n-k+\sum_{i\in E\setminus S}p_i.
 \]
 Comparing the two independent random internal orders with one fully random
 order, the early-cost difference is
 \[
- \frac{e_RW_S-e_SW_R}{2}
+ \frac{e_TW_S-e_SW_T}{2}
  \le\frac12nk(1+B/2).
 \]
 Postponing positive sampled early jobs until all sample tests finish adds at
@@ -321,13 +321,13 @@ Therefore, on a good learned sample,
 
 On a good fallback sample, comparison of sample and population densities
 shows that the true maximum-density reciprocal satisfies
-$\tau_{D_p}\ge B/4=8$.
+$\tau_{D[p]}\ge B/4=8$.
 The exact threshold inequalities imply
 \begin{equation}
- K_p\ge\frac{(\tau_{D_p}-1)^2}{\tau_{D_p}},
+ K(D[p])\ge\frac{(\tau_{D[p]}-1)^2}{\tau_{D[p]}},
  \qquad
- \Omega_{\mathsf{OT}}(D_p)
- \ge\frac{\tau_{D_p}-1+1/\tau_{D_p}}{2}\ge\frac{57}{16}.
+ \Omega_{\mathsf{OT}}(D[p])
+ \ge\frac{\tau_{D[p]}-1+1/\tau_{D[p]}}{2}\ge\frac{57}{16}.
  \label{eq:rand-fallback-opt-large}
 \end{equation}
 For every test order, test-all-then-SPT satisfies

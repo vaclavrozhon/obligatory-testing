@@ -63,7 +63,7 @@ maximize over all empirical distributions.  A survival-function flattening
 argument reduces the outer optimization to binary distributions.  Two
 scalar maximizations give the four branches above.  A sublinear sample removes
 advance knowledge of the input, and binary random labelings give matching Yao
-lower bounds.  The next subsection starts the formal calculation.
+lower bounds.
 
 \subsection{Offline and stationary fluid coefficients}
 
@@ -83,21 +83,21 @@ The convention at atoms does not affect any integral below.  Since a
 clairvoyant job has effective length $1+\min\{s,P\}$, the layer-cake identity
 and \cref{cor:empirical-offline} give
 \begin{align}
- \Omega_u(D)
+ \Omega_{\mathsf{RO},u}(D)
  &=\frac12\left(1+\int_0^s S_D(t)^2\,dt\right),
  \label{eq:rcu-offline-fluid}\\
  \OPT_u(M)
- &=n^2\Omega_u(D_M)
-   +\frac n2\int\lambda_u(p)\,dD_M(p)
+ &=n^2\Omega_{\mathsf{RO},u}(D[M])
+   +\frac n2\int\lambda_u(p)\,dD[M](p)
  \label{eq:rcu-offline-finite}
 \end{align}
-for every empirical distribution $D_M$.
+for every empirical distribution $D[M]$.
 
 We next specialize the maximum-density module
 \cref{lem:maximum-density-module} to a form suited to the cap.  If its
-threshold prefix has mass $a$ and first moment $m$, put
+threshold prefix has mass $a$ and first moment $\ell$, put
 \begin{equation}
- \tau_D=\frac{1+m}{a}.
+ \tau_D=\frac{1+\ell}{a}.
  \label{eq:rcu-tau-density}
 \end{equation}
 The common threshold equation and the layer-cake identity give
@@ -139,14 +139,14 @@ residual draws, with their subprobability masses left unnormalized.  The
 stationary prefix identity \cref{lem:stationary-prefix-cost}, applied first
 to empirical laws and then by continuity, gives the leading coefficient
 \begin{equation}
- (1+m)\left(1-\frac a2\right)+\frac{K_T}{2}.
+ (1+\ell)\left(1-\frac a2\right)+\frac{K_T}{2}.
  \label{eq:rcu-stationary-pair}
 \end{equation}
 If $\tau_D\le u$, the threshold property gives
 \[
  K_T=\tau_D h^2+\int_{\tau_D}^uS_D(t)^2\,dt,
  \qquad
- (1+m)\left(1-\frac a2\right)
+ (1+\ell)\left(1-\frac a2\right)
  =\frac{\tau_D}2(1-h^2).
 \]
 Their sum is one half of the first line of
@@ -164,7 +164,7 @@ stationary maximum-density policy.  Hence
  \label{eq:rcu-Phi-endpoint-upper}
 \end{equation}
 and \cref{eq:rcu-announced-ratio} is an upper bound on the
-instance-specific ratio $\PhiRO(D)/\Omega_u(D)$.  Interior values of $q$ can
+instance-specific ratio $\PhiRO(D)/\Omega_{\mathsf{RO},u}(D)$.  Interior values of $q$ can
 strictly improve individual inputs; the point of the next two subsections is
 that the two endpoint policies already give the sharp value after maximizing
 over all $D$.  The binary lower bounds at the end apply to every policy, not
@@ -346,73 +346,26 @@ $u=25/4$.  Differentiating \eqref{eq:rcu-B-at-u} shows that its only
 interior maximum above one occurs at $u=(3+\sqrt3)/2$; substitution gives
 \eqref{eq:intro-random-common-maximum}.
 
-\subsection{Removing the announcement by sampling}
+\subsection{Worst-case upper bound from instance optimality}
 
-The policy used for the upper bound must not know $D$.  The next lemma
-removes this announcement at lower-order cost.
-
-\begin{lemma}[Sublinear-sample transfer]
-\label{lem:rcu-pilot-transfer}
-For every fixed $u>1$, there are randomized nonanticipating policies
-$\mathcal A_{n,u}$ such that every fixed labeled input with empirical
-distribution $D$ satisfies
-\begin{equation}
- \EE\ALG_{\mathcal A_{n,u}}
- \le \frac{n^2}{2}\min\{u,\mathcal T_u(D)\}
-      +O_u(n^{11/6}).
- \label{eq:rcu-pilot-bound}
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-Let $k=\lfloor n^{2/3}\rfloor$, $d=\lfloor n^{1/3}\rfloor$, and
-$\eta=u/d$.  Keep zero as a separate category and round each positive value
-upward to one of the $d$ grid endpoints.  The algorithm privately permutes
-the labels, tests the first $k$, and forms the sample histogram.  On that
-histogram it compares the raw template with every stationary grid-prefix
-template.  It applies a minimizing template to the remaining labels; in the
-stationary case, prefix outcomes are processed immediately and the residual
-tail in SPT order.  Sampled positive jobs are inserted in the corresponding
-known part of the schedule.
-
-Let $\widehat D$ and $D^{\rm g}$ be the sample and population grid
-histograms.  The histogram estimate
-\cref{eq:without-replacement-histogram} gives
-\begin{equation}
- \EE\|\widehat D-D^{\rm g}\|_1
- \le\sqrt{\frac{d+1}{k}}=O(n^{-1/6}).
- \label{eq:rcu-histogram-error}
-\end{equation}
-For a fixed prefix, the stationary coefficient is a quadratic polynomial in
-the category masses, with coefficients bounded in terms of $u$.  It is
-therefore $O_u(1)$-Lipschitz in total variation, uniformly over all grid
-prefixes.  The empirical-minimization lemma
-\cref{lem:empirical-minimization} therefore loses at most twice the
-right-hand side of \eqref{eq:rcu-histogram-error}.  Zero-preserving upward
-rounding changes the fluid benchmark by $O_u(1/d)$ by
-\cref{lem:zero-preserving-transport}.
-
-Finally, placing the sample before the main random-order template affects at
-most $O(nk+k^2)$ bounded operation--job pairs.  The already tested sample
-has the same bound when raw is selected.  After normalization by $n^2$, the
-total error is
+No second learning argument is needed.  Apply the universal unannounced
+policy of \cref{thm:common-upper-instance} to $D=D[M]$.  The endpoint
+comparison \cref{eq:rcu-Phi-endpoint-upper} and the scalar bound
+\cref{eq:rcu-announced-upper} give
 \[
- O_u\left(\sqrt{d/k}+1/d+k/n\right)=O_u(n^{-1/6}).
+ \PhiRO(D[M])
+ \le \RrandRO(u)\Omega_{\mathsf{RO},u}(D[M]).
 \]
-This proves \eqref{eq:rcu-pilot-bound}.  The initial private permutation
-makes the law identical for every fixed public labeling.
-\end{proof}
-
-Together with \eqref{eq:rcu-offline-finite} and
-\eqref{eq:rcu-announced-upper}, \cref{lem:rcu-pilot-transfer} yields
+The exact empirical identity \cref{eq:rcu-offline-finite} has a nonnegative
+linear correction.  Therefore the instance-optimal upper bound immediately
+yields
 \begin{equation}
  \EE\ALG_{\mathcal A_{n,u}}
- \le\RrandRO(u)\OPT_u+O_u(n^{11/6}),
+ \le\RrandRO(u)\OPT_u+o_u(n^2),
  \label{eq:rcu-final-upper}
 \end{equation}
-which is \eqref{eq:intro-random-common-upper} with
-$\eps_u(n)=O_u(n^{-1/6})$.  For $0<u\le1$, raw execution is exactly
-clairvoyantly optimal, so no learning is required.
+which is \eqref{eq:intro-random-common-upper}.  For $0<u\le1$, raw execution
+is exactly clairvoyantly optimal, so no learning is required.
 
 \subsection{Binary oblivious lower bounds}
 

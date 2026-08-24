@@ -1,4 +1,323 @@
-\subsection{Matching upper bound for revealing optimization}
+\subsubsection{Low and intermediate caps}
+\label{sec:opt:low-upper}
+
+The first policy is formalized in \cref{alg:raw}.
+
+\begin{algorithm}[H]
+\caption{\textsc{Raw}$(J,u)$}
+\label{alg:raw}
+\begin{algorithmic}
+\Statex \textbf{Input:} jobs $J$ and a finite common upper limit $u$.
+\State Fix an arbitrary order $j_1,\ldots,j_n$.
+\State \textbf{For} $i=1,\ldots,n$, execute $j_i$ untested for $u$ time.
+\end{algorithmic}
+\end{algorithm}
+
+For $u\le \udiam$, use \textsc{Raw}.  It is optimal when $u\le1$;
+when $u>1$, every effective length $\lambda_u(p_j)$ from
+\cref{eq:optional-effective-length} is at least one, so the ratio is at most
+$u$.
+
+For the next interval, let $R=\Rquad(u)$, $s=u-1$, and define
+\begin{equation}
+ K=s^2+s+1,
+ \quad D=K+sR,
+ \quad b=\frac{K-s^2R}{D},
+ \quad \chi=\frac{1-b}{R},
+ \quad \alpha=\frac KD.
+ \label{eq:opt:ute-parameters}
+\end{equation}
+The defining equation for $R$ gives
+\begin{equation}
+ 0\le b<\chi<\alpha<1,
+ \qquad
+ \chi=\frac{s(s+1)}D,
+ \qquad
+ b=(s+1)\alpha-s;
+ \label{eq:opt:ute-order}
+\end{equation}
+For completeness, these inequalities follow without numerical root
+isolation.  Since $T_s$ is increasing on positive arguments,
+\begin{equation}
+ T_s\!\left(\frac K{s^2}\right)
+ =\frac K{s^3}\bigl(-s^3+s^2+2s+1\bigr)\ge0
+ \qquad(s\le s_0),
+\end{equation}
+and hence $b=(K-s^2R)/D\ge0$, with equality only at $s=s_0$.  Moreover,
+\begin{equation}
+ \alpha-\chi=\frac1D,
+ \qquad
+ \chi-b=\frac{s^2R-1}{D}>0.
+\end{equation}
+For the last sign,
+\begin{equation}
+ 9T_s(5/3)=f(s):=6s^3-12s^2-2s-3<0.
+ \label{eq:opt:T-five-thirds}
+\end{equation}
+throughout the present interval.  Indeed, on $[4/5,1]$ the polynomial is
+decreasing and $f(4/5)=-1151/125$; on $[1,s_0]$ it has one interior minimum,
+while $f(1)=-11$ and $f(s_0)<f(13/6)=-95/36$.  Here
+$s_0<13/6$ follows by substituting $13/6$ in
+$s^3-(s+1)^2$.  Thus $R>5/3$, while $s>4/5$, and
+$s^2R>16/15$.  Finally $K<D$ gives $\alpha<1$.  In particular, $b=0$
+occurs only at $u=\uzero$.
+The remaining two elementary branches use the single procedure in
+\cref{alg:ute}.
+
+\begin{algorithm}[H]
+\caption{\textsc{ForcedPrefixUTE}$(J,u,b)$}
+\label{alg:ute}
+\begin{algorithmic}
+\Statex \textbf{Input:} jobs $J$, finite $u>1$, and $b\in[0,1]$.
+\State Fix a test order $j_1,\ldots,j_n$; set
+       $k\gets\lfloor bn\rfloor$, $\theta_u\gets\min\{1,u-1\}$,
+       and $Q\gets\varnothing$.
+\State \textbf{For} $i=1,\ldots,n$ \textbf{do}:
+\State \quad Test $j_i$ for one unit and observe $p_{j_i}$.
+\State \quad \textbf{If} $i\le k$ or $p_{j_i}\le\theta_u$, process $j_i$
+       immediately.
+\State \quad \textbf{Otherwise}, add $j_i$ to $Q$.
+\State Process the jobs of $Q$ in nondecreasing revealed processing time.
+\end{algorithmic}
+\end{algorithm}
+
+On $\udiam\le u\le \uzero$, use
+\textsc{ForcedPrefixUTE} with $b$ from \cref{eq:opt:ute-parameters}.  Rounding
+$bn$ changes the cost by $O_u(n)$.
+
+Here is the complete binary calculation.  Adjacent exchanges place as many
+long jobs as possible in the forced prefix and put all suffix-long jobs
+before suffix zeros.  If $x$ is the total long mass, then the prefix-long
+mass is $a=\min\{b,x\}$ and the deferred-long mass is
+$d=(x-b)_+$.  After division by $n^2$, the leading excess
+$G(x)=A-R O$ is
+\begin{equation}
+G(x)=
+\begin{cases}
+\displaystyle
+ \frac{1-R}{2}+u\left(x-\frac{x^2}{2}\right)
+ -\frac{R s}{2}x^2,
+ &0\le x\le b,\\[3mm]
+\displaystyle
+ \frac{1-R}{2}
+ +u\left(b-\frac{b^2}{2}\right)
+ +(1-b)(x-b)+\frac{s}{2}(x-b)^2
+ -\frac{R s}{2}x^2,
+ &b\le x\le1.
+\end{cases}
+\label{eq:opt:binary-upper-gap}
+\end{equation}
+The second quadratic is strictly concave, has its stationary point at
+$x=\alpha$, and satisfies $G(\alpha)=0$; after substituting
+\cref{eq:opt:ute-parameters}, the latter identity is exactly
+\cref{eq:opt:Rquad-equation}.  Since $b<\alpha$, its right derivative at $b$
+is positive.  The left derivative satisfies
+$G'_-(b)=G'_+(b)+s(1-b)>0$, and the first quadratic is concave, so it is
+increasing on $[0,b]$.  Thus $G(x)\le0$ for every $x\in[0,1]$, including
+the limiting case $b=0$.  This proves the binary upper bound without a
+hidden local-versus-global step.
+
+For $\udiam\le u\le2$, arbitrary values reduce to binary values by
+independent Bernoulli extremalization, in the following order.  First raise
+\emph{every} suffix-deferred value to $u$.  This cannot lower ALG, while its
+offline effective length was already $u$.  Only after this deterministic
+step, replace a prefix value $p$ by $u$ with probability $p/u$ and by zero
+otherwise, and replace a suffix-immediate value $p\le u-1$ by $u$ with
+probability $p$ and by zero otherwise.  Notice that the $u$ realization
+of a suffix-immediate job becomes deferred, so status is not preserved.
+Nevertheless the online check is pairwise.  For jobs $i$ before $j$, the
+leading pair contribution is
+\begin{equation}
+ g_{ij}=\begin{cases}
+ 1+p_i,&i\text{ is immediate},\\
+ 2+p_j,&i\text{ is deferred and }j\text{ is immediate},\\
+ 2+\min\{p_i,p_j\},&i,j\text{ are deferred}.
+ \end{cases}
+ \label{eq:opt:pair-contribution}
+\end{equation}
+A rounded prefix job stays immediate and preserves its expected value.  If
+$i$ is suffix-immediate, its rounded contribution is one when it becomes
+zero and at least two when it becomes $u$, hence its expectation is at least
+$1+p_i$.  If $i$ is deferred and $j$ is suffix-immediate, then $i$ has been
+raised to $u$ and the expected pair contribution is
+$2+up_j\ge2+p_j$; a deferred--deferred pair can only increase.  Thus
+expected ALG does not decrease, up to its $O_u(n)$ diagonal terms.
+
+The expected effective lengths are,
+respectively,
+\begin{equation}
+ 1+\frac{u-1}{u}p\le \lambda_u(p),
+ \qquad
+ 1+(u-1)p\le1+p,
+\end{equation}
+and $u$ for a deferred value.  Since the minimum is jointly concave,
+$\EE\min(\lambda_i',\lambda_j')\le\min(\lambda_i,\lambda_j)$.  Thus some binary realization
+has competitive excess at least that of the original instance.
+
+It remains to justify arbitrary values for $2\le u\le \uzero$.  The following
+quadratic lemma records the entire endpoint calculation.
+
+\begin{lemma}[UTE endpoint game]
+\label{lem:opt:ute-endpoint-game}
+For $2\le u\le \uzero$, UTE with the parameters
+\cref{eq:opt:ute-parameters} satisfies
+\begin{equation}
+ \ALG\le\Rquad(u)\OPT+O_u(n).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Fix the symbolic prefix/immediate/deferred decisions.  Convexity in one
+coordinate reduces a prefix job to $p\in\{0,u\}$, a suffix-immediate job to
+$p\in\{0,1\}$, and a suffix-deferred job to $p\in\{1^+,u\}$.  For the last
+claim, on $1<p<u-1$ the deferred--deferred term has coefficient
+$1-R<0$ multiplying a concave minimum; on $[u-1,u]$, OPT is flat and ALG
+is nondecreasing.  Adjacent exchanges give the canonical endpoint order.
+
+Normalize counts by $n$.  Let $a$ be prefix-$u$ mass, $d$ suffix-$u$ mass,
+$t$ suffix-$1^+$ mass, and $m$ suffix-immediate-one mass.  Their constraints
+are
+\begin{equation}
+ 0\le a\le b,
+ \qquad d,t,m\ge0,
+ \qquad d+t+m\le1-b.
+\end{equation}
+Pairwise accounting using \cref{eq:opt:pair-contribution} gives
+\begin{align}
+ A={}&\frac12+(s+1)\left(a-\frac{a^2}{2}\right)
+ +(1-b)(d+t+m)-\frac{m^2}{2}+\frac{s}{2}d^2,
+ \label{eq:opt:ute-A}\\
+ O={}&\frac12+\frac{(a+d+t+m)^2}{2}
+ +\frac{s-1}{2}(a+d)^2.
+ \label{eq:opt:ute-O}
+\end{align}
+Moving $m$ to $t$ does not change $O$ and increases $A$, so $m=0$.  Put
+$x=a+d$ and write $F(x)=A-R O$ after optimizing the other variables.
+The derivative of the gap in $t$ is
+$1-b-R(x+t)$, so its maximizing value is $(\chi-x)_+$.  At fixed
+$x,t$, moving mass from $d$ to $a$ leaves $O$ unchanged and changes $A$ at
+rate $s(1-x)+b-a\ge0$.  Hence
+\begin{equation}
+ t=(\chi-x)_+,
+ \qquad
+ a=\min\{b,x\},
+ \qquad d=(x-b)_+.
+ \label{eq:opt:ute-reduction}
+\end{equation}
+
+For $x\ge\chi$, the gap $A-R O$ is the binary concave quadratic already
+discussed; it is tangent to zero at $x=\alpha$.  For $x<\chi$, put
+\begin{equation}
+ C_0=-\frac{R-1}{2}+\frac{(1-b)^2}{2R},
+ \qquad
+ \gamma=s-R(s-1).
+\end{equation}
+Substitution gives
+\begin{equation}
+ A-R O
+ =C_0+a(s+b-sx)-\frac{a^2}{2}+\frac{\gamma x^2}{2}.
+ \label{eq:opt:ute-positive-t}
+\end{equation}
+One has $\gamma>0$ on $1\le s\le s_0$.  Indeed,
+$T_s(2)=s(s^2-s+1)>0$, so for $s\le2$ the equation $T_s(R)=0$ gives
+$R<2$, and hence $\gamma>2-s\ge0$.  For
+$2\le s\le s_0<13/6$,
+\begin{equation}
+ 16T_s(7/4)=12s^3-20s^2+s-4>0;
+\end{equation}
+the polynomial is $14$ at $s=2$ and has positive derivative thereafter.
+Thus $R<7/4$ and $\gamma>7/4-3s/4>1/8$.
+
+On $0\le x\le b$, one has $a=x$, and
+\begin{equation}
+ A-R O=C_0+(s+b)x
+ -\frac{s+1+R(s-1)}2x^2.
+ \label{eq:opt:ute-small-x}
+\end{equation}
+Its derivative is decreasing, and the derivative at $b$ multiplied by $D$
+is
+\begin{equation}
+ R\bigl(1+s^2+R s^2(s-1)\bigr)>0,
+\end{equation}
+so the maximum is at $b$.  On $b\le x\le\chi$,
+\cref{eq:opt:ute-positive-t} is convex and its maximum is at $b$ or $\chi$.
+The endpoint $\chi$ lies on the binary branch.  Finally,
+\begin{equation}
+ F(b)-F(\chi)
+ =\frac{\chi-b}{2}\,[2sb-\gamma(b+\chi)],
+\end{equation}
+and direct use of \cref{eq:opt:ute-parameters} gives
+\begin{equation}
+ D[\gamma(b+\chi)-2sb]
+ =-s+(1+s-s^3)R+s^2(s-1)R^2>0.
+ \label{eq:opt:ute-small-certificate}
+\end{equation}
+For a rational sign certificate, $T_s$ is increasing on positive arguments
+and
+\begin{equation}
+ 9T_s(5/3)=6s^3-12s^2-2s-3<0,
+\end{equation}
+so $R>5/3$.  If the right-hand side of
+\cref{eq:opt:ute-small-certificate} is denoted by $q_s(R)$, then
+\begin{equation}
+ 3\,\partial_R q_s(5/3)=7s^3-10s^2+3s+3>0.
+\end{equation}
+The last polynomial is increasing for $s\ge1$, so $q_s$ is increasing for
+$R\ge5/3$.  Finally,
+\begin{equation}
+ 9q_s(5/3)=10s^3-25s^2+6s+15>0.
+\end{equation}
+For the last sign, write $s=3/2+z$; the expression becomes
+$3/2-3z/2+20z^2+10z^3$.  It is at least $3/2$ for
+$-1/2\le z\le0$, and for $z\ge0$ it is larger than
+$3/2-9/320$.  These inequalities prove that every endpoint gap is
+nonpositive.  Diagonals and prefix rounding contribute $O_u(n)$.
+\end{proof}
+At $u=\uzero$, $b=0$.  The same zero-prefix algorithm remains exact through
+$u=\varphi+2$ and continues with a $\varphi$ guarantee afterwards.  We state
+the continuation because it makes the three-policy lower envelope in
+\cref{fig:intro-curves-det} literal rather than schematic.
+
+\begin{lemma}[Zero-prefix extension]
+\label{lem:opt:zero-prefix}
+For every $u\ge \uzero$,
+\textnormal{\textsc{ForcedPrefixUTE}}$(J,u,0)$ from \cref{alg:ute} is
+\begin{equation}
+ \max\left\{\varphi,1+\frac1{\sqrt{u-1}}\right\}
+ \label{eq:opt:zero-prefix-full-guarantee}
+\end{equation}
+competitive up to $O_u(n)$.  Thus its guarantee is
+$1+1/\sqrt{u-1}$ on $[\uzero,\varphi+2]$ and $\varphi$ on
+$[\varphi+2,\infty)$.
+\end{lemma}
+
+\begin{proof}
+The same coordinatewise reduction leaves capped-deferred mass $d$,
+boundary-deferred mass $t$, immediate-one mass $m$, and zeros.  With
+$s=u-1$, these masses satisfy $d,t,m\ge0$ and $d+t+m\le1$, and the leading
+costs are
+\begin{equation}
+ A=\frac12+d+t+m-\frac{m^2}{2}+\frac{s d^2}{2},
+ \qquad
+ O=\frac12+\frac{(d+t+m)^2}{2}+\frac{(s-1)d^2}{2}.
+\end{equation}
+Move $m$ to $t$ and put $y=d+t$.  For fixed $y$, the ratio is
+fractional-linear in $d^2$, so its maximum is on one of two faces:
+\begin{equation}
+ \frac{1+2y}{1+y^2}\le\varphi
+ \quad(d=0),
+ \qquad
+ 1+\frac{2y}{1+s y^2}\le1+\frac1{\sqrt s}
+ \quad(d=y).
+\end{equation}
+The first one-variable function is maximized at $y=1/\varphi$ and the second
+at $y=1/\sqrt s$, which gives the two displayed constants.
+The second value dominates the first exactly when
+$u\le\varphi+2$.  Binary instances attain the second value.
+\end{proof}
+
+
+\subsubsection{High caps}
 \label{sec:optional-upper}
 
 We now prove the upper bounds on the two ranges on which capped outcomes
@@ -53,7 +372,7 @@ $u(c)$ is decreasing.  The endpoints are
  (c,m,u)=(r,0,\zstar).
 \]
 
-\begin{theorem}
+\begin{theorem}[Middle and high revealing upper bounds]
 \label{thm:opt:optional-middle-upper}
 For every finite $u\in[\varphi+2,\infty)$, the formally specified algorithm
 \textnormal{\textsc{AdaptiveThreshold}} from
@@ -75,7 +394,7 @@ In particular these are upper bounds on the deterministic
 size-asymptotic competitive ratio.
 \end{theorem}
 
-\noindent\emph{Proof.}
+\begin{proof}
 
 Fix a finite cap $u$ in the stated range.
 
@@ -551,15 +870,15 @@ $1-r(u-1-a_r(y))$ decreases, and the capped diagonal term in
 \eqref{eq:opt:gap-decomposition} also decreases.
 
 Here is the promised uniform finite calculation.  The base bank and its
-feasible cone contain no $u$, so there is one constant $\kappa$, depending
+feasible cone contain no $u$, so there is one constant $C_{\rm step}$, depending
 only on $r$, for which every ordinary or capped transition with $u\ge \zstar$
 satisfies
 \[
- \ell_i+W_{i+1}-W_i\le\kappa.
+ \ell_i+W_{i+1}-W_i\le C_{\rm step}.
 \]
 Because $W_0=rn^2/2$ and $W_n=0$, telescoping gives
 \begin{equation}
- \sum_i\ell_i\le\frac r2n^2+\kappa n.
+ \sum_i\ell_i\le\frac r2n^2+C_{\rm step}n.
  \label{eq:opt:uniform-ell}
 \end{equation}
 In the diagonal term of \cref{eq:opt:gap-decomposition}, a value below the
@@ -570,11 +889,11 @@ $[\zstar,\infty)$.  Combining
 now yields
 \begin{align}
  \ALG-(1+r)\OPT
- &\le-r\binom n2+\frac r2n^2+\kappa n
-   =\left(\kappa+\frac r2\right)n.
+ &\le-r\binom n2+\frac r2n^2+C_{\rm step}n
+   =\left(C_{\rm step}+\frac r2\right)n.
  \label{eq:opt:uniform-high-gap}
 \end{align}
-Thus, with $B=\kappa+r/2$,
+Thus, with $B=C_{\rm step}+r/2$,
 \begin{equation}
  \ALG\le(1+r)\OPT+B n
  \qquad\text{for every finite }u\in[\zstar,\infty),
@@ -587,213 +906,4 @@ present range, every effective offline length is at least one and
 $\OPT\ge n(n+1)/2$.  The additive term in
 \eqref{eq:opt:mixed-upper-finite} vanishes in the size-asymptotic ratio.
 
-\hfill$\square$
-
-\subsection{The obligatory endpoint}
-\label{sec:obligatory}
-
-The obligatory model is the unbounded endpoint of revealing optimization,
-but the passage to that endpoint is not a formal substitution
-$u=\infty$: both the algorithm and the additive error must be uniform in
-$u$.  The finite curve has just established exactly those two properties,
-so the endpoint now follows by a short transfer.
-
-\begin{theorem}[Deterministic obligatory testing]
-\label{thm:det-obligatory}
-Let $\zstar>1$ be the unique solution of
-$\zstar-3=\ln \zstar$, and set
-\[
- \RdetOT=1+\frac{2}{\zstar-1}
- =1.570574096649395\ldots .
-\]
-For every deterministic online algorithm $\mathcal B$ and every $\eps>0$,
-there are arbitrarily large obligatory-testing instances $I$ such that
-\[
- \cost(\mathcal B,I)\ge(\RdetOT-\eps)\cost(\OPT,I).
-\]
-Conversely, there are a deterministic algorithm $\mathcal A$ and an absolute
-constant $B$ such that every $n$-job obligatory instance satisfies
-\[
- \cost(\mathcal A,I)\le\RdetOT\cost(\OPT,I)+Bn.
-\]
-Consequently the optimal deterministic size-asymptotic competitive ratio is
-exactly $\RdetOT$.
-\end{theorem}
-
-\begin{proof}
-For the upper bound, use \textsc{AdaptiveThreshold} with $c=r$.  This
-algorithm never runs a job raw and is independent of $u$.  Given a finite
-obligatory instance, choose any finite
-\[
- u>\max\{\zstar,1+\max_j p_j\}.
-\]
-Its execution is identical in the revealing model with cap $u$, and every
-offline effective length is
-$\min\{u,1+p_j\}=1+p_j$.  Thus the revealing and obligatory optima coincide.
-The constant $B$ in \cref{eq:opt:uniform-high-upper} is independent of $u$,
-so the same inequality holds for the obligatory instance.
-
-For the lower bound, regard an arbitrary obligatory algorithm $\mathcal B$
-as a revealing algorithm at the fixed cap $u=\zstar$ that simply never uses raw
-execution.  The plateau lower bound in \cref{thm:optional-curve} may be
-witnessed by cap-free instances with $p_j<\zstar-1$.  On those instances the
-online transcript is unchanged and
-$\min\{\zstar,1+p_j\}=1+p_j$, so again the two offline optima coincide.  The
-finite-cap lower inequality therefore gives the claimed obligatory lower
-bound for arbitrarily large instances.
 \end{proof}
-
-\newcommand{\capbubblingappendix}{%
-\section{Independent certificate by bubbling caps to a prefix}
-\label{app:cap-bubbling}
-For completeness, we give a second proof of the quadratic estimate.  This
-argument is also a useful audit of the fifth-endpoint calculation: it never
-inserts $p=u$ into an ordinary deferred formula before the caps have
-actually been moved.
-
-Work first in normalized fluid mass.  Immediately before an adjacent pair
-$XU$, let $E_0$ be the preceding $E$-mass, $P$ the preceding
-substantive mass, $N_{\mathrm{def}}$ its deferred submass, $x$ the remaining mass, and
-$w$ the mass of $U$-endpoints strictly after the pair.  Put
-\begin{equation}
- y=\frac{N_{\mathrm{def}}-R(P+E_0)}x,
- \qquad
- \eta=\frac{N_{\mathrm{def}}-RP}{x}=y+R\frac{E_0}{x}\le0.
- \label{eq:opt:bubble-state}
-\end{equation}
-Direct differentiation of the exact pair objective
-\eqref{eq:opt:pair-objective}, including the mutual pair and all future
-caps, gives the two nontrivial commutators
-\begin{align}
- UM-MU
- &=1+\left(1+\eta-\frac{Rw}{x}\right)
-       (y-c)a_c'(y),
- \label{eq:opt:cap-M-commutator}\\
- UQ-QU
- &=\left(\eta-\frac{cw}{x}\right)
-       (y-c)a_c'(y).
- \label{eq:opt:cap-Q-commutator}
-\end{align}
-Here $UX-XU$ means ``new objective after moving $U$ left'' minus the
-old objective.  The second quantity is nonnegative.  For the first, if
-$B=1+\eta-Rw/x\le0$, its second term is nonnegative.  If $B>0$, then
-$B\le1$, and on $-1<y\le0$
-\[
- \frac{(c-y)B}{c-2y}\le1.
-\]
-Thus \eqref{eq:opt:cap-M-commutator} is nonnegative as well.  Below
-$y=-1$, the threshold is flat.  Direct evaluation also gives
-\begin{equation}
- UZ-ZU=UE-EU=1.
- \label{eq:opt:cap-zero-commutators}
-\end{equation}
-The suffix terms involving $w$ are crucial: they make every adjacent
-exchange valid even while other caps remain to the right.  Repeated swaps
-therefore put all caps into one prefix.
-
-After that prefix there is no future cap.  Let $e,b,d$ be the preceding
-$E$-mass, substantive mass, and deferred substantive mass, and define
-\[
- y=\frac{d-R(e+b)}x,
- \quad v=\frac ex,
- \quad h=d-Rb,
- \quad k=x+d-Rb.
-\]
-The four ordinary commutators are
-\begin{align}
- ME-EM&=a_c+a_c'(R-y)\frac{k}{x},
- &QE-EQ&=1-a_c'(R-y)(-y-Rv),
- \notag\\
- MZ-ZM&=a_c-a_c'y\frac{k}{x},
- &QZ-ZQ&=1-a_c'y\frac{h}{x}.
- \label{eq:opt:ordinary-commutators}
-\end{align}
-They are nonnegative.  Indeed, in the varying region
-$h/x=y+Rv\in[y,0]$ and $k/x\in[0,1]$.  With $t=-y\in[0,1]$,
-\begin{equation}
- a_c'(R-y)t=\frac{t(R+t)}{c+2t}\le1,
- \qquad
- a_c't^2=\frac{t^2}{c+2t}\le1;
- \label{eq:opt:ordinary-commutator-signs}
-\end{equation}
-the first inequality is equivalent to
-$(t-1)(t+c)\le0$.  In the flat region $a_c'=0$.  Hence $Z,E$ can be
-moved to the tail, and a worst word has the form
-\begin{equation}
- U^\mu\{M,Q\}^*\{Z,E\}^*.
- \label{eq:opt:canonical-word}
-\end{equation}
-
-On the middle block use the simpler potential
-\[
- \widehat W(x,N,N_{\mathrm{def}})=xN_{\mathrm{def}}+x^2f_c\!\left(\frac{N_{\mathrm{def}}-RN}{x}\right).
-\]
-The identity
-\begin{equation}
- 2f_c-yf_c'
- =\max\{0,-Rf_c',-Rf_c'+a_c(1+y),
-              1-cf_c'+a_cy\}
- \label{eq:opt:ordinary-HJB}
-\end{equation}
-is a direct rewriting of \eqref{eq:opt:f-hjb-identities}; it pays the
-entire ordinary continuation.  If the cap prefix has mass $\mu$, then
-after it $x=1-\mu$, $N=N_{\mathrm{def}}=\mu$, and
-$y=-c\mu/(1-\mu)$.  Its internal cap-pair reward plus its worst
-continuation is therefore
-\begin{equation}
- F_{c,u}(\mu)
- =\frac{2-c(u-1)}2\mu^2+\mu(1-\mu)
- +(1-\mu)^2f_c\!\left(-\frac{c\mu}{1-\mu}\right).
- \label{eq:opt:prefix-objective}
-\end{equation}
-For $0<\mu<1/R$, differentiation gives
-\begin{equation}
- F_{c,u}'(\mu)
- =c\mu\,[Z(c)-u-\operatorname{artanh}\mu].
- \label{eq:opt:prefix-derivative}
-\end{equation}
-On the mixed curve the unique maximizer in this range is therefore
-$\mu=m$, and
-\begin{equation}
- F_{c,u}(m)
- =f_c(0)+\frac c2(\operatorname{artanh}m-m)=\frac c2.
- \label{eq:opt:prefix-maximum}
-\end{equation}
-Here $m\le1/R$, since $c,m\le1/\varphi$.  On the flat part
-$\mu\ge1/R$,
-\begin{equation}
- F_{c,u}(\mu)=\mu-\frac{c(u-1)}2\mu^2.
- \label{eq:opt:prefix-flat}
-\end{equation}
-Its derivative at $1/R$ is
-\[
- \frac{c(1+m)-1}{R}\le0,
-\]
-and only decreases thereafter.  Thus $F_{c,u}(\mu)\le c/2$ on the whole
-unit interval.  At $c=r,m=0,u=\zstar$, the same calculation is maximized at
-$\mu=0$, and increasing $u$ only lowers
-\eqref{eq:opt:prefix-objective}.
-
-To make this independent exchange proof finite, fix
-$\eps>0$ and first replace the last
-$\eps n+O(1)$ outcomes by genuine zeros.  Earlier states and
-actions are unchanged, and only $O(\eps n^2+n)$ pair terms are
-affected.  All cap and ordinary exchanges in the retained prefix then
-occur with $x\ge\eps$; their displayed fluid commutators have
-uniform Taylor remainders there.  More precisely, after assigning mass
-$1/n$ to every job, a normalized adjacent exchange has remainder
-$O_{u,\eps}(n^{-3})$; there are at most $n^2$ exchanges.  At the
-join $y=-1$, split an exchange at the join and use the two one-sided
-formulae, whose values agree.  The artificial zeros already form the
-terminal block, so no unbubbled suffix cap invalidates
-\eqref{eq:opt:ordinary-commutators}.  The normalized one-job remainder in
-the continuation-potential calculation is
-$O_{u,\eps}(n^{-2})$.  For fixed $\eps$, first let
-$n\to\infty$, and then let $\eps\downarrow0$.  Equations
-\eqref{eq:opt:ordinary-HJB}--\eqref{eq:opt:prefix-maximum} give
-\[
- \Gamma_n\le c\binom n2+o(n^2),
-\]
-which is an independent size-asymptotic certificate for the two upper
-bounds above.
-}

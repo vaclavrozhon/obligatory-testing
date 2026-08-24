@@ -154,22 +154,28 @@ per-input guarantee: it is \emph{instance-optimal}.
 \protect\cref{thm:obligatory-instance}]
 \label{thm:intro-obligatory-instance}
 Fix $L<\infty$.  There is a variant $\mathcal A^*$ of
-\cref{alg:intro-obligatory-rand} such that, for every input
+\cref{alg:intro-obligatory-rand} such that, for every size-$n$ multiset
 $M\subseteq[0,L]$ and every online algorithm $\mathcal A'$,
 \[
  \cost(\mathcal A^*)\le \cost(\mathcal A')+o_L(n^2),
 \]
 where both costs are measured on $M$ and include the algorithms' randomness.
 The competing algorithm $\mathcal A'$ may even be designed specifically for
-$M$ and told the entire input in advance.
+$M$ and told the entire multiset in advance, though not its assignment to
+the public labels.
 \end{theorem}
+
+Here and in the instance-optimal statements below, cost on a multiset uses
+the order-oblivious convention of \cref{rem:order-oblivious}.  A private
+shuffle makes the original labeling irrelevant, so the comparison is made
+separately for every multiset $M$.
 
 Both assumptions in the theorem are necessary.  Without a fixed bound $L$
 there is no randomized instance-optimal algorithm, and without randomization
 there is no deterministic one; see \cref{thm:ot-instance-impossibility}.
 
 Two points about the theorem are worth emphasizing.  First, the comparison is made separately
-on every input.  We must therefore compete not only with one fixed online
+on every multiset.  We must therefore compete not only with one fixed online
 algorithm, but also with algorithms optimized for this particular $M$.
 Allowing $\mathcal A'$ to know $M$ makes this strongest possible online
 benchmark explicit.
@@ -258,14 +264,14 @@ it only tells us $p_i$ before we decide when to run it.  We call this
 Without an upper bound on the job lengths, no randomized algorithm has a
 finite competitive ratio, even if we ignore an additive $o(n^2)$ term; see
 \cref{thm:blind-unbounded-impossible}.  For every fixed bound $L$, however,
-sampling again gives one algorithm that is optimal on every input.
+sampling again gives one algorithm that is optimal on every bounded multiset.
 
 
 \begin{theorem}[Blind-execution instance optimality, informal version of
 \protect\cref{thm:blind-instance}]
 \label{thm:intro-blind-instance}
 Fix $L<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
-for every input $M\subseteq[0,L]$ and every online algorithm $\mathcal A'$,
+for every size-$n$ multiset $M\subseteq[0,L]$ and every online algorithm $\mathcal A'$,
 \[
  \cost(\mathcal A^*)\le \cost(\mathcal A')+o_L(n^2).
 \]
@@ -286,7 +292,8 @@ over $0\le q\le1$.
 \caption{Instance-optimal blind execution}
 \label{alg:intro-blind}
 \begin{algorithmic}
-\State Shuffle the jobs and test $o(n)$ of them to estimate $D$.
+\State Shuffle the jobs and run $o(n)$ of them blindly; use their observed
+lengths to estimate $D$.
 \State Find $\tau_D$ from $\mathbb E(\tau_D-P)^+=1$.
 \State If $\tau_D\ge\mu$, put $q=0$.  Otherwise
 $q\in\arg\min_{0\le z\le1}F_{\mathsf{BE},D}(z)$.
@@ -349,7 +356,7 @@ all remaining jobs.
 \protect\cref{thm:bo-instance}]
 \label{thm:intro-bo-instance}
 Consider the blind optimization model with some $u<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
-for every input $M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
+for every size-$n$ multiset $M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
 \[
  \cost(\mathcal A^*)\le \cost(\mathcal A')+o_u(n^2).
 \]
@@ -467,8 +474,8 @@ shown in \cref{fig:intro-curves-det} to make the lower envelope visible.
 \label{alg:intro-ro-ute}
 \begin{algorithmic}
 \State Fix a test order $j_1,\ldots,j_n$ and set $Q\gets\varnothing$.
-\State Set $\theta_u\gets\min\{1,u-1\}$ and
-$b\gets b(u)$ for $u\le \uzero$, while $b\gets0$ otherwise.
+\State Set $\theta_u\gets\min\{1,u-1\}$.  If
+$\udiam\le u\le\uzero$, set $b\gets b(u)$; otherwise set $b\gets0$.
 \State For $i=1,\ldots,n$, test $j_i$ and observe $p_{j_i}$.
 \State \quad If $i\le\lfloor bn\rfloor$ or $p_{j_i}\le\theta_u$, process
 $j_i$ immediately; otherwise add it to $Q$.
@@ -496,7 +503,7 @@ tested jobs belong before the untouched raw block.
 \protect\cref{thm:common-upper-instance}]
 \label{thm:intro-common-upper-instance}
 Fix $u<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
-for every input $M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
+for every size-$n$ multiset $M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
 \[
  \cost(\mathcal A^*)\le \cost(\mathcal A')+o_u(n^2).
 \]
@@ -536,7 +543,7 @@ tail, and the untouched jobs form the final raw block.  The algorithm
 optimizes these two parameters on the sample and applies them after a private
 shuffle.  The sample and its estimation error cost only $o_u(n^2)$.
 
-For each input, this policy attains the best online leading cost.  The
+For each multiset, this policy attains the best online leading cost.  The
 competitive ratio is obtained by maximizing the ratio between that cost and
 the clairvoyant optimum over inputs.  The worst input can be reduced to two
 job lengths, leaving a one-variable optimization.

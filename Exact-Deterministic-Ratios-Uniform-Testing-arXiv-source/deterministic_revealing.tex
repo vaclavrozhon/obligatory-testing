@@ -1,0 +1,146 @@
+\section{Deterministic revealing optimization: the exact curve}
+\label{sec:optional}
+
+The goal of this section is to prove \cref{thm:optional-curve}, the rigorous
+deterministic part of the informal revealing-optimization curve theorem
+\cref{thm:intro-common-upper-curves}.  We now allow raw execution for a
+finite common time $u$.  All jobs have this same known upper limit, and a
+test reveals $p_j\in[0,u]$.  By
+\cref{eq:optional-effective-length,lem:offline}, the offline effective length
+is $\lambda_u(p_j)=\min\{u,1+p_j\}$, and the offline optimum schedules these
+effective lengths in nondecreasing order.  We write $\RdetRO(u)$ for the optimal
+deterministic size-asymptotic ratio at this fixed common upper limit.
+
+The answer has six branches.  We first define their transition points.  Put
+\begin{equation}
+ \varphi=\frac{1+\sqrt5}{2},
+ \qquad
+ \udiam=\frac{1+\sqrt{3+2\sqrt5}}2
+ =1.866760399173862\ldots .
+ \label{eq:opt:phi-udiamond}
+\end{equation}
+Let $s_0>1$ be the root of
+\begin{equation}
+ s_0^3=(s_0+1)^2,
+ \qquad
+ \uzero=1+s_0=3.147899035704787\ldots .
+ \label{eq:opt:u0}
+\end{equation}
+For $s=u-1$, put
+\begin{equation}
+ T_s(z)=sz^2+(s^3+s^2+1)z-(s^2+s+1)(s+2),
+ \label{eq:opt:Ts}
+\end{equation}
+and let $\Rquad(u)$ be the positive root of
+\begin{equation}
+sR^2+(s^3+s^2+1)R-(s^2+s+1)(s+2)=0.
+\label{eq:opt:Rquad-equation}
+\end{equation}
+Denote the left-hand side by $T_s(R)$.
+Equivalently,
+\begin{equation}
+ \Rquad(u)=
+ \frac{-1-u+2u^2-u^3+
+ \sqrt{u^6-4u^5+10u^4-6u^3-3u^2+6u-3}}
+ {2(u-1)}.
+ \label{eq:opt:Rquad-explicit}
+\end{equation}
+
+At the other end, let $\zstar>1$ solve $\zstar-3=\ln \zstar$ and define
+\begin{equation}
+ r=\frac2{\zstar-1},
+ \qquad
+ \RdetOT=1+r=1.570574096649395\ldots,
+ \qquad
+ \zstar=4.505241495792883\ldots .
+ \label{eq:opt:obligatory-constant}
+\end{equation}
+For $\varphi+2\le u\le \zstar$, define $\Rmix(u)=1+c$ by the unique
+solution $(c,m)$ of
+\begin{equation}
+ \operatorname{artanh}m-m
+ =1-\frac1c+\frac12\ln\!\left(1+\frac2c\right),
+ \qquad
+ u=1+\frac2c-m,
+ \label{eq:opt:mixed-parametrization}
+\end{equation}
+with $r\le c\le1/\varphi$ and $0\le m\le1/\varphi$.
+
+\begin{theorem}[Exact revealing-optimization curve]
+\label{thm:optional-curve}
+For every fixed $0<u<\infty$, the optimal deterministic size-asymptotic ratio in
+the revealing-optimization model is
+\begin{equation}
+\boxed{
+\RdetRO(u)=
+\begin{cases}
+1, &0<u\le1,\\[1mm]
+u, &1\le u\le \udiam,\\[1mm]
+\Rquad(u), &\udiam\le u\le \uzero,\\[1mm]
+\displaystyle 1+\frac1{\sqrt{u-1}},
+   &\uzero\le u\le\varphi+2,\\[3mm]
+\Rmix(u), &\varphi+2\le u\le \zstar,\\[1mm]
+\RdetOT, &u\ge \zstar.
+\end{cases}}
+\label{eq:opt:full-curve}
+\end{equation}
+For every branch there is an explicit deterministic algorithm satisfying
+\[
+ \cost(\mathcal A,I)\le \RdetRO(u)\cost(\OPT,I)+O_u(n).
+\]
+On $u\ge \zstar$ the remainder is one absolute $O(n)$ term, uniform over all
+finite $u$.
+Conversely, for every deterministic algorithm $\mathcal A$ and every
+$\eps>0$, there are arbitrarily large fixed instances $I$ such that
+\[
+ \cost(\mathcal A,I)
+ \ge\bigl(\RdetRO(u)-\eps\bigr)\cost(\OPT,I).
+\]
+For $u\ge \zstar$, these lower-bound instances may be chosen cap-free:
+$p_j<u-1$ for every job.  Thus both witnesses on the plateau are uniform in
+the sense needed to pass separately to the obligatory endpoint.
+\end{theorem}
+
+The proof combines two kinds of lower bounds.  Binary hidden-stopping
+instances give the first four branches, while a continuous capped version
+of the harmonic construction gives the mixed branch and the plateau.  Three
+explicit policies match them: raw execution, a forced-prefix uniform
+threshold, and a history-dependent adaptive threshold.
+The upper-bound witness can be read from the following policy map.  The
+algorithms themselves are specified formally in
+\cref{alg:raw,alg:ute,alg:adaptive-threshold}.
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+range & policy & parameter choice \\
+\midrule
+$0<u\le \udiam$
+ & \textsc{Raw} & none \\
+$\udiam<u\le \uzero$
+ & \textsc{ForcedPrefixUTE} & $b=b(u)$ from \eqref{eq:opt:ute-parameters} \\
+$\uzero<u\le\varphi+2$
+ & \textsc{ForcedPrefixUTE} & $b=0$ \\
+$\varphi+2<u<\zstar$
+ & \textsc{AdaptiveThreshold} & $c=c(u)$ from \eqref{eq:opt:mixed-parametrization} \\
+$\zstar\le u<\infty$
+ & \textsc{AdaptiveThreshold} & $c=r$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Policy guarantees}
+\label{sec:det-policy-guarantees}
+
+\input{deterministic_policy_guarantees}
+
+\subsection{Branchwise lower bounds}
+\label{sec:det-branchwise-lower}
+
+\input{deterministic_lower_bounds}
+
+\subsection{Assembly of the curve}
+\label{sec:det-curve-assembly}
+
+\input{deterministic_curve_assembly}
+
+\input{deterministic_obligatory}

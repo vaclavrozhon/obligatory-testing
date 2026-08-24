@@ -10,7 +10,7 @@ that this variant attains, on every bounded input, the best leading cost
 available even to an announced policy.
 
 For a multiset $M=\{p_1,\ldots,p_n\}$, we define below an explicit number
-$\PhiOT(D_M)$, using the common empirical notation
+$\PhiOT(D[M])$, using the common empirical notation
 \cref{eq:empirical-distributions}.  It is obtained by scanning the
 processing times in increasing order, choosing the prefix with the largest
 number of completions per unit of discovery work, and evaluating the
@@ -25,23 +25,21 @@ $\eps_L(n)\to0$ such that, for every size-$n$ multiset
 $M\subseteq[0,L]$ and every fixed labeling $\sigma$,
 \begin{equation}
  \EE\cost(\mathcal A^*,\sigma(M))
- \le n^2\PhiOT(D_M)+\eps_L(n)n^2.
+ \le n^2\PhiOT(D[M])+\eps_L(n)n^2.
  \label{eq:ot-instance-upper}
 \end{equation}
 Conversely, for every randomized policy $\mathcal A$, even an announced
 policy, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE\cost(\mathcal A,\sigma(M))
- \ge n^2\PhiOT(D_M)-\eps_L(n)n^2.
+ \ge n^2\PhiOT(D[M])-\eps_L(n)n^2.
  \label{eq:ot-instance-lower}
 \end{equation}
 One may take $\eps_L(n)=O_L(n^{-1/5})$.  Thus $\mathcal A^*$ is
 asymptotically instance-optimal, uniformly over all bounded inputs.
 \end{theorem}
 
-The upper estimate will have order $O_L(n^{-1/5})$.  The announced lower
-bound is sharper, of order $O_L(n^{-1/2}\sqrt{\ln(n+2)})$; we use the slower
-common rate only to keep the theorem statement symmetric.
+Both estimates below are stated with the common order $O_L(n^{-1/5})$.
 
 \begin{theorem}[When instance optimality is impossible]
 \label{thm:ot-instance-impossibility}
@@ -79,19 +77,19 @@ the private randomness of $\mathcal A$.  For part~(i), write $n=2m$.
 Against the fixed deterministic policy, reveal
 length two on the first $m$ labels it tests and zero on the remaining $m$.
 As usual, replay freezes this interaction into one fixed oblivious labeling.
-If the policy does not finish, the claim is immediate.  Otherwise, let $r$
+If the policy does not finish, the claim is immediate.  Otherwise, let $h$
 be the number of length-two jobs completed before the first zero is tested.
-By that time all $m$ positive jobs have been tested, so at least $m+2r$ work
-has elapsed.  The first $r$ completed positive jobs contribute at least
-$3r(r+1)/2$.  At that point the remaining jobs consist of $m$ unit tests of
-zero jobs and $m-r$ processing operations of length two.  Even SPT order for
+By that time all $m$ positive jobs have been tested, so at least $m+2h$ work
+has elapsed.  The first $h$ completed positive jobs contribute at least
+$3h(h+1)/2$.  At that point the remaining jobs consist of $m$ unit tests of
+zero jobs and $m-h$ processing operations of length two.  Even SPT order for
 this remaining work gives
 \begin{align*}
  \cost(\mathcal A,M)
- &\ge \frac{3r(r+1)}2
- +(2m-r)(m+2r)+\frac{m(m+1)}2\\
- &\hspace{22mm}{}+m(m-r)+(m-r)(m-r+1)\\
- &=\frac92m^2+\frac12r^2+\frac32m+\frac12r
+ &\ge \frac{3h(h+1)}2
+ +(2m-h)(m+2h)+\frac{m(m+1)}2\\
+ &\hspace{22mm}{}+m(m-h)+(m-h)(m-h+1)\\
+ &=\frac92m^2+\frac12h^2+\frac32m+\frac12h
  \ge\frac98n^2.
 \end{align*}
 The comparison policy $\mathcal A'$ tests in a uniformly random order, completes zeros at
@@ -170,8 +168,8 @@ Define
   +\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q).}
  \label{eq:ot-Phi}
 \end{equation}
-For $D=D_M$ and a whole-occurrence maximizing prefix $E$, this is precisely
-$\Psi_{D_M}(E)$ from \cref{eq:stationary-leading-coefficient}.  The next
+For $D=D[M]$ and a whole-occurrence maximizing prefix $E$, this is precisely
+$F_{\mathsf{OT},D[M]}(E)$ from \cref{eq:stationary-leading-coefficient}.  The next
 lemma proves both that the value is
 independent of choices at a tied atom and that it lower-bounds every fluid
 policy.
@@ -180,7 +178,7 @@ policy.
 \label{lem:ot-completion-envelope}
 For scaled time $s\ge0$, let
 \begin{equation}
- \mathcal C^{\mathsf{OT}}_D(s)=\max\left\{
+ \mathcal C_{\mathsf{OT},D}(s)=\max\left\{
   D(\{0\})T+\sum_{p>0}c_p:
   \begin{array}{l}
    0\le T\le1,\quad 0\le c_p\le D(\{p\})T,\\
@@ -188,12 +186,12 @@ For scaled time $s\ge0$, let
   \end{array}\right\}.
  \label{eq:ot-envelope}
 \end{equation}
-Then $\mathcal C^{\mathsf{OT}}_D$ is attained simultaneously at all times by the stationary
+Then $\mathcal C_{\mathsf{OT},D}$ is attained simultaneously at all times by the stationary
 maximum-density schedule: repeat infinitesimal full modules $g_*$ until all
 jobs have been tested, then process the residual measure $\nu$ in SPT order.
 Moreover,
 \begin{equation}
- \PhiOT(D)=\int_0^\infty(1-\mathcal C^{\mathsf{OT}}_D(s))\,ds.
+ \PhiOT(D)=\int_0^\infty(1-\mathcal C_{\mathsf{OT},D}(s))\,ds.
  \label{eq:ot-Phi-area}
 \end{equation}
 \end{lemma}
@@ -211,7 +209,7 @@ then processes $\nu$ in SPT order, proving the pointwise assertion.  Since
 $\nu$ has mass $1-a_*$ and is supported above $\tau_D$, the common area
 formula \cref{eq:common-envelope-area} expands to
 \begin{align*}
- \int_0^\infty(1-\mathcal C^{\mathsf{OT}}_D(s))\,ds
+ \int_0^\infty(1-\mathcal C_{\mathsf{OT},D}(s))\,ds
  &=\tau_D\left(\frac{a_*^2}{2}+a_*(1-a_*)\right)
    +\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q)\\
  &=w_*\left(1-\frac{a_*}{2}\right)
@@ -230,7 +228,7 @@ identity \cref{eq:stationary-prefix-cost} and
 \cref{eq:ot-Phi} give
 \begin{equation}
  \EE\cost(\mathrm{stat},M)
- =n^2\PhiOT(D_M)
+ =n^2\PhiOT(D[M])
   +\frac12\left(|E|+\sum_i p_i\right).
  \label{eq:ot-announced-upper}
 \end{equation}
@@ -246,100 +244,58 @@ job, since otherwise the lower bound is immediate.  In the adaptive order in
 which it tests new labels, the revealed occurrences form a uniform random permutation
 $P_1,\ldots,P_n$ of $M$.  This is \cref{lem:adaptive-first-touch}, with
 equal-valued occurrences kept distinct as temporary tokens.
+Because every first touch is a test, no suffix edit is needed and we may use
+the sharper all-prefix sampling bound directly.
 
-For every prefix length $k$ and threshold $z$, put
+Keep zero separate, partition $(0,L]$ into
 \begin{equation}
- N_k(z)=|\{j\le k:P_j\le z\}|,\qquad
- N(z)=|\{i:p_i\le z\}|,
+ K_n=\lfloor n^{1/5}\rfloor
+ \label{eq:ot-lower-grid-size}
 \end{equation}
-and define
+cells, and round every positive value upward to its cell endpoint.  Let
+$D^+$ be the resulting empirical law and $h_n=L/K_n$ the mesh.  For each
+cell $j$, let $H_{k,j}$ count its occurrences among the first $k$ tests and
+let $d_j$ be its mass in $D^+$.  The uniform-prefix bound
+\cref{eq:uniform-prefix-hoeffding} gives, except on an event of probability
+at most $n^{-2}$,
 \begin{equation}
- \Delta=\max_{0\le k\le n}\max_z
- \left|N_k(z)-\frac{k}{n}N(z)\right|.
- \label{eq:ot-prefix-discrepancy}
-\end{equation}
-Only the at most $n+1$ thresholds immediately after values of $M$ matter.
-Apply the uniform-prefix sampling bound
-\cref{eq:uniform-prefix-hoeffding,eq:uniform-prefix-mean} to the binary
-indicators $\one_{p_i\le z}$ and union-bound over these thresholds.  This
-gives universal constants $c,C>0$ such that
-\begin{equation}
- \Prob(\Delta\ge u)\le2(n+1)^2e^{-cu^2/n},\qquad
- \EE\Delta\le C\sqrt{n\ln(n+2)}.
- \label{eq:ot-discrepancy-concentration}
+ |H_{k,j}-kd_j|\le\Gamma_n
+ \quad\text{for all }k,j,
+ \qquad
+ \Gamma_n=O\!\left(\sqrt{n\ln(n+2)}\right).
+ \label{eq:ot-cell-discrepancy}
 \end{equation}
 
-We now transfer a realized schedule prefix to the deterministic fluid
-envelope.  For a finite subprobability measure $\lambda$, let
+Put $\gamma_n=\Gamma_n/n$.  At an operation prefix, let $t=k/n$, let $z$ be
+the normalized number of completed zero jobs, and let $c_j$ be the completed
+positive mass from cell $j$.  Equation~\eqref{eq:ot-cell-discrepancy} gives
+the capacity hypotheses of \cref{lem:cell-capacity-repair} with $q=1$ and
+$b=0$.  Rounding upward adds at most $h_n$ to normalized processed work, so
+the work hypothesis holds with $\alpha=h_n$.  Since
+$\mathcal C^v_{D^+,1}=\mathcal C_{\mathsf{OT},D^+}$, the lemma gives,
+simultaneously at every prefix,
 \begin{equation}
- Q_\lambda(u)=\inf\{z:\lambda([0,z])\ge u\},\qquad
- W_\lambda(c)=\int_0^cQ_\lambda(u)\,du.
- \label{eq:ot-quantile-work}
-\end{equation}
-Thus $W_\lambda(c)$ is the least work needed to process mass $c$ from
-$\lambda$, with the endpoint fraction of an atom taken when necessary.
-After $k$ tests define
-\begin{equation}
- R_k=\frac1n\sum_{j\le k}\delta_{P_j},\qquad
- A_k=\frac{k}{n}D_M,\qquad \delta=\frac\Delta n.
-\end{equation}
-Both measures have mass $k/n$, and
-\begin{equation}
- \sup_z|R_k([0,z])-A_k([0,z])|\le\delta.
- \label{eq:ot-cdf-transfer}
-\end{equation}
-Consequently, for $u>\delta$,
-$Q_{A_k}(u-\delta)\le Q_{R_k}(u)$.  Indeed, whenever the $R_k$-CDF has
-reached $u$, \cref{eq:ot-cdf-transfer} says that the $A_k$-CDF has reached
-$u-\delta$; taking generalized inverses gives the inequality, including at
-atom endpoints.  Thus, when $c\ge\delta$, integration yields
-\begin{equation}
- W_{A_k}((c-\delta)_+)
- \le\int_\delta^cQ_{R_k}(u)\,du
- \le W_{R_k}(c).
- \label{eq:ot-quantile-transfer}
-\end{equation}
-If $c<\delta$, the retained mass $(c-\delta)_+$ is zero and the corresponding
-claim is immediate.
-
-At physical time $t$, suppose $k$ tests have completed, the policy has
-completed mass $c$ of jobs, and the positive processing work belonging to
-those completed jobs is $nq$.  Replacing the completed submeasure by the
-shortest mass $c$ of $R_k$ can only reduce its work, so
-$W_{R_k}(c)\le q$.  Also $k+nq\le t$.  By
-\cref{eq:ot-quantile-transfer}, the proportional supply $A_k$ contains mass
-$(c-\delta)_+$ processable with work at most $q$.  This is a feasible point
-of \cref{eq:ot-envelope} at scaled time $t/n$.  Therefore, pathwise and
-simultaneously for every $t$,
-\begin{equation}
- \#\{\text{jobs completed by time }t\}
- \le nF_{D_M}(t/n)+\Delta.
+ \frac{N_{\mathcal A}(nx)}n
+ \le \mathcal C_{\mathsf{OT},D^+}(x+h_n)
+      +(K_n+1)\gamma_n.
  \label{eq:ot-pointwise-completion}
 \end{equation}
 
-Put $H=1+n^{-1}\sum_i p_i$.  The fluid curve is one by time $H$.  Integrating
-the unfinished-job area in \cref{eq:ot-pointwise-completion} gives the
-pathwise inequality
-\begin{align}
- \cost(\mathcal A,M)
- &\ge\int_0^{nH}
-   \left[n(1-F_{D_M}(t/n))-\Delta\right]dt\notag\\
- &=n^2\PhiOT(D_M)-Hn\Delta.
- \label{eq:ot-announced-lower-pathwise}
-\end{align}
-Taking expectations and using
-\cref{eq:ot-discrepancy-concentration}, every deterministic announced policy
-has expected cost at least
+The completion horizon is at most $H=L+2$, and the immediate
+test--process policy gives $0\le\PhiOT(D^+)\le(L+1)/2$.  Apply
+\cref{thm:completion-curve-transfer} with $\varepsilon=0$,
+$\alpha=h_n$, $\beta=(K_n+1)\gamma_n$, and $\eta=n^{-2}$.  Finally,
+zero-preserving transport \cref{lem:zero-preserving-transport} changes the
+fluid value by at most $h_n$.  Because
+$(K_n+1)\gamma_n=O(n^{-3/10}\sqrt{\ln(n+2)})$, every deterministic announced
+policy has uniform-placement expected cost at least
 \begin{equation}
- n^2\PhiOT(D_M)
- -O\!\left(Hn^{3/2}\sqrt{\ln(n+2)}\right).
+ n^2\PhiOT(D[M])-O_L(n^{9/5}).
  \label{eq:ot-announced-lower}
 \end{equation}
-Finite Yao selection \cref{lem:finite-yao} gives the same lower bound for
-randomized policies: the uniform distribution over occurrence placements is
-an oblivious finite input distribution, so some fixed placement has at least
-the average cost.
-When $p_i\le L$, one has $H\le1+L$, uniformly over $M$.
+The finite-Yao conclusion built into
+\cref{thm:completion-curve-transfer} gives the same lower bound on one fixed
+oblivious placement for every randomized policy.
 
 \subsection{Removing the announcement}
 
@@ -360,19 +316,22 @@ maximum-density sample prefix.
 Fix $L$.  For all sufficiently large $n$, $B_n>L$ and the grid has no
 overflow job.  Moreover, the full sample prefix has density at least
 $1/(1+L+\eta)>2/B_n$, so fallback never occurs.  Let $D^+$ be the rounded
-population histogram, $\widehat D$ the sample histogram, and
-$\Delta=\|D^+-\widehat D\|_1$.  By \cref{lem:rand-histogram},
+population histogram, $D^{\rm rem}$ the rounded histogram of the remaining jobs,
+$\widehat D$ the sample histogram, and
+$\Delta=\|D^+-\widehat D\|_1$.  By \cref{lem:rand-histogram} and deletion of
+the $k$ sample occurrences,
 \begin{equation}
- \EE\Delta\le\sqrt{\frac{d+2}{k}}.
+ \EE\Delta\le\sqrt{\frac{d+2}{k}},\qquad
+ \|D^{\rm rem}-D^+\|_1\le\frac{2k}{n-k}.
  \label{eq:ot-learning-histogram}
 \end{equation}
 
-For a fixed grid prefix $J$, let $\Psi_D(J)$ be the right-hand side of
+For a fixed grid prefix $J$, let $F_{\mathsf{OT},D}(J)$ be the right-hand side of
 \cref{eq:ot-Phi} when $J$ is used as the early set, whether or not it is
 optimal for $D$.  If $D,E$ are grid histograms supported on $[0,L+\eta]$,
 then
 \begin{equation}
- |\Psi_D(J)-\Psi_E(J)|
+ |F_{\mathsf{OT},D}(J)-F_{\mathsf{OT},E}(J)|
  \le3(L+2)\|D-E\|_1.
  \label{eq:ot-template-lipschitz}
 \end{equation}
@@ -382,18 +341,12 @@ kernel $\min\{p,q\}$ changes by at most twice this amount under the two
 product measures.  The displayed loose constant covers the three terms.
 
 By \cref{lem:ot-completion-envelope}, a maximum-density prefix minimizes
-$\Psi_D(J)$ over grid prefixes.  If $\widehat J$ is the prefix learned from
-the sample, \cref{lem:empirical-minimization}, together with
-\cref{eq:ot-template-lipschitz}, gives
-\begin{equation}
- \Psi_{D^+}(\widehat J)
- \le\PhiOT(D^+)+6(L+2)\Delta.
- \label{eq:ot-learning-sandwich}
-\end{equation}
+$F_{\mathsf{OT},D}(J)$ over grid prefixes.  Let $\widehat J$ be the prefix
+learned from the sample.
 Rounding each processing time upward by at most $\eta$ preserves zeros, so
 \cref{lem:zero-preserving-transport} gives
 \begin{equation}
- \PhiOT(D^+)\le\PhiOT(D_M)+\eta.
+ \PhiOT(D^+)\le\PhiOT(D[M])+\eta.
  \label{eq:ot-rounding-stability}
 \end{equation}
 
@@ -405,11 +358,14 @@ $O_L(n)$, and using the rounded values can only increase the comparator's
 processing delays.  Therefore
 \begin{equation}
  \EE[\cost(\mathcal A^*,M)\mid S]
- \le n^2\Psi_{D^+}(\widehat J)+O_L(nk+k^2+n).
+ \le n^2F_{\mathsf{OT},D^{\rm rem}}(\widehat J)+O_L(nk+k^2+n).
  \label{eq:ot-sample-first-instance}
 \end{equation}
-Average \cref{eq:ot-sample-first-instance}, then use
-\cref{eq:ot-learning-histogram,eq:ot-learning-sandwich,eq:ot-rounding-stability}.
+This is the conditional hypothesis of
+\cref{lem:pilot-learning-transfer}.  Apply that lemma with metric
+$d(D,E)=\|D-E\|_1$, $L_0=3(L+2)$, and
+\cref{eq:ot-learning-histogram}; then use
+\cref{eq:ot-rounding-stability}.
 Since
 \[
  \sqrt{d/k}=O(n^{-1/4}),\qquad
@@ -418,7 +374,7 @@ Since
 we obtain
 \begin{equation}
  \EE\cost(\mathcal A^*,\sigma(M))
- \le n^2\PhiOT(D_M)+O_L(n^{9/5})
+ \le n^2\PhiOT(D[M])+O_L(n^{9/5})
  \label{eq:ot-instance-upper-rate}
 \end{equation}
 for every fixed labeling $\sigma$.  Together with

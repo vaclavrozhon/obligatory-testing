@@ -1,0 +1,72 @@
+\subsubsection{The shape of the claimed curve}
+
+The global-maximum assertion follows directly from the displayed formulas.
+Only the algebraic branch needs a check.  Implicit differentiation of
+$T_s(\Rquad(u))=0$, with $s=u-1$, gives
+\begin{equation}
+ \Rquad'(u)=
+ -\frac{R^2+(3s^2+2s)R-3(s+1)^2}
+ {2sR+s^3+s^2+1}.
+ \label{eq:opt:Rquad-derivative}
+\end{equation}
+Using $T_s(R)=0$, its numerator factors as
+\[
+ \frac{2s^3+s^2-1}{s}
+ \left(R-
+ \frac{2s^3+3s^2-2}{2s^3+s^2-1}\right).
+\]
+On the relevant interval $s\ge \udiam-1>2/3$, the prefactor is
+positive, while the fraction in parentheses is at most $5/3$ because
+$4s^3-4s^2+1>0$.  The sign certificate
+\eqref{eq:opt:T-five-thirds} gives $R>5/3$.  Hence
+$\Rquad'(u)<0$.  The reciprocal branch and the mixed parametrization are
+also decreasing, so $\RdetRO(u)$ attains its global maximum only at
+$u=\udiam$.
+
+\subsubsection{Completion of the curve and consistency at the joins}
+
+The branchwise lower bounds are:
+\cref{prop:opt:binary-lower} supplies the first four branches,
+\cref{eq:opt:mixed-lower-final} the fifth, and
+\cref{eq:opt:high-lower} the last.  The raw algorithm,
+\cref{lem:opt:ute-endpoint-game,lem:opt:zero-prefix}, supplies the matching
+upper bounds through $\varphi+2$, while \cref{sec:optional-upper} supplies
+the last two.  Together these statements prove \cref{thm:optional-curve}.
+
+For clarity, all five joins are exact:
+\begin{align*}
+ \Rquad(\udiam)&=\udiam,\\
+ \Rquad(\uzero)&=1+\frac1{\sqrt{s_0}}
+              =1.682327803828019\ldots,\\
+ 1+\frac1{\sqrt{(\varphi+2)-1}}&=\varphi
+              =\Rmix(\varphi+2),\\
+ \Rmix(\zstar)&=1+r=\RdetOT.
+\end{align*}
+At $u=1$, both initial branches equal one.  Representative values of the
+new mixed branch are
+\begin{center}
+\begin{tabular}{@{}rrrr@{}}
+\toprule
+$u$ & $\RdetRO(u)$ & $m$ & $t$\\
+\midrule
+$3.800000$ & $1.598851588$ & $0.539725635$ & $1.138984621$\\
+$4.000000$ & $1.583283633$ & $0.428863572$ & $1.330517832$\\
+$4.071679486$ & $1.579204806$ & $0.381330539$ & $1.412236296$\\
+$4.300000$ & $1.571692026$ & $0.198387083$ & $1.734651379$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{remark}[Asymptotic scope]
+\label{rem:opt:curve-audit}
+All statements above concern the fixed-$u$ size-asymptotic ratio.  Below the
+plateau, the upper bounds have additive error $O_u(n)$.  On
+$u\in[\zstar,\infty)$ the same algorithm has one uniform $O(n)$ error.  The
+unbounded obligatory endpoint is not included in the statement of the
+curve; it is derived after the finite-$u$ proof in
+\cref{sec:obligatory}.
+\end{remark}
+
+The next subsection, \cref{sec:optional-upper}, proves the matching
+middle- and high-$u$ upper bounds and thereby completes the proof of
+\cref{thm:optional-curve}.

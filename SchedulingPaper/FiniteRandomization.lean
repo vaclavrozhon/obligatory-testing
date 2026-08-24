@@ -64,6 +64,95 @@ theorem uniformAverage_nonneg {Ω : Type*} [Fintype Ω] [Nonempty Ω]
     0 ≤ uniformAverage f := by
   simpa using uniformAverage_mono (f := fun _ : Ω => 0) (g := f) h
 
+/-- Expectation under an explicitly represented finite probability law.
+Unlike `uniformAverage`, this also represents irrational atom masses. -/
+def finiteExpectation {Ω : Type*} [Fintype Ω]
+    (weight : Ω → ℝ) (f : Ω → ℝ) : ℝ :=
+  ∑ ω, weight ω * f ω
+
+theorem finiteExpectation_const
+    {Ω : Type*} [Fintype Ω] (weight : Ω → ℝ)
+    (hmass : ∑ ω, weight ω = 1) (c : ℝ) :
+    finiteExpectation weight (fun _ : Ω => c) = c := by
+  unfold finiteExpectation
+  rw [← Finset.sum_mul, hmass, one_mul]
+
+theorem finiteExpectation_add
+    {Ω : Type*} [Fintype Ω] (weight : Ω → ℝ)
+    (f g : Ω → ℝ) :
+    finiteExpectation weight (fun ω => f ω + g ω) =
+      finiteExpectation weight f + finiteExpectation weight g := by
+  unfold finiteExpectation
+  simp only [mul_add, Finset.sum_add_distrib]
+
+theorem finiteExpectation_smul
+    {Ω : Type*} [Fintype Ω] (weight : Ω → ℝ)
+    (c : ℝ) (f : Ω → ℝ) :
+  finiteExpectation weight (fun ω => c * f ω) =
+      c * finiteExpectation weight f := by
+  unfold finiteExpectation
+  rw [Finset.mul_sum]
+  apply Finset.sum_congr rfl
+  intro ω _
+  ring
+
+/-- A finite sum can be interchanged with a finite weighted expectation. -/
+theorem finiteExpectation_fintype_sum
+    {Ω β : Type*} [Fintype Ω] [Fintype β]
+    (weight : Ω → ℝ) (f : Ω → β → ℝ) :
+    finiteExpectation weight (fun ω => ∑ x, f ω x) =
+      ∑ x, finiteExpectation weight (fun ω => f ω x) := by
+  unfold finiteExpectation
+  simp_rw [Finset.mul_sum]
+  rw [Finset.sum_comm]
+
+/-- A finite expectation is unchanged when both the weights and the random
+variable are reparameterized by a bijection. -/
+theorem finiteExpectation_comp_equiv
+    {Ω Ω' : Type*} [Fintype Ω] [Fintype Ω']
+    (e : Ω ≃ Ω') (weight : Ω' → ℝ) (f : Ω' → ℝ) :
+    finiteExpectation (weight ∘ e) (f ∘ e) =
+      finiteExpectation weight f := by
+  unfold finiteExpectation
+  exact Fintype.sum_equiv e _ _ fun _ => rfl
+
+/-- A normalized nonnegative finite expectation cannot exceed every atom. -/
+theorem exists_finiteExpectation_le
+    {Ω : Type*} [Fintype Ω] [Nonempty Ω]
+    (weight : Ω → ℝ) (f : Ω → ℝ)
+    (hweight : ∀ ω, 0 ≤ weight ω)
+    (hmass : ∑ ω, weight ω = 1) :
+    ∃ ω, finiteExpectation weight f ≤ f ω := by
+  obtain ⟨ω, _hω, hmax⟩ := Finset.exists_max_image
+    (Finset.univ : Finset Ω) f Finset.univ_nonempty
+  refine ⟨ω, ?_⟩
+  calc
+    finiteExpectation weight f ≤
+        finiteExpectation weight (fun _ : Ω => f ω) := by
+      unfold finiteExpectation
+      exact Finset.sum_le_sum fun x hx =>
+        mul_le_mul_of_nonneg_left (hmax x hx) (hweight x)
+    _ = f ω := finiteExpectation_const weight hmass _
+
+/-- One-sided finite Yao selection for an arbitrary finite-support law.
+The private seed remains uniform, while input atoms may have arbitrary real
+probabilities (in particular the exact maximizing Bernoulli mass). -/
+theorem finite_yao_select_weighted
+    {Inputs Seeds : Type*}
+    [Fintype Inputs] [Nonempty Inputs]
+    [Fintype Seeds] [Nonempty Seeds]
+    (weight : Inputs → ℝ) (cost : Inputs → Seeds → ℝ)
+    (hweight : ∀ input, 0 ≤ weight input)
+    (hmass : ∑ input, weight input = 1)
+    {L : ℝ}
+    (hjoint : L ≤ finiteExpectation weight
+      (fun input => uniformAverage fun seed => cost input seed)) :
+    ∃ input, L ≤ uniformAverage fun seed => cost input seed := by
+  obtain ⟨input, hinput⟩ := exists_finiteExpectation_le weight
+    (fun input => uniformAverage fun seed => cost input seed)
+    hweight hmass
+  exact ⟨input, hjoint.trans hinput⟩
+
 /-- Uniform averaging is unchanged by a bijective reparameterization of the
 seed. -/
 theorem uniformAverage_comp_equiv

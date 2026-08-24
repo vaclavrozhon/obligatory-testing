@@ -1,104 +1,99 @@
+\clearpage
 \section{Machine-checked verification}
 \label{sec:formalization}
 
 The accompanying Lean~4 development~\cite{DeMouraUllrich2021} uses
 mathlib~\cite{Mathlib2020} and is pinned to version~4.30.0.  Its root module
-imports the complete deterministic, randomized-obligatory, and
-blind-execution developments.  The source contains no \texttt{sorry},
-\texttt{admit}, or project-defined axiom.  This section records the precise
-proof boundary; \cref{app:lean-formalization} gives the detailed dictionary
-for the deterministic exact curve.  The revealing-optimization instance theorem of
-\cref{sec:common-upper-instance} and its randomized curve in
-\cref{sec:random-common-upper} are currently analytic only and are not
-included in the machine-checked claims below.  The blind-optimization
-deterministic curve, randomized instance theorem, and randomized curve of
-\cref{sec:blind-optimization} are also currently analytic only.
+imports every development listed below.  The following table states the proof boundary;
+\cref{app:lean-formalization} gives the detailed paper--Lean dictionary for
+the deterministic theorem.
 
-\subsection{Deterministic exact ratios}
+\begin{center}
+\footnotesize
+\begin{tabular}{@{}L{0.27\textwidth}L{0.32\textwidth}L{0.33\textwidth}@{}}
+\toprule
+paper result & Lean export & coverage \\
+\midrule
+Deterministic revealing optimization and obligatory testing,
+\cref{thm:optional-curve,thm:det-obligatory}
+ & \path{SchedulingPaper.exact_ratio_main}
+ & End-to-end: both bounds, fixed replayed inputs, completing strategies,
+   linear remainders, all joins, and the obligatory endpoint. \\
+Randomized obligatory testing, \cref{thm:rand-obligatory}
+ & \path{unknownMultiset_operational_expectedCost_le_20378};
+   \path{oblivious_iid_binary_lower_online_actualOPT}
+ & End-to-end sharp worst-case value $4/3$, including the sampled policy,
+   finite error, and a fixed binary lower-bound input. \\
+Obligatory-testing instance optimality,
+\cref{thm:obligatory-instance,thm:ot-instance-impossibility}
+ & \path{ObligatoryInstance.deterministic_balanced_cost_lower};
+   \path{ObligatoryUnbounded.exists_quadratic_instance_gap}
+ & The deterministic impossibility is end-to-end: adaptive revelation,
+   freezing to one balanced labeled input, termination, and the sharp
+   $9n^2/8$ cost bound.  The finite averaging core of the unbounded
+   randomized impossibility is checked; its operational charging bridge
+   remains analytic. \\
+Blind-execution results,
+\cref{thm:blind-instance,thm:blind-unbounded-impossible}
+ & \path{boundedUniform_blindPilot_concrete_rate};
+   \path{UnboundedOperational.no_finite_ratio_at_quadratic_scale_operational}
+ & End-to-end uniform $o_L(n^2)$ comparison with every complete announced
+   policy; the checked rate is slower than the paper's rate.  The unbounded
+   impossibility is also end-to-end: the all-zero first-touch order is
+   extracted from each literal transcript, lockstep causality preserves the
+   exceptional label's blind rank, suffix accounting charges its actual
+   one-long-job run, and finite-seed averaging fixes one oblivious label. \\
+Revealing-optimization instance and randomized curve,
+\cref{thm:common-upper-instance,thm:random-common-upper}
+ & \path{RevealingOptimization.binaryFamilies_le_curve};
+   \path{binaryFamilies_attain_curve};
+   \path{randomizedCurve_attains_globalMaximum};
+   \path{RevealingOptimization.middleTail_reduction_le_binary_families};
+   \path{FluidToFinite.completion_transfer_uniform};
+   \path{FluidToFinite.pilot_learning_transfer}
+ & The exact four-piece scalar maximization, its transition root, plateau,
+   attainment, and global maximum are checked.  The model-independent
+   completion-area, bad-event, and pilot-learning transfer is checked once
+   and reused; the linear-fractional endpoint step of the RO survival
+   reduction is also checked.  Deriving its integral constraints from an
+   arbitrary survival function and the operational envelope instantiation
+   remain analytic. \\
+Blind-optimization results,
+\cref{thm:bo-det-not-instance-optimal,thm:bo-det-curve,thm:bo-instance,thm:bo-curve}
+ & \path{BlindOptimization.Adversary.no_deterministic_instance_optimal};
+   \path{deterministicCurve_operational_exact};
+   \path{operationalPilot_expectedCost_le_curve_normalized};
+   \path{pilotNormalizedError_tendsto_zero};
+   \path{RandomizedLower.exists_binary_mass_adaptive_curve_lower};
+   \path{RandomizedLower.exists_binary_mass_finite_ratio_tendsto_curve};
+   \path{randomizedBinaryEnvelope_attains_curve};
+   \path{Randomized.finite_yao_select_weighted};
+   \path{RandomizedCompiler.exists_binary_mass_operational_ratio_tendsto_curve}
+ & The deterministic counterexample and exact deterministic curve are
+   end-to-end, including replay, adaptive hidden stopping, completing
+   policies, and finite linear remainders.  The randomized upper is checked
+   for literal independent pilot/main orders, with without-replacement
+   learning error, observable threshold, exact finite offline comparison,
+   and explicit remainder; each private seed is now a literal completing
+   transcript-only strategy whose run cost is identified with the analyzed
+   schedule.  The distribution reduction, scalar maximum, attainment, both
+   large-$u$ asymptotics, fully adaptive binary decision-tree lower bound,
+   exact finite diagonal limit, and finite weighted Yao selection (which
+   permits the exact, possibly irrational Bernoulli mass) are checked.  An
+   arbitrary transcript-only strategy is mechanically unfolded into the
+   corresponding labeled adaptive tree.  Its structural expectation is
+   identified with the weighted average of literal operational runs, the
+   exact finite offline expectation (including its diagonal correction) is
+   checked, and Yao selects one fixed labeled input against the entire
+   private-seed family at a ratio converging to the advertised curve. \\
+\bottomrule
+\end{tabular}
+\end{center}
 
-The theorem \texttt{SchedulingPaper.exact\_ratio\_main} packages both
-directions of the six-piece finite-cap curve and the obligatory limit.
-Its upper fields contain literal transcript-only strategies, termination
-proofs, and $O(n)$ certificates; its lower fields quantify over arbitrary
-deterministic strategy families and return genuine fixed inputs after the
-formal replay theorem.  The formal curve includes all five joins, continuity,
-the plateau, and the global maximum.
-
-\subsection{Randomized obligatory testing}
-
-The module \texttt{SchedulingPaper.RandomizedFourThirds} exports the
-operational upper theorem
-\begin{lstlisting}[style=lean]
-theorem unknownMultiset_operational_expectedCost_le_20378 ... :
-  uniformAverage (physicalSampledRunCost ...) <=
-    4 / 3 * finiteObligatoryOPT p + 20378 * R ^ 7
-\end{lstlisting}
-At the concrete parameter choice $n\le R^4$, this is
-\cref{eq:rand-final-upper}.  The proof below this interface includes the
-maximum-density optimizer, exact and robust $4/3$ certificates, threshold
-closure for sample-empty bins, finite hypergeometric concentration, the
-cutoff-$32$ fallback, sample-first accounting, bad-event excess, and
-termination of the sampled transcript strategy.
-
-The same module exports
-\texttt{oblivious\_iid\_binary\_lower\_online\_actualOPT}.  It accepts an
-arbitrary finite family of public-transcript strategies, assumes only that
-the supplied fuel completes every fair binary input, and returns a fixed
-binary input whose average cost has coefficient $4n/(3n+5)$.  The formal
-development identifies its denominator with the literal clairvoyant
-obligatory optimum.  Since $4n/(3n+5)\to4/3$, the upper and lower exports give
-the machine-checked sharp asymptotic value.
-
-The instance-optimal variant in \cref{sec:obligatory-instance} replaces the
-checked cutoff $32$ by the slowly growing cutoff from
-\cref{eq:ot-learning-parameters}.  Its full assembly is currently analytic.
-Lean verifies the shared
-finite stationary-cost identity, maximum-density algebra, and fluid
-$4/3$ certificate in \texttt{RandomizedAnnouncedFluid} and the randomized
-operational modules.  It does not currently export the whole-measure
-quantile transfer \cref{eq:ot-quantile-transfer} or an end-to-end theorem for
-\cref{thm:obligatory-instance}; those are not included in the
-machine-checked claim.
-
-\subsection{Blind-execution instance optimality}
-
-This formalization uses an operation semantics in which completion of a blind
-job records its realized duration.  The trace-bijection and observed-trace
-modules prove the occurrence-token reveal bijection of
-\cref{lem:blind-trace-bijection}, its lockstep causality theorem, the
-predictable test selector, and the exact selected-count and blind-work
-identities.
-
-The deterministic analytic layer checks the full-module replacement,
-fractional-knapsack envelope, long-test dominance, revelation repair,
-horizontal integral shift, formula \cref{eq:blind-F}, its quadratic normal
-form and vertex minimizer, and the three-point witness.  The finite layer
-checks all-grid repair, bounded one- and two-job kernels, histogram stability,
-the canonical physical operation word, a blind-sample compiler, and the
-announced adaptive lower bound.
-
-The end-to-end theorem is exported as
-\texttt{boundedUniform\_blindPilot\_concrete\_rate} in
-\texttt{RandomizedOptionalUnknownRates}.  In mathematical notation, for
-$m=\lfloor n^{1/16}\rfloor\ge2$, every $p\in[0,L]^n$, and every complete
-announced policy $\pi$, it proves
-\begin{equation}
- \frac{\EE\cost(\mathrm{learned},p)}{n^2}
- \le \frac{\EE\cost(\pi,p)}{n^2}
-    +\frac{7830(L+1)^2}{m}.
- \label{eq:lean-blind-rate}
-\end{equation}
-The learned algorithm depends only on $n,L$ and its private permutations,
-not on the multiset.  Lean separately proves
-$\lfloor n^{1/16}\rfloor\to\infty$ and hence that the displayed error tends
-to zero.  It also discharges the zero-mean case for the same algorithm.  This
-is a slower rate than the exponential-tail analysis in
-\cref{eq:blind-unannounced-upper}, but it proves the same uniform
-$o_L(n^2)$ theorem using finite second-moment and checkpoint bounds.
-
-The formal statements use finite uniform averages rather than measure-valued
-random seeds.  This is sufficient for the advertised algorithms and Yao
-distributions, all of which use finite permutations, finite sample choices,
-and finite tie-breaking coins.  Classical real analysis and noncomputable
-exact minimizers are used in certificates; no floating-point program is
-extracted.
+The development contains no \texttt{sorry}, \texttt{admit}, or
+project-defined axiom.  Formal randomized statements use finite uniform
+averages for private seeds and explicit nonnegative finite weights for Yao
+input laws; these cover permutations, sample choices, tie-breaking coins,
+and the exact Bernoulli masses used here.  Classical real analysis and
+noncomputable exact minimizers occur only in certificates; no floating-point
+program is extracted.

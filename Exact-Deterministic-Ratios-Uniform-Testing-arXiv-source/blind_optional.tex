@@ -17,14 +17,14 @@ sequence $\eps_L(n)\to0$ with the following properties.  For every multiset
 $M\subseteq[0,L]$ of size $n$ and every fixed labeling $\sigma$,
 \begin{equation}
  \EE\cost(\mathcal A^*,\sigma(M))
- \le n^2\PhiBE(D_M)+\eps_L(n)n^2.
+ \le n^2\PhiBE(D[M])+\eps_L(n)n^2.
  \label{eq:intro-blind-upper}
 \end{equation}
 For every randomized policy $\mathcal A$, even an announced policy, some
 fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE\cost(\mathcal A,\sigma(M))
- \ge n^2\PhiBE(D_M)-\eps_L(n)n^2.
+ \ge n^2\PhiBE(D[M])-\eps_L(n)n^2.
  \label{eq:intro-blind-lower}
 \end{equation}
 The benchmark $\PhiBE$ is defined explicitly in
@@ -56,24 +56,24 @@ every job, since otherwise its cost is infinite.
 
 Fix its private seed and order the labels by their first touch on this zero
 instance.  Every first touch completes its job: a blind zero takes no time,
-while a tested zero completes with its unit test.  If the job at rank $r$ is
-tested, that test is performed while $n-r+1$ jobs are unfinished and hence
-contributes $n-r+1$ to the objective.  Consequently
+while a tested zero completes with its unit test.  If the job at rank $h$ is
+tested, that test is performed while $n-h+1$ jobs are unfinished and hence
+contributes $n-h+1$ to the objective.  Consequently
 \begin{equation}
- Z_n\ge\EE\sum_{r:\,\text{rank }r\text{ is tested}}(n-r+1).
+ Z_n\ge\EE\sum_{h:\,\text{rank }h\text{ is tested}}(n-h+1).
  \label{eq:blind-zero-test-area}
 \end{equation}
 
 Now choose one label uniformly and change only its length from zero to
 $H=n^2$.  Until this exceptional label is first touched, the policy sees
-exactly the zero-instance history.  If its rank $r$ is touched blindly, its
+exactly the zero-instance history.  If its rank $h$ is touched blindly, its
 nonpreemptive execution occupies the machine for $H$ time units while
-$n-r+1$ jobs are unfinished.  Averaging over the exceptional label and the
+$n-h+1$ jobs are unfinished.  Averaging over the exceptional label and the
 private seed therefore gives
 \begin{align}
  \EE\cost(\mathcal A_n,p)
  &\ge \frac Hn\,\EE
-   \sum_{r:\,\text{rank }r\text{ is blind}}(n-r+1)\notag\\
+   \sum_{h:\,\text{rank }h\text{ is blind}}(n-h+1)\notag\\
  &\ge\frac Hn\left(\frac{n(n+1)}2-Z_n\right)
   =H\left(\frac n2-o(n)\right).
  \label{eq:blind-one-long-average}
@@ -93,7 +93,6 @@ adaptive policy, we show that its first-touch order is a bijective
 relabeling of the occurrence permutation; predictable sampling controls all
 touch prefixes at once.  A growing grid extends the bound to arbitrary
 bounded multisets, and a blind sample removes advance knowledge of the input.
-The next subsection defines the benchmark and begins the formal proof.
 
 \subsection{The distributional benchmark}
 \label{sec:blind-benchmark}
@@ -150,18 +149,18 @@ For the explicit cost, first assume no atom lies at $\tau_D$ or $\mu$, and put
  \mathcal H&=\{p>\mu\},\\
  a&=\Prob(P\in\mathcal L),&
  \ell&=\EE[P\one_{\mathcal L}],&
- m&=\EE[P\one_{\mathcal M}],\\
+ \ell_M&=\EE[P\one_{\mathcal M}],\\
  d&=\Prob(P\in\mathcal H),&
  K_M&=\EE[\min(P,P')\one_{P,P'\in\mathcal M}],&
  K_H&=\EE[\min(P,P')\one_{P,P'\in\mathcal H}],
 \end{align*}
-where $P,P'$ are independent with law $D$.  For $r=1-q$, remaining-mass
+where $P,P'$ are independent with law $D$.  Put $\bar q=1-q$.  Remaining-mass
 accounting gives
 \begin{align}
  F_{\mathsf{BE},D}(q)
  &= (1+\ell)\left(q-\frac{aq^2}{2}\right)
-    +qm(r+qd)+\frac{q^2K_M}{2}\notag\\
- &\quad+\mu\left(rqd+\frac{r^2}{2}\right)
+    +q\ell_M(\bar q+qd)+\frac{q^2K_M}{2}\notag\\
+ &\quad+\mu\left(\bar q qd+\frac{\bar q^2}{2}\right)
     +\frac{q^2K_H}{2}.
  \label{eq:blind-F}
 \end{align}
@@ -171,7 +170,7 @@ holds for the resulting virtual classes.
 
 Each term in \cref{eq:blind-F} has a direct area interpretation.  During the
 test module, work $(1+\ell)dq$ reduces unfinished mass from $1$ to $1-aq$.
-The medium work $qm$ delays the untouched mass $r$ and high mass $qd$, while
+The medium work $q\ell_M$ delays the untouched mass $\bar q$ and high mass $qd$, while
 $K_M$ is the internal SPT pair term.  The blind block delays all high jobs and
 itself loses mass linearly.  Finally $K_H$ is the high-tail pair term.
 Expansion gives the quadratic
@@ -181,10 +180,10 @@ Expansion gives the quadratic
 \end{equation}
 where
 \begin{align}
- A&=1+\ell+m+\mu(d-1)
+ A&=1+\ell+\ell_M+\mu(d-1)
    =1-\EE(\mu-P)^+,
  \label{eq:blind-A}\\
- B&=-\frac{a(1+\ell)}2+m(d-1)+\frac{K_M}{2}
+ B&=-\frac{a(1+\ell)}2+\ell_M(d-1)+\frac{K_M}{2}
    +\mu\left(\frac12-d\right)+\frac{K_H}{2}.
  \label{eq:blind-B}
 \end{align}
@@ -227,11 +226,15 @@ subject to
  0\le c_i\le d_it.
  \label{eq:blind-revelation-constraints}
 \end{equation}
-Thus $\mathcal C^\mu_{D,q}$ is the common fluid envelope
-\cref{eq:common-fluid-envelope}.  Every fluid schedule that ultimately tests
+Define the model envelope
+\begin{equation}
+ \mathcal C_{\mathsf{BE},D,q}\defeq\mathcal C^\mu_{D,q},
+ \label{eq:blind-model-envelope}
+\end{equation}
+using the common envelope \cref{eq:common-fluid-envelope}.  Every fluid schedule that ultimately tests
 mass $q$ obeys this envelope, hence
 \begin{equation}
- \cost\ge\int_0^\infty(1-\mathcal C^\mu_{D,q}(x))\,dx.
+ \cost\ge\int_0^\infty(1-\mathcal C_{\mathsf{BE},D,q}(x))\,dx.
  \label{eq:blind-envelope-lower}
 \end{equation}
 
@@ -261,7 +264,7 @@ completion.  The $q=0$ envelope, one blind item of capacity one and cost
 $\mu$, therefore pointwise dominates every $q>0$ envelope and has area
 $\mu/2$.  Finally, feasibility in
 \cref{eq:blind-fluid-work,eq:blind-revelation-constraints} is affine in $q$,
-so $\mathcal C^\mu_{D,q}(x)$ is concave in $q$ for each $x$.  In the short-test regime its
+so $\mathcal C_{\mathsf{BE},D,q}(x)$ is concave in $q$ for each $x$.  In the short-test regime its
 area complement $F_{\mathsf{BE},D}(q)$ is convex, proving $B\ge0$.
 \end{proof}
 
@@ -273,36 +276,27 @@ touch next and when to stop testing as arbitrary functions of its history.
 The next finite lemma is the deferred-decisions statement needed to control
 such a policy.
 
+For a size-$n$ multiset whose values lie among
+$0=p_0<p_1<\cdots<p_s\le L$, write $D_n$ for its empirical distribution,
+$D_{n,i}=D_n(\{p_i\})$, and $\mu_n=\int p\,dD_n(p)$.
+
 Distinguish occurrences even when their processing times coincide and fix a
 deterministic proper policy, equivalently the private seed of a randomized
-policy.  By \cref{lem:adaptive-first-touch}, a uniform placement is carried
-to a uniform random permutation of occurrence tokens, and the test/blind
-choice is predictable.  No conditional suffix compiler is needed.
-
-For finite support, standard prefix concentration and a predictable
-martingale give the following simultaneous event.  Stop while at least
-$\delta n$ labels remain untouched, and put
-\begin{equation}
- e_n=E_{n,n+1,1,n^{-2}},\qquad
- \Gamma_n=(1+1/\delta)e_n.
- \label{eq:blind-Gamma}
-\end{equation}
-Except with probability $o(1)$, for every earlier touch prefix and every
-class $i$,
+policy.  Apply \cref{lem:uniform-first-touch-event} to the $s+1$ classes with
+failure probability $n^{-2}$, and put
+$\Gamma_n=\max\{\Gamma_{\rm cell},\Gamma_{\rm work}\}$.  On the resulting
+event, for every touch prefix leaving at least $\delta n$ labels untouched
+and every class $i$,
 \begin{align}
  |\#\text{tested class }i-D_{n,i}\#\text{tests}|
  &\le\Gamma_n,
  \label{eq:blind-tested-discrepancy}\\
  |\text{blind work}-\mu_n\#\text{blind jobs}|
- &\le L\Gamma_n.
+ &\le\Gamma_n.
  \label{eq:blind-work-discrepancy}
 \end{align}
-Indeed, apply \cref{lem:predictable-permutation-sampling} first to all class
-indicators and the predictable test selector, and then to the processing
-time and the predictable blind selector.  The second application has $B=L$
-and is bounded by $L\Gamma_n$.  Taking $\eta=n^{-2}$ in both applications
-proves the event with probability $1-o(1)$.  Importantly, we never condition
-on the eventual tested fraction.
+Importantly, the common event does not condition on the eventual tested
+fraction.
 
 \subsection{The announced lower bound}
 \label{sec:blind-announced}
@@ -311,9 +305,9 @@ Fix a policy seed.  Stop after $\lfloor(1-\delta)n\rfloor$ first touches and
 let $Q_{n,\delta}$ be the number of tests completed by then, divided by $n$.
 Edit the suffix: every still-untouched job that would later be tested is
 instead executed blindly at its first original operation, and its later
-processing record is deleted.  At most $3\delta n+O(1)$ bounded operations
-are moved or deleted.  Pairwise delay accounting changes total cost by at
-most
+processing record is deleted.  At most $\delta n+O(1)$ jobs and three
+operations per affected job change.  The bounded suffix-edit lemma
+\cref{lem:bounded-suffix-edit}, with $W=L+1$, gives
 \begin{equation}
  O((L+1)\delta n^2).
  \label{eq:blind-suffix-edit}
@@ -330,47 +324,44 @@ processed known positive mass of class $i$.  The event gives
  z\le D_{n,0}t+\gamma_n,\qquad
  c_i\le D_{n,i}t+\gamma_n.
 \]
-Set $c_i'=(c_i-\gamma_n)^+$.  Then
-\[
- c_i'\le D_{n,i}t,\qquad t\le q,\qquad b\le1-q.
-\]
-If $x$ is the actual normalized prefix work, then
-\begin{align}
- t+\mu_nb+\sum_i p_ic_i'
- &\le x+L(\gamma_n+\delta),
- \label{eq:blind-work-repair}\\
- z+b+\sum_i c_i
- &\le D_{n,0}t+b+\sum_i c_i'+(s+1)\gamma_n.
- \label{eq:blind-mass-repair}
-\end{align}
-By the definition of the empirical envelope,
+If $x$ is the actual normalized prefix work, the blind-work discrepancy and
+the suffix edit give
+\begin{equation}
+ t+\mu_nb+\sum_i p_i(c_i-\gamma_n)^+
+ \le x+(L+1)(\gamma_n+\delta).
+ \label{eq:blind-work-repair}
+\end{equation}
+Thus all hypotheses of \cref{lem:cell-capacity-repair} hold with
+$\alpha=(L+1)(\gamma_n+\delta)$, and it gives
 \begin{equation}
  \text{completed fraction by }x
- \le H_{D_n,q}(x+L(\gamma_n+\delta))+(s+1)\gamma_n.
+ \le \mathcal C_{\mathsf{BE},D_n,q}(x+(L+1)(\gamma_n+\delta))
+      +(s+1)\gamma_n.
  \label{eq:blind-envelope-repair}
 \end{equation}
-Horizontal shifting loses at most the shift itself because
-$0\le1-H\le1$; the vertical slack is multiplied by a horizon at most $L+1$.
-After restoring \cref{eq:blind-suffix-edit}, the fixed-$q$ envelope lemma
-therefore gives, pathwise on the good event,
+The envelope horizon is at most $H=L+1$, and pure blind execution gives
+$0\le\PhiBE(D_n)\le L/2$.  Apply
+\cref{thm:completion-curve-transfer} with the suffix-edit error from
+\cref{eq:blind-suffix-edit},
+$\alpha=(L+1)(\gamma_n+\delta)$, and $\beta=(s+1)\gamma_n$.  It gives
 \begin{equation}
  \frac{\cost(\mathcal A,M)}{n^2}
- \ge F_{D_n}(Q_{n,\delta})
-   -O_{D}(\gamma_n+\delta+1/n)
- \ge\PhiBE(D_n)-O_D(\gamma_n+\delta+1/n).
+ \ge F_{\mathsf{BE},D_n}(Q_{n,\delta})
+   -O_{L,s}(\gamma_n+\delta+1/n)
+ \ge\PhiBE(D_n)-O_{L,s}(\gamma_n+\delta+1/n).
  \label{eq:blind-announced-finite-support}
 \end{equation}
 The long-test regime uses the $\mu_n/2$ dominance part of
-\cref{lem:blind-fixed-q-envelope}.  Averaging first over the uniform placement
-and then over private seeds proves the same lower bound for every randomized
-announced policy.
+\cref{lem:blind-fixed-q-envelope}; the same transfer applies.  Its finite-Yao
+conclusion also proves the lower bound for randomized announced policies.
 
-The random-labeling and announced minimax values coincide.  A uniform
-labeling and \cref{lem:finite-yao} give one inequality.  For the
+The random-labeling and announced minimax values coincide.  The transfer
+lemma gives one inequality.  For the
 other, privately relabel the physical jobs before running an optimal
 deterministic urn policy; against every fixed assignment, the policy sees a
 uniform assignment.  Thus the lower bound above applies to the announced
 oblivious minimax problem, not merely to one randomized input model.
+Write $\operatorname{VAL}_{\rm ann}(M)$ for this common minimax value.
 
 \subsection{A growing grid and arbitrary bounded multisets}
 
@@ -382,6 +373,8 @@ cell, partition $(0,L]$ into
 \end{equation}
 bins, and round every positive value upward; let $h_n=L/K_n$ be the mesh.
 Zero preservation matters because a tested zero completes at its test.
+Write $D[M]^{\rm grid}$ for the rounded empirical distribution and
+$\mu_M^{\rm grid}=\int p\,dD[M]^{\rm grid}(p)$ for its mean.
 
 Coupling each value with its rounded value and applying
 \cref{lem:zero-preserving-transport} gives
@@ -392,27 +385,24 @@ Coupling each value with its rounded value and applying
 This avoids any assumption that the numerical optimizer or threshold is
 stable under rounding.
 
-Apply the predictable urn event to all $K_n+1$ cells and take
-$\delta_n=n^{-1/6}$.  Repairing every class loses at most
-$(K_n+1)\Gamma_n/n$ completion mass.  The rounded analogue of
-\cref{eq:blind-envelope-repair} is
-\begin{equation}
- \text{completed fraction by }x
- \le H^{\rm grid}_q(x+\zeta_n)+\zeta_n,
- \label{eq:blind-grid-envelope-repair}
-\end{equation}
-where
+Apply \cref{lem:uniform-first-touch-event} to all $K_n+1$ cells and take
+$\delta_n=n^{-1/6}$.  The model-specific blind-work discrepancy supplies the
+horizontal error; \cref{lem:cell-capacity-repair} supplies the vertical one.
+After rounding, both are bounded by
 \begin{equation}
  \zeta_n=O_L\!\left(
   \frac{(K_n+1)\Gamma_n}{n}+h_n+\delta_n\right)
  =O_L(n^{-1/6}\sqrt{\ln(n+2)}).
  \label{eq:blind-zeta}
 \end{equation}
-Integrating exactly as above and using nonnegativity on the bad event yields
-the announced lower bound
+Consequently the rounded completion curve is bounded by
+$\mathcal C_{\mathsf{BE},D[M]^{\rm grid},q}(x+\zeta_n)+\zeta_n$.
+Apply \cref{thm:completion-curve-transfer} with $H=L+1$, $B=L/2$, the
+suffix-edit error, and the failure probability from the urn lemma.  Together
+with \cref{eq:blind-rounding-stability}, this yields the announced lower bound
 \begin{equation}
  \frac{\operatorname{VAL}_{\rm ann}(M)}{n^2}
- \ge\PhiBE(D_M)-O_L(n^{-1/6}\sqrt{\ln(n+2)}).
+ \ge\PhiBE(D[M])-O_L(n^{-1/6}\sqrt{\ln(n+2)}).
  \label{eq:blind-announced-lower}
 \end{equation}
 
@@ -422,15 +412,16 @@ labels to test, and execute the four blocks.  Pairwise delay accounting
 expresses its expectation as bounded one-occurrence and two-distinct-
 occurrence kernels.  The without-replacement pair coefficients differ from
 their product-law values by $O(1/n)$ uniformly in the tested count.  Hence
+if $\pi$ records the virtual classes and the tested fraction,
 \begin{equation}
- \EE C_n(\pi)=n^2\Psi_{D_M^{\rm grid}}(\pi)+O_L(n)
+ \EE C_n(\pi)=n^2F_{\mathsf{BE},D[M]^{\rm grid}}(\pi)+O_L(n)
  \label{eq:blind-finite-kernel}
 \end{equation}
 uniformly over canonical templates $\pi$.  Together with
 \cref{eq:blind-rounding-stability}, this proves
 \begin{equation}
  \left|\frac{\operatorname{VAL}_{\rm ann}(M)}{n^2}
-       -\PhiBE(D_M)\right|
+       -\PhiBE(D[M])\right|
  \le O_L(n^{-1/6}\sqrt{\ln(n+2)}).
  \label{eq:blind-announced-sandwich}
 \end{equation}
@@ -448,40 +439,42 @@ The policy minimizes the canonical quadratic over every grid threshold,
 blind-block insertion position, and $q\in[0,1]$, then runs the selected
 four-block template on the remaining jobs in the unused random order.
 
-Let $D_n$ and $D_n^R$ be the full and remaining grid histograms.  Applying
+Let $D_n$ and $D_n^{\rm rem}$ be the full and remaining grid histograms.  Applying
 \cref{eq:without-replacement-histogram} to the grid classes gives
-\begin{equation}
+\begin{align}
  \EE\|\widehat D_n-D_n\|_1
  \le\sqrt{\frac{K_n+1}{k_n}},
- \qquad
- \EE\|\widehat D_n-D_n^R\|_1
- \le\frac{n}{n-k_n}\sqrt{\frac{K_n+1}{k_n}}.
+ &\qquad
+ \EE\|\widehat D_n-D_n^{\rm rem}\|_1
+ \le\frac{n}{n-k_n}\sqrt{\frac{K_n+1}{k_n}},\notag\\
+ &\|D_n^{\rm rem}-D_n\|_1\le\frac{2k_n}{n-k_n}.
  \label{eq:blind-histogram-learning}
-\end{equation}
+\end{align}
 For a fixed canonical template, formula \cref{eq:blind-F} consists only of
 bounded one- and two-draw expectations.  Therefore, uniformly in the grid
 and template,
 \begin{equation}
- |\Psi_D(\pi)-\Psi_E(\pi)|
+ |F_{\mathsf{BE},D}(\pi)-F_{\mathsf{BE},E}(\pi)|
  \le C_L\|D-E\|_1,
  \label{eq:blind-template-Lipschitz}
 \end{equation}
-for example with $C_L=20(L+1)$.  If $\widehat\pi$ minimizes the sampled
-objective, \cref{lem:empirical-minimization} gives
-\begin{equation}
- \Psi_{D_n^R}(\widehat\pi)
- \le\PhiBE(D_n^R)+2C_L\|\widehat D_n-D_n^R\|_1.
- \label{eq:blind-empirical-sandwich}
-\end{equation}
+for example with $C_L=20(L+1)$.  Let $\widehat\pi$ minimize the sampled
+objective.
 Conditional on the sample, the remaining order is uniform and the learned
 template is fixed, so \cref{eq:blind-finite-kernel} applies.  The sample itself
 has work at most $Lk_n$ and delays at most $n$ jobs, adding at most
-$Lnk_n=O_L(n^{3/2})$.  Combining
-\cref{eq:blind-rounding-stability,eq:blind-histogram-learning} with
-\cref{eq:blind-template-Lipschitz,eq:blind-empirical-sandwich} gives
+$Lnk_n=O_L(n^{3/2})$.  Hence
+\[
+ \EE[\cost(\mathcal A^*,p)\mid\widehat D_n,D_n^{\rm rem}]
+ \le n^2F_{\mathsf{BE},D_n^{\rm rem}}(\widehat\pi)+O_L(nk_n+n).
+\]
+Apply \cref{lem:pilot-learning-transfer} with
+$d(D,E)=\|D-E\|_1$, $L_0=C_L$, and
+\cref{eq:blind-histogram-learning}; then use
+\cref{eq:blind-rounding-stability}.  This gives
 \begin{equation}
  \frac{\EE\cost(\mathcal A^*,p)}{n^2}
- \le\PhiBE(D_M)
+ \le\PhiBE(D[M])
  +O_L\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right)
  \label{eq:blind-unannounced-upper}
 \end{equation}

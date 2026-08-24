@@ -1,0 +1,824 @@
+\subsubsection{The binary stopping game and its lower envelope}
+\label{sec:optional-lower}
+
+The first four branches already occur on binary instances
+$p_j\in\{0,u\}$.  The stopping point must be hidden from the algorithm;
+announcing it in advance gives a strictly weaker lower bound.
+
+\begin{lemma}[Raw-safe hidden stopping]
+\label{lem:opt:hidden-stopping}
+Fix $u>1$, a target $R\le u$, and a stopping fraction $\alpha\in(0,1)$.
+Against a deterministic algorithm, there is a legal binary adversary whose
+leading excess at its first crossing is
+\begin{equation}
+ (u-R)(1-\sigma^2)+\sigma^2 f_{u,R}(y,b),
+ \label{eq:opt:stopping-decomposition}
+\end{equation}
+where $0\le b\le y\le1$ and
+\begin{equation}
+ 0\le y-\alpha<\frac1{n-v}.
+ \label{eq:opt:stopping-overshoot}
+\end{equation}
+Moreover,
+\begin{equation}
+ f_{u,R}(y,b)=
+ 1-R+2y+(u-1)(1-R)y^2
+ +b^2+2b(u-1-uy).
+ \label{eq:opt:stopping-f}
+\end{equation}
+Here $\sigma\in[0,1]$ is the fraction of jobs not already executed raw.
+Consequently, if
+\[
+ \min_{0\le b\le\alpha}f_{u,R}(\alpha,b)\ge0,
+\]
+then the adversary gives ratio at least $R-O_u(1/n)$.
+\end{lemma}
+
+\begin{proof}
+Start in a long phase.  A fresh job that is tested receives $p=u$, while a
+fresh job run raw is assigned the hidden value zero.  If $v$ jobs have been
+run raw and $L$ tested-long jobs have been seen, stop at the first touch for
+which
+\begin{equation}
+ L\ge\alpha(n-v).
+ \label{eq:opt:stopping-line}
+\end{equation}
+All untouched jobs are then assigned value zero.  Only for the purpose of
+lower-bounding the remaining cost, we grant the algorithm this future
+information and allow an optimal continuation; in the actual interaction,
+values are still revealed only by tests.  If the line is never crossed, every job
+was run raw: if even one job had been tested, then after the last first touch
+the tested fraction would be one.  On the all-zero hidden instance the ratio
+is $u\ge R$.
+
+At a crossing, let $e$ of the $L$ long jobs already be complete, let $d=L-e$
+be pending, and let $x=n-v-e-d$ jobs remain untouched.  The following
+favorable canonical schedule lower-bounds the algorithm: run the $v$ raw
+jobs; test and immediately process the $e$ completed long jobs; perform the
+$d$ noncompleting long tests; test the $x$ zero jobs; and finally process the
+$d$ pending long jobs.  Indeed, if a noncompleting unit test is immediately
+before an available length-$u$ completion while $h$ jobs remain, the two
+orders contribute $h+hu$ and $hu+(h-1)$, respectively; moving the
+completion left saves one.  Raw completions are available from time zero,
+and identical long jobs may be relabeled so that the $e$ completed ones are
+tested first.  After the switch, a zero test-completion has length one and
+therefore precedes a pending operation of length $u$.  These exchanges
+respect precedence.
+
+The exact costs of this relaxed schedule and of OPT are
+\begin{align}
+ A_{\rm ex}={}&
+ u\left(vn-\frac{v(v-1)}2\right)
+ +(1+u)\left(e(n-v)-\frac{e(e-1)}2\right) \notag\\
+ &+d(n-v-e)+x(d+x)-\frac{x(x-1)}2
+ +u\frac{d(d+1)}2,
+ \label{eq:opt:stopping-Aexact}\\
+ O_{\rm ex}={}&\frac{n(n+1)}2
+ +(u-1)\frac{(e+d)(e+d+1)}2.
+ \label{eq:opt:stopping-Oexact}
+\end{align}
+Put $\nu=v/n$, $\delta=(v+e+d)/n$, and $\lambda=e/n$.  Twice the quadratic
+coefficients in \cref{eq:opt:stopping-Aexact,eq:opt:stopping-Oexact} are
+\begin{align*}
+ \mathcal A={}&1+2\delta(1-u\nu)+(u-1)\delta^2
+ +2\nu(\nu+u-2)\\
+ &+\lambda^2+2\lambda(\nu+u-1-u\delta),\\
+ \mathcal O={}&1+(u-1)(\delta-\nu)^2.
+\end{align*}
+Now put $\sigma=1-\nu$, $y=(e+d)/(n-v)$, and $b=e/(n-v)$.
+Direct expansion gives exactly \cref{eq:opt:stopping-decomposition} after
+normalizing by $n^2/2$.  The first-crossing overshoot in
+\cref{eq:opt:stopping-line} is less than one: a test increases
+$e+d-\alpha(n-v)$ by one and a raw first touch increases it by $\alpha$.
+This proves \cref{eq:opt:stopping-overshoot}, and in particular
+$\sigma(y-\alpha)<1/n$.  There is one small domain issue: the actual
+$b\le y$ can exceed $\alpha$.  Put $\bar b=\min\{b,\alpha\}$.  Then
+$0\le b-\bar b\le y-\alpha$.  Since $f_{u,R}$ is Lipschitz on the unit
+square,
+\begin{equation}
+ \sigma^2 f_{u,R}(y,b)
+ \ge \sigma^2 f_{u,R}(\alpha,\bar b)-O_u(1/n).
+\end{equation}
+Thus the stated minimum over $0\le\bar b\le\alpha$ suffices uniformly even
+when $n-v$ is small.  The discarded diagonal terms are $O_u(n)$ in the
+unnormalized costs.
+Finally, the adaptive transcript defines a fixed instance by replay: every
+tested answer was fixed when revealed, and every raw job's zero value stayed
+hidden.  This proves the lemma.
+\end{proof}
+
+Minimizing \cref{eq:opt:stopping-f} over the algorithm's completion choice
+gives
+\begin{equation}
+ b_*(y)=\max\{0,uy-(u-1)\}.
+ \label{eq:opt:bstar}
+\end{equation}
+The upper constraint $b\le y$ never binds, because
+$uy-(u-1)\le y$ for $y\le1$.
+There are therefore two elementary quadratic branches.  On the positive
+branch, put
+\begin{equation}
+ A_u=u^2-u+1,
+ \qquad
+ D_{u,R}=A_u+(u-1)R.
+\end{equation}
+Then
+\begin{equation}
+ \min_b f_{u,R}(y,b)
+ =1-R-(u-1)^2+2A_uy-D_{u,R}y^2.
+ \label{eq:opt:stopping-positive-branch}
+\end{equation}
+Its maximizer is $\alpha=A_u/D_{u,R}$, and tangency to zero is
+\begin{equation}
+ \bigl(1-R-(u-1)^2\bigr)D_{u,R}+A_u^2=0.
+ \label{eq:opt:stopping-tangency}
+\end{equation}
+Expanding \cref{eq:opt:stopping-tangency} gives
+\cref{eq:opt:Rquad-equation}.  On the zero-$b$ branch,
+\begin{equation}
+ \min_b f_{u,R}(y,b)
+ =1-R+2y+(u-1)(1-R)y^2,
+\end{equation}
+and tangency gives
+\begin{equation}
+ R=1+\frac1{\sqrt{u-1}},
+ \qquad
+ \alpha=\frac1{\sqrt{u-1}}.
+ \label{eq:opt:zero-b-tangency}
+\end{equation}
+The latter point belongs to the zero-$b$ branch iff
+$(u-1)^3\ge u^2$, with equality at $u=\uzero$.
+
+For $R=u$, the maximum in
+\cref{eq:opt:stopping-positive-branch} is nonnegative exactly while
+\begin{equation}
+ [u(u-1)]^2-u(u-1)-1\le0,
+\end{equation}
+whose positive equality is $u=\udiam$.  We have proved the following
+binary lower envelope.
+
+\begin{proposition}[Binary lower curve]
+\label{prop:opt:binary-lower}
+Every deterministic algorithm has size-asymptotic ratio at least
+\begin{equation}
+ B(u)=
+ \begin{cases}
+ 1,&0<u\le1,\\
+ u,&1\le u\le \udiam,\\
+ \Rquad(u),&\udiam\le u\le \uzero,\\[1mm]
+ \displaystyle1+\frac1{\sqrt{u-1}},&u\ge \uzero.
+ \end{cases}
+ \label{eq:opt:binary-curve}
+\end{equation}
+The lower bound uses only $p_j\in\{0,u\}$.
+\end{proposition}
+
+\begin{proof}
+For $1<u\le \udiam$, use $R=u$ and the maximizing point of
+\cref{eq:opt:stopping-positive-branch}.  For
+$\udiam\le u\le \uzero$, use the positive root $\Rquad(u)$ and
+$\alpha=A_u/D_{u,\Rquad(u)}$; the tangency identity makes the maximum zero.
+The minimizing completion mass is positive in the interior and becomes zero
+at $u=\uzero$.  For $u\ge \uzero$, use the zero-$b$ tangency point from
+\cref{eq:opt:zero-b-tangency}.  The branch conditions are precisely the two
+inequalities checked above.  Finally, $\RdetRO(u)\ge1$ is trivial for $u\le1$.
+In each nontrivial case \cref{lem:opt:hidden-stopping} supplies fixed binary
+instances by replay.
+\end{proof}
+
+
+\subsubsection{The cap-free harmonic core}
+\label{sec:lower}
+
+This subsection develops the cap-free construction used by the last two
+branches of the revealing curve.  Its notation is local to this subsection.
+We first record its extremal specialization and then extract the scaled form
+reused by the mixed branch.  The construction
+has many equally large groups of positive jobs, revealed from longest to
+shortest, followed by one large group of zero jobs.  The only design choice is
+the gap between two consecutive positive processing times.  Choosing these
+gaps harmonically will make all decisions of the online algorithm disappear
+from the leading term.
+
+\begin{theorem}[Extremal harmonic core]
+\label{thm:lower}
+For every deterministic online algorithm $\mathcal B$ and every $\eps>0$,
+there are arbitrarily large fixed instances $I$ with unit tests and rational
+processing times such that
+\[
+  \ALG_{\mathcal B}(I)\ge (\RdetOT-\eps)\OPT(I).
+\]
+\end{theorem}
+
+\paragraph{The revelation experiment.}
+Fix an integer $K$, a rational number $\xi>0$, and a rational slack
+$\gamma\in(0,1)$; one may keep $\gamma=1/2$ throughout.  For a large scaling
+integer $H$, the instance will contain $H$ jobs of each of $K$ positive types
+$0,1,\ldots,K-1$ and $\xi H$ zero jobs.  We choose $H$ to clear all
+denominators.
+
+The adversary assigns processing times according to the order in which tests
+are started.  The first $H$ tested jobs receive processing time $p_0$, the
+next $H$ receive $p_1$, and so on; after the $K$ positive blocks, every
+remaining job receives processing time zero.  Thus
+\[
+  p_0>p_1>\cdots>p_{K-1}>1,
+\]
+so the algorithm sees the positive types from longest to shortest and learns
+about the zero jobs only at the end.
+
+This adaptive description is only a convenient way to construct the input.
+After running the interaction against a fixed deterministic algorithm, assign
+to every job label the value revealed when that label was tested.  Replaying
+the algorithm on this fixed assignment produces exactly the same transcript.
+If the algorithm never tests or completes some job, its cost is infinite and
+the lower bound is immediate; otherwise every job label is recorded.
+Hence it is enough to lower-bound the cost in the revelation experiment.
+
+\paragraph{Why each phase can be relaxed to shortest processing time.}
+Let $T_\ell$ be the start of the first test in positive block $\ell$, and let
+$T_K$ be the start of the first test in the zero block.  Phase $\ell$ contains
+the completions in $(T_\ell,T_{\ell+1}]$; a completion exactly at $T_\ell$
+belongs to the preceding phase.  Each $T_\ell$ is the boundary between two
+nonpreemptive operations.  Consequently, a previously tested job that is
+unfinished at $T_\ell$ has not started processing and still needs its entire
+processing time.
+
+We repeatedly use the following elementary observation.  Suppose jobs with
+remaining work $v_1,\ldots,v_m$ complete after some time $T$.  If their
+completion order is $q_1,\ldots,q_m$, then the $g$th relative completion time
+is at least $\sum_{h\le g}v_{q_h}$.  Summing these prefix inequalities shows
+that their total relative completion time is minimized by arranging the
+$v_i$ in nondecreasing order.  This is merely a lower bound; the online
+algorithm need not actually use that order.
+
+For normalized group masses $q_1,\ldots,q_m$ and remaining lengths
+$v_1\le\cdots\le v_m$, this shortest-first bound has leading coefficient
+\begin{equation}
+ \mathcal S((q_g,v_g)_{g=1}^m)
+ =\sum_{g=1}^m
+   \left(\frac{v_gq_g^2}{2}
+    +q_g\sum_{h<g}v_hq_h\right).
+ \label{eq:lower-S}
+\end{equation}
+More precisely, the corresponding contribution for groups of size $q_gH$
+is $H^2\mathcal S+O(H)$.  The quadratic term is simply the familiar sum
+$v_g(1+\cdots+q_gH)$ inside one group; the cross term is the waiting caused
+by all shorter groups.
+
+We ensure that
+\begin{equation}
+  p_0-p_{K-1}<1.
+  \label{eq:lower-span}
+\end{equation}
+In phase $\ell$, an unfinished job of an older type $j<\ell$ therefore has
+remaining length $p_j$, whereas a type-$\ell$ job completed in its own phase
+needs both its test and processing, of total length $1+p_\ell$.  Their order
+in the shortest-first relaxation is
+\[
+  p_{\ell-1}<p_{\ell-2}<\cdots<p_0<1+p_\ell.
+\]
+At $T_K$, an untested zero job has remaining length $1$, so the relaxed tail
+starts with all zero jobs and then uses the positive types from shortest to
+longest.  These are the only two places where
+\cref{eq:lower-span} is used.
+
+\paragraph{The finite accounting identity.}
+We now record the online algorithm's possible behavior.  Normalize all job
+counts by $H$.  Let
+\begin{itemize}
+\item $s_j\in[0,1]$ be the mass of type-$j$ jobs completed in their own
+      phase;
+\item $d_{j,\ell}\ge0$ be the mass of type-$j$ jobs completed in the later
+      phase $\ell>j$; and
+\item
+\[
+  X_{j,\ell}=s_j+\sum_{h=j+1}^{\ell-1}d_{j,h}\le1
+  \qquad(\ell>j)
+\]
+be the mass of type $j$ completed before phase $\ell$.  Thus
+$X_{j,\ell+1}$ is the mass completed by the end of phase $\ell$.
+\end{itemize}
+At time $T_\ell$, the machine has already performed the tests of the $\ell H$
+jobs in earlier positive blocks and has processed every earlier job that has
+completed.  Thus
+\begin{equation}
+  \frac{T_\ell}{H}
+  \ge \ell+\sum_{j<\ell}p_jX_{j,\ell}.
+  \label{eq:lower-start}
+\end{equation}
+For each phase, charge its completions their common start time from
+\cref{eq:lower-start}, and charge their relative completion times using
+\cref{eq:lower-S}.  Do the same at $T_K$ for the remaining positive jobs
+and the $\xi H$ zero jobs.  Expanding and collecting equal variables gives
+\begin{align}
+ \frac{\ALG}{H^2}
+ \ge{}& C_K
+ +\sum_{j=0}^{K-1}\left(\frac{s_j^2}{2}-\theta_js_j\right)
+ \nonumber\\
+ &+\sum_{j<\ell}d_{j,\ell}
+ \left[
+   \ell-j-\theta_j
+   -\sum_{j<k<\ell}(p_j-p_k)X_{k,\ell+1}
+ \right]-O(1/H),
+ \label{eq:lower-accounting}
+\end{align}
+where $K,\xi,\gamma$ are fixed while $H\to\infty$, and
+\begin{align}
+ \theta_j
+   &=1-\xi(p_j-1)-\sum_{k>j}(p_j-p_k-1),
+   \label{eq:lower-theta}\\
+ C_K
+   &=\frac{\xi^2}{2}+2\xi K+K^2+P_K,
+ &
+ P_K&=\sum_{j=0}^{K-1}\left(j+\frac12\right)p_j.
+ \label{eq:lower-CP}
+\end{align}
+
+For completeness, here is how to audit
+\cref{eq:lower-accounting} without guessing its origin.  In phase $\ell$,
+the masses in the shortest-first relaxation are
+\[
+ d_{\ell-1,\ell},d_{\ell-2,\ell},\ldots,d_{0,\ell},s_\ell
+\]
+with respective lengths
+\[
+ p_{\ell-1},p_{\ell-2},\ldots,p_0,1+p_\ell.
+\]
+Multiply their total mass by the right-hand side of
+\cref{eq:lower-start} and add the functional
+\cref{eq:lower-S}.  In the final phase use masses
+\[
+ \xi,\ 1-X_{K-1,K},\ldots,1-X_{0,K}
+\]
+and lengths $1,p_{K-1},\ldots,p_0$.  The constant terms sum to $C_K$.
+The terms containing only $s_j$ are $s_j^2/2-\theta_js_j$; the coefficient
+of each $d_{j,\ell}$ is precisely the bracket in
+\cref{eq:lower-accounting}.  Thus the displayed identity is just the
+phasewise shortest-first bound with the phase start times retained.  No
+optimality assumption about the online schedule is hidden in it.
+
+The meaning of the expression is useful.  Completing an $s_j$ fraction of a
+type in its own phase creates a quadratic completion cost but saves later
+waiting cost, producing $s_j^2/2-\theta_js_j$.  A completion postponed to a
+later positive phase is represented by $d_{j,\ell}$ and its bracket.  We next
+choose the processing times so that every such bracket is nonnegative and all
+$\theta_j$ are equal.
+
+\paragraph{The harmonic choice and its telescoping cancellation.}
+Set
+\begin{equation}
+  p_{K-1}=1+\frac{\gamma}{\xi},
+  \qquad
+  p_i=p_{i+1}+\frac1{\xi+K-1-i}
+  \quad(0\le i<K-1).
+  \label{eq:lower-harmonic}
+\end{equation}
+In other words, measured upward from the shortest type, the consecutive gaps
+are
+\[
+  \frac1{\xi+1},\frac1{\xi+2},\ldots,\frac1{\xi+K-1}.
+\]
+This is the key design choice.  If $m=K-1-j$, then
+\begin{align*}
+ p_j-1
+   &=\frac\gamma \xi+\sum_{h=1}^m\frac1{\xi+h},\\
+ \sum_{k>j}(p_j-p_k)
+   &=\sum_{h=1}^m\frac{h}{\xi+h}.
+\end{align*}
+Adding the first line multiplied by $\xi$ to the second line makes each
+denominator cancel:
+\begin{equation}
+ \xi(p_j-1)+\sum_{k>j}(p_j-p_k)
+ =\gamma+\sum_{h=1}^m\frac{\xi+h}{\xi+h}
+ =\gamma+m.
+ \label{eq:lower-telescope}
+\end{equation}
+Substitution in \cref{eq:lower-theta} gives the same value for every type,
+\begin{equation}
+  \theta_j=1-\gamma.
+  \label{eq:lower-theta-constant}
+\end{equation}
+This is why the increments in \cref{eq:lower-harmonic} are harmonic: the
+factor $\xi$ coming from the zero block and the multiplicity $h$ coming from the
+$h$ shorter positive types add up to the denominator $\xi+h$.
+
+The delayed-completion terms are now harmless as well.  Since
+$X_{k,\ell+1}\le1$, their brackets are at least
+\begin{align*}
+ &\ell-j-(1-\gamma)
+   -\sum_{j<k<\ell}(p_j-p_k)\\
+ &\hspace{20mm}
+ =\gamma+\sum_{j<k<\ell}\bigl(1-(p_j-p_k)\bigr)>0,
+\end{align*}
+where the final inequality follows from
+\cref{eq:lower-span}.  We may therefore drop every term containing
+$d_{j,\ell}$.  The remaining minimization is not a multivariable optimization
+problem: complete one square for each $j$,
+\[
+  \frac{s_j^2}{2}-(1-\gamma)s_j
+  =\frac12\bigl(s_j-(1-\gamma)\bigr)^2
+   -\frac12(1-\gamma)^2.
+\]
+Because $1-\gamma\in(0,1)$, this minimum is feasible for
+$s_j\in[0,1]$.  Hence every online algorithm obeys
+\begin{equation}
+ \liminf_{H\to\infty}\frac{\ALG}{H^2}
+ \ge Q_K
+ \defeq C_K-\frac K2(1-\gamma)^2.
+ \label{eq:lower-QK}
+\end{equation}
+
+It remains to compute the offline benchmark.  Knowing all processing times,
+the optimum runs the zero jobs first and the positive types from shortest to
+longest.  Equivalently, the pairwise contribution of two jobs is
+$1+\min\{p_i,p_j\}$.  Its leading coefficient is
+\begin{equation}
+  D_K=\frac{\xi^2}{2}+\xi K+\frac{K^2}{2}+P_K,
+  \qquad
+  \lim_{H\to\infty}\frac{\OPT}{H^2}=D_K.
+  \label{eq:lower-DK}
+\end{equation}
+The four terms respectively account for zero--zero pairs, zero--positive
+pairs, the unit-test part of positive--positive pairs, and the processing
+part of positive--positive pairs.  Thus the finite-$K$ lower-bound
+certificate is simply $Q_K/D_K$.
+
+\paragraph{Passing to a smooth curve.}
+Write
+\[
+  \alpha=\frac K\xi
+\]
+for the ratio of positive mass to zero mass, and keep $\alpha$ fixed while
+$K\to\infty$.  We restrict to $0<\alpha<e-1$.  Then
+\[
+ p_0-p_{K-1}
+ =\sum_{h=1}^{K-1}\frac1{\xi+h}
+ <\ln\!\left(1+\frac K\xi\right)
+ =\ln(1+\alpha)<1,
+\]
+which verifies \cref{eq:lower-span}.
+
+The processing contribution $P_K$ has the exact form
+\begin{equation}
+ P_K
+ =\frac{K^2}{2}\left(1+\frac\gamma \xi\right)
+  +\frac12\sum_{h=1}^{K-1}\frac{(K-h)^2}{\xi+h}.
+ \label{eq:lower-P-exact}
+\end{equation}
+Indeed, the common baseline $1+\gamma/\xi$ contributes the first term, and
+swapping the order of summation shows that the increment $1/(\xi+h)$ receives
+total weight $(K-h)^2/2$.  After division by $\xi^2$, the sum becomes a
+Riemann integral:
+\begin{align}
+ \frac{P_K}{\xi^2}&\longrightarrow I(\alpha)
+   =\frac{\alpha^2}{2}
+    +\frac12\int_0^\alpha\frac{(\alpha-t)^2}{1+t}\,dt
+   \nonumber\\
+ &=\int_0^\alpha(\alpha-t)\bigl(1+\ln(1+t)\bigr)\,dt
+   \nonumber\\
+ &=\frac12(1+\alpha)^2\ln(1+\alpha)
+   -\frac\alpha2-\frac{\alpha^2}{4}.
+ \label{eq:lower-I}
+\end{align}
+The second integral form follows either by integration by parts or by summing
+the limiting processing-time curve $1+\ln(1+t)$ against the remaining
+positive mass $\alpha-t$.
+The subtraction in \cref{eq:lower-QK} is only $O(K)$, whereas
+$C_K,D_K=\Theta(K^2)$.  Since $C_K-D_K=\xi K+K^2/2$, we obtain
+\begin{equation}
+ R(\alpha)
+ \defeq\lim_{K\to\infty}\frac{Q_K}{D_K}
+ =1+
+ \frac{\alpha+\alpha^2/2}
+ {\frac12+\frac\alpha2+\frac{\alpha^2}{4}
+  +\frac12(1+\alpha)^2\ln(1+\alpha)}.
+ \label{eq:lower-Ralpha}
+\end{equation}
+
+This last one-variable maximization is where the constant in the theorem
+comes from.  Put $z=(1+\alpha)^2$.  Then
+\begin{equation}
+  R(z)=1+\frac{2(z-1)}{1+z+z\ln z}.
+  \label{eq:lower-Rz}
+\end{equation}
+The derivative of the fraction has the sign of
+\[
+  3-z+\ln z.
+\]
+For $z>1$ this expression is strictly decreasing, is positive at $z=1$, and
+tends to $-\infty$.  Hence it has one zero $\zstar$, characterized by
+\[
+  \zstar-3=\ln \zstar.
+\]
+The derivative is positive before $\zstar$ and negative afterward, so this is
+the global maximum.  At the root,
+\[
+  1+\zstar+\zstar\ln \zstar=(\zstar-1)^2,
+\]
+and therefore
+\[
+  R(\zstar)=1+\frac{2}{\zstar-1}=\RdetOT.
+\]
+Moreover, $\sqrt{\zstar}-1=1.12255\ldots<e-1$, so the maximizer lies in the
+range where \cref{eq:lower-span} holds.
+
+\begin{proof}[Proof of \cref{thm:lower}]
+Choose a rational $\alpha$ sufficiently close to
+$\alpha_\star=\sqrt{\zstar}-1$, and choose any rational
+$\gamma\in(0,1)$.  For a sufficiently large $K$, set $\xi=K/\alpha$ and use
+\cref{eq:lower-harmonic}; then $Q_K/D_K>\RdetOT-\eps/2$.
+All parameters are rational.  Let $H$ tend to infinity through multiples of
+their common denominators.  \Cref{eq:lower-QK,eq:lower-DK} make the actual ratio exceed
+$\RdetOT-\eps$ for all sufficiently large $H$.  Finally, the replay argument
+at the beginning of the proof converts the revelation experiment into a fixed
+instance for the given deterministic algorithm.
+\end{proof}
+
+\begin{lemma}[Scaled harmonic core]
+\label{lem:opt:harmonic-block}
+Fix a total normalized mass $s>0$ and a parameter $t\in[1,e)$.  Against
+every deterministic obligatory-testing algorithm, there are scales
+$M_\nu\to\infty$ and finite rational multilevel instances with
+$sM_\nu+o(M_\nu)$ jobs such that
+\begin{equation}
+ \frac{\OPT}{M_\nu^2}\longrightarrow
+ O_0=\frac{s^2}{4}(1+t^{-2}+2\ln t),
+ \qquad
+ \liminf_{\nu\to\infty}\frac{\ALG}{M_\nu^2}
+ \ge A_0^{\rm lb}
+ \defeq O_0+\frac{s^2}{2}(1-t^{-2}).
+ \label{eq:opt:harmonic-coefficients}
+\end{equation}
+Their normalized total positive processing mass converges to
+\begin{equation}
+ \frac1{M_\nu}\sum_{j:p_j>0}p_j\longrightarrow L=s\ln t,
+ \label{eq:opt:harmonic-processing-mass}
+\end{equation}
+and their largest processing time converges to $1+\ln t<2$.
+The adaptive revelation is converted by replay into a fixed instance.
+\end{lemma}
+
+\begin{proof}
+The case $t=1$ is obtained by continuity from instances with vanishing
+positive mass, so suppose $1<t<e$.  In the construction above set
+$\alpha=t-1=K/\xi$.  Before rescaling, the total normalized mass is
+$K+\xi=\xi t$.  Give every unit of normalized mass the common factor
+$s/(\xi t)$.
+
+The phase accounting, harmonic cancellation, and completion of squares in
+\cref{eq:lower-accounting,eq:lower-telescope,eq:lower-QK} are homogeneous of
+degree two in the job masses.  The Riemann-sum limit
+\cref{eq:lower-I} substituted into \cref{eq:lower-DK} therefore gives
+\[
+ O_0=\frac{s^2}{4}(1+t^{-2}+2\ln t).
+\]
+Likewise $C_K-D_K=\xi K+K^2/2$, while the $O(K)$ square-completion loss in
+\cref{eq:lower-QK} disappears after division by the quadratic scale.  After
+the same rescaling this gives the guaranteed lower benchmark
+\[
+ A_0^{\rm lb}-O_0=\frac{s^2}{2}(1-t^{-2}).
+\]
+Finally, summing the limiting processing-time curve
+$1+\ln(1+x)$ over the positive mass gives $L=s\ln t$, and
+\cref{eq:lower-harmonic} gives $p_0\to1+\ln t$.  Rational approximation,
+clearing denominators, and the replay argument used in the theorem produce a
+diagonal sequence of arbitrarily large fixed rational instances with the
+stated limit and liminf bounds.
+\end{proof}
+
+\subsubsection{The unrestricted mixed lower bound}
+\label{sec:opt:mixed-lower}
+
+For $\varphi+2<u<\zstar$, neither the binary family nor the pure cap-free
+family is tight.  The correct adversary puts a capped block before a scaled
+harmonic core.  Two lemmas ensure that raw
+execution and early processing of caps cannot escape it.
+
+The cap-free construction needed below is exactly the scaled harmonic core
+from \cref{lem:opt:harmonic-block}; no second phase-accounting proof is
+needed here.  We now prepend capped jobs to that reusable core.
+
+\begin{lemma}[Cap deferral]
+\label{lem:opt:cap-deferral}
+Prepend capped mass $m$ with value $p=u$ to a later cap-free block of mass
+$s=1-m$ and total processing mass $L$.  Suppose every later value satisfies
+$1+p\le u$ and
+\begin{equation}
+ s(u-1)-L-m\ge0.
+ \label{eq:opt:cap-deferral-condition}
+\end{equation}
+Then processing any capped job before all later jobs are complete cannot
+decrease the leading online cost.
+\end{lemma}
+
+\begin{proof}
+A cap completed after its test block but before a later job of value $p$
+has mutual cost $1+u$; leaving it pending until after that job gives $2+p$.
+The exchange saves $u-1-p\ge0$.  If cap mass $q$ is instead completed inside
+the cap-test block, its pairs with all later jobs add
+$q[s(u-1)-L]$.  Its largest possible saving against not-yet-tested caps is
+$qm-q^2/2$.  Relative to leaving every cap pending, the change is therefore
+at least
+\begin{equation}
+ q[s(u-1)-L-m]+\frac{q^2}{2}\ge0.
+\end{equation}
+The finite diagonal discrepancy is lower order.
+\end{proof}
+
+After cap deferral, pairwise accounting gives the offline coefficient $O$
+and the guaranteed online lower benchmark $A^{\rm lb}$:
+\begin{align}
+ A^{\rm lb}={}&A_0^{\rm lb}+m(1-m)+m(1+L)+\frac u2m^2,
+ \label{eq:opt:mixed-A}\\
+ O={}&O_0+m(1-m+L)+\frac u2m^2.
+ \label{eq:opt:mixed-O}
+\end{align}
+Indeed, a cap--later pair contributes $2+p$ online and $1+p$ offline,
+whereas a cap--cap pair contributes $2+u$ online and $u$ offline; collecting
+these pairs yields the two cross terms and the cap squares above.
+In particular, $A^{\rm lb}-O=(A_0^{\rm lb}-O_0)+m$.
+
+\begin{lemma}[Raw-safe quota and replay]
+\label{lem:opt:mixed-raw-safe}
+Fix $m\in(0,1)$ and a later cap-free block satisfying the hypotheses of
+\cref{lem:opt:cap-deferral}.  Against every deterministic revealing algorithm
+there are fixed instances whose asymptotic excess is at least the cap-free
+hybrid benchmark $A^{\rm lb}-R\,O$ from
+\cref{eq:opt:mixed-A,eq:opt:mixed-O} for every target
+$R\le u$.
+\end{lemma}
+
+\begin{proof}
+In the initial phase, a tested fresh job receives $p=u$, while a job run raw
+is assigned hidden value zero.  If $v$ raw jobs and $\ell$ tested caps have
+been touched, stop at the first crossing
+\begin{equation}
+ \frac{\ell}{n-v}\ge m.
+ \label{eq:opt:mixed-quota}
+\end{equation}
+With $S=n-v$, the overshoot is less than one, so $\ell=mS+O(1)$.  If no
+crossing occurs, no test can have occurred: after all first touches, any
+positive $\ell$ would make the ratio in \cref{eq:opt:mixed-quota} equal one.
+Thus every job was run raw and the all-zero hidden instance has ratio
+$u\ge R$.
+
+At a crossing, scale the prescribed later instance to the remaining
+$S-\ell$ first touches, absorbing the one-job cap overshoot and integer
+rounding into its zero group.  A later test reveals the next value in this
+fixed type stream; a later raw action consumes the next value but keeps it
+hidden from the revealing algorithm.
+
+Move every initial raw-zero completion to the start.  It has the same length
+$u$ as cap processing, and crossing a unit test only lowers completion cost.
+With
+\begin{equation}
+ Z_v=vn-\frac{v(v-1)}2,
+\end{equation}
+this prefix contributes $uZ_v$ online and $Z_v$ offline.  Delete it.  The
+remaining $S$ labels consist, up to one-job rounding, of capped fraction $m$
+and the prescribed later cap-free block.
+
+If the revealing algorithm later runs a fresh assigned value $p$ raw, a
+physical cap-free simulation tests and immediately processes that job in
+time $1+p\le u$, suppresses the answer from the virtual revealing algorithm,
+and idles until its virtual $u$-block ends.  Inductively every physical
+completion is no later than its virtual revealing completion.  Since the
+finite-cap and cap-free offline lengths are both $1+p$ on the later block,
+\begin{equation}
+ \ALG_{\mathsf{RO}}-R\OPT_{\mathsf{RO}}
+ \ge (u-R)Z_v+
+ \bigl(\ALG_{\rm hyb}-R\OPT_{\rm hyb}\bigr)-O_u(n).
+ \label{eq:opt:mixed-raw-decomposition}
+\end{equation}
+The first term is nonnegative.  Finally, record every assigned value on its
+job label.  Replaying this fixed vector produces the same transcript because
+the values learned only by the physical simulation were hidden from the
+virtual algorithm.  This proves legality.
+\end{proof}
+
+Apply \cref{lem:opt:harmonic-block} with $s=1-m$.  Substitution into
+\cref{eq:opt:mixed-A,eq:opt:mixed-O} gives the guaranteed two-parameter
+lower ratio
+\begin{equation}
+ \mathcal R_u(m,t)=1+
+ \frac{m+\frac{(1-m)^2}{2}(1-t^{-2})}
+ {\frac{(1-m)^2}{4}(1+t^{-2}+2\ln t)
+  +m(1-m)(1+\ln t)+\frac u2m^2}.
+ \label{eq:opt:mixed-ratio}
+\end{equation}
+At an interior stationary point with value $1+c$, differentiation and the
+zero-gap equation give
+\begin{equation}
+ \ln t=u-2-\frac1c,
+ \qquad
+ t^2=\frac{1-m}{1+m}\left(1+\frac2c\right).
+ \label{eq:opt:mixed-stationarity}
+\end{equation}
+Eliminating $t$ gives precisely
+\cref{eq:opt:mixed-parametrization}.  Conversely, those equations make
+$\mathcal R_u(m,t)=1+c$.
+
+The branch runs from
+\begin{equation}
+ (u,m,t)=\left(\varphi+2,\frac1\varphi,1\right)
+ \quad\text{to}\quad
+ (u,m,t)=(\zstar,0,\sqrt{\zstar}).
+ \label{eq:opt:mixed-endpoints}
+\end{equation}
+It satisfies $u\ge\varphi+2$, $\ln t<1$, and $m\le1/\varphi$.  Therefore
+\begin{equation}
+ (1-m)(u-1-\ln t)
+ >(1-m)\varphi\ge\frac1\varphi\ge m,
+\end{equation}
+so \cref{eq:opt:cap-deferral-condition} holds; also $1+p<3<u$ for every
+later positive value in a sufficiently fine finite construction.  The
+functions
+\begin{equation}
+ g(c)=1-\frac1c+\frac12\ln\!\left(1+\frac2c\right),
+ \qquad h(m)=\operatorname{artanh}m-m
+\end{equation}
+have $g'(c)=2/[c^2(c+2)]>0$ and
+$h'(m)=m^2/(1-m^2)>0$.  Hence $m(c)=h^{-1}(g(c))$ is strictly increasing,
+while
+\begin{equation}
+ u(c)=1+\frac2c-m(c)
+\end{equation}
+is strictly decreasing.  The identities $g(r)=h(0)=0$ and
+$g(1/\varphi)=h(1/\varphi)$ give the two endpoints in
+\cref{eq:opt:mixed-endpoints}; consequently every
+$u\in[\varphi+2,\zstar]$ has exactly one parameter pair.
+
+To pass to fixed finite instances, first approximate $(m,t)$ rationally
+while retaining the strict cap inequalities, then choose a sufficiently
+fine harmonic family, and finally multiply all rational block sizes by a
+common integer $H$.  For fixed harmonic depth, quota overshoot, diagonals,
+and rounding are $O_u(H)$ whereas the displayed costs are $\Theta(H^2)$.
+Send first $H$, then the harmonic depth, and finally the rational
+approximation to their limits.  Together with
+\cref{lem:opt:mixed-raw-safe}, this proves
+\begin{equation}
+ \RdetRO(u)\ge \Rmix(u)
+ \qquad(\varphi+2\le u\le \zstar).
+ \label{eq:opt:mixed-lower-final}
+\end{equation}
+The construction above applies directly in the open interval.  At
+$u=\varphi+2$ and $u=\zstar$ the same statement follows by approaching from
+the interior, so the endpoints are included.
+
+\subsubsection{The large-upper-limit lower bound by cap-free transfer}
+
+\begin{lemma}[Bounded cap-free transfer]
+\label{lem:opt:obligatory-transfer}
+Let $u\ge1$, and let $L_{\mathsf{OT}}(P)$ denote the deterministic
+size-asymptotic value in the cap-free limit, restricted to
+$0\le p_j\le P$.  Then
+\begin{equation}
+ \RdetRO(u)\ge L_{\mathsf{OT}}(u-1).
+ \label{eq:opt:obligatory-transfer}
+\end{equation}
+In particular,
+\begin{equation}
+ \RdetRO(u)\ge \RdetOT
+ \qquad
+ \left(u\ge1+\frac1r=2.752620747896442\ldots\right).
+ \label{eq:opt:high-lower}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Given a finite-cap algorithm, construct a cap-free algorithm on instances
+with $p_j\le u-1$ by running a virtual copy of the finite-cap algorithm.  Copy
+ordinary tests and processing actions.  When the virtual algorithm runs an
+untouched job raw for $u$ time, physically test and immediately process it in
+$1+p_j\le u$ time, hide the answer from the virtual copy, and wait for the
+virtual clock.  Every physical completion is no later than its virtual
+completion.  Moreover, $\min\{u,1+p_j\}=1+p_j$, so finite-cap and cap-free
+optima coincide.  Thus we obtain the following game-value comparison.  For
+every finite-cap algorithm
+$\mathcal A$, the simulation produces a cap-free algorithm $\mathcal B$ and,
+pointwise on every instance with $p_j\le u-1$,
+\[
+ \ALG_{\mathcal A}\ge\ALG_{\mathcal B},
+ \qquad \OPT_u=\OPT_\infty.
+\]
+Consequently
+\[
+ \CR_\infty(\mathcal A)
+ \ge \CR_\infty(\mathcal B; p\le u-1)
+ \ge L_{\mathsf{OT}}(u-1).
+\]
+Taking the infimum over $\mathcal A$ proves
+\cref{eq:opt:obligatory-transfer}.
+
+The harmonic cap-free family attaining $\RdetOT$ has limiting largest
+processing time
+\begin{equation}
+ 1+\ln(1+y_*)
+ =1+\frac12\ln \zstar
+ =\frac{\zstar-1}{2}=\frac1r,
+ \qquad y_*=\sqrt{\zstar}-1.
+\end{equation}
+Approximation from below also gives the endpoint, proving
+\cref{eq:opt:high-lower}.
+\end{proof}

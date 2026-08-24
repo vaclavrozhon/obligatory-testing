@@ -10,7 +10,7 @@ revealing-optimization theorem \cref{thm:intro-common-upper-instance}.
 For a distribution $D$ on $[0,u]$, we define an explicit value
 $\PhiRO(D)$ in \cref{eq:cui-Phi}.  It is obtained by choosing one threshold
 and minimizing a quadratic over the tested fraction $q$.  For a multiset
-$M$, use the empirical distribution $D_M$ from
+$M$, use the empirical distribution $D[M]$ from
 \cref{eq:empirical-distributions}.
 
 \begin{theorem}[Revealing-optimization instance optimality]
@@ -22,14 +22,14 @@ $M\subseteq[0,u]$ has the following properties.
 For every fixed labeling $\sigma$,
 \begin{equation}
  \EE\cost(\mathcal A^*_{n,u},\sigma(M))
- \le n^2\PhiRO(D_M)+\eps_u(n)n^2.
+ \le n^2\PhiRO(D[M])+\eps_u(n)n^2.
  \label{eq:cui-upper}
 \end{equation}
 Conversely, for every randomized nonanticipating policy $\mathcal A$, even
 an announced policy, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
  \EE\cost(\mathcal A,\sigma(M))
- \ge n^2\PhiRO(D_M)-\eps_u(n)n^2.
+ \ge n^2\PhiRO(D[M])-\eps_u(n)n^2.
  \label{eq:cui-lower}
 \end{equation}
 One may take
@@ -46,7 +46,7 @@ policy under a uniform placement into predictable sampling without
 replacement.  One event then controls every touch prefix, so the realized
 stopping fraction can be substituted pathwise.  Finally, a growing grid and
 a sublinear sample make the result uniform over arbitrary bounded multisets
-without announcing the input.  The first subsection begins the formal proof.
+without announcing the input.
 
 \subsection{The fixed-fraction fluid benchmark}
 \label{sec:cui-fluid}
@@ -61,26 +61,32 @@ Write
  \qquad \tau_D=\frac{1+\ell}{a}.
  \label{eq:cui-tau}
 \end{equation}
-Let $R_i=\nu(\{p_i\})$ be the residual masses on the positive support from
+Write the positive support as $p_1,\ldots,p_s$, and let
+$\nu_i=\nu(\{p_i\})$ be the residual masses from
 \cref{lem:maximum-density-module}.  Thus
 \begin{equation}
- \sum_iR_i=1-a,\qquad p_i\ge\tau_D\text{ whenever }R_i>0.
+ \sum_i\nu_i=1-a,\qquad p_i\ge\tau_D\text{ whenever }\nu_i>0.
  \label{eq:cui-residual}
 \end{equation}
-For a fixed final tested fraction $q\in[0,1]$, let $\mathcal C^u_{D,q}$ be the common
-fluid envelope \cref{eq:common-fluid-envelope} with independent-mode work
-$v=u$; the independent mode is raw execution.
+For a fixed final tested fraction $q\in[0,1]$, define the model envelope
+\begin{equation}
+ \mathcal C_{\mathsf{RO},D,q}\defeq\mathcal C^u_{D,q},
+ \label{eq:cui-model-envelope}
+\end{equation}
+where the right-hand side is the common envelope
+\cref{eq:common-fluid-envelope} with independent-mode work $v=u$; the
+independent mode is raw execution.
 
 \begin{lemma}[Fixed-$q$ completion envelope]
 \label{lem:cui-envelope}
-The envelope $\mathcal C^u_{D,q}$ is the divisible-knapsack curve with items
+The envelope $\mathcal C_{\mathsf{RO},D,q}$ is the divisible-knapsack curve with items
 \begin{center}
 \begin{tabular}{@{}lcc@{}}
 \toprule
 item & completion capacity & work per completion\\
 \midrule
 maximum-density test module & $aq$ & $\tau_D$\\
-residual tested class $i$ & $qR_i$ & $p_i$\\
+residual tested class $i$ & $q\nu_i$ & $p_i$\\
 raw module & $1-q$ & $u$\\
 \bottomrule
 \end{tabular}
@@ -100,8 +106,8 @@ of capacity one and cost $u$.
 
 Put
 \begin{equation}
- m_R=\sum_i p_iR_i=\mu-\ell,\qquad
- K_R=\sum_{i,j}\min\{p_i,p_j\}R_iR_j.
+ \ell_\nu=\sum_i p_i\nu_i=\mu-\ell,\qquad
+ K_\nu=\sum_{i,j}\min\{p_i,p_j\}\nu_i\nu_j.
  \label{eq:cui-residual-moments}
 \end{equation}
 The common area identity \cref{eq:common-envelope-area}, specialized through
@@ -109,7 +115,7 @@ The common area identity \cref{eq:common-envelope-area}, specialized through
 \begin{equation}
  F_{\mathsf{RO},u,D}(q)
  =(1+\ell)\left(q-\frac{aq^2}{2}\right)
- +qm_R(1-q)+\frac{q^2K_R}{2}
+ +q\ell_\nu(1-q)+\frac{q^2K_\nu}{2}
  +\frac{u(1-q)^2}{2}.
  \label{eq:cui-F}
 \end{equation}
@@ -128,12 +134,12 @@ This is an explicit one-dimensional optimization.  In fact
 \begin{equation}
  F_{\mathsf{RO},u,D}(q)=\frac u2+Aq+Bq^2,\qquad
  A=1+\mu-u,\qquad
- B=-\frac{a(1+\ell)}2-m_R+\frac{K_R}2+\frac u2.
+ B=-\frac{a(1+\ell)}2-\ell_\nu+\frac{K_\nu}2+\frac u2.
  \label{eq:cui-quadratic}
 \end{equation}
 For each work budget, convexly combining feasible points for $q_1,q_2$
 gives a feasible point for the corresponding convex combination of the two
-fractions.  Hence $\mathcal C^u_{D,q}(x)$ is concave in $q$, its remaining-mass area is
+fractions.  Hence $\mathcal C_{\mathsf{RO},D,q}(x)$ is concave in $q$, its remaining-mass area is
 convex, and $B\ge0$.  Moreover,
 \[
  \tau_D<u\quad\Longleftrightarrow\quad\EE(u-P)>1
@@ -154,43 +160,24 @@ $F_{\mathsf{RO},u,D}(q)\ge\PhiRO(D)$.
 
 We now transfer the fluid envelope to a finite policy which may choose labels
 and its stopping time adaptively.  Equal-valued jobs are first distinguished
-as occurrence tokens.  Fix the private seed of a completing policy and apply
-the common first-touch permutation lemma \cref{lem:adaptive-first-touch}.
-Under a uniform placement, the token values $X_1,\ldots,X_n$ encountered at
-first touches form a uniform random permutation, and the indicator $A_k$
-that touch $k$ is a test is predictable.  Partition $[0,u]$ into $K+1$
-cells, keeping zero separate, and let $d_j$ be the exact mass of cell $j$.
-The following event is therefore uniform over the policy.
-
-\begin{lemma}[Predictable urn discrepancy]
-\label{lem:cui-urn}
-Fix $\delta\in(0,1)$ and put
-\begin{equation}
- e_n=E_{n,K+1,1,n^{-2}}
- =\sqrt{2n\ln\!\bigl(4(K+1)(n+1)n^2\bigr)},
- \qquad
- \Gamma_n=(1+\delta^{-1})e_n.
- \label{eq:cui-Gamma}
-\end{equation}
-With probability $1-o(1)$, simultaneously for every cell $j$ and every touch
-prefix $m\le(1-\delta)n$,
+as occurrence tokens, and we fix the private seed of a completing policy.
+For the present finite-support law, take zero and the $K=s$ positive atoms as
+the cells, with masses $d_j$.
+Apply \cref{lem:uniform-first-touch-event} with failure probability $n^{-2}$,
+using its notation $X_k,A_k$, and let $\Gamma_n=\Gamma_{\rm cell}$.  With
+that probability, simultaneously
+for every cell $j$ and every touch prefix $m\le(1-\delta)n$,
 \begin{equation}
  \left|\sum_{k\le m}A_k\one_{X_k\in j}
        -d_j\sum_{k\le m}A_k\right|\le\Gamma_n.
  \label{eq:cui-urn-discrepancy}
 \end{equation}
-The failure probability is at most $n^{-2}$.
-\end{lemma}
-
-\begin{proof}
-Apply \cref{lem:predictable-permutation-sampling} to the $(K+1)$-dimensional
-cell-indicator vectors, with $B=1$ and $\eta=n^{-2}$.
-\end{proof}
 
 Stop the first-touch sequence when only $\delta n+O(1)$ labels remain.  In
 the suffix, replace every future test of an untouched job by raw execution
 at its first original operation and delete its later known processing.
-Only $O(\delta n)$ bounded operations change, so
+At most $\delta n+O(1)$ jobs and three operations per affected job change.
+Thus \cref{lem:bounded-suffix-edit}, with $W=u+1$, gives
 \begin{equation}
  C_{\rm original}\ge C_{\rm edited}-O_u(\delta n^2+n).
  \label{eq:cui-suffix-edit}
@@ -198,29 +185,21 @@ Only $O(\delta n)$ bounded operations change, so
 The edited schedule has a fixed final tested fraction $q$, but we do not
 condition on its value.
 
-On the single event of \cref{lem:cui-urn}, consider any operation prefix.
-Normalize counts and work by $n$; let $t,b,z,c_j$ denote tested mass, raw
+On the single event \cref{eq:cui-urn-discrepancy}, consider any operation prefix and
+normalize counts and work by $n$.  Let $t,b,z,c_j$ denote tested mass, raw
 mass, tested-zero completions, and processed known mass from positive cell
-$j$.  With $\gamma_n=\Gamma_n/n$,
-\[
- z\le D_0t+\gamma_n,\qquad c_j\le D_jt+\gamma_n.
-\]
-Set $c_j'=(c_j-\gamma_n)^+$.  Then
-\begin{equation}
- c_j'\le D_jt,\qquad t\le q,\qquad b\le1-q.
- \label{eq:cui-repaired-capacities}
-\end{equation}
-Raw work is exactly $ub$, and reducing known mass reduces work.  Thus the
-repaired point is feasible for the empirical envelope at the actual work
-budget, while completed mass decreases by at most $(K+1)\gamma_n$.  Hence
+$j$, and put $\gamma_n=\Gamma_n/n$.  The urn event gives the capacity
+hypotheses of \cref{lem:cell-capacity-repair}; raw work is exactly $ub$, so
+its work hypothesis holds with $\alpha=0$.  Therefore
 \begin{equation}
  \text{completed fraction at work }x
- \le \mathcal C^u_{D,q}(x)+(K+1)\gamma_n.
+ \le \mathcal C_{\mathsf{RO},D,q}(x)+(K+1)\gamma_n.
  \label{eq:cui-envelope-repair}
 \end{equation}
-Integrating the remaining-mass curve, substituting the realized $q$ only
-after \cref{eq:cui-envelope-repair} is established, and restoring
-\cref{eq:cui-suffix-edit} gives the fixed-grid lower bound
+The completion horizon is at most $H=1+u$, and
+$0\le\PhiRO(D)\le u/2$.  Thus \cref{thm:completion-curve-transfer}, with
+the suffix edit as $\varepsilon=O_u(\delta+1/n)$ and
+$\beta=(K+1)\gamma_n$, gives
 \begin{equation}
  \frac{C_{\rm original}}{n^2}
  \ge\PhiRO(D)-O_{u,K}(\gamma_n+\delta+1/n).
@@ -240,52 +219,54 @@ at most $h$, the transport lemma \cref{lem:zero-preserving-transport} gives
  |\PhiRO(D)-\PhiRO(D')|\le h.
  \label{eq:cui-rounding-stability}
 \end{equation}
-For the finite repair, raising a processed value to its bin endpoint shifts
-the envelope horizontally by at most $h_n$; deleting $\gamma_n$ from every
-cell creates vertical error $(K_n+1)\gamma_n$.  With the parameters above,
+For the finite repair, raising a processed value to its bin endpoint adds at
+most $h_n$ to normalized prefix work, while
+\cref{lem:cell-capacity-repair} loses at most
+$(K_n+1)\gamma_n$ completed mass.  With the parameters above,
 \begin{equation}
  (K_n+1)\frac{\Gamma_n}{n}
  =O\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right).
  \label{eq:cui-grid-error}
 \end{equation}
-On the bad event we use nonnegativity and $0\le\PhiRO\le u/2$.
-Averaging \cref{eq:cui-fixed-grid-lower}, using
-\cref{eq:cui-rounding-stability,eq:cui-grid-error}, and then averaging over
-the private seed proves that every announced policy has uniform-placement
-cost at least
+Apply \cref{thm:completion-curve-transfer} directly to the rounded grid, with
+$\alpha=h_n$, $\beta=(K_n+1)\gamma_n$, $H=1+u$, and
+$B=u/2$.  Together with the suffix edit and
+\cref{eq:cui-rounding-stability,eq:cui-grid-error}, it proves that every
+announced policy has uniform-placement cost at least
 \begin{equation}
- n^2\PhiRO(D_M)
+ n^2\PhiRO(D[M])
  -O_u\!\left(n^{11/6}\sqrt{\ln(n+2)}\right).
  \label{eq:cui-announced-lower}
 \end{equation}
-Finite Yao selection \cref{lem:finite-yao} gives a placement whose
-seed-expected cost is at least this average.  It is chosen before the seed
-and is therefore a fixed oblivious labeling.  This proves
-\cref{eq:cui-lower}.
+The final assertion of \cref{thm:completion-curve-transfer} selects a fixed
+oblivious labeling before the policy seed.  This proves \cref{eq:cui-lower}.
 
 \subsection{Removing the announcement}
 \label{sec:cui-learning}
 
 It remains to attain the benchmark without an announcement.  We first record
-the finite cost of one canonical template: select $r$ labels uniformly,
+the finite cost of one canonical template: select $N_{\rm test}$ labels uniformly,
 test them in random order while immediately processing outcomes in a fixed
 low prefix, then process the tested residual stock in SPT order and finally
-run the other $n-r$ jobs raw.  If $q=r/n$, direct pair accounting gives,
+run the other $n-N_{\rm test}$ jobs raw.  If $q=N_{\rm test}/n$, direct pair
+accounting gives,
 uniformly over the empirical grid histogram and the chosen prefix,
 \begin{equation}
- \EE C_n(\pi)=n^2\Psi_D(\pi)+O_u(n),
+ \EE C_n(\pi)=n^2F_{\mathsf{RO},u,D}(\pi)+O_u(n),
  \label{eq:cui-finite-kernel}
 \end{equation}
-where $\Psi_D(\pi)$ is the right-hand side of
-\cref{eq:cui-F}.  To verify this, expand the testing phase into one-job terms
+where the template $\pi$ records the low prefix and $q$, and
+$F_{\mathsf{RO},u,D}(\pi)$ is the right-hand side of \cref{eq:cui-F}.
+To verify this, expand the testing phase into one-job terms
 and relative-order kernels for pairs of tested jobs; expand the residual SPT
 block into its work against raw jobs and its minimum kernel; and add the
-exact raw-block cost $u(n-r)(n-r+1)/2$.  For distinct occurrences the finite
+exact raw-block cost
+$u(n-N_{\rm test})(n-N_{\rm test}+1)/2$.  For distinct occurrences the finite
 coefficients
 \[
- \frac{r(r-1)}{n(n-1)},\qquad
- \frac{r(n-r)}{n(n-1)},\qquad
- \frac{(n-r)(n-r-1)}{n(n-1)}
+ \frac{N_{\rm test}(N_{\rm test}-1)}{n(n-1)},\qquad
+ \frac{N_{\rm test}(n-N_{\rm test})}{n(n-1)},\qquad
+ \frac{(n-N_{\rm test})(n-N_{\rm test}-1)}{n(n-1)}
 \]
 differ from $q^2,q(1-q),(1-q)^2$ by $O(1/n)$.  Every kernel is bounded in
 terms of $u$, so fewer than $n^2$ pair terms create only $O_u(n)$ error.
@@ -302,21 +283,21 @@ $q\in[0,1]$, minimize the quadratic \cref{eq:cui-F}.  Apply the selected
 template to the remaining labels in their unused random order, then finish
 the positive sample jobs.
 
-Let $D_n$ and $D_n^R$ be the full and remaining rounded histograms.
+Let $D_n$ and $D_n^{\rm rem}$ be the full and remaining rounded histograms.
 The sampling-without-replacement histogram estimate
 \cref{eq:without-replacement-histogram} gives
 \begin{equation}
  \EE\|\widehat D_n-D_n\|_1
  \le\sqrt{\frac{K_n+1}{k_n}},
  \qquad
- \|D_n^R-D_n\|_1\le\frac{2k_n}{n-k_n}.
+ \|D_n^{\rm rem}-D_n\|_1\le\frac{2k_n}{n-k_n}.
  \label{eq:cui-histogram}
 \end{equation}
-For a fixed template, the quantities $a,\ell,m_R$ in
-\cref{eq:cui-F} are bounded one-draw expectations and $K_R$ is a bounded
+For a fixed template, the quantities $a,\ell,\ell_\nu$ in
+\cref{eq:cui-F} are bounded one-draw expectations and $K_\nu$ is a bounded
 two-draw expectation.  Inserting an intermediate product measure shows
 \begin{equation}
- |\Psi_D(\pi)-\Psi_E(\pi)|
+ |F_{\mathsf{RO},u,D}(\pi)-F_{\mathsf{RO},u,E}(\pi)|
  \le4(u+1)\|D-E\|_1,
  \label{eq:cui-template-Lipschitz}
 \end{equation}
@@ -326,16 +307,12 @@ The maximum-density and completion-envelope results
 over this common template family is exactly $\PhiRO(D)$.
 
 Condition on the sample.  The learned template is fixed and the unused labels
-are uniformly ordered, so \cref{eq:cui-finite-kernel} applies.  The transfer
-lemma \cref{lem:empirical-minimization}, with
-\cref{eq:cui-template-Lipschitz}, bounds the main cost by
-\[
- (n-k_n)^2\left(
- \PhiRO(D_n^R)+O_u(\|\widehat D_n-D_n^R\|_1)\right)+O_u(n).
-\]
-The sample and its final tail contribute $O_u(nk_n)$.  Now apply
-\cref{eq:cui-histogram}, replace the remaining histogram by the full one,
-and use \cref{eq:cui-rounding-stability}.  Since
+are uniformly ordered, so \cref{eq:cui-finite-kernel} applies.  Including the
+sample and its final tail, whose cost is $O_u(nk_n)$, gives the conditional
+hypothesis of \cref{lem:pilot-learning-transfer} with
+$\varepsilon=O_u(k_n/n+1/n)$.  Apply that lemma with total-variation distance,
+$L_0=4(u+1)$, and \cref{eq:cui-histogram}.  Finally use
+\cref{eq:cui-rounding-stability}.  Since
 \[
  h_n=O_u(n^{-1/6}),\qquad
  \sqrt{(K_n+1)/k_n}=O(n^{-1/6}),\qquad
@@ -344,7 +321,7 @@ and use \cref{eq:cui-rounding-stability}.  Since
 the resulting bound is
 \begin{equation}
  \EE\cost(\mathcal A^*_{n,u},\sigma(M))
- \le n^2\PhiRO(D_M)+O_u(n^{11/6})
+ \le n^2\PhiRO(D[M])+O_u(n^{11/6})
  \label{eq:cui-universal-upper}
 \end{equation}
 for every fixed labeling.  Together with the announced lower bound

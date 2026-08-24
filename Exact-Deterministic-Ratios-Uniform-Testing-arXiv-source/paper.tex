@@ -115,6 +115,7 @@
 \newcommand{\RrandRO}{R_{\mathsf{RO}}^{\mathrm{rand}}}
 \newcommand{\RdetBO}{R_{\mathsf{BO}}^{\mathrm{det}}}
 \newcommand{\RrandBO}{R_{\mathsf{BO}}^{\mathrm{rand}}}
+\newcommand{\Rquad}{R_{\mathrm{quad}}}
 \newcommand{\PhiOT}{\Phi_{\mathsf{OT}}}
 \newcommand{\PhiBE}{\Phi_{\mathsf{BE}}}
 \newcommand{\PhiBO}{\Phi_{\mathsf{BO},u}}
@@ -123,7 +124,7 @@
 \newcommand{\zstar}{z_\star}
 \newcommand{\udiam}{u_\diamond}
 \newcommand{\uzero}{u_0}
-\newcommand{\Cmix}{C_{\mathrm{mix}}}
+\newcommand{\Rmix}{R_{\mathrm{mix}}}
 \newcommand{\artanh}{\operatorname{artanh}}
 \newcommand{\eps}{\varepsilon}
 \newcommand{\RR}{\mathbb{R}}
@@ -254,10 +255,38 @@ multiset can only help and is therefore a valid strengthening in lower bounds.
 
 All randomized expectations are over private algorithmic randomness.  A
 uniform random relabeling is private randomness, not a distributional
-assumption on the adversarial multiset.  For lower bounds we use a uniform
-distribution over fixed labelings as a finite Yao distribution and then
-select one labeling whose cost is at least the average, as formalized in
-\cref{lem:finite-yao} below.
+assumption on the adversarial multiset.
+
+\begin{remark}[Order-oblivious convention]
+\label{rem:order-oblivious}
+For a multiset $M$ of $n$ occurrences and a randomized policy $\mathcal A$,
+write
+\[
+ \cost^{\mathrm{oo}}(\mathcal A,M)
+ \defeq \max_{\sigma\in\mathfrak S_n}
+       \EE\cost(\mathcal A,\sigma(M)).
+\]
+This is the standard order-oblivious view of instance optimality: the input
+is a multiset and its order carries no instance information
+~\cite{AfshaniBarbayChan2017,NarayananRozhonTetekThorup2024}.
+In the present models the convention is especially harmless.  Given any
+policy $\mathcal A$, let $\mathcal A^{\mathrm{sym}}$ first draw a uniform
+permutation $\Pi$ of the public labels and then simulate $\mathcal A$ through
+that relabeling.  For every fixed labeling $\sigma$,
+\[
+ \EE\cost(\mathcal A^{\mathrm{sym}},\sigma(M))
+ =\EE_{\Pi}\EE\cost(\mathcal A,\Pi\sigma(M)),
+\]
+which is independent of $\sigma$ and at most
+$\cost^{\mathrm{oo}}(\mathcal A,M)$.  Hence randomized policies may be
+symmetrized without loss, after which only the multiset matters.  When the
+introduction compares costs ``on $M$,'' it uses this convention.  An
+announced policy knows $M$, but not its assignment to the public labels.
+\end{remark}
+
+For lower bounds we use a uniform distribution over fixed labelings as a
+finite Yao distribution and then select one labeling whose cost is at least
+the average, as formalized in \cref{lem:finite-yao} below.
 
 \subsection{Offline optima and pair accounting}
 
@@ -317,16 +346,14 @@ the first two formulas.  Splitting the double sum into its diagonal and the
 two orientations of every unordered pair gives the symmetric form.
 \end{proof}
 
-For a multiset $M=\{p_1,\ldots,p_n\}$ and a labeled vector
-$p=(p_1,\ldots,p_n)$, respectively, write
+For any finite input object $I$ whose occurrences have processing times
+$p_1,\ldots,p_n$, write
 \begin{equation}
- D_M\defeq\frac1n\sum_{i=1}^n\delta_{p_i},
- \qquad
- D_p\defeq\frac1n\sum_{i=1}^n\delta_{p_i}.
+ D[I]\defeq\frac1n\sum_{i=1}^n\delta_{p_i}.
  \label{eq:empirical-distributions}
 \end{equation}
-for their empirical processing-time distributions.  The two notations
-distinguish whether labels are relevant in the surrounding argument.
+Thus $D[M]$ and $D[p]$ are instances of the same empirical-law operator;
+labels matter to the online interaction, but not to $D[I]$.
 
 For a probability distribution $D$ and a nonnegative effective-length map
 $\ell$, let $P,P'$ be independent with law $D$ and define
@@ -340,7 +367,7 @@ We use the model-specific abbreviations
   &\defeq\frac12\EE\min\{1+P,1+P'\},
  &\Omega_{\mathsf{BE}}(D)
   &\defeq\frac12\EE\min\{P,P'\},\notag\\
- \Omega_u(D)
+ \Omega_{\mathsf{BO},u}(D)=\Omega_{\mathsf{RO},u}(D)
   &\defeq\frac12\EE\min\{\lambda_u(P),\lambda_u(P')\}.
  \label{eq:model-offline-coefficients}
 \end{align}
@@ -359,14 +386,14 @@ effective lengths $\{\lambda_1,\ldots,\lambda_n\}$.  Then
 \end{equation}
 For a multiset $M$ and the effective-length map $\ell$ of the chosen model,
 \begin{equation}
- \OPT(M)=n^2\Omega_\ell(D_M)
-       +\frac n2\int\ell(p)\,dD_M(p).
+ \OPT(M)=n^2\Omega_\ell(D[M])
+       +\frac n2\int\ell(p)\,dD[M](p).
  \label{eq:empirical-offline-model}
 \end{equation}
 In particular, in $\mathsf{BO}(u)$ or $\mathsf{RO}(u)$,
 \begin{equation}
- \OPT_u(M)=n^2\Omega_u(D_M)
-       +\frac n2\int\lambda_u(p)\,dD_M(p).
+ \OPT_u(M)=n^2\Omega_{\mathsf{RO},u}(D[M])
+       +\frac n2\int\lambda_u(p)\,dD[M](p).
  \label{eq:empirical-offline-u}
 \end{equation}
 \end{corollary}
@@ -385,14 +412,14 @@ offline, because a clairvoyant scheduler can run a job for $p_j$ without
 paying the unit test.  Thus
 \begin{equation}
  \OPT_{\mathsf{BE}}(M)
- =n^2\Omega_{\mathsf{BE}}(D_M)+\frac n2\int p\,dD_M(p)
+ =n^2\Omega_{\mathsf{BE}}(D[M])+\frac n2\int p\,dD[M](p)
  =\sum_i p_i+\sum_{i<j}\min\{p_i,p_j\}.
  \label{eq:blind-offline-opt}
 \end{equation}
 This is not the principal benchmark in \cref{thm:blind-instance}.  The
 clairvoyant value may be $o(n^2)$, whereas that theorem compares policies at
 the $n^2$ scale with the optimal announced-multiset online value
-$\PhiBE(D_M)$.
+$\PhiBE(D[M])$.
 
 For obligatory testing, \cref{eq:unified-opt-prefix,eq:optional-opt-pair}
 specialize to
@@ -421,21 +448,21 @@ outside it.  Suppose that $E$ contains all zero jobs, put $T=[n]\setminus E$,
 and use the normalized quantities
 \begin{equation}
  e=|E|,\quad a=\frac en,\quad h=1-a,\quad
- m=\frac1n\sum_{i\in E}p_i,\quad
+ \ell_E=\frac1n\sum_{i\in E}p_i,\quad
  K_X=\frac1{n^2}\sum_{i,j\in X}\min\{p_i,p_j\}.
  \label{eq:stationary-prefix-notation}
 \end{equation}
 The prefix property gives
 \begin{equation}
- K_p=K_E+2hm+K_T,
+ K(D[p])=K_E+2h\ell_E+K_T,
  \qquad
- K_p=\frac1{n^2}\sum_{i,j}\min\{p_i,p_j\}.
+ K(D)\defeq\iint\min\{x,y\}\,dD(x)dD(y).
  \label{eq:stationary-kernel-split}
 \end{equation}
 Define its stationary leading coefficient by
 \begin{equation}
- \Psi_{D_p}(E)
- = (1+m)\left(1-\frac a2\right)+\frac{K_T}{2}.
+ F_{\mathsf{OT},D[p]}(E)
+ = (1+\ell_E)\left(1-\frac a2\right)+\frac{K_T}{2}.
  \label{eq:stationary-leading-coefficient}
 \end{equation}
 
@@ -446,7 +473,7 @@ immediately after its test, defer every $T$-job, and finally process $T$ in
 SPT order.  The resulting stationary policy satisfies
 \begin{equation}
  \EE\ALG_{\Stat}(p,E)
- =n^2\Psi_{D_p}(E)+\frac{e+\sum_i p_i}{2}.
+ =n^2F_{\mathsf{OT},D[p]}(E)+\frac{e+\sum_i p_i}{2}.
  \label{eq:stationary-prefix-cost}
 \end{equation}
 \end{lemma}
@@ -536,23 +563,23 @@ mass is $1-a_*$ and can occur only at values at least $\tau_D$.
 
 \begin{corollary}[Empirical maximum-density prefix]
 \label{cor:empirical-density-prefix}
-For an empirical distribution $D_p$ from
+For an empirical distribution $D[p]$ from
 \cref{eq:empirical-distributions}, the maximum of
 \begin{equation}
  \frac{|E|/n}{1+n^{-1}\sum_{i\in E}p_i}
  \label{eq:empirical-prefix-density}
 \end{equation}
 over processing-time prefixes $E$ containing all zero jobs is
-$1/\tau_{D_p}$.  It is attained by taking every occurrence below
-$\tau_{D_p}$, no occurrence above it, and any subset of occurrences equal to
-$\tau_{D_p}$.  Thus every selected value is at most $\tau_{D_p}$ and every
-unselected value is at least $\tau_{D_p}$.
+$1/\tau_{D[p]}$.  It is attained by taking every occurrence below
+$\tau_{D[p]}$, no occurrence above it, and any subset of occurrences equal to
+$\tau_{D[p]}$.  Thus every selected value is at most $\tau_{D[p]}$ and every
+unselected value is at least $\tau_{D[p]}$.
 \end{corollary}
 
 \begin{proof}
-Apply \cref{lem:maximum-density-module} to $D_p$.  At the boundary
-$p_i=\tau_{D_p}$, adding or removing an occurrence preserves the ratio
-$1/\tau_{D_p}$, so the fractional boundary selector may be replaced by any
+Apply \cref{lem:maximum-density-module} to $D[p]$.  At the boundary
+$p_i=\tau_{D[p]}$, adding or removing an occurrence preserves the ratio
+$1/\tau_{D[p]}$, so the fractional boundary selector may be replaced by any
 subset of the tied occurrences.
 \end{proof}
 
@@ -702,7 +729,7 @@ positive constant times $n^2$.  In these models the definition above is equivale
 the usual worst-case ratio after taking $n\to\infty$.  This equivalence fails
 for blind execution, where $\OPT$ can be $o(n^2)$.  Accordingly,
 \cref{thm:blind-instance} makes the absolute statement
-$\EE\ALG=n^2\PhiBE(D_M)+o_L(n^2)$ and does not claim a bounded ratio to the
+$\EE\ALG=n^2\PhiBE(D[M])+o_L(n^2)$ and does not claim a bounded ratio to the
 clairvoyant optimum on every sparse input.
 
 \subsection{Test-order adversaries}
@@ -870,10 +897,10 @@ Let $X_1,\ldots,X_N$ be a uniform random permutation of fixed vectors
 $x_1,\ldots,x_N\in[0,B]^d$, and let
 $\bar x=N^{-1}\sum_i x_i$.  If $A_k\in[0,1]$ is measurable before $X_k$ is
 exposed, then for $\delta,\eta\in(0,1)$, with probability at least
-$1-\eta$, simultaneously for every coordinate $r$ and every
+$1-\eta$, simultaneously for every coordinate $\ell$ and every
 $m\le(1-\delta)N$,
 \begin{equation}
- \left|\sum_{k\le m}A_k(X_{k,r}-\bar x_r)\right|
+ \left|\sum_{k\le m}A_k(X_{k,\ell}-\bar x_\ell)\right|
  \le(1+\delta^{-1})E_{N,d,B,\eta},
  \qquad
  E_{N,d,B,\eta}\defeq
@@ -889,18 +916,19 @@ For each coordinate, apply
 \cref{eq:without-replacement-hoeffding} after scaling by $B$, and union-bound
 over coordinates and prefix lengths.  Except with probability at most
 $\eta/2$, every centered prefix sum has absolute value at most
-$E=E_{N,d,B,\eta}$.  Before draw $k\le(1-\delta)N$, the mean $R_{k-1,r}$ of
+$E=E_{N,d,B,\eta}$.  Before draw $k\le(1-\delta)N$, the mean
+$\widetilde x_{k-1,\ell}$ of
 the remaining urn therefore satisfies
 \[
- |R_{k-1,r}-\bar x_r|\le \frac{E}{\delta N}.
+ |\widetilde x_{k-1,\ell}-\bar x_\ell|\le \frac{E}{\delta N}.
 \]
-For each $r$,
+For each $\ell$,
 \[
- M_{m,r}=\sum_{k\le m}A_k(X_{k,r}-R_{k-1,r})
+ M_{m,\ell}=\sum_{k\le m}A_k(X_{k,\ell}-\widetilde x_{k-1,\ell})
 \]
 is a martingale with increments bounded by $B$.  The maximal
 Azuma--Hoeffding inequality \cref{eq:maximal-azuma}, followed by a union
-bound over $r$, puts all $|M_{m,r}|$ below $E$ except with probability at
+bound over $\ell$, puts all $|M_{m,\ell}|$ below $E$ except with probability at
 most $\eta/2$.  The predictable drift is at most $E/\delta$, which proves
 \cref{eq:predictable-permutation-sampling}.  Conditioning and then averaging
 proves the final assertion.
@@ -957,9 +985,223 @@ one input in the finite support attains this average.  This is the one-sided
 finite form of Yao's principle~\cite{Yao1977} used in our lower bounds.
 \end{proof}
 
-\input{optional_lower_and_curve}
+\subsection{Notation and fluid-to-finite transfer}
+\label{sec:notation-transfer}
 
-\input{optional_upper}
+We use one notation hierarchy in all four models.  An uppercase Roman $D$
+denotes a probability law, and $D[I]$ is the empirical law
+\cref{eq:empirical-distributions} of a finite input object $I$.
+Calligraphic uppercase letters denote curves, sets, or policies.  For a
+model $\mathsf M$, an input law $D$, and a fluid policy template $\pi$, we
+write
+\begin{equation}
+ \mathcal C_{\mathsf M,D,\pi}(x)
+   =\text{maximum completed mass by work }x,
+ \qquad
+ F_{\mathsf M,D}(\pi)
+   =\int_0^\infty\bigl(1-\mathcal C_{\mathsf M,D,\pi}(x)\bigr)\,dx.
+ \label{eq:notation-envelope-template}
+\end{equation}
+Uppercase Greek letters are leading $n^2$-coefficients:
+\begin{equation}
+ \Omega_{\mathsf M}(D)=\text{offline fluid cost},
+ \qquad
+ \Phi_{\mathsf M}(D)=\inf_{\pi}F_{\mathsf M,D}(\pi)
+   =\text{instance-optimal online value}.
+ \label{eq:notation-leading-values}
+\end{equation}
+Model parameters such as $u$ are appended to the model subscript when
+needed.  Finally, $R_{\mathsf M}^{\rm det}$ and
+$R_{\mathsf M}^{\rm rand}$ denote worst-case ratios.  We reserve $R$ for a
+candidate ratio and $r=R-1$ for its excess.  Lowercase letters denote local
+scalars; in particular $a$ is completion mass, $w$ is work, $q$ is a tested
+fraction, $\mu$ is a mean, $\kappa$ is completion density, and
+$\tau=1/\kappa$ is work per completion.  Specialized formulas may suppress
+a template or a fixed model parameter, but retain these semantic roles.
+
+The following reusable results isolate the finite-size argument shared by the
+instance-optimal sections.  They deliberately separate the model-specific
+task---constructing a fluid envelope and repairing a finite prefix into a
+feasible fluid point---from the generic completion-area and learning steps.
+
+\begin{lemma}[Uniform first-touch sampling event]
+\label{lem:uniform-first-touch-event}
+Fix values $p_1,\ldots,p_n\in[0,L]$, partition their occurrence tokens into
+$s+1$ cells with empirical masses $d_0,\ldots,d_s$, and put
+$\mu=n^{-1}\sum_i p_i$.  Place the tokens uniformly on the public labels,
+fix a deterministic policy, and let $X_k$ be the value encountered at first
+touch $k$.  If $A_k$ is the predictable indicator that this touch uses the
+revealing mode, then for every $\delta,\eta\in(0,1)$, with probability at
+least $1-\eta$, simultaneously for every $m\le(1-\delta)n$,
+\begin{align}
+ \left|\sum_{k\le m}A_k\one_{X_k\in j}
+       -d_j\sum_{k\le m}A_k\right|
+ &\le \Gamma_{\rm cell} &&(0\le j\le s),
+ \label{eq:first-touch-cell}\\
+ \left|\sum_{k\le m}(1-A_k)X_k
+       -\mu\sum_{k\le m}(1-A_k)\right|
+ &\le \Gamma_{\rm work},
+ \label{eq:first-touch-work}
+\end{align}
+where
+\begin{align*}
+ \Gamma_{\rm cell}
+  &=(1+\delta^{-1})E_{n,s+1,1,\eta/2},\\
+ \Gamma_{\rm work}
+  &=(1+\delta^{-1})E_{n,1,L,\eta/2}.
+\end{align*}
+The statement remains true after conditioning on an independent policy seed.
+\end{lemma}
+
+\begin{proof}
+By \cref{lem:adaptive-first-touch}, the first-touch values form a uniform
+permutation and $A_k$ is predictable.  Apply
+\cref{lem:predictable-permutation-sampling} to the cell-indicator vector with
+selector $A_k$ and to the scalar value with selector $1-A_k$, assigning
+failure probability $\eta/2$ to each application.
+\end{proof}
+
+\begin{lemma}[Bounded suffix edit]
+\label{lem:bounded-suffix-edit}
+Consider two completing no-idling schedules on the same $n$ jobs, each of
+total work at most $Wn$.  Suppose one is obtained from the other by changing
+the operations of at most $h$ jobs, altering at most $ch$ operations of
+individual length at most $W$, while preserving the relative order and
+completion events of all unaffected jobs.  Then
+\begin{equation}
+ |\cost(\mathcal A)-\cost(\widetilde{\mathcal A})|
+ \le(c+1)Whn.
+ \label{eq:bounded-suffix-edit}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Write completion cost as operation length times the number of unfinished
+jobs.  Altered operations contribute at most $chWn$.  At every unaffected
+operation, the unfinished counts in the two schedules differ only on the
+$h$ affected jobs; summing this discrepancy over total work at most $Wn$
+adds at most $hWn$.
+\end{proof}
+
+\begin{theorem}[Fluid-to-finite completion transfer]
+\label{thm:completion-curve-transfer}
+Fix a law $D$ and a family of templates $\Pi$.  Suppose every envelope
+$\mathcal C_{D,\pi}$ is nondecreasing, takes values in $[0,1]$, and equals
+one for $x\ge H$, where $H<\infty$ is common to $\pi\in\Pi$.  Put
+\begin{equation}
+ F_D(\pi)=\int_0^\infty(1-\mathcal C_{D,\pi}(x))\,dx,
+ \qquad \Phi(D)=\inf_{\pi\in\Pi}F_D(\pi),
+ \label{eq:transfer-fluid-values}
+\end{equation}
+and assume $0\le\Phi(D)\le B$.
+
+Let $\mathcal A$ be a random finite schedule on $n$ jobs.  Suppose that on an
+event $G$ there are an edited completing schedule $\widetilde{\mathcal A}$
+and a possibly random template $\pi\in\Pi$ such that
+\begin{align}
+ \cost(\mathcal A)&\ge
+   \cost(\widetilde{\mathcal A})-\varepsilon n^2,
+ \label{eq:transfer-edit-cost}\\
+ \frac{N_{\widetilde{\mathcal A}}(nx)}n
+ &\le \mathcal C_{D,\pi}(x+\alpha)+\beta
+ \qquad(0\le x\le H),
+ \label{eq:transfer-completion-bound}
+\end{align}
+where $N_{\widetilde{\mathcal A}}(t)$ is the number of jobs completed by
+time $t$.  If $\Prob(G^c)\le\eta$, then
+\begin{equation}
+ \frac{\EE\cost(\mathcal A)}{n^2}
+ \ge \Phi(D)-\varepsilon-\alpha-H\beta-\eta B.
+ \label{eq:completion-curve-transfer}
+\end{equation}
+The same conclusion holds seedwise under a uniform finite placement; in that
+case, for each randomized policy, finite Yao selection produces one fixed
+oblivious labeling satisfying the bound.
+\end{theorem}
+
+\begin{proof}
+Total completion time is the area under the unfinished-job curve.  On $G$,
+\cref{eq:transfer-completion-bound} and the fact that the envelope is one
+after $H$ give
+\begin{align*}
+ \frac{\cost(\widetilde{\mathcal A})}{n^2}
+ &\ge\int_0^H
+   \bigl(1-\mathcal C_{D,\pi}(x+\alpha)-\beta\bigr)\,dx\\
+ &\ge F_D(\pi)-\alpha-H\beta
+ \ge\Phi(D)-\alpha-H\beta.
+\end{align*}
+Use \cref{eq:transfer-edit-cost}, average over $G$, and use nonnegativity on
+$G^c$.  The lost factor is at most $\eta\Phi(D)\le\eta B$, proving
+\cref{eq:completion-curve-transfer}.  The final assertion is
+\cref{lem:finite-yao} applied after conditioning on the policy seed.
+\end{proof}
+
+\begin{lemma}[Cell-capacity repair]
+\label{lem:cell-capacity-repair}
+Let $D$ have support $0=p_0<p_1<\cdots<p_s$ with masses $d_j$, and consider
+the common envelope $\mathcal C^v_{D,q}$ from
+\cref{eq:common-fluid-envelope}.  At a finite schedule prefix, let $t,b,z$
+be normalized tested mass, independent-mode mass, and zero completions, and
+let $c_j$ be normalized processed mass of positive class $j$.  Suppose
+\begin{equation}
+ t\le q,\quad b\le1-q,\quad
+ z\le d_0t+\gamma,\quad c_j\le d_jt+\gamma,
+ \label{eq:cell-repair-capacities}
+\end{equation}
+and, with $c_j'=(c_j-\gamma)^+$,
+\begin{equation}
+ t+vb+\sum_{j=1}^sp_jc_j'\le x+\alpha.
+ \label{eq:cell-repair-work}
+\end{equation}
+Then
+\begin{equation}
+ z+b+\sum_{j=1}^sc_j
+ \le \mathcal C^v_{D,q}(x+\alpha)+(s+1)\gamma.
+ \label{eq:cell-capacity-repair}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+The repaired variables $t,b,c_j'$ satisfy every constraint in
+\cref{eq:common-fluid-envelope} at work budget $x+\alpha$.  Replacing $z$ by
+$d_0t$ and each $c_j$ by $c_j'$ loses at most $(s+1)\gamma$ completed mass.
+\end{proof}
+
+\begin{lemma}[Pilot-learning transfer]
+\label{lem:pilot-learning-transfer}
+Let $\Pi$ be a common template family, suppose
+$\Phi(D)=\inf_{\pi\in\Pi}F_D(\pi)$, and assume
+\begin{equation}
+ \sup_{\pi\in\Pi}|F_D(\pi)-F_E(\pi)|\le L_0d(D,E).
+ \label{eq:pilot-transfer-lipschitz}
+\end{equation}
+Let $\widehat D$ be a pilot estimate, $D^{\rm rem}$ the law of the remaining jobs,
+and let $\widehat\pi$ minimize $F_{\widehat D}$.  If the complete learned
+schedule, including its pilot, satisfies conditionally
+\begin{equation}
+ \EE[\cost(\mathcal A)\mid\widehat D,D^{\rm rem}]
+ \le n^2F_{D^{\rm rem}}(\widehat\pi)+\varepsilon n^2,
+ \label{eq:pilot-transfer-finite-cost}
+\end{equation}
+then
+\begin{equation}
+ \frac{\EE\cost(\mathcal A)}{n^2}
+ \le \Phi(D)+2L_0\EE d(\widehat D,D^{\rm rem})
+       +L_0\EE d(D^{\rm rem},D)+\varepsilon.
+ \label{eq:pilot-learning-transfer}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+By \cref{lem:empirical-minimization},
+$F_{D^{\rm rem}}(\widehat\pi)\le
+\Phi(D^{\rm rem})+2L_0d(\widehat D,D^{\rm rem})$.  The value part of the
+same lemma gives
+$\Phi(D^{\rm rem})\le\Phi(D)+L_0d(D^{\rm rem},D)$.  Substitute both estimates in
+\cref{eq:pilot-transfer-finite-cost} and average.
+\end{proof}
+
+\input{deterministic_revealing}
 
 \input{common_upper_instance}
 
@@ -991,7 +1233,7 @@ in this paper.
 \appendix
 \input{formal_verification}
 \input{finite_checkpoint}
-\capbubblingappendix
+\input{cap_bubbling}
 \input{lean_formalization}
 
 \bibliographystyle{alphaurl}

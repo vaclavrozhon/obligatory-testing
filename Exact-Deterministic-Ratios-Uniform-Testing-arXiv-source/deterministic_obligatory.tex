@@ -1,0 +1,54 @@
+\subsection{The obligatory endpoint}
+\label{sec:obligatory}
+
+The obligatory model is the unbounded endpoint of revealing optimization,
+but the passage to that endpoint is not a formal substitution
+$u=\infty$: both the algorithm and the additive error must be uniform in
+$u$.  The finite curve has just established exactly those two properties,
+so the endpoint now follows by a short transfer.
+
+\begin{theorem}[Deterministic obligatory testing]
+\label{thm:det-obligatory}
+Let $\zstar>1$ be the unique solution of
+$\zstar-3=\ln \zstar$, and set
+\[
+ \RdetOT=1+\frac{2}{\zstar-1}
+ =1.570574096649395\ldots .
+\]
+For every deterministic online algorithm $\mathcal B$ and every $\eps>0$,
+there are arbitrarily large obligatory-testing instances $I$ such that
+\[
+ \cost(\mathcal B,I)\ge(\RdetOT-\eps)\cost(\OPT,I).
+\]
+Conversely, there are a deterministic algorithm $\mathcal A$ and an absolute
+constant $B$ such that every $n$-job obligatory instance satisfies
+\[
+ \cost(\mathcal A,I)\le\RdetOT\cost(\OPT,I)+Bn.
+\]
+Consequently the optimal deterministic size-asymptotic competitive ratio is
+exactly $\RdetOT$.
+\end{theorem}
+
+\begin{proof}
+For the upper bound, use \textsc{AdaptiveThreshold} with $c=r$.  This
+algorithm never runs a job raw and is independent of $u$.  Given a finite
+obligatory instance, choose any finite
+\[
+ u>\max\{\zstar,1+\max_j p_j\}.
+\]
+Its execution is identical in the revealing model with cap $u$, and every
+offline effective length is
+$\min\{u,1+p_j\}=1+p_j$.  Thus the revealing and obligatory optima coincide.
+The constant $B$ in \cref{eq:opt:uniform-high-upper} is independent of $u$,
+so the same inequality holds for the obligatory instance.
+
+For the lower bound, regard an arbitrary obligatory algorithm $\mathcal B$
+as a revealing algorithm at the fixed cap $u=\zstar$ that simply never uses raw
+execution.  The plateau lower bound in \cref{thm:optional-curve} may be
+witnessed by cap-free instances with $p_j<\zstar-1$.  On those instances the
+online transcript is unchanged and
+$\min\{\zstar,1+p_j\}=1+p_j$, so again the two offline optima coincide.  The
+finite-cap lower inequality therefore gives the claimed obligatory lower
+bound for arbitrarily large instances.
+\end{proof}
+

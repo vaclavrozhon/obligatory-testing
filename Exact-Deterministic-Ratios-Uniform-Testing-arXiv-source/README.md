@@ -12,10 +12,9 @@ latexmk -pdf paper.tex
 ```
 
 from this directory.  The build uses only standard LaTeX packages and the
-included vector figures.  The introduction overview is native TikZ/pgfplots
-source in `curves_overview_tikz.tex`; the revealing/non-revealing comparison
-is regenerated with `python3 plot_blind_optimization_curve.py`.  Regeneration
-of that PDF requires NumPy and Matplotlib, but compiling the paper does not.
+included vector figures.  The three introduction figures are native
+TikZ/pgfplots sources in `curves_overview_tikz.tex`,
+`randomized_curve_tikz.tex`, and `blind_optimization_curve_tikz.tex`.
 
 If `latexmk` is unavailable, the equivalent manual build is
 
@@ -46,8 +45,7 @@ ALG <= R OPT + O_u(n),
 with fixed finite `u`.  The endpoint `u = infinity` is exactly obligatory
 testing.  Since `OPT = Omega_u(n^2)`, this gives
 the stated exact asymptotic coefficients and every larger coefficient under
-the additive-constant convention.  The manuscript does not claim a single
-finite additive constant at the endpoint coefficient.
+the additive-constant convention.
 
 On the plateau `u >= z_*`, including `u = infinity`, the same
 Adaptive-Threshold algorithm satisfies
@@ -59,7 +57,7 @@ ALG <= R_* OPT + C n
 with one absolute constant `C` independent of `u`.
 
 The deterministic revealing-optimization theorem is per parameter: it gives the full
-six-branch function `V(u)`, not only its worst value.  The three upper-bound
+six-branch function `R_det_RO(u)`, not only its worst value.  The three upper-bound
 policies are specified in numbered `algorithmic` environments.  Its
 mixed-regime upper bound is presented by a direct cap-reserve potential and
 accompanied by an independent adjacent-exchange cross-check.
@@ -70,11 +68,24 @@ leading values for bounded obligatory testing, blind execution, revealing
 optimization, and blind optimization.  In obligatory testing, the worst-case
 algorithm uses the fixed cutoff `32`; the bounded-bag instance-optimal policy
 is its variant with a slowly growing cutoff.
-The full revealing-optimization instance-optimal proof is Section 7 of the
+The full revealing-optimization instance-optimal proof is Section 4 of the
 manuscript; its outer worst-case optimization is the separate four-piece
-curve in Section 8.  The blind-execution theorem is formalized in Lean.  The
-blind-optimization results include the exact deterministic curve and the
-randomized instance-optimal theorem and curve.  Both curves are unbounded as
-$u\to\infty$ and are currently analytic only.  For obligatory testing, Lean
-checks the fixed-cutoff `4/3` theorem and the shared fluid algebra; the
-growing-cutoff instance-optimal variant is currently analytic.
+curve in Section 5.  The blind-execution theorem is formalized in Lean.  For
+blind optimization, Lean checks both scalar curve formulas, the randomized
+reduction for arbitrary finite empirical distributions, and the full
+deterministic instance-optimality counterexample; deterministic hidden
+stopping and pilot learning are still analytic.  For obligatory testing,
+Lean checks the fixed-cutoff `4/3` theorem, the shared fluid algebra, and the
+full deterministic balanced-input impossibility; the growing-cutoff
+instance-optimal variant is currently analytic.  For revealing optimization,
+Lean also checks the four-piece randomized scalar maximization, including
+transition uniqueness, attainment, the plateau, and the global maximum.
+
+## Source organization
+
+Section 3 is assembled by `deterministic_revealing.tex` from policy
+guarantees, branchwise lower bounds, curve assembly, and the obligatory
+endpoint.  The independent cap-bubbling certificate is the normal appendix
+source `cap_bubbling.tex`.  Superseded proofs, generated PDF plots, and their
+plotting scripts are retained under `old/`; the manuscript uses only the
+native TikZ sources listed above.
