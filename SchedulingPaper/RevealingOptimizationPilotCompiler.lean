@@ -130,6 +130,55 @@ theorem completionCount_filter_owner_le
       simp only [List.map_cons, Online.completionCount_cons,
         Online.Observation.completionLabel_relabel, Option.isSome_map, ih]
 
+@[simp] theorem completionLabels_filter_owner
+    {n : ℕ} (processing : Online.Label n → ℝ)
+    (keep : Online.Label n → Prop) [DecidablePred keep]
+    (transcript : Online.Transcript n) :
+    Online.Transcript.completionLabels processing
+        (transcript.filter fun observation => keep observation.ownerLabel) =
+      (Online.Transcript.completionLabels processing transcript).filter keep := by
+  induction transcript with
+  | nil => rfl
+  | cons observation rest ih =>
+      rw [List.filter_cons]
+      by_cases hkeep : keep observation.ownerLabel
+      · rw [if_pos (by simpa using hkeep),
+          Online.Transcript.completionLabels_cons,
+          Online.Transcript.completionLabels_cons, ih]
+        cases hcompletion : observation.completionLabel processing with
+        | none => simp
+        | some job =>
+            have howner : observation.ownerLabel = job :=
+              observation.ownerLabel_eq_of_completionLabel_eq hcompletion
+            have hj : keep job := by simpa [howner] using hkeep
+            simp [hj]
+      · rw [if_neg (by simpa using hkeep),
+          Online.Transcript.completionLabels_cons, ih]
+        cases hcompletion : observation.completionLabel processing with
+        | none => simp
+        | some job =>
+            have howner : observation.ownerLabel = job :=
+              observation.ownerLabel_eq_of_completionLabel_eq hcompletion
+            have hj : ¬keep job := by simpa [howner] using hkeep
+            simp [hj]
+
+@[simp] theorem completionLabels_map_relabel
+    {n : ℕ} (processing : Online.Label n → ℝ)
+    (order : Equiv.Perm (Online.Label n))
+    (transcript : Online.Transcript n) :
+    Online.Transcript.completionLabels processing
+        (transcript.map (Online.Observation.relabel order)) =
+      (Online.Transcript.completionLabels
+        (fun virtual => processing (order virtual)) transcript).map order := by
+  induction transcript with
+  | nil => rfl
+  | cons observation rest ih =>
+      simp only [List.map_cons, Online.Transcript.completionLabels_cons,
+        Online.Observation.completionLabel_relabel, ih]
+      cases hcompletion : observation.completionLabel
+          (fun virtual => processing (order virtual)) <;>
+        simp
+
 theorem completionCost_append
     {n : ℕ} (cap : Cap) (processing : Online.Label n → ℝ)
     (left right : Online.Transcript n) :
@@ -440,6 +489,90 @@ theorem learnedRetained_completionCount_le
     completionCount_map_relabel]
   rw [learnedVirtual_completionCount G positions pilotOrder mainOrder] at hfilter
   exact hfilter
+
+theorem pilotOccurrenceSet_card
+    (positions : Finset (Fin n)) (order : Equiv.Perm (Fin n)) :
+    (pilotOccurrenceSet positions order).card = positions.card := by
+  unfold pilotOccurrenceSet
+  exact Finset.card_image_iff.mpr fun _ _ _ _ heq => order.injective heq
+
+/-- Exactly the `n-k` nonpilot jobs complete in the retained main
+transcript. -/
+theorem learnedRetained_completionCount
+    {n : ℕ} {u : ℝ}
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {processing : Fin n → ℝ} (G : RoundedPositiveGrid ι processing)
+    (positions : Finset (Fin n))
+    (pilotOrder mainOrder : Equiv.Perm (Fin n)) :
+    Online.completionCount processing
+      (learnedRetainedTranscript G positions pilotOrder mainOrder u) =
+        n - positions.card := by
+  let T := learnedTemplate G positions pilotOrder u
+  let virtual := learnedVirtualTranscript G positions pilotOrder mainOrder u
+  let keep : Fin n → Prop := fun job =>
+    mainOrder job ∉ pilotOccurrenceSet positions pilotOrder
+  rw [show learnedRetainedTranscript G positions pilotOrder mainOrder u =
+      (virtual.filter fun observation => keep observation.ownerLabel).map
+        (Online.Observation.relabel mainOrder) by rfl,
+    completionCount_map_relabel,
+    Online.completionCount_eq_completionLabels_length,
+    completionLabels_filter_owner]
+  have hperm := quotaStrategy_completionLabels_perm T.quota_le u
+    (fun job => processing (mainOrder job)) (roundedTemplateLow G T)
+  have hfiltered := hperm.filter (fun job => decide (keep job))
+  have hlength := hfiltered.length_eq
+  have hlength' :
+      (List.filter (fun job => decide (keep job))
+        (Online.Transcript.completionLabels
+          (fun job => processing (mainOrder job)) virtual)).length =
+      (List.filter (fun job => decide (keep job))
+        (List.finRange n)).length := by
+    simpa [virtual, learnedVirtualTranscript, T, quotaRun,
+      List.ofFn_id] using hlength
+  rw [hlength']
+  rw [← List.toFinset_card_of_nodup
+    ((List.nodup_finRange n).filter _)]
+  rw [List.toFinset_filter]
+  rw [show (List.finRange n).toFinset = Finset.univ by ext job; simp]
+  simp only [decide_eq_true_eq]
+  rw [show (Finset.univ.filter keep) =
+      (((pilotOccurrenceSet positions pilotOrder).image mainOrder.symm)ᶜ :
+        Finset (Fin n)) by
+    ext job
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and,
+      Finset.mem_compl, Finset.mem_image]
+    constructor
+    · intro hpilot himage
+      obtain ⟨x, hx, hsymm⟩ := himage
+      apply hpilot
+      have hphysical : mainOrder job = x := by
+        rw [← hsymm]
+        simp
+      simpa [hphysical] using hx
+    · intro himage hpilot
+      exact himage ⟨mainOrder job, hpilot, by simp⟩]
+  rw [Finset.card_compl, Finset.card_image_of_injective]
+  · rw [pilotOccurrenceSet_card]
+    simp
+  · exact mainOrder.symm.injective
+
+/-- The compiled pilot word completes exactly one copy of every physical
+job: the pilot completes the sampled owners and the retained main word
+completes their complement. -/
+theorem learnedPilot_completionCount
+    {n : ℕ} {u : ℝ}
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {processing : Fin n → ℝ} (G : RoundedPositiveGrid ι processing)
+    (positions : Finset (Fin n))
+    (pilotOrder mainOrder : Equiv.Perm (Fin n)) :
+    Online.completionCount processing
+      (learnedPilotTranscript G positions pilotOrder mainOrder u) = n := by
+  rw [learnedPilotTranscript, Online.completionCount_append,
+    revealingPilotTranscript_completionCount,
+    learnedRetained_completionCount]
+  have hcard : positions.card ≤ n := by
+    simpa using positions.card_le_univ
+  omega
 
 /-- Pointwise compiler overhead. -/
 theorem learnedPilotCost_le
