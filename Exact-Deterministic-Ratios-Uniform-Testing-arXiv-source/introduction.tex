@@ -380,7 +380,7 @@ and let $\widehat\mu$ be the mean observed length.
 \begin{minipage}[t]{0.485\textwidth}
 \vspace{0pt}
 \centering
-\input{blind_optimization_curve_tikz}
+\inputplot{blind_optimization_curve_tikz}
 \captionof{figure}{The exact deterministic and randomized ratios for blind
 optimization.}
 \label{fig:intro-bo-curve}
@@ -436,7 +436,7 @@ eventually becomes $4/3$.
 
 \begin{figure}[H]
 \centering
-\input{curves_overview_tikz}
+\inputplot{curves_overview_tikz}
 \caption{The three proved deterministic policy guarantees and their exact
 lower envelope.  The black outline is the optimal ratio.  The arrow on
 \textsc{Raw} marks its off-scale linear continuation; the teal horizontal
@@ -529,7 +529,7 @@ observed lengths to estimate the input distribution.
 \begin{minipage}[t]{0.485\textwidth}
 \vspace{0pt}
 \centering
-\input{randomized_curve_tikz}
+\inputplot{randomized_curve_tikz}
 \captionof{figure}{The exact randomized revealing-optimization ratio as a function of
 the raw execution time $u$.}
 \label{fig:intro-curves-rand}
@@ -664,12 +664,17 @@ deterministic hidden-stopping lower bound and matching two-policy curve,
 proves the randomized instance-optimal theorem, and maximizes its mean-based
 benchmark to obtain the exact randomized worst-case curve.
 
-The appendices document and independently audit the more delicate parts of
-the argument.  \Cref{sec:formalization} states precisely which results are
-machine checked and summarizes the corresponding Lean~4 development.
-\Cref{app:finite-checkpoint} evaluates a large but finite rational instance
-of the cap-free lower bound, while \cref{app:cap-bubbling} gives an
-independent cap-bubbling certificate for the deterministic upper bound.
-Finally, \cref{app:lean-formalization} records the exported Lean theorem and
-the detailed dictionary between its objects and the deterministic statements
-in the paper.
+\ifbuildappendices
+  The appendices document and independently audit the more delicate parts of
+  the argument.  \Cref{sec:formalization} states precisely which results are
+  machine checked and summarizes the corresponding Lean~4 development.
+  \Cref{app:finite-checkpoint} evaluates a large but finite rational instance
+  of the cap-free lower bound, while \cref{app:cap-bubbling} gives an
+  independent cap-bubbling certificate for the deterministic upper bound.
+  Finally, \cref{app:lean-formalization} records the exported Lean theorem and
+  the detailed dictionary between its objects and the deterministic
+  statements in the paper.
+\else
+  The complete build also contains appendices documenting the machine-checked
+  results and independently auditing the more delicate parts of the argument.
+\fi
