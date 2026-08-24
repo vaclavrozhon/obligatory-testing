@@ -172,3 +172,7 @@ The operational layer also supports a public-transcript-dependent selector:
 its pilot/quota specialization completes the first pilot outcomes immediately,
 then uses a supplied post-pilot selector, and is proved to terminate after
 `2n+1` steps under every private relabelling.
+The literal learned policy now goes one step further: it recomputes its quota
+and selector solely from the first `k` public test-result records, stabilizes
+after that pilot prefix, and terminates with the empirical grid-minimizing
+template without receiving the input histogram as hidden advice.
