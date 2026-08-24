@@ -180,3 +180,7 @@ Its analysis identifies the entire learned execution with the realized fixed
 pilot/quota run and proves that the histogram read from the public transcript
 is exactly the standard without-replacement sample histogram under private
 random relabelling.
+A physical two-permutation compiler executes each pilot occurrence only once,
+deletes those owners from the virtual learned quota run, and proves the full
+rounded-grid expected bound with explicit normalized pilot overhead
+`2 k (u+1) / n`.
