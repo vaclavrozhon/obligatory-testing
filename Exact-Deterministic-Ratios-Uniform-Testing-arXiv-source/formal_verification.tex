@@ -45,17 +45,24 @@ Obligatory-testing instance optimality,
    \path{ObligatoryInstance.empiricalMaximumDensity_completion_le_line};
    \path{ObligatoryInstance.empiricalPartialCompletion_le_thresholdPrefix};
    \path{ObligatoryInstance.exists_empiricalObligatoryBenchmark};
+   \path{ObligatoryInstance.uniformAverage_normalizedCost_ge_roundedObligatoryValue};
+   \path{ObligatoryInstance.exists_fixedPlacement_randomizedCost_ge_roundedObligatoryValue};
+   \path{ObligatoryInstance.exists_boundedUniformBenchmark_fixedPlacement_randomized_lower};
    \path{FluidToFinite.completion_transfer_uniform};
    \path{FluidToFinite.pilot_learning_transfer}
  & The maximum-density algebra is instantiated on every concrete nonempty
    finite input: Lean constructs the threshold, proves its global fractional
    density certificate and the complete finite fractional pointwise envelope,
    and identifies the exact uniform cost of the announced stationary
-   operation word, including its linear diagonal remainder.  The two
-   model-independent transfer principles are also checked.  Connecting the
-   fractional envelope to every literal online prefix, the bounded
-   adaptive-policy lower bound, and the growing-cutoff operational learner
-   are not yet assembled in Lean. \\
+   operation word, including its linear diagonal remainder.  The lower
+   transfer is operational: every completing adaptive test-only policy is
+   reindexed by its first-touch permutation, every literal prefix is bounded
+   by the rounded completion envelope, the envelope is integrated into the
+   actual completion cost, and finite Yao selects one fixed oblivious
+   labeling for every finite private-seed family.  The checked block-area
+   benchmark is identified with the stationary maximum-density formula.
+   The two model-independent transfer principles are also checked.  The
+   remaining unassembled part is the growing-cutoff operational learner. \\
 Blind-execution results,
 \cref{thm:blind-instance,thm:blind-unbounded-impossible}
  & \path{boundedUniform_blindPilot_concrete_rate};
@@ -79,6 +86,7 @@ Revealing-optimization instance and randomized curve,
    \path{RevealingOptimization.RandomizedLower.adaptive_binary_families_attain_curve};
    \path{RevealingOptimization.RandomizedYao.finiteSeed_binary_families_attain_curve};
    \path{RevealingOptimization.OperationalCompiler.exists_operational_binary_family_ratio_tendsto_curve};
+   \path{RevealingOptimization.CompiledRun.compiledLearnedStrategy_expectedCost_le};
    \path{FluidToFinite.completion_transfer_uniform};
    \path{FluidToFinite.pilot_learning_transfer}
  & The exact four-piece scalar maximization, its transition root, plateau,
@@ -108,8 +116,10 @@ Revealing-optimization instance and randomized curve,
    denominator is the literal finite clairvoyant optimum including its
    diagonal, finite weighted Yao fixes one labelled input before every
    private seed, and the exact finite ratios converge to the advertised
-   curve.  The model-specific finite revealing-policy envelope and universal
-   operational pilot upper bound are not yet assembled in Lean. \\
+   curve.  The universal learned upper is also a literal public
+   transcript-only strategy: its pilot and retained main transcript are
+   replayed exactly by the timed runtime with uniform fuel, and its expected
+   actual run cost satisfies the finite pilot-learning bound. \\
 Blind-optimization results,
 \cref{thm:bo-det-not-instance-optimal,thm:bo-det-curve,thm:bo-instance,thm:bo-curve}
  & \path{BlindOptimization.Adversary.no_deterministic_instance_optimal};
