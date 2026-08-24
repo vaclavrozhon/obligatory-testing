@@ -161,3 +161,7 @@ proved termination and exact completion labels, and its bounded finite
 random-placement pair kernel.  The canonical-trace layer now proves the
 literal strategy's exact one- and two-label projection grammar and identifies
 its completion cost exactly with that kernel (including stable SPT ties).
+The finite kernel is in turn connected to the empirical fluid objective with
+an explicit normalized `(5u+8)/(2n)` error.  The same bridge compiles finite
+grid templates into executable value selectors and composes the literal
+randomized run with the uniform-pilot template learner.
