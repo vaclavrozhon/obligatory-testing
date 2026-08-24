@@ -59,11 +59,6 @@ Here and below, \emph{shortest first} means processing revealed jobs in
 nondecreasing order of $p_i$.  The following pseudocode gives a little more
 detail about the two policies.  The formulas are not meant to be memorable.
 
-
-[dej tyhle dva algoritmy normalne pod sebe]
-\noindent
-\begin{minipage}[t]{0.485\textwidth}
-\vspace{0pt}
 \begin{algorithm}[H]
 \caption{Deterministic threshold}
 \label{alg:intro-obligatory-det}
@@ -83,20 +78,17 @@ positive jobs processed immediately and $d_i$ the number deferred.
 \State After all tests, finish deferred jobs shortest first.
 \end{algorithmic}
 \end{algorithm}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.485\textwidth}
+
 \begin{algorithm}[H]
 \caption{Learned randomized threshold $\mathcal A_n^*$}
 \label{alg:intro-obligatory-rand}
 \begin{algorithmic}
-\State Set $B_n=O(n^{1/20})$ and test $O(n^{3/4})$ random jobs to estimate the distribution $X \sim \widehat D$ of the
-job length.
+\State Set $B_n=O(n^{1/20})$ and test $O(n^{3/4})$ random jobs to estimate
+the job-length distribution $X\sim\widehat D$.
 \State For each candidate threshold $0\le t\le B_n$, put
 \[
- \begin{aligned}
-  a(t)&=\Pr(X\le t), 
-  m(t)&=\mathbb E[X\mathbf 1_{X\le t}]
- \end{aligned}
+ a(t)=\Pr(X\le t),\qquad
+ m(t)=\mathbb E[X\mathbf 1_{X\le t}],
 \]
 and define
 \[
@@ -112,7 +104,6 @@ deferring them otherwise.
 \State After all tests, finish deferred jobs shortest first.
 \end{algorithmic}
 \end{algorithm}
-\end{minipage}
 
 Both algorithms follow the same principle: process short jobs as soon as
 possible and leave long jobs for the end.  The difficult part is choosing the
@@ -287,22 +278,40 @@ $\mathcal A'$,
 \]
 \end{theorem}
 
-To describe the algorithm, let $X$ be the estimated distribution of job lenths with distribution $\widehat D$. 
-Put $\widehat\mu=\mathbb E X$.  As in
+To describe the algorithm, let $X\sim\widehat D$ denote the estimated
+job-length distribution and put $\widehat\mu=\mathbb E X$.  As in
 \cref{alg:intro-obligatory-rand}, define
 \[
- a(t)=\Pr(P\le t),\qquad
- m(t)=\mathbb E[P\mathbf 1_{P\le t}],
+ a(t)=\Pr(X\le t),\qquad
+ m(t)=\mathbb E[X\mathbf 1_{X\le t}],
  \qquad
  \widehat\tau
  =\min_{\substack{t\ge0\\a(t)>0}}\frac{1+m(t)}{a(t)}.
-\] [tady vsude chci X]
+\]
 
-The optimal algorithm is however more complicated than alg2 since in some cases the blind execution of jobs is the best strategy. There are situations where the blind execution of all the jobs (after initial subsample) simply wins, but there are even more subtle situations where it helps. 
+The optimal policy is more subtle than
+\cref{alg:intro-obligatory-rand}, because running a job blindly can be better
+than testing it.  Sometimes, after the initial sample, the best choice is to
+run every remaining job blindly.  Even when further testing is useful, it
+need not be useful all the way to the end of the input.
 
-To see a concrete example, consider the previous alg2 that computes a threshold and then executes jobs with $p$ less than it and postpones the rest. Imagine there are only two lengths of jobs, short that are being executed and long that need to wait. What happens when the last tested job arrives? If it's short, we want to execute it now, while if it's long, we want to add it to the list of long jobs we will execute in arbitrary order next. Hence, it's optimal to execute this job right now anyway, and no testing is needed to know that!
+For a simple illustration, suppose that jobs have only two possible lengths.
+The obligatory-testing policy would process short outcomes immediately and
+defer long ones.  Now consider the last untouched job.  If it is short, we
+want to run it next.  If it is long, it can still be run next, as the first
+job in the arbitrarily ordered long tail.  Thus in either case the useful
+action is to run the job; testing it first only adds one unit of work.  This
+is why the value of testing can disappear before every job has been tested.
 
-In general, the optimal algorithm tests only a certain fraction $q$ of jobs against the threshold $\tau$ computed as in alg2. Then, it runs the rest of them blindly. Just before that, we also run all the postponed jobs with $p \le \hat\mu$ since those will finish faster than remaining untested jobs; jobs with $p > \hat\mu$ are left until the very end. The right threshold $q$ is computed by a concrete optimization problem postponed to section XX. 
+In general, the policy tests only a fraction $q$ of the jobs and uses the
+threshold $\widehat\tau$ from \cref{alg:intro-obligatory-rand} to decide
+which tested jobs to process immediately.  After testing stops, deferred
+jobs with $\widehat\tau\le p<\widehat\mu$ are processed before the untouched
+jobs: their known lengths are smaller than the expected duration
+$\widehat\mu$ of a blind execution.  The untouched jobs are then run
+blindly, and tested jobs with $p\ge\widehat\mu$ form the final tail.  The
+optimal fraction $q$ minimizes the explicit quadratic
+$F_{\mathsf{BE},\widehat D}$ from \cref{eq:blind-F}.
 
 
 \begin{algorithm}[H]
@@ -324,8 +333,6 @@ $\widehat\tau\le p<\widehat\mu$, shortest first.
 \State Finish the remaining tested jobs shortest first.
 \end{algorithmic}
 \end{algorithm}
-
-
 
 \subsection{Blind optimization}
 \label{sec:intro-blind-optimization}

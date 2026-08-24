@@ -25,7 +25,8 @@ vector $p\in[0,\infty)^n$ satisfies
  \le\left(\frac43+2Cn^{-1/10}\right)\cost(\OPT,p).
  \label{eq:rand-obligatory-upper}
 \end{equation}
-Its fixed-cutoff specialization $\mathcal A_n^{(32)}$ satisfies the sharper
+A fixed-cutoff companion $\mathcal A_n^{(32)}$, using $B=32$ and the more
+conservative fallback criterion $\widehat\kappa<2/B$, satisfies the sharper
 explicit estimate
 \begin{equation}
  \EE\cost(\mathcal A_n^{(32)},p)
@@ -258,7 +259,7 @@ The algorithm draws a uniform permutation and first tests its first $k$ jobs,
 leaving positive sample jobs pending.  It computes the closed sample prefix.
 If
 \begin{equation}
- \widehat\kappa<\frac2B,
+ \widehat\kappa<\frac1B,
  \label{eq:rand-fallback-test}
 \end{equation}
 it enters \emph{fallback mode}: test every remaining job and then process all
@@ -283,8 +284,9 @@ Markov's inequality, recalled in \cref{sec:probabilistic-tools}, and
 
 Assume $G$ and learned mode.  Let $E$ be the population set selected by the
 closed category prefix, and let $a,\ell_E,\tau=(1+\ell_E)/a$ be its true statistics.
-Since $\widehat\tau\le B/2$ and
-$\widehat a=(1+\widehat\ell)/\widehat\tau\ge2/B$, we have $a\ge1/B$.  For
+Since $\widehat\tau\le B$ and
+$\widehat a=(1+\widehat\ell)/\widehat\tau\ge1/B$, we have
+$a\ge1/(B+1)$.  For
 this fixed category set,
 \[
  |a-\widehat a|\le\Delta,\qquad
@@ -293,14 +295,14 @@ this fixed category set,
 Consequently
 \begin{equation}
  |\tau-\widehat\tau|
- \le\frac32B^2\Delta+B\eta.
+ \le2B(B+1)\Delta+(B+1)\eta.
  \label{eq:rand-threshold-transfer}
 \end{equation}
 Every early actual value is at most $\widehat\tau$, while every late value
 is greater than $\widehat\tau-\eta$.  Thus the robust certificate applies
 with
 \begin{equation}
- s=\frac32B^2\Delta+B\eta+\eta.
+ s=2B(B+1)\Delta+(B+2)\eta.
  \label{eq:rand-robust-s}
 \end{equation}
 
@@ -315,16 +317,16 @@ Comparing the two independent random internal orders with one fully random
 order, the early-cost difference is
 \[
  \frac{e_TW_S-e_SW_T}{2}
- \le\frac12nk(1+B/2).
+ \le\frac12nk(1+B).
 \]
 Postponing positive sampled early jobs until all sample tests finish adds at
-most $k^2(1+B/2)$.  The late tail is identical because every zero is early.
+most $k^2(1+B)$.  The late tail is identical because every zero is early.
 Therefore, on a good learned sample,
 \begin{equation}
  \EE[\ALG\mid S]
  \le\frac43\OPT
- +n^2\!\left[B^2\Delta+\frac23(B+1)\eta\right]
- +(1+B/2)(nk/2+k^2).
+ +n^2\!\left[\frac43B(B+1)\Delta+\frac23(B+2)\eta\right]
+ +(1+B)(nk/2+k^2).
  \label{eq:rand-good-learned}
 \end{equation}
 
@@ -352,17 +354,17 @@ $\ALG_{\rm fb}<4\OPT/3$.
 
 Because processing times are unbounded, a bad-event estimate must control
 excess over $4\OPT/3$, not raw cost.  In learned mode every early value is at
-most $B/2$, so \cref{eq:rand-bounded-early} bounds the stationary excess by
-$(B/4)n^2$; in fallback mode \cref{eq:rand-fallback-crude} bounds it by
+most $B$, so \cref{eq:rand-bounded-early} bounds the stationary excess by
+$(B/2)n^2$; in fallback mode \cref{eq:rand-fallback-crude} bounds it by
 $n^2/2$.  Averaging \cref{eq:rand-good-learned} and these bad-event bounds,
 and using \cref{eq:rand-bad-probability}, yields the uniform estimate
 \begin{equation}
  \EE\ALG
  \le\frac43\OPT
  +n^2\!\left[
-   \frac{B^2(B+5)}4\sqrt{\frac{d+2}{k}}
-   +\frac{2B(B+1)}{3d}\right]
- +(1+B/2)(nk/2+k^2).
+   \frac{B(B+1)(3B+8)}6\sqrt{\frac{d+2}{k}}
+   +\frac{2B(B+2)}{3d}\right]
+ +(1+B)(nk/2+k^2).
  \label{eq:rand-explicit-upper}
 \end{equation}
 For $n\ge12^4$, the floors in \cref{eq:rand-parameters} give
@@ -374,8 +376,9 @@ constant covers smaller $n$ and proves the first inequality in
 \cref{eq:rand-obligatory-upper}.  The bound $\OPT\ge n^2/2$ gives its
 multiplicative form.
 
-For completeness, taking $B=32$ instead in the same policy reduces
-\cref{eq:rand-explicit-upper} to
+For completeness, the fixed-cutoff companion uses $B=32$ and the more
+conservative fallback criterion $\widehat\kappa<2/B$.  Repeating the same
+calculation with learned threshold at most $B/2$ gives
 \[
  \EE\ALG
  \le\frac43\OPT
