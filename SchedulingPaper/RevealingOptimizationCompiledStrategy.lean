@@ -1,4 +1,5 @@
 import SchedulingPaper.RevealingOptimizationPilotCompiler
+import SchedulingPaper.RevealingOptimizationQuotaRestriction
 import Mathlib.Tactic
 
 /-!
@@ -22,8 +23,10 @@ open RandomizedOptional.ObservedEnvelope
 open InstanceLearning
 open QuotaStrategy
 open QuotaFluid
+open QuotaRounding
 open LearnedPilot
 open PilotCompiler
+open QuotaRestriction
 
 noncomputable section
 attribute [local instance] Classical.propDecidable
@@ -83,6 +86,42 @@ theorem publicTemplateLow_at_job
       T.lowWithZero (roundedGridCell G job) := by
   rw [publicTemplateLow, publicGridCell_processing]
 
+theorem publicTemplateLow_eq_roundedTemplateLow_at_job
+    {n : ℕ} {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {processing : Fin n → ℝ} (G : RoundedPositiveGrid ι processing)
+    (hprice0 : ∀ cell, 0 < G.price cell)
+    (hprice : Function.Injective G.price)
+    (T : InstanceLearning.Template ι n) (job : Fin n) :
+    publicTemplateLow G.category T (processing job) =
+      roundedTemplateLow G T (processing job) := by
+  rw [publicTemplateLow_at_job,
+    roundedTemplateLow_at_job G hprice0 hprice]
+
+theorem quotaRun_publicTemplateLow_eq_roundedTemplateLow
+    {n : ℕ} {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {processing : Fin n → ℝ} (G : RoundedPositiveGrid ι processing)
+    (hprice0 : ∀ cell, 0 < G.price cell)
+    (hprice : Function.Injective G.price)
+    (T : InstanceLearning.Template ι n) (mainOrder : Equiv.Perm (Fin n))
+    (u : ℝ) :
+    quotaRun T.quota.val u (fun virtual => processing (mainOrder virtual))
+        (publicTemplateLow G.category T) =
+      quotaRun T.quota.val u (fun virtual => processing (mainOrder virtual))
+        (roundedTemplateLow G T) := by
+  apply quotaRun_congr_on_processing
+  intro virtual
+  exact publicTemplateLow_eq_roundedTemplateLow_at_job
+    G hprice0 hprice T (mainOrder virtual)
+
+@[simp] theorem requestedAction_relabel
+    {n : ℕ} (order : Equiv.Perm (Fin n))
+    (observation : Online.Observation n) :
+    (observation.relabel order).requestedAction =
+      observation.requestedAction.relabel order := by
+  cases observation <;>
+    simp [Online.Observation.relabel, Online.Observation.requestedAction,
+      Online.Action.relabel]
+
 /-- Fixed pilot actions.  Every pilot occurrence is tested and then
 processed; the latter is a zero-duration administrative action for a zero
 job. -/
@@ -96,6 +135,112 @@ def pilotActions
     (positions : Finset (Fin n)) (pilotOrder : Equiv.Perm (Fin n)) :
     (pilotActions positions pilotOrder).length = 2 * positions.card := by
   simp [pilotActions, Nat.mul_comm]
+
+theorem revealingPilotTranscript_requestedActions
+    {n : ℕ} (processing : Fin n → ℝ)
+    (positions : Finset (Fin n)) (pilotOrder : Equiv.Perm (Fin n)) :
+    (revealingPilotTranscript processing positions pilotOrder).map
+        Online.Observation.requestedAction =
+      pilotActions positions pilotOrder := by
+  unfold revealingPilotTranscript pilotActions
+  generalize positions.toList = list
+  induction list with
+  | nil => rfl
+  | cons position rest ih =>
+      rw [List.flatMap_cons, List.map_append, List.flatMap_cons, ih]
+      simp [PilotCompiler.pilotJobWord,
+        Online.Observation.requestedAction]
+
+@[simp] theorem revealingPilotTranscript_filter_nonpilot
+    {n : ℕ} (processing : Fin n → ℝ)
+    (positions : Finset (Fin n)) (pilotOrder : Equiv.Perm (Fin n)) :
+    (revealingPilotTranscript processing positions pilotOrder).filter
+        (fun observation => observation.ownerLabel ∉
+          pilotOccurrenceSet positions pilotOrder) = [] := by
+  unfold revealingPilotTranscript
+  have hlist : ∀ list : List (Fin n),
+      (∀ position ∈ list, position ∈ positions) →
+      (list.flatMap fun position =>
+        PilotCompiler.pilotJobWord processing (pilotOrder position)).filter
+          (fun observation => observation.ownerLabel ∉
+            pilotOccurrenceSet positions pilotOrder) = [] := by
+    intro list hpositions
+    induction list with
+    | nil => rfl
+    | cons position rest ih =>
+        have hposition : position ∈ positions := hpositions position (by simp)
+        have hpPhysical : pilotOrder position ∈
+            pilotOccurrenceSet positions pilotOrder :=
+          Finset.mem_image.mpr ⟨position, hposition, rfl⟩
+        rw [List.flatMap_cons, List.filter_append, ih (by
+          intro other hother
+          exact hpositions other (by simp [hother]))]
+        simp [PilotCompiler.pilotJobWord, Online.Observation.ownerLabel,
+          hpPhysical]
+  exact hlist positions.toList (by simp)
+
+@[simp] theorem ownerLabel_relabel
+    {n : ℕ} (order : Equiv.Perm (Fin n))
+    (observation : Online.Observation n) :
+    (observation.relabel order).ownerLabel = order observation.ownerLabel := by
+  cases observation <;> rfl
+
+theorem filter_relabelled_owner_filter
+    {n : ℕ} (pilot : Finset (Fin n))
+    (order : Equiv.Perm (Fin n)) (virtual : Online.Transcript n) :
+    (((virtual.filter fun observation =>
+        order observation.ownerLabel ∉ pilot).map
+          (Online.Observation.relabel order)).filter fun observation =>
+            observation.ownerLabel ∉ pilot) =
+      (virtual.filter fun observation =>
+        order observation.ownerLabel ∉ pilot).map
+          (Online.Observation.relabel order) := by
+  induction virtual with
+  | nil => rfl
+  | cons observation rest ih =>
+      by_cases hpilot : order observation.ownerLabel ∈ pilot
+      · rw [List.filter_cons, if_neg (by simpa using hpilot)]
+        exact ih
+      · rw [List.filter_cons, if_pos (by simpa using hpilot)]
+        simp only [List.map_cons, List.filter_cons, ownerLabel_relabel]
+        rw [if_pos (by simpa using hpilot), ih]
+
+@[simp] theorem inverse_relabel_relabelled_owner_filter
+    {n : ℕ} (pilot : Finset (Fin n))
+    (order : Equiv.Perm (Fin n)) (virtual : Online.Transcript n) :
+    (((virtual.filter fun observation =>
+        order observation.ownerLabel ∉ pilot).map
+          (Online.Observation.relabel order)).map
+            (Online.Observation.relabel order.symm)) =
+      virtual.filter fun observation =>
+        order observation.ownerLabel ∉ pilot := by
+  generalize (virtual.filter fun observation =>
+    order observation.ownerLabel ∉ pilot) = retained
+  induction retained with
+  | nil => rfl
+  | cons observation rest ih => simp [ih]
+
+theorem filter_map_relabel_of_owner_not_mem
+    {n : ℕ} (pilot : Finset (Fin n))
+    (order : Equiv.Perm (Fin n)) (virtual : Online.Transcript n)
+    (hall : ∀ observation ∈ virtual,
+      order observation.ownerLabel ∉ pilot) :
+    (virtual.map (Online.Observation.relabel order)).filter
+        (fun observation => observation.ownerLabel ∉ pilot) =
+      virtual.map (Online.Observation.relabel order) := by
+  apply List.filter_eq_self.mpr
+  intro physical hphysical
+  rcases List.mem_map.mp hphysical with ⟨observation, hobservation, rfl⟩
+  simpa using hall observation hobservation
+
+@[simp] theorem map_relabel_symm_relabel
+    {n : ℕ} (order : Equiv.Perm (Fin n))
+    (virtual : Online.Transcript n) :
+    (virtual.map (Online.Observation.relabel order)).map
+        (Online.Observation.relabel order.symm) = virtual := by
+  induction virtual with
+  | nil => rfl
+  | cons observation rest ih => simp [ih]
 
 /-- First untouched nonpilot virtual position satisfying `eligible`, placed
 on its physical label. -/
@@ -131,17 +276,12 @@ def restrictedFixedMainStrategy
     (T : InstanceLearning.Template ι n)
     (pilot : Finset (Fin n)) (mainOrder : Equiv.Perm (Fin n)) :
     Online.Strategy n := fun transcript =>
-  match safeLastLowPending? (publicTemplateLow category T) transcript with
-  | some job => some (.process job)
-  | none =>
-      match restrictedTestLabel? n T.quota.val pilot mainOrder transcript with
-      | some job => some (.test job)
-      | none =>
-          match transcript.shortestRemaining? with
-          | some job => some (.process job)
-          | none =>
-              (restrictedRawLabel? n T.quota.val pilot mainOrder transcript).map
-                Online.Action.raw
+  let keep : Fin n → Prop := fun virtual => mainOrder virtual ∉ pilot
+  let virtual := (transcript.filter fun observation =>
+    observation.ownerLabel ∉ pilot).map
+      (Online.Observation.relabel mainOrder.symm)
+  (keptQuotaStrategy n T.quota.val (publicTemplateLow category T) keep
+    virtual).map (Online.Action.relabel mainOrder)
 
 /-- Main phase after the revealing pilot.  It learns from the first `k`
 public test results, tests the retained virtual quota, drains the tested
@@ -301,6 +441,35 @@ theorem compiledLearnedStrategy_before_pilot
       (pilotActions positions pilotOrder)[transcript.length]?.map id := by
   simp [compiledLearnedStrategy, pilotActions_length, hpilot]
 
+theorem compiledLearnedStrategy_follows_pilot
+    {n : ℕ} {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (category : ι → ℝ → Bool) (price : ι → ℝ) (u : ℝ)
+    (processing : Fin n → ℝ) (positions : Finset (Fin n))
+    (pilotOrder mainOrder : Equiv.Perm (Fin n)) :
+    FollowsFrom
+      (compiledLearnedStrategy n category price u positions
+        pilotOrder mainOrder)
+      [] (revealingPilotTranscript processing positions pilotOrder) := by
+  intro index
+  let pilot := revealingPilotTranscript processing positions pilotOrder
+  have hindex : index.val < pilot.length := by
+    simpa [pilot] using index.isLt
+  have htakeLength : (pilot.take index.val).length = index.val := by
+    simp [List.length_take, hindex.le]
+  have hlt : (pilot.take index.val).length < 2 * positions.card := by
+    rw [htakeLength]
+    simpa [pilot] using index.isLt
+  rw [show ([] : Online.Transcript n) ++ pilot.take index.val =
+      pilot.take index.val by rfl]
+  rw [compiledLearnedStrategy_before_pilot category price u positions
+    pilotOrder mainOrder (pilot.take index.val) hlt]
+  rw [htakeLength]
+  rw [← revealingPilotTranscript_requestedActions processing positions
+    pilotOrder]
+  rw [List.getElem?_map]
+  rw [List.getElem?_eq_getElem index.isLt]
+  simp
+
 /-- After the literal pilot prefix, the transcript-only learner stabilizes
 to the same fixed template used by the analytic compiler, independently of
 the later suffix. -/
@@ -323,6 +492,107 @@ theorem compiledLearnedStrategy_after_pilot
     rw [pilot_testResults_take_of_suffix]
     rw [resultHistogram_revealingPilotTranscript]
   · simp
+
+/-- On the compiler word, the fixed physical main strategy is exactly the
+relabelling of the owner-restricted virtual quota strategy. -/
+theorem restrictedFixedMainStrategy_follows_retained
+    {n : ℕ} {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {processing : Fin n → ℝ} (G : RoundedPositiveGrid ι processing)
+    (hprice0 : ∀ cell, 0 < G.price cell)
+    (hprice : Function.Injective G.price)
+    (u : ℝ) (positions : Finset (Fin n))
+    (pilotOrder mainOrder : Equiv.Perm (Fin n)) :
+    FollowsFrom
+      (restrictedFixedMainStrategy n G.category
+        (learnedTemplate G positions pilotOrder u)
+        (pilotOccurrenceSet positions pilotOrder) mainOrder)
+      (revealingPilotTranscript processing positions pilotOrder)
+      (learnedRetainedTranscript G positions pilotOrder mainOrder u) := by
+  let T := learnedTemplate G positions pilotOrder u
+  let pilot := pilotOccurrenceSet positions pilotOrder
+  let keep : Fin n → Prop := fun virtual => mainOrder virtual ∉ pilot
+  let virtual :=
+    (quotaRun T.quota.val u (fun job => processing (mainOrder job))
+      (roundedTemplateLow G T)).config.transcript
+  let retained := virtual.filter fun observation => keep observation.ownerLabel
+  have hfollowPublic := quotaRun_filter_owner_follows T.quota_le u
+    (fun job => processing (mainOrder job))
+    (publicTemplateLow G.category T) keep
+  have hrun := quotaRun_publicTemplateLow_eq_roundedTemplateLow
+    G hprice0 hprice T mainOrder u
+  rw [hrun] at hfollowPublic
+  change FollowsFrom
+    (restrictedFixedMainStrategy n G.category T pilot mainOrder)
+    (revealingPilotTranscript processing positions pilotOrder)
+    (retained.map (Online.Observation.relabel mainOrder))
+  intro index
+  let virtualIndex : Fin retained.length :=
+    ⟨index.val, by simpa [retained] using index.isLt⟩
+  have hvirtual := hfollowPublic virtualIndex
+  have hallTake : ∀ observation ∈ retained.take index.val,
+      mainOrder observation.ownerLabel ∉ pilot := by
+    intro observation hobservation
+    have hretained : observation ∈ retained :=
+      List.mem_of_mem_take hobservation
+    exact of_decide_eq_true (List.mem_filter.mp hretained).2
+  have hhistory :
+      (((revealingPilotTranscript processing positions pilotOrder ++
+          (retained.map (Online.Observation.relabel mainOrder)).take
+            index.val).filter fun observation =>
+              observation.ownerLabel ∉ pilot).map
+                (Online.Observation.relabel mainOrder.symm)) =
+        retained.take index.val := by
+    rw [← List.map_take, List.filter_append]
+    rw [show pilot = pilotOccurrenceSet positions pilotOrder by rfl,
+      revealingPilotTranscript_filter_nonpilot]
+    simp only [List.nil_append]
+    rw [filter_map_relabel_of_owner_not_mem pilot mainOrder _ hallTake]
+    exact map_relabel_symm_relabel mainOrder _
+  unfold restrictedFixedMainStrategy
+  rw [hhistory]
+  have hmapped := congrArg
+    (Option.map (Online.Action.relabel mainOrder)) hvirtual
+  simpa [virtualIndex, requestedAction_relabel] using hmapped
+
+/-- The complete analytic compiler word follows the literal transcript-only
+learned strategy. -/
+theorem compiledLearnedStrategy_follows_learnedPilot
+    {n : ℕ} {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {processing : Fin n → ℝ} (G : RoundedPositiveGrid ι processing)
+    (hprice0 : ∀ cell, 0 < G.price cell)
+    (hprice : Function.Injective G.price)
+    (u : ℝ) (positions : Finset (Fin n))
+    (pilotOrder mainOrder : Equiv.Perm (Fin n)) :
+    (learnedPilotTranscript G positions pilotOrder mainOrder u
+      ).FollowsStrategy
+      (compiledLearnedStrategy n G.category G.price u positions
+        pilotOrder mainOrder) := by
+  let strategy := compiledLearnedStrategy n G.category G.price u positions
+    pilotOrder mainOrder
+  let pilot := revealingPilotTranscript processing positions pilotOrder
+  let main := learnedRetainedTranscript G positions pilotOrder mainOrder u
+  have hpilotFrom := compiledLearnedStrategy_follows_pilot
+    G.category G.price u processing positions pilotOrder mainOrder
+  have hpilot : pilot.FollowsStrategy strategy := by
+    simpa [FollowsFrom, Online.Transcript.FollowsStrategy, pilot, strategy]
+      using hpilotFrom
+  have hmainFixed := restrictedFixedMainStrategy_follows_retained
+    G hprice0 hprice u positions pilotOrder mainOrder
+  have hmain : FollowsFrom strategy pilot main := by
+    intro index
+    have hfixed := hmainFixed index
+    rw [show strategy
+          (pilot ++ main.take index.val) =
+        restrictedFixedMainStrategy n G.category
+          (learnedTemplate G positions pilotOrder u)
+          (pilotOccurrenceSet positions pilotOrder) mainOrder
+          (pilot ++ main.take index.val) by
+        simpa [strategy, pilot, main] using
+          (compiledLearnedStrategy_after_pilot G u positions
+            pilotOrder mainOrder (main.take index.val))]
+    exact hfixed
+  rw [learnedPilotTranscript]
+  exact followsStrategy_append_of_followsFrom hpilot hmain
 
 end
 
