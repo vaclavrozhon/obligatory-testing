@@ -1428,6 +1428,53 @@ theorem finiteSeed_operational_binary_families_attain_curve
     refine ⟨τ, hτ, hattain, ?_, hratio⟩
     simpa [hattain] using familyAFiniteYaoRatio_tendsto hτpos
 
+/-- Quantifier-ordered operational lower theorem: the attaining family and
+its parameter depend only on `u`; afterwards the same exact finite ratios
+work against every input size and every finite private-seed strategy family. -/
+theorem exists_operational_binary_family_ratio_tendsto_curve
+    {u : ℝ} (hu : 1 < u) :
+    (∃ τ ∈ Set.Icc (1 : ℝ) u,
+      familyB u τ = randomizedCurve u ∧
+      Filter.Tendsto (fun n : ℕ => familyBFiniteYaoRatio n u τ)
+        Filter.atTop (nhds (randomizedCurve u)) ∧
+      ∀ (n : ℕ) (Seeds : Type) [Fintype Seeds] [Nonempty Seeds],
+        0 < n → ∀ strategy : Seeds → Online.Strategy n,
+          (∀ seed, CompletesBinary u u (strategy seed)) →
+          ∃ input : BinaryInput n,
+            familyBFiniteYaoRatio n u τ *
+                empiricalRevealingOfflineCost u
+                  (RandomizedYao.binaryProcessing u input) ≤
+              Randomized.uniformAverage fun seed =>
+                binaryRunCost u u (strategy seed) input) ∨
+    (∃ τ ∈ Set.Icc (1 : ℝ) (u - 1),
+      familyA τ = randomizedCurve u ∧
+      Filter.Tendsto (fun n : ℕ => familyAFiniteYaoRatio n τ)
+        Filter.atTop (nhds (randomizedCurve u)) ∧
+      ∀ (n : ℕ) (Seeds : Type) [Fintype Seeds] [Nonempty Seeds],
+        0 < n → ∀ strategy : Seeds → Online.Strategy n,
+          (∀ seed, CompletesBinary u τ (strategy seed)) →
+          ∃ input : BinaryInput n,
+            familyAFiniteYaoRatio n τ *
+                empiricalRevealingOfflineCost u
+                  (RandomizedYao.binaryProcessing τ input) ≤
+              Randomized.uniformAverage fun seed =>
+                binaryRunCost u τ (strategy seed) input) := by
+  rcases binaryFamilies_attain_curve hu with hB | hA
+  · left
+    rcases hB with ⟨τ, hτ, hattain⟩
+    refine ⟨τ, hτ, hattain, ?_, ?_⟩
+    · simpa [hattain] using familyBFiniteYaoRatio_tendsto
+        (τ := τ) hu
+    · intro n Seeds _ _ hn strategy hcomplete
+      exact familyB_operational_yao_ratio hn hu hτ.1 hτ.2 strategy hcomplete
+  · right
+    rcases hA with ⟨τ, hτ, hattain⟩
+    have hτpos : 0 < τ := by linarith [hτ.1]
+    refine ⟨τ, hτ, hattain, ?_, ?_⟩
+    · simpa [hattain] using familyAFiniteYaoRatio_tendsto hτpos
+    · intro n Seeds _ _ hn strategy hcomplete
+      exact familyA_operational_yao_ratio hn hu hτ.1 hτ.2 strategy hcomplete
+
 /-- The compiler can be plugged directly into the two binary families and
 the checked finite-Yao theorem. -/
 theorem finiteSeed_compiled_binary_families_attain_curve

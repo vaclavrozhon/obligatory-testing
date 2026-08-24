@@ -80,9 +80,14 @@ removes the announcement by a tested pilot sample, and identifies the
 instance-specific asymptotic ratio `Phi_u(D)/Omega_u(D)`.  It also solves the
 outer optimization over distributions, giving an explicit four-branch exact
 randomized curve with global maximum `1.6257523846...`.  Both the
-instance-optimal theorem and the exact curve are now incorporated as separate
-main sections of the manuscript.  The common-upper result has not yet been
-added to Lean.
+instance-optimal theorem and the exact curve are incorporated as separate
+main sections of the manuscript.  Lean checks the scalar curve, the explicit
+announced stationary-or-raw upper endpoint, and the randomized lower bound
+end-to-end for literal transcript-only strategies: a generic operational
+compiler, exact finite clairvoyant denominator, fixed-input weighted Yao
+selection, and convergence of the finite coefficients to the curve.  The
+general completion-envelope lower transfer and the universal pilot-learned
+upper half of common-upper instance optimality remain to be assembled.
 
 The obligatory analytic proof is complete. Lean checks its exact and
 robust fluid certificates, maximum-density optimizer and sample-empty-bin
@@ -140,9 +145,9 @@ lake build
 
 The root module `SchedulingPaper.lean` imports the complete development.
 
-The manuscript additionally studies a fourth, currently non-formalized
-model in which a unit-time optimization changes a raw duration `u` to a
-hidden duration `p <= u` without revealing `p` before execution.  A universal
-mean-sampling policy is instance optimal up to `o(n^2)`, and the exact
-oblivious-randomized competitive curve is attained by binary `{0,u}`
-multisets and grows as `sqrt(u)/2`.
+The manuscript additionally studies the blind-optimization model in which a
+unit-time optimization changes a raw duration `u` to a hidden duration
+`p <= u` without revealing `p` before execution.  Its deterministic
+impossibility and exact curve, universal mean-sampling instance-optimal
+policy, and exact oblivious-randomized curve are all formalized operationally,
+including fixed-input Yao selection and the `sqrt(u)/2` asymptotics.
