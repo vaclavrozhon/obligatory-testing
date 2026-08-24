@@ -34,18 +34,18 @@
   },
 ]
 % Exact randomized curve.
-\addplot[purple!78!black,very thick,domain=0.2:1] {1};
+\addplot[blue!75!black,very thick,domain=0.2:1] {1};
 \addlegendentry{randomized}
-\addplot[forget plot,purple!78!black,very thick,domain=1:2.24697960372]
+\addplot[forget plot,blue!75!black,very thick,domain=1:2.24697960372]
   {x^3/(x^2+(x-1)^3)};
-\addplot[forget plot,purple!78!black,very thick,domain=2.24697960372:20]
+\addplot[forget plot,blue!75!black,very thick,domain=2.24697960372:20]
   {0.5*(1+sqrt((x^2+x-1)/(x-1)))};
 
 % Exact deterministic curve.
-\addplot[orange!85!black,dashed,very thick,domain=0.2:1] {1};
+\addplot[red!80!black,very thick,domain=0.2:1] {1};
 \addlegendentry{deterministic}
-\addplot[orange!85!black,dashed,very thick,domain=1:2] {x};
-\addplot[orange!85!black,dashed,very thick,domain=2:20]
+\addplot[red!80!black,very thick,domain=1:2] {x};
+\addplot[red!80!black,very thick,domain=2:20]
   {(sqrt(4*x^3-4*x+1)-1)/(2*(x-1))};
 
 \addplot[black!40,densely dotted,thin] coordinates {(1,0.92) (1,5.1)};
