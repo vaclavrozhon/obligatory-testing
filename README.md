@@ -184,3 +184,7 @@ A physical two-permutation compiler executes each pilot occurrence only once,
 deletes those owners from the virtual learned quota run, and proves the full
 rounded-grid expected bound with explicit normalized pilot overhead
 `2 k (u+1) / n`.
+The corresponding unknown-input `Online.Strategy` is defined using only the
+public grid, two private seeds, and the live transcript.  Its public value
+classifier and literal pilot histogram are proved equal to the rounded cells
+and without-replacement histogram used by the analytic compiler.
