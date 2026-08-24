@@ -437,7 +437,7 @@ regimes.
 This model was introduced by D{\"u}rr et
 al.~\cite{DurrErlebachMegowMeissner2020}.  Their results showed that
 intermediate values of $u$ are the difficult ones.  We determine the exact
-answer for every $u$, for both deterministic and randomized algorithms.
+competitive ratio for every $u$, for both deterministic and randomized algorithms.
 
 
 \begin{theorem}[Revealing-optimization curves, informal version of
@@ -452,14 +452,14 @@ $1.57\ldots$.  The randomized curve reaches $1.63\ldots$ and
 eventually becomes $4/3$.
 \end{theorem}
 
-Write the five deterministic transition points as
+To understand the behavior of deterministic algorithms, we define the following five deterministic transition points as
 \[
  \begin{gathered}
   \uDet{1}=1,\qquad
-  \uDet{2}=1.866760\ldots,\qquad
-  \uDet{3}=3.147899\ldots,\\
-  \uDet{4}=\varphi+2=3.618033\ldots,\qquad
-  \uDet{5}=4.505241\ldots .
+  \uDet{2}=1.86\ldots,\qquad
+  \uDet{3}=3.14\ldots,\qquad
+  \uDet{4}=3.61\ldots,\qquad
+  \uDet{5}=4.50\ldots 
  \end{gathered}
 \]
 They delimit the six branches from left to right.
@@ -486,10 +486,9 @@ The second algorithm, \textsc{ForcedPrefixUTE} in
 \cref{alg:intro-ro-ute}, tests every job and normally processes only
 outcomes below a fixed threshold.  It makes one deliberate exception: every
 outcome in an initial $b(u)$-fraction of the test order is processed
-immediately.  Without this forced prefix, deferring early long outcomes can
-create a tail that is delayed by almost all later tests; the prefix balances
-this tail cost against the opposite risk of processing a long job before
-shorter unseen jobs.
+immediately. 
+Intuitively, this is because the deterministic adversary will try to feed our algorithm longer jobs first, and only then it will show it the longer jobs. We can fight this family of bad inputs by running the jobs in the prefix without any testing -- while this can be bad in other inputs, it helps in this discussed worst-case scenario. 
+
 
 The exact parameter $b(u)$ is defined in
 \cref{eq:opt:ute-parameters}; it is nonnegative on
@@ -519,7 +518,8 @@ optimization in \cref{eq:opt:mixed-parametrization}, after which it equals
 the obligatory-testing value $0.570574\ldots$.  The three policies form the
 deterministic lower envelope in \cref{fig:intro-curves-det}:
 \textsc{Raw} wins first, \textsc{ForcedPrefixUTE} in the middle, and
-\textsc{AdaptiveThreshold} for large $u$.
+\textsc{AdaptiveThreshold} for large $u$.The exact formulas and matching constructions are in
+\cref{sec:optional,sec:random-common-upper}.
 
 
 For randomized algorithms, private sampling again gives instance optimality
@@ -546,8 +546,10 @@ For the randomized curve, write
  \qquad \uRand{2}=5.048917\ldots,
  \qquad \uRand{3}=\frac{25}{4}=6.25.
 \]
-These three points delimit its four branches.
+The exact formulas and matching constructions are in
+\cref{sec:optional,sec:random-common-upper}. These three points delimit its four branches.
 
+[tady bud trochu specifictejsi jak se spocte threshold a q, at je to podobne podrobne jako algoritmy nad tim]
 \noindent
 \begin{minipage}[t]{0.485\textwidth}
 \vspace{0pt}
@@ -555,7 +557,7 @@ These three points delimit its four branches.
 \caption{Instance-optimal revealing-optimization policy}
 \label{alg:intro-common-upper}
 \begin{algorithmic}
-\State Shuffle the jobs, test $\lceil\sqrt n\rceil$ of them, and use the
+\State Shuffle the jobs, test $O(\sqrt n)$ of them, and use the
 observed lengths to estimate the input distribution.
 \State Compute the best threshold and the best tested fraction $q$.
 \State Test a random $q$-fraction; finish outcomes below the threshold at once.
@@ -573,61 +575,28 @@ function of the raw execution time $u$.}
 \label{fig:intro-curves-rand}
 \end{minipage}
 
-The pilot sample estimates the input distribution.  If that estimate were
-exact, the best leading-order online schedule would be determined by two
-numbers: a threshold and the fraction $q$ of jobs to test.  Short outcomes
-are completed during testing, longer tested outcomes form a shortest-first
-tail, and the untouched jobs form the final raw block.  The algorithm
-optimizes these two parameters on the sample and applies them after a private
-shuffle.  The sample and its estimation error cost only $o_u(n^2)$.
-
-For each multiset, this policy attains the best online leading cost.  The
-competitive ratio is obtained by maximizing the ratio between that cost and
-the clairvoyant optimum over inputs.  The worst input can be reduced to two
-job lengths, leaving a one-variable optimization.
-
-The curves in \cref{fig:intro-curves-det,fig:intro-curves-rand} are not
+Notice that the curves in \cref{fig:intro-curves-det,fig:intro-curves-rand} are not
 monotone.  This is not a contradiction.  For very small $u$, testing is
 useless, while as $u\to\infty$ the model converges to the obligatory-testing
-setting of \cref{sec:obligatory}.  Intermediate values are harder because
-raw execution gives the clairvoyant scheduler an additional useful option.
+setting of \cref{sec:obligatory}. Both of these special cases are, algorithmically speaking, relatively easy to navigate, and charge our cost to the optimum cost. Intermediate values are harder because
+raw execution gives the clairvoyant scheduler additional useful options.
 
-The exact formulas and matching constructions are in
-\cref{sec:optional,sec:random-common-upper}.
+
 
 \subsection{Techniques}
 
-The proofs repeatedly use three pictures.
+The proofs repeatedly use similar ideas. We try to summarize the main technical ideas here. 
 
-\paragraph{The area of unfinished jobs.}
-During one unit of machine work, the objective increases by the number of
-jobs that are still unfinished.  Thus the sum of completion times is the area
-under the curve ``number of unfinished jobs versus time.''  This picture is
-often easier to reason about than individual completion times.
 
 \paragraph{Jobs completed per unit of work.}
-A round of tests together with the short jobs completed during that round can
-be viewed as one large action.  It spends some amount of time and completes
-some fraction of the jobs.  Higher-density actions---those completing more
-jobs per unit of work---should come first.  Sorting these actions produces
-the thresholds, the ordered blocks, and the one-variable quadratics in the
-instance-optimal results.
+Our algorithms can be typically thought of as a series of a few of a few \emph{action blocks} [jmeno?].  one action block spends a large amount of time (we typically think of its length as a fraction of $n$) by executing the same algorithm, for example "sample random job, if it's below threshold, execute it, else postpone". This action takes some time and completes
+some fraction of the jobs. It is useful to think about the \emph{density} [tomuhle bych dal nějaké jméno, co něco jako job-density? moc se mi tohle konkretni nelibi ale neco takoveho] of finished jobs per unit of time when we evaluate such action. Higher-density actions---those completing more
+jobs per unit of work---should come first. Our algorithms can be found by considering the few reasonable actions that one can take and then sorting them according to their job density. 
 
 \paragraph{A private shuffle.}
-The universal algorithms start by shuffling the labels and inspecting a
-small prefix.  The same idea is needed in the lower bound, where the policy
-may adaptively decide which label to touch next.  If equal job lengths are
-temporarily distinguished as separate tokens, the order in which any
-deterministic policy first reveals these tokens is itself just a permutation
-of them.  The revealed sequence is therefore sampling without replacement.
-One concentration event can then control every possible stopping point of
-the policy.
+The randomized algorithms start by shuffling the labels and inspecting a
+small prefix.  This is essentially for free and, if we apply the right concentration inequalities, it more or less gives the algorithm the knowledge of the input distribution. Since the algorithm can only sample a random sample from this distribution, it moreover remains stable throughout most of the algorithm (which again requires concentration). This intuitively simplifies the randomized setup a lot. 
 
-The deterministic proofs use a complementary idea.  Their lower bounds make
-the algorithm choose between completing the current jobs and waiting for
-shorter future jobs.  Their upper bounds maintain a threshold and charge each
-wrongly ordered pair to a small potential.  The exact constants appear when
-the two possible losses are equal.
 
 \subsection{Related work}
 \label{sec:related}
