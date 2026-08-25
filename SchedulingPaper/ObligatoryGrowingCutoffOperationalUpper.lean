@@ -536,7 +536,7 @@ theorem growing_tracePairCharge_le_ideal_add_sample
           · simp [idealPairCharge, early, hleftEarly, hrightEarly,
               hpLeft0, hpRight0, min_eq_left hle]
 
-theorem initialFin_indicator_sum
+theorem growing_initialFin_indicator_sum
     {n k : ℕ} (hk : k < n) :
     (∑ i : Fin n, if i.val < k then (1 : ℝ) else 0) = k := by
   let bound : Fin n := ⟨k, hk⟩
@@ -550,7 +550,7 @@ theorem initialFin_indicator_sum
   rw [← Finset.sum_filter]
   simp [hfilter, bound]
 
-theorem sample_pair_penalty_sum_le
+theorem growing_sample_pair_penalty_sum_le
     {n k : ℕ} (B : ℝ) (hB : 0 ≤ B) (hk : k < n)
     (early : Fin n → Bool) :
     (∑ left : Fin n, ∑ right ∈
@@ -615,7 +615,7 @@ theorem sample_pair_penalty_sum_le
             (fun left : Fin n =>
               if left.val < k then (1 : ℝ) else 0) (B + 1)).symm
     _ = (B + 1) * (k : ℝ) ^ 2 := by
-      rw [initialFin_indicator_sum hk]
+      rw [growing_initialFin_indicator_sum hk]
       ring
 
 /-- The completed literal run is bounded by the finite ideal pair objective
@@ -682,7 +682,7 @@ theorem run_growingObligatoryStrategy_cost_le_finiteIdeal_add
             (processingTime right, early right)) +
           (B + 1) * (k : ℝ) ^ 2 := by
         gcongr
-        exact sample_pair_penalty_sum_le B hB hk early
+        exact growing_sample_pair_penalty_sum_le B hB hk early
   linarith
 
 
