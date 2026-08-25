@@ -173,9 +173,9 @@ theorem uniformAverage_growingResultTemplate_le_minimum
 /-! ## From a categorical template to the finite stationary fluid value -/
 
 theorem weightedMass_categoryTemplate_eq
-    {n : ℕ} (hn : 0 < n) {d : ℕ}
-    (category : Fin n → QuantizedCategory d)
-    (early : QuantizedCategory d → Bool) :
+    {n : ℕ} (hn : 0 < n) {β : Type*}
+    [Fintype β] [DecidableEq β]
+    (category : Fin n → β) (early : β → Bool) :
     weightedMass (earlyJobWeight (fun i => early (category i))) =
       templateEarlyMass (populationHistogram category) early := by
   letI : Nonempty (Fin n) := ⟨⟨0, hn⟩⟩
@@ -189,10 +189,10 @@ theorem weightedMass_categoryTemplate_eq
   by_cases hi : early (category i) = true <;> simp [hi]
 
 theorem weightedMoment_categoryTemplate_eq
-    {n : ℕ} (hn : 0 < n) {d : ℕ}
-    (category : Fin n → QuantizedCategory d)
-    (price : QuantizedCategory d → ℝ)
-    (early : QuantizedCategory d → Bool) :
+    {n : ℕ} (hn : 0 < n) {β : Type*}
+    [Fintype β] [DecidableEq β]
+    (category : Fin n → β) (price : β → ℝ)
+    (early : β → Bool) :
     weightedMoment (earlyJobWeight (fun i => early (category i)))
         (fun i => price (category i)) =
       templateEarlyMoment (populationHistogram category) price early := by
@@ -207,10 +207,10 @@ theorem weightedMoment_categoryTemplate_eq
   by_cases hi : early (category i) = true <;> simp [hi] <;> ring
 
 theorem weightedMinPair_categoryTemplate_eq
-    {n : ℕ} (hn : 0 < n) {d : ℕ}
-    (category : Fin n → QuantizedCategory d)
-    (price : QuantizedCategory d → ℝ)
-    (early : QuantizedCategory d → Bool) :
+    {n : ℕ} (hn : 0 < n) {β : Type*}
+    [Fintype β] [DecidableEq β]
+    (category : Fin n → β) (price : β → ℝ)
+    (early : β → Bool) :
     weightedMinPair (lateJobWeight (fun i => early (category i)))
         (fun i => price (category i)) =
       templateLatePair (populationHistogram category) price early := by
