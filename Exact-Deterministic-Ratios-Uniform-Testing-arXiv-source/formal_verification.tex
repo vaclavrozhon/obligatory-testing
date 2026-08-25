@@ -25,8 +25,9 @@ Randomized obligatory testing, \cref{thm:rand-obligatory}
    \path{oblivious_iid_binary_lower_online_actualOPT}
  & End-to-end sharp worst-case value $4/3$ for the fixed-cutoff
    companion in \cref{eq:rand-obligatory-fixed-upper}, including its
-   finite error and a fixed binary lower-bound input.  The growing-cutoff
-   extension in \cref{eq:rand-obligatory-upper} is proved in the paper. \\
+   finite error and a fixed binary lower-bound input.  The learned
+   growing-cutoff execution and its operational comparison are checked in
+   the instance-optimality row below. \\
 Obligatory-testing impossibility,
 \cref{thm:ot-instance-impossibility}
  & \path{ObligatoryInstance.deterministic_balanced_cost_lower};
@@ -54,6 +55,10 @@ Obligatory-testing instance optimality,
    \path{ObligatoryInstance.obligatoryTemplateValue_lipschitz};
    \path{ObligatoryInstance.minimumObligatoryTemplateValue_lipschitz};
    \path{ObligatoryInstance.uniformSample_minimizingObligatoryTemplate_le_minimum};
+   \path{ObligatoryInstance.uniformAverage_physicalGrowingRunCost_le_minimum};
+   \path{ObligatoryInstance.exists_fixedPlacement_growingPolicy_le_randomizedCompetitor};
+   \path{ObligatoryInstance.exists_fixedPlacement_universalGrowingPolicy_concrete_rate};
+   \path{ObligatoryInstance.concreteUniversalGrowingError_tendsto_zero};
    \path{FluidToFinite.completion_transfer_uniform};
    \path{FluidToFinite.pilot_learning_transfer}
  & The maximum-density algebra is instantiated on every concrete nonempty
@@ -74,8 +79,14 @@ Obligatory-testing instance optimality,
    $3(L+2)$ histogram stability estimate are checked.  Lean also constructs
    the exact minimizer over the common finite Boolean-template family and
    proves its uniform-pilot excess bound
-   $6(L+2)\sqrt{K/k}$.  The remaining
-   unassembled part is its instance-optimal operational cost comparison. \\
+   $6(L+2)\sqrt{K/k}$.  The literal-run upper is identified exactly with the
+   aligned rounded benchmark used by the adaptive lower transfer, and finite
+   Yao selects one fixed placement against every finite private-seed family.
+   Both positive- and zero-mean inputs are covered.  Finally Lean supplies a
+   single parameter family independent of $L$, proves its integer accuracy
+   tends to infinity, and obtains the checked normalized error
+   $800(L+3)^2/\lfloor n^{1/32}\rfloor=o_L(1)$.  This rate is slower than the
+   sharper rate proved in the paper. \\
 Blind-execution results,
 \cref{thm:blind-instance,thm:blind-unbounded-impossible}
  & \path{boundedUniform_blindPilot_concrete_rate};
@@ -100,6 +111,11 @@ Revealing-optimization instance and randomized curve,
    \path{RevealingOptimization.RandomizedYao.finiteSeed_binary_families_attain_curve};
    \path{RevealingOptimization.OperationalCompiler.exists_operational_binary_family_ratio_tendsto_curve};
    \path{RevealingOptimization.CompiledRun.compiledLearnedStrategy_expectedCost_le};
+   \path{RevealingOptimization.RawObserved.settled_rawElapsed_eq_compiledTestWork};
+   \path{RevealingOptimization.ObservedAreaLower.exists_fixedPlacement_randomizedRawCost_ge_rawBenchmarkValue};
+   \path{RevealingOptimization.BenchmarkBridge.compiledLearnedStrategy_expectedCost_le_rawBenchmark};
+   \path{RevealingOptimization.InstanceOptimal.exists_fixedPlacement_compiled_le_randomizedCompetitor_concrete_rate};
+   \path{RevealingOptimization.InstanceOptimal.concreteRevealingComparisonError_tendsto_zero};
    \path{FluidToFinite.completion_transfer_uniform};
    \path{FluidToFinite.pilot_learning_transfer}
  & The exact four-piece scalar maximization, its transition root, plateau,
@@ -132,7 +148,16 @@ Revealing-optimization instance and randomized curve,
    curve.  The universal learned upper is also a literal public
    transcript-only strategy: its pilot and retained main transcript are
    replayed exactly by the timed runtime with uniform fuel, and its expected
-   actual run cost satisfies the finite pilot-learning bound. \\
+   actual run cost satisfies the finite pilot-learning bound.  The bounded
+   common-upper instance theorem is now assembled around one raw-block
+   benchmark: revealing raw timings are accounted exactly, every completing
+   adaptive observed policy satisfies the integrated completion-envelope
+   lower bound, finite Yao fixes one placement before the competitor's seed,
+   and the literal learned upper meets the same benchmark.  The all-zero
+   branch is discharged by an exact completion triangle.  With
+   $m=\lfloor n^{1/16}\rfloor$, the direct normalized comparison error is at
+   most $1000(u+1)^2/m=o_u(1)$; this checked rate is slower than the rate in
+   the main proof. \\
 Blind-optimization results,
 \cref{thm:bo-det-not-instance-optimal,thm:bo-det-curve,thm:bo-instance,thm:bo-curve}
  & \path{BlindOptimization.Adversary.no_deterministic_instance_optimal};

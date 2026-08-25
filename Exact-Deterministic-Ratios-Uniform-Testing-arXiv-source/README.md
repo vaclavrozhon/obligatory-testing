@@ -73,16 +73,22 @@ algorithm uses the fixed cutoff `32`; the bounded-bag instance-optimal policy
 is its variant with a slowly growing cutoff.
 The full revealing-optimization instance-optimal proof is Section 4 of the
 manuscript; its outer worst-case optimization is the separate four-piece
-curve in Section 5.  The blind-execution theorem is formalized in Lean.  For
-blind optimization, Lean checks both scalar curve formulas, the randomized
-reduction for arbitrary finite empirical distributions, and the full
-deterministic instance-optimality counterexample; deterministic hidden
-stopping and pilot learning are still analytic.  For obligatory testing,
-Lean checks the fixed-cutoff `4/3` theorem, the shared fluid algebra, and the
-full deterministic balanced-input impossibility; the growing-cutoff
-instance-optimal variant is currently analytic.  For revealing optimization,
-Lean also checks the four-piece randomized scalar maximization, including
-transition uniqueness, attainment, the plateau, and the global maximum.
+curve in Section 5.  Lean now checks this instance theorem end to end for a
+literal pilot-learned transcript-only strategy against every finite
+randomization of completing adaptive observed policies, including the
+fixed-placement Yao lower bound, the zero-mean branch, and a concrete
+input-size-only vanishing error.  It also checks the four-piece randomized
+scalar maximization, including transition uniqueness, attainment, the
+plateau, and the global maximum.
+
+The blind-execution theorem is formalized in Lean.  For blind optimization,
+Lean checks the deterministic counterexample and curve, the universal pilot
+upper, the randomized reduction for arbitrary finite empirical
+distributions, and literal operational fixed-input Yao selection.  For
+obligatory testing, Lean checks the fixed-cutoff `4/3` theorem, the full
+growing-cutoff bounded instance-optimal comparison and its universal
+vanishing parameter family, the shared fluid algebra, and the deterministic
+balanced-input impossibility.
 
 ## Source organization
 
