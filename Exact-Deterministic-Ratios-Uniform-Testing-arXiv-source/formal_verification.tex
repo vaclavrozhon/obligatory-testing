@@ -48,6 +48,9 @@ Obligatory-testing instance optimality,
    \path{ObligatoryInstance.uniformAverage_normalizedCost_ge_roundedObligatoryValue};
    \path{ObligatoryInstance.exists_fixedPlacement_randomizedCost_ge_roundedObligatoryValue};
    \path{ObligatoryInstance.exists_boundedUniformBenchmark_fixedPlacement_randomized_lower};
+   \path{Online.run_growingObligatoryStrategy_completed};
+   \path{Online.boundedPilot_uses_learnedBranch};
+   \path{Online.run_growingObligatoryStrategy_completionLabels_perm};
    \path{FluidToFinite.completion_transfer_uniform};
    \path{FluidToFinite.pilot_learning_transfer}
  & The maximum-density algebra is instantiated on every concrete nonempty
@@ -62,7 +65,10 @@ Obligatory-testing instance optimality,
    labeling for every finite private-seed family.  The checked block-area
    benchmark is identified with the stationary maximum-density formula.
    The two model-independent transfer principles are also checked.  The
-   remaining unassembled part is the growing-cutoff operational learner. \\
+   growing-cutoff learner is now a literal completing transcript-only policy;
+   its variable-grid density certificate, bounded-input exclusion of fallback,
+   and exact-once completion invariant are checked.  The remaining unassembled
+   part is its instance-optimal operational cost comparison. \\
 Blind-execution results,
 \cref{thm:blind-instance,thm:blind-unbounded-impossible}
  & \path{boundedUniform_blindPilot_concrete_rate};
