@@ -88,10 +88,10 @@ Then
 \end{equation}
 \end{lemma}
 
-We prove the lemma in three steps.  The first claim verifies that the prefix
-parameter is admissible.  The next two claims prove the guarantee below and
-above $u=2$ by reducing the possible processing times to boundary values in
-two different ways.  Throughout these claims,
+We prove the lemma in three steps.  The first claim verifies that the root
+$R$ is well-defined and that the prefix parameter is admissible.  The next
+two claims prove the guarantee below and above $u=2$ by reducing the possible
+processing times to boundary values in two different ways.  Throughout these claims,
 put $R=\Rquad(u)$ and $s=u-1$.  In this notation, the
 parameter from \cref{eq:opt:ute-parameters} is
 \[
@@ -100,13 +100,19 @@ parameter from \cref{eq:opt:ute-parameters} is
 
 \begin{claim}[Parameter admissibility]
 \label{clm:opt:ute-admissibility}
-One has $0\le b<1$, with $b=0$ only at $u=\uDet{3}$.  Moreover,
-$R>5/3$ and $s^2R>16/15$ throughout the interval.
+The positive root $R$ is well-defined.  Moreover, $0\le b<1$, with $b=0$
+only at $u=\uDet{3}$, and $R>5/3$ and $s^2R>16/15$ throughout the interval.
 \end{claim}
 
 \begin{proof}
-Since
-$T_s$ is increasing on positive arguments,
+Since $s>0$, we have $T_s(0)<0$ and $T_s(z)\to\infty$ as
+$z\to\infty$.  Moreover, $T_s$ is strictly increasing for $z>0$, because
+\[
+ T_s'(z)=2sz+s^3+s^2+1>0.
+\]
+It therefore has a unique positive root $R$.
+
+Since $T_s$ is increasing on positive arguments,
 \begin{equation}
  T_s\!\left(\frac{s^2+s+1}{s^2}\right)
  =\frac{s^2+s+1}{s^3}\bigl(-s^3+s^2+2s+1\bigr)\ge0
@@ -140,7 +146,7 @@ For every $\uDet{2}\le u\le2$,
 \end{claim}
 
 \begin{proof}
-We first consider a binary input, so every job is either zero
+We first consider a binary input in which every job is either zero
 ($p_i=0$) or long ($p_i=u$).  The first $bn$ positions are the forced
 prefix.  A long job in this prefix is processed immediately; a long job in
 the suffix is deferred; every zero job is processed immediately.
@@ -468,7 +474,7 @@ give \cref{eq:opt:ute-full-upper} with $R=\Rquad(u)$.
 
 At $u=\uDet{3}$, $b=0$.  For
 $\uDet{3}\le u\le\uDet{4}$, the zero-prefix specialization gives the
-formula $1+1/\sqrt{u-1}$.  We prove exactly this parameter interval.
+ratio $1+1/\sqrt{u-1}$.
 
 \begin{lemma}[Zero-prefix guarantee]
 \label{lem:opt:zero-prefix}
