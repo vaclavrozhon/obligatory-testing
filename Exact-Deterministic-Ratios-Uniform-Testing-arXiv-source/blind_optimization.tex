@@ -30,9 +30,9 @@ rigorous version of \cref{thm:intro-bo-curve} and maximizes that
 instance-specific value relative to the clairvoyant optimum.  Keeping the
 results together avoids repeating the same blind-block reduction.
 
-For a multiset $M$, use $D[M]$ from \cref{eq:empirical-distributions} and put
+For a multiset $M$, let $P\sim D[M]$ and put
 \[
- \mu_M=\int p\,dD[M](p)=\frac1n\sum_{i=1}^n p_i
+ \mu_M=\EE P=\frac1n\sum_{i=1}^n p_i
 \]
 and define
 \begin{equation}
@@ -197,8 +197,8 @@ first completion for which $L>0$ and
  \label{eq:bo-det-stopping-line}
 \end{equation}
 Give value zero to all remaining jobs.  The answers are deterministic
-functions of the transcript, so the replay induction of \cref{lem:replay}
-freezes the interaction into one fixed labeled binary input.
+functions of the transcript and therefore define one fixed labeled binary
+input that reproduces the same execution.
 
 If the policy fails to complete all jobs, its ratio is infinite.  Otherwise,
 if the line is never crossed, then $L=0$ after all jobs are completed:
@@ -405,11 +405,10 @@ $u$.  Both blocks complete exactly one job.
 Fix the private seed of a policy and place the announced occurrences
 uniformly behind the labels.  We may assume that the policy completes every
 job.  Give equal-valued occurrences distinct hidden
-tokens.  The common first-touch lemma \cref{lem:adaptive-first-touch} makes
-their analytically exposed order a uniform permutation and the selector of
-optimized blocks predictable.  A raw block does not reveal its token's value
-to the policy; exposing it only in the analysis enriches the filtration and
-is already allowed by the lemma.
+tokens.  By deferred decisions, their analytically exposed order is a
+uniform permutation and the selector of optimized blocks is predictable.
+A raw block does not reveal its token's value to the policy; exposing it
+afterwards only for the analysis does not affect the policy's decisions.
 
 Fix $\delta>0$ and ignore the last $\delta n$ first touches for the moment.
 The predictable-permutation estimate

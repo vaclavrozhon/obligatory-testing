@@ -85,14 +85,14 @@ law $D$, and use the survival function
 \end{equation}
 The convention at atoms does not affect any integral below.  Since a
 clairvoyant job has effective length $1+\min\{s,P\}$, the layer-cake identity
-and \cref{cor:empirical-offline} give
+and \cref{cor:empirical-offline} give, for $P_M\sim D[M]$,
 \begin{align}
  \Omega_{\mathsf{RO},u}(D)
  &=\frac12\left(1+\int_0^s S_D(t)^2\,dt\right),
  \label{eq:rcu-offline-fluid}\\
  \OPT_u(M)
  &=n^2\Omega_{\mathsf{RO},u}(D[M])
-   +\frac n2\int\lambda_u(p)\,dD[M](p)
+   +\frac n2\EE\lambda_u(P_M)
  \label{eq:rcu-offline-finite}
 \end{align}
 for every empirical distribution $D[M]$.
@@ -402,9 +402,8 @@ Every labeling has
 First fix a deterministic policy.  If it does not complete all jobs, the
 claim is immediate.  Otherwise place the occurrences uniformly on the
 public labels, distinguishing equal-valued occurrences as tokens.  By
-\cref{lem:adaptive-first-touch}, the analytically exposed occurrence word is
-a uniform permutation, and the test/raw choice before its next entry is
-predictable.
+deferred decisions, the analytically exposed occurrence word is a uniform
+permutation, and the test/raw choice before its next entry is predictable.
 
 Take $\delta_n=n^{-1/4}$.  The predictable-permutation bound
 \cref{lem:predictable-permutation-sampling}, applied to the zero indicator

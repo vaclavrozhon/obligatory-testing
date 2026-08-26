@@ -367,7 +367,8 @@ The exact deterministic and randomized asymptotic competitive ratios satisfy
  \qquad
  \RrandBO(u)=\frac{\sqrt u}{2}+\frac12+o(1).
 \]
-Their exact curves are shown in \cref{fig:intro-bo-curve}.
+Their complete formulas are given in
+\cref{thm:bo-det-curve,thm:bo-curve}.
 \end{theorem}
 
 This poor worst-case behavior is driven by a very specific family of inputs,
@@ -391,7 +392,6 @@ $M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
 \end{theorem}
 
 
-\noindent
 \begin{algorithm}[H]
 \caption{Instance-optimal blind optimization}
 \label{alg:intro-blind-optimization}
@@ -427,7 +427,8 @@ regimes.
 This model was introduced by D{\"u}rr et
 al.~\cite{DurrErlebachMegowMeissner2020}.  Their results showed that
 intermediate values of $u$ are the difficult ones.  We determine the exact
-competitive ratio for every $u$, for both deterministic and randomized algorithms.
+competitive ratio for every $u$, for both deterministic and randomized
+algorithms.
 
 
 \begin{theorem}[Revealing-optimization curves, informal version of
@@ -435,21 +436,23 @@ competitive ratio for every $u$, for both deterministic and randomized algorithm
 \label{thm:intro-common-upper-curves}
 For every $u>0$, the exact deterministic and randomized asymptotic
 competitive ratios $\RdetRO(u)$ and $\RrandRO(u)$ are the six-piece and
-four-piece curves in \cref{fig:intro-curves-det,fig:intro-curves-rand}.
+four-piece curves derived in
+\cref{sec:optional,sec:random-common-upper}, respectively.
 The deterministic curve reaches
 $1.87\ldots$ and then falls to the obligatory value
 $1.57\ldots$.  The randomized curve reaches $1.63\ldots$ and
 eventually becomes $4/3$.
 \end{theorem}
 
-To understand the behavior of deterministic algorithms, we define the following five deterministic transition points as
+To describe the deterministic curve, define the following five transition
+points:
 \[
  \begin{gathered}
   \uDet{1}=1,\qquad
   \uDet{2}=1.86\ldots,\qquad
   \uDet{3}=3.14\ldots,\qquad
   \uDet{4}=3.61\ldots,\qquad
-  \uDet{5}=4.50\ldots 
+  \uDet{5}=4.50\ldots .
  \end{gathered}
 \]
 They delimit the six branches from left to right.
@@ -476,9 +479,11 @@ The second algorithm, \textsc{ForcedPrefixUTE} in
 \cref{alg:intro-ro-ute}, tests every job and normally processes only
 outcomes below a fixed threshold.  It makes one deliberate exception: every
 outcome in an initial $b(u)$-fraction of the test order is processed
-immediately. 
-Intuitively, this is because the deterministic adversary will try to feed our algorithm longer jobs first, and only then it will show it the longer jobs. We can fight this family of bad inputs by running the jobs in the prefix without any testing -- while this can be bad in other inputs, it helps in this discussed worst-case scenario. 
-
+immediately.  Intuitively, a deterministic adversary may reveal long jobs
+first and shorter jobs only later.  Deferring all early long jobs would
+create a tail that waits through most of the later tests.  The forced prefix
+limits this risk by testing and immediately processing a controlled initial
+fraction, at the cost of sometimes processing a long job too early.
 
 The exact parameter $b(u)$ is defined in
 \cref{eq:opt:ute-parameters}; it is nonnegative on
@@ -508,8 +513,8 @@ optimization in \cref{eq:opt:mixed-parametrization}, after which it equals
 the obligatory-testing value $0.570574\ldots$.  The three policies form the
 deterministic lower envelope in \cref{fig:intro-curves-det}:
 \textsc{Raw} wins first, \textsc{ForcedPrefixUTE} in the middle, and
-\textsc{AdaptiveThreshold} for large $u$.The exact formulas and matching constructions are in
-\cref{sec:optional,sec:random-common-upper}.
+\textsc{AdaptiveThreshold} for large $u$.  The exact formulas and matching
+constructions are in \cref{sec:optional}.
 
 
 For randomized algorithms, private sampling again gives instance optimality
@@ -536,47 +541,60 @@ For the randomized curve, write
  \qquad \uRand{2}=5.048917\ldots,
  \qquad \uRand{3}=\frac{25}{4}=6.25.
 \]
-The exact formulas and matching constructions are in
-\cref{sec:optional,sec:random-common-upper}. These three points delimit its four branches.
+These three points delimit its four branches.  The exact formulas and
+matching constructions are in \cref{sec:random-common-upper}.
 
-[tady bud trochu specifictejsi jak se spocte threshold a q, at je to podobne podrobne jako algoritmy nad tim]
-\noindent
 \begin{algorithm}[H]
 \caption{Instance-optimal revealing-optimization policy}
 \label{alg:intro-common-upper}
 \begin{algorithmic}
 \State Shuffle the jobs, test $O(\sqrt n)$ of them, and use the
 observed lengths to estimate the input distribution.
-\State Compute the best threshold and the best tested fraction $q$.
-\State Test a random $q$-fraction; finish outcomes below the threshold at once.
+\State For $X\sim\widehat D$, choose a processing-time prefix $E$ maximizing
+$\widehat a/(1+\widehat\ell)$, where
+$\widehat a=\Pr(X\in E)$ and
+$\widehat\ell=\mathbb E[X\mathbf 1_{X\in E}]$.
+\State Put $\widehat\tau=(1+\widehat\ell)/\widehat a$.  If
+$\widehat\tau\ge u$, set $q=0$; otherwise choose $q$ minimizing
+$F_{\mathsf{RO},u,\widehat D}(q)$ from \cref{eq:cui-F}.
+\State Test a random $q$-fraction; finish outcomes below
+$\widehat\tau$ at once.
 \State Finish all other tested jobs, shortest first.
 \State Run every untouched job raw for time $u$.
 \end{algorithmic}
 \end{algorithm}
 
-
-Notice that the curves in \cref{fig:intro-curves-det,fig:intro-curves-rand} are not
-monotone.  This is not a contradiction.  For very small $u$, testing is
+Notice that the two exact revealing-optimization curves are not monotone.
+This is not a contradiction.  For very small $u$, testing is
 useless, while as $u\to\infty$ the model converges to the obligatory-testing
-setting of \cref{sec:obligatory}. Both of these special cases are, algorithmically speaking, relatively easy to navigate, and charge our cost to the optimum cost. Intermediate values are harder because
-raw execution gives the clairvoyant scheduler additional useful options.
+setting of \cref{sec:obligatory}.  Both extreme cases are comparatively easy:
+the online cost can be charged directly to the optimum.  Intermediate values
+are harder because raw execution gives the clairvoyant scheduler additional
+useful options.
 
 
 
 \subsection{Techniques}
 
-The proofs repeatedly use similar ideas. We try to summarize the main technical ideas here. 
+The proofs repeatedly use similar ideas.  We summarize the main ones here.
 
-
-\paragraph{Jobs completed per unit of work.}
-Our algorithms can be typically thought of as a series of a few of a few \emph{action blocks} [jmeno?].  one action block spends a large amount of time (we typically think of its length as a fraction of $n$) by executing the same algorithm, for example "sample random job, if it's below threshold, execute it, else postpone". This action takes some time and completes
-some fraction of the jobs. It is useful to think about the \emph{density} [tomuhle bych dal nějaké jméno, co něco jako job-density? moc se mi tohle konkretni nelibi ale neco takoveho] of finished jobs per unit of time when we evaluate such action. Higher-density actions---those completing more
-jobs per unit of work---should come first. Our algorithms can be found by considering the few reasonable actions that one can take and then sorting them according to their job density. 
+\paragraph{Completion density.}
+Our algorithms can typically be viewed as a sequence of a few
+\emph{modules}.  A module repeatedly performs the same action;
+for example, it may test a random job, process it below a threshold, and
+defer it otherwise.  Each module spends some work and completes some mass of
+jobs.  Its \emph{completion density} is the completed mass per unit of work.
+Higher-density modules should come first.  This viewpoint leads to our
+algorithms by identifying the relevant modules and ordering them by
+completion density.
 
 \paragraph{A private shuffle.}
 The randomized algorithms start by shuffling the labels and inspecting a
-small prefix.  This is essentially for free and, if we apply the right concentration inequalities, it more or less gives the algorithm the knowledge of the input distribution. Since the algorithm can only sample a random sample from this distribution, it moreover remains stable throughout most of the algorithm (which again requires concentration). This intuitively simplifies the randomized setup a lot. 
-
+small prefix.  Its sublinear cost is negligible at the $n^2$ scale, while
+concentration makes it a reliable estimate of the input distribution.
+Because the labels were shuffled privately, the distribution of the
+remaining jobs stays close to this estimate throughout most of the schedule.
+This stability makes the randomized setting substantially simpler.
 
 \subsection{Related work}
 \label{sec:related}

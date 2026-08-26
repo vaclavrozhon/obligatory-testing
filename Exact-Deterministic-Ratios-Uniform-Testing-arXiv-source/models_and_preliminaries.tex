@@ -1,18 +1,17 @@
 \section{Models and common preliminaries}\label{sec:model}
 
-Every setup we consider slightly different. We try to collect common building blocks in this section so that the subsequent sections are less repetitive. Still, some amount of repetition is necessary due to the fact that the models and the optimal algorithms often turn out to be subtly different. 
+The four models differ in small but consequential ways.  This section
+collects their common building blocks so that the later arguments need not
+repeat them.  We first define the models and adversaries, then develop the
+offline pair identities and fluid completion curves, and finally record
+the probabilistic and finite-size tools used throughout the paper.
 
-\paragraph{roadmap}
-short roadmap for this section. 
+\subsection{Models}
 
-\subsection{Model}
-
-This section makes the four models from the introduction precise and records
-the common facts used throughout the paper.  There are $n$ jobs, all
-available at time zero, and one machine.  Operations are nonpreemptive, and
-at most one operation can run at a time.  Job $j$ has a hidden value
-$p_j\ge0$.  The four models differ in what can be done before this value is
-known.
+There are $n$ jobs, all available at time zero, and one machine.  Operations
+are nonpreemptive, and at most one operation can run at a time.  Job $j$ has
+a hidden value $p_j\ge0$.  The four models differ in what can be done before
+this value is known.
 
 \begin{description}[leftmargin=*,style=nextline]
 \item[Obligatory testing $\mathsf{OT}$.]
@@ -22,7 +21,8 @@ processing operation of length $p_j$ may be performed immediately or
 delayed.
 
 \item[Blind execution $\mathsf{BE}$.]
-A job may be run blindly for its actual duration $p_j$;
+The values $p_j$ are arbitrary finite nonnegative numbers.  A job may be run
+blindly for its actual duration $p_j$;
 the value becomes known only when that execution finishes.  Alternatively,
 the job may be tested for one unit, revealing $p_j$, and its processing
 operation may then be delayed.  Testing provides information but does not
@@ -39,14 +39,20 @@ execution finishes.  Raw execution reveals no hidden value.
 Again $p_j\in[0,u]$, and raw execution takes the known time $u$.  The other
 option is a unit test that reveals $p_j$, followed, possibly after a delay,
 by processing for $p_j$.  Thus the preliminary action provides both the
-speedup and its size.
+speedup and information about its size.
 \end{description}
 
-In OT and BE, we sometimes consider L -- the maximum length of a job. The values $n$, $u$, $L$ are known to the algorithm.
+The notation $\mathsf{BE}$ has no model parameter: blind execution permits
+arbitrary finite nonnegative processing times.  For its bounded
+instance-optimal theorem we restrict the inputs to $[0,L]$ and make $L$
+public.  In the last two models, by contrast, $u$ is itself an available
+running time and hence part of every scheduling decision.  The number $n$
+and any theorem-specific bound $L$ or model parameter $u$ are known to the
+algorithm.
 
 The completion time $C_j$ is the time at which job $j$ finishes.  If a test
 reveals $p_j=0$, the job completes at the end of that test.  A blind zero job
-in $\mathsf{BE}(L)$ completes as soon as it is selected, whereas an optimized
+in $\mathsf{BE}$ completes as soon as it is selected, whereas an optimized
 zero job in $\mathsf{BO}(u)$ first pays its unit optimization cost.  The
 objective is
 \[
@@ -54,8 +60,10 @@ objective is
 \]
 
 Obligatory testing can be viewed as the limit of revealing optimization in
-which raw execution becomes unavailable.  We use this only as intuition:
-the obligatory theorems and their algorithms are proved directly though, using this argument directly would require us to be very careful about both $u$ and $n$ going to infinity. 
+which raw execution becomes unavailable.  We use this only as intuition.
+The obligatory theorems and their algorithms are proved directly; deriving
+them from revealing optimization would require controlling the joint limits
+$u\to\infty$ and $n\to\infty$, which we avoid.
 
 We write $\cost(\mathcal A,I)$ for the objective value of an online algorithm
 $\mathcal A$ on an instance $I$, and $\cost(\OPT,I)$ for the value of an
@@ -67,19 +75,18 @@ shorter abbreviations
  \OPT(I)=\cost(\OPT,I),
 \]
 and omit algorithms or instances when they are clear.  Thus $\OPT$ denotes
-an algorithm inside $\cost(\OPT,I)$ and its cost only in the abbreviated
-notation $\OPT(I)$.
+the algorithm inside $\cost(\OPT,I)$, while the abbreviation $\OPT(I)$
+denotes its cost.
 
 \subsection{Information and adversaries}
 
-The deterministic curve results allow the usual adversarial input and use
-adaptive revelation only as a lower-bound device that is frozen by
-\cref{lem:replay}.  The randomized results use an \emph{oblivious} adversary:
-the labeled processing-time vector is fixed before the algorithm draws its
-private random seed.  Unless explicitly stated otherwise, the algorithm is
-not told the multiset of values.  An \emph{announced} policy is additionally
-given that multiset but not its assignment to labels.  Announcing the
-multiset can only help and is therefore a valid strengthening in lower bounds.
+The deterministic curve results use the usual adversarial inputs.  The
+randomized results use an \emph{oblivious} adversary: the labeled
+processing-time vector is fixed before the algorithm draws its private
+random seed.  Unless stated otherwise, the algorithm is not told the
+multiset of values.  An \emph{announced} policy additionally receives this
+multiset, but not its assignment to labels.  Announcing the multiset can
+only help, so it is a valid strengthening in lower bounds.
 
 All randomized expectations are over private algorithmic randomness.  A
 uniform random relabeling is private randomness, not a distributional
@@ -95,8 +102,8 @@ write
        \EE\cost(\mathcal A,\sigma(M)).
 \]
 This is the standard order-oblivious view of instance optimality: the input
-is a multiset and its order carries no instance information
-~\cite{AfshaniBarbayChan2017,NarayananRozhonTetekThorup2024}.
+is a multiset and its order carries no instance
+information~\cite{AfshaniBarbayChan2017,NarayananRozhonTetekThorup2024}.
 In the present models the convention is especially harmless.  Given any
 policy $\mathcal A$, let $\mathcal A^{\mathrm{sym}}$ first draw a uniform
 permutation $\Pi$ of the public labels and then simulate $\mathcal A$ through
@@ -130,7 +137,7 @@ and associate with job $j$ the model-dependent \emph{effective length}
  \lambda_j\defeq
  \begin{cases}
   1+p_j, & \mathsf{OT},\\
-  p_j, & \mathsf{BE}(L),\\
+  p_j, & \mathsf{BE},\\
   \lambda_u(p_j), & \mathsf{BO}(u)\text{ or }\mathsf{RO}(u).
  \end{cases}
  \label{eq:model-effective-length}
@@ -153,7 +160,7 @@ in this order and has value
     \right).
  \label{eq:unified-opt-symmetric}
 \end{align}
-In $\mathsf{OT}$ it tests every job.  In $\mathsf{BE}(L)$ it runs every job
+In $\mathsf{OT}$ it tests every job.  In $\mathsf{BE}$ it runs every job
 blindly.  In $\mathsf{BO}(u)$ and $\mathsf{RO}(u)$ it uses raw mode when
 $u\le1+p_j$ and the unit preliminary action followed by processing otherwise.
 \end{lemma}
@@ -212,16 +219,17 @@ effective lengths $\{\lambda_1,\ldots,\lambda_n\}$.  Then
       +\frac n2\EE\Lambda.
  \label{eq:empirical-offline}
 \end{equation}
-For a multiset $M$ and the effective-length map $\ell$ of the chosen model,
+For a multiset $M$, let $P\sim D[M]$.  If $\ell$ is the effective-length
+map of the chosen model, then
 \begin{equation}
  \OPT(M)=n^2\Omega_\ell(D[M])
-       +\frac n2\int\ell(p)\,dD[M](p).
+       +\frac n2\EE\ell(P).
  \label{eq:empirical-offline-model}
 \end{equation}
 In particular, in $\mathsf{BO}(u)$ or $\mathsf{RO}(u)$,
 \begin{equation}
  \OPT_u(M)=n^2\Omega_{\mathsf{RO},u}(D[M])
-       +\frac n2\int\lambda_u(p)\,dD[M](p).
+       +\frac n2\EE\lambda_u(P).
  \label{eq:empirical-offline-u}
 \end{equation}
 \end{corollary}
@@ -240,7 +248,7 @@ offline, because a clairvoyant scheduler can run a job for $p_j$ without
 paying the unit test.  Thus
 \begin{equation}
  \OPT_{\mathsf{BE}}(M)
- =n^2\Omega_{\mathsf{BE}}(D[M])+\frac n2\int p\,dD[M](p)
+ =n^2\Omega_{\mathsf{BE}}(D[M])+\frac n2\EE P
  =\sum_i p_i+\sum_{i<j}\min\{p_i,p_j\}.
  \label{eq:blind-offline-opt}
 \end{equation}
@@ -280,11 +288,10 @@ and use the normalized quantities
  K_X=\frac1{n^2}\sum_{i,j\in X}\min\{p_i,p_j\}.
  \label{eq:stationary-prefix-notation}
 \end{equation}
-The prefix property gives
+For independent $P,P'$ with law $D$, put
+$K(D)\defeq\EE\min\{P,P'\}$.  The prefix property gives
 \begin{equation}
- K(D[p])=K_E+2h\ell_E+K_T,
- \qquad
- K(D)\defeq\iint\min\{x,y\}\,dD(x)dD(y).
+ K(D[p])=K_E+2h\ell_E+K_T.
  \label{eq:stationary-kernel-split}
 \end{equation}
 Define its stationary leading coefficient by
@@ -326,25 +333,50 @@ Adding the two displays and collecting the diagonal terms gives
 \cref{eq:stationary-prefix-cost}.
 \end{proof}
 
-\subsection{Maximum-density modules and fluid completion envelopes}
+\subsection{Maximum-density modules and fluid completion curves}
 \label{sec:common-fluid-envelopes}
 
-Several randomized and instance-optimal arguments use the same fluid
-primitive.  Testing one unit mass of jobs automatically completes its zero
-outcomes and may be followed by immediate processing of selected positive
-outcomes.  We isolate that primitive, its optimal density, and the resulting
-fractional-knapsack envelope here.
+Here \emph{fluid} simply means that we work with fractions of the input
+rather than individual jobs.  After dividing all job counts and all work by
+$n$, the $n$ jobs have total mass one.  Thus a class containing $30\%$ of
+the jobs has mass $0.3$, and processing that class for time $p$ uses
+$0.3p$ units of normalized work.  This scaling captures the leading
+$n^2$ term of total completion time; rounding individual jobs changes only
+lower-order terms.
 
-Let $D$ be a probability distribution on $[0,\infty)$ with finite mean and
-let $P\sim D$.  For a measurable selector $g(p)\in[0,1]$ on the positive
-values, define its completed mass and work by
+Consider a concrete example in which half the jobs have $p=0$ and half have
+$p=1$.  Testing the whole unit mass costs one unit of work and completes the
+zero half.  If we also process every revealed job of length one immediately, this uses
+another $1/2$ unit of work and completes the entire mass.  The combined
+operation therefore completes mass one using work $3/2$, for completion
+density $2/3$.  Testing alone would have density only $1/2$.  If the
+positive jobs were much longer, however, processing them immediately could
+decrease the density.  The first question is therefore which revealed
+lengths should be included.
+
+Let $D$ be a distribution of job lengths with finite mean.  We call one such
+combined operation a \emph{test module}: test one unit mass
+of jobs and immediately process a chosen fraction of each positive length
+class.  Let $D$ be the distribution of job lengths and let $P\sim D$.
+Write $g(p)\in[0,1]$ for the fraction of the length-$p$ class processed
+immediately.  The module completes mass
+$a_D(g)$ and uses work $w_D(g)$, where
 \begin{equation}
  a_D(g)\defeq D(\{0\})+\EE[g(P)\one_{P>0}],
  \qquad
  w_D(g)\defeq 1+\EE[P g(P)\one_{P>0}].
  \label{eq:common-module-aw}
 \end{equation}
-The zero mass is included automatically because its test completes it.
+The initial $1$ in $w_D(g)$ is the work of testing the whole mass.  Zero
+jobs appear in $a_D(g)$ automatically because they finish with their tests.
+The ratio $a_D(g)/w_D(g)$ is the module's completion density, and its
+reciprocal is work per completion.
+
+The optimal rule is a threshold.  Intuitively, adding jobs of length $p$
+improves the current density exactly when $p$ is smaller than the current
+work per completion.  At the optimum these two quantities agree: the cutoff
+$\tau_D$ is also the module's work per completion.  The following lemma
+makes this self-consistency precise.
 
 \begin{lemma}[Maximum-density discovery module]
 \label{lem:maximum-density-module}
@@ -354,20 +386,14 @@ There is a unique $\tau_D\ge1$ satisfying
  \label{eq:common-threshold-equation}
 \end{equation}
 Choose $g_*$ to select every positive $p<\tau_D$, reject every $p>\tau_D$,
-and select an arbitrary fraction of an atom at $p=\tau_D$.  Put
-\begin{equation}
- a_*=a_D(g_*),\qquad w_*=w_D(g_*),\qquad
- d\nu(p)=(1-g_*(p))\one_{p>0}\,dD(p),
- \label{eq:common-module-data}
-\end{equation}
-with $\nu(\{0\})=0$.  Then
+and select any fraction of the jobs with $p=\tau_D$.  Write
+$a_*=a_D(g_*)$ and $w_*=w_D(g_*)$.  Then
 \begin{equation}
  \frac{a_*}{w_*}=\max_g\frac{a_D(g)}{w_D(g)}=\frac1{\tau_D},
  \qquad
  \tau_D a_D(g)\le w_D(g)\quad\text{for every }g.
  \label{eq:common-density-dual}
 \end{equation}
-Moreover, $\nu$ has mass $1-a_*$ and is supported on $[\tau_D,\infty)$.
 \end{lemma}
 
 \begin{proof}
@@ -376,18 +402,31 @@ $h(0)=0$, and tends to infinity because $h(t)\ge t-\EE P$.  Once positive it
 is strictly increasing, so $h(t)=1$ has a unique solution; $h(t)\le t$ gives
 $\tau_D\ge1$.
 
-For an arbitrary selector $g$,
+For an arbitrary rule $g$,
 \[
  \tau_D a_D(g)-\EE[P g(P)\one_{P>0}]
  =\tau_D D(\{0\})+\EE[(\tau_D-P)g(P)\one_{P>0}]
  \le\EE(\tau_D-P)^+=1.
 \]
 This is the dual inequality in \cref{eq:common-density-dual}.  The threshold
-selector $g_*$ attains equality because it keeps exactly the terms with
+rule $g_*$ attains equality because it keeps exactly the terms with
 $\tau_D-p>0$; mass at $p=\tau_D$ does not affect the equality.  Hence
-$\tau_D a_*=w_*$ and $g_*$ has maximum density $1/\tau_D$.  Its unselected
-mass is $1-a_*$ and can occur only at values at least $\tau_D$.
+$\tau_D a_*=w_*$ and $g_*$ has maximum density $1/\tau_D$.
 \end{proof}
+
+The test module completes mass $a_*$.  We keep track of the positive jobs
+that it does not complete by writing
+\begin{equation}
+ d\nu(p)=(1-g_*(p))\one_{p>0}\,dD(p),
+ \qquad \nu(\{0\})=0.
+ \label{eq:common-module-data}
+\end{equation}
+The residual mass $\nu$ is not normalized: its total mass $1-a_*$ is exactly
+the fraction of jobs left for later.  Because $g_*$ accepts everything
+below $\tau_D$, these residual jobs all have length at least $\tau_D$.
+
+For an empirical input, this threshold rule has an elementary finite
+interpretation: sort the jobs by processing time and take a prefix.
 
 \begin{corollary}[Empirical maximum-density prefix]
 \label{cor:empirical-density-prefix}
@@ -407,33 +446,46 @@ unselected value is at least $\tau_{D[p]}$.
 \begin{proof}
 Apply \cref{lem:maximum-density-module} to $D[p]$.  At the boundary
 $p_i=\tau_{D[p]}$, adding or removing an occurrence preserves the ratio
-$1/\tau_{D[p]}$, so the fractional boundary selector may be replaced by any
+$1/\tau_{D[p]}$, so the fractional boundary rule may be replaced by any
 subset of the tied occurrences.
 \end{proof}
 
-We will also use the continuous analogue of shortest-processing-time pair
-accounting.  Let $\mathcal M=\sum_k c_k\delta_{v_k}$ be a finitely supported
-probability measure on $[0,\infty)$.  Its divisible completion envelope is
+\paragraph{Ordering modules.}
+After identifying one test module, we must decide where it belongs relative
+to the work performed later.  At the fluid scale, every kind of work can be
+represented by two numbers: a completion capacity $c_k$ and work
+$v_k$ per completed job.  A budget $x$ can be divided among these kinds of
+work.  As in shortest-processing-time scheduling, the cheapest work per
+completion should come first.
+
+Formally, let $\mathcal M=\sum_k c_k\delta_{v_k}$ describe finitely many such
+blocks, where $c_k\ge0$ and $\sum_k c_k=1$.  Its completion curve is
 \begin{equation}
  K_{\mathcal M}(x)\defeq
  \max\left\{\sum_k z_k:
        0\le z_k\le c_k,\ \sum_kv_kz_k\le x\right\}.
  \label{eq:divisible-spt-envelope}
 \end{equation}
+Thus $K_{\mathcal M}(x)$ is the largest job mass that can be completed with
+work budget $x$.  The variables $z_k$ allow a fraction of a block to be
+used, which is the second place where the fluid viewpoint simplifies the
+finite schedule.  Since $1-K_{\mathcal M}(x)$ is the unfinished mass after
+work $x$, its area is the normalized total completion cost.
 
 \begin{lemma}[Divisible SPT area]
 \label{lem:divisible-spt-area}
-The envelope $K_{\mathcal M}$ processes the items in nondecreasing order of
-$v_k$, and
+The curve $K_{\mathcal M}$ processes the items in nondecreasing order of
+$v_k$.  If $V,V'$ are independent with law $\mathcal M$, then
 \begin{equation}
  \int_0^\infty\bigl(1-K_{\mathcal M}(x)\bigr)\,dx
- =\frac12\iint\min\{r,s\}\,d\mathcal M(r)d\mathcal M(s).
+ =\frac12\EE\min\{V,V'\}.
  \label{eq:divisible-spt-area}
 \end{equation}
 \end{lemma}
 
 \begin{proof}
-The ordering assertion is the usual fractional-knapsack exchange.  In a
+The ordering assertion is the usual exchange argument: moving a lower-$v_k$
+block before a higher-$v_k$ block cannot increase the area.  In a
 block of completion mass $c_k$ and work per completion $v_k$, unfinished
 mass decreases linearly.  After sorting the blocks by $v_k$, its area
 contribution is
@@ -444,11 +496,18 @@ Summing these terms and collecting each unordered pair gives
 \cref{eq:divisible-spt-area}.
 \end{proof}
 
-Assume from now on that $D$ has finite support and write
-$d_p=D(\{p\})$.  Fix a final tested fraction $q\in[0,1]$ and an independent
-completion mode that uses $v\ge0$ work per completed job.  At a fluid
-schedule prefix, let $t$ be tested mass, $b$ mass completed by the independent
-mode, and $c_p$ processed tested mass of positive class $p$.  Define
+\paragraph{Combining testing with another mode.}
+We now combine the test module with the other way of completing a job.  For
+revealing optimization this other mode is raw execution with cost $v=u$;
+in other applications $v$ may represent a different independent action.
+Suppose a total fraction $q$ of the jobs will be tested, so the remaining
+$1-q$ fraction is available to the other mode.
+
+To write the completion curve explicitly, assume that $D$ has finite
+support and put $d_p=D(\{p\})$.  At an intermediate point, let $t$ be the
+mass tested so far, $b$ the mass completed by the other mode, and $c_p$ the
+tested mass of positive class $p$ that has also been processed.  The maximum
+mass completed with work budget $x$ is
 \begin{equation}
  \mathcal C^v_{D,q}(x)\defeq
  \max\left\{
@@ -460,11 +519,18 @@ mode, and $c_p$ processed tested mass of positive class $p$.  Define
  \end{array}\right\}.
  \label{eq:common-fluid-envelope}
 \end{equation}
+The objective counts tested zeros, jobs completed by the other mode, and
+processed positive outcomes.  The last constraint charges respectively for
+tests, the other mode, and processing after a test.
 
-\begin{lemma}[Test-module completion envelope]
+The key simplification is that all tests together with their selected short
+outcomes can be replaced by copies of the single maximum-density module.
+What remains are just three kinds of blocks: the test module, the residual
+tested jobs, and the other completion mode.
+
+\begin{lemma}[Test-module completion curve]
 \label{lem:test-module-envelope}
-Let $(a_*,\tau_D,\nu)$ be supplied by
-\cref{lem:maximum-density-module}.  Then
+Let $a_*,\tau_D$, and the residual mass $\nu$ be defined above.  Then
 \begin{equation}
  \mathcal C^v_{D,q}=K_{\mathcal M_{D,q,v}},
  \qquad
@@ -475,13 +541,10 @@ Let $(a_*,\tau_D,\nu)$ be supplied by
 Consequently,
 \begin{equation}
  \int_0^\infty\bigl(1-\mathcal C^v_{D,q}(x)\bigr)\,dx
- =\frac12\iint\min\{r,s\}\,
-   d\mathcal M_{D,q,v}(r)d\mathcal M_{D,q,v}(s).
+ =\frac12\EE\min\{V,V'\},
  \label{eq:common-envelope-area}
 \end{equation}
-The three terms in $\mathcal M_{D,q,v}$ are respectively the maximum-density
-test module, the residual tested classes, and the independent completion
-mode.
+where $V,V'$ are independent with law $\mathcal M_{D,q,v}$.
 \end{lemma}
 
 \begin{proof}
@@ -509,7 +572,7 @@ realized by the corresponding fraction of tests and selected outcomes.  Once
 all $q$ test modules have run, every residual capacity is available; this is
 early enough because \cref{lem:maximum-density-module} gives
 $\operatorname{supp}\nu\subseteq[\tau_D,\infty)$.  Hence the greedy curve is
-feasible at every work budget, proving the envelope identity.  The area
+feasible at every work budget, proving the curve identity.  The area
 formula follows from \cref{lem:divisible-spt-area}.
 \end{proof}
 
@@ -560,28 +623,6 @@ for blind execution, where $\OPT$ can be $o(n^2)$.  Accordingly,
 $\EE\ALG=n^2\PhiBE(D[M])+o_L(n^2)$ and does not claim a bounded ratio to the
 clairvoyant optimum on every sparse input.
 
-\subsection{Test-order adversaries}
-
-The lower bound will assign processing times according to the order in which
-tests finish.  This is only a proof device.
-
-\begin{lemma}[Replay]\label{lem:replay}
-Fix a deterministic online algorithm.  Suppose all untested jobs have the
-same known parameters, and an adversary assigns processing times
-deterministically from the transcript and test-completion order.  The
-resulting interaction is reproduced by a fixed input instance.
-\end{lemma}
-
-\begin{proof}
-Run the interaction once and record the value revealed for every tested job
-label.  Assign those values to the corresponding labels in advance.  An
-induction over operation completions shows that the deterministic algorithm
-chooses the same tests, processing operations, and idle intervals on the fixed
-instance.  If the algorithm fails to test or complete some job forever, its
-competitive ratio is already infinite; otherwise every relevant label is
-recorded.
-\end{proof}
-
 \subsection{Probabilistic tools}
 \label{sec:probabilistic-tools}
 
@@ -591,41 +632,24 @@ union bound, Markov's inequality
 $\Prob(Y\ge t)\le \EE Y/t$ for $Y\ge0$, and the tail identity
 $\EE Y=\int_0^\infty\Prob(Y\ge t)\,dt$.
 
-The next deferred-decisions lemma turns adaptive label choices into sampling
-without replacement.  Occurrence tokens distinguish equal processing times.
+\paragraph{Deferred decisions.}
+Suppose a fixed multiset of processing times is assigned uniformly to the
+public job labels.  Even if a policy chooses the next untouched label from
+everything it has seen so far, the processing time behind that label is
+uniform among the remaining occurrences.  Repeating this observation shows
+that the processing times encountered at first touch form a uniform random
+permutation of the multiset.  Equal values may be regarded as distinct
+copies when making this argument.
 
-\begin{lemma}[Adaptive first-touch permutation]
-\label{lem:adaptive-first-touch}
-\label{lem:blind-trace-bijection}
-Let $J$ be $n$ public labels, let $\Xi$ be $n$ occurrence tokens, and let a
-placement $\sigma:J\to\Xi$ be a bijection.  Fix a deterministic
-nonanticipating policy that eventually first-touches every label.  Write
-$\ell_1(\sigma),\ldots,\ell_n(\sigma)$ for its labels in order of first
-touch and define
-\begin{equation}
- R_{\mathcal A}(\sigma)_k=\sigma(\ell_k(\sigma)).
- \label{eq:adaptive-first-touch-map}
-\end{equation}
-Then $\sigma\mapsto R_{\mathcal A}(\sigma)$ is a bijection from placements
-to permutations of $\Xi$.  The action selected at first touch $k$ is a
-function of the preceding tokens and is therefore predictable with respect
-to the analytically exposed token order.  Consequently, a uniform placement
-induces a uniform random permutation of the occurrences.
-\end{lemma}
+The action chosen at a first touch is determined before the processing time
+behind that label is exposed.  It can therefore be used as a predictable
+selector in the sampling bounds below.  If the chosen action does not reveal
+the processing time to the policy, we may still expose it afterwards for the
+analysis; this does not change the policy's decisions.
 
-\begin{proof}
-Suppose two placements induce the same occurrence order.  A lockstep
-induction shows that the runs have the same observable history before each
-first touch: the preceding tokens and actions are the same, and any
-observation made by the model is determined by them.  The deterministic
-policy therefore performs the same intervening operations, chooses the same
-new label, and selects the same action.  Thus all first-touch labels agree.
-Equation~\eqref{eq:adaptive-first-touch-map} then makes the placements equal
-on every label.  The map is injective between two sets of size $n!$, hence
-bijective.  The same induction stopped before touch $k$ proves
-predictability.  Exposing a token value that the policy itself does not see
-only enriches the analytical filtration and does not affect the conclusion.
-\end{proof}
+We next record the concentration bounds applied to the resulting random
+orders.  Chernoff bounds handle the few places where genuinely independent
+Bernoulli variables arise.
 
 \begin{lemma}[Chernoff bounds]
 \label{lem:chernoff}
@@ -643,9 +667,14 @@ For $0\le\delta\le1$,
  \le \exp\!\left(-\frac{\delta^2\mu}{2}\right).
  \label{eq:chernoff-lower}
 \end{equation}
+\end{lemma}
+
 These are the standard exponential-moment bounds of
 Chernoff~\cite{Chernoff1952}.
-\end{lemma}
+
+Most of our samples are drawn from a fixed input without replacement.  The
+next lemma gives both a tail bound and the finite-population variance used
+for such samples.
 
 \begin{lemma}[Sampling without replacement]
 \label{lem:sampling-without-replacement}
@@ -665,14 +694,42 @@ $\sigma^2=N^{-1}\sum_i(x_i-\bar x)^2$, then, for $N>1$,
  \le\frac{1}{4k}.
  \label{eq:without-replacement-variance}
 \end{equation}
-If the population is partitioned into $d$ classes with population histogram
-$p$ and sample histogram $\widehat p$, the same variance formula and
-Cauchy--Schwarz give
+\end{lemma}
+
+\begin{proof}
+The estimate \cref{eq:without-replacement-hoeffding} is Hoeffding's
+sampling-without-replacement inequality~\cite[Section~6]{Hoeffding1963}.
+The variance identity is the elementary finite-population correction.
+\end{proof}
+
+Applying the scalar variance bound to class indicators gives a concise
+estimate for an empirical histogram.
+
+\begin{lemma}[Histogram error without replacement]
+\label{lem:without-replacement-histogram}
+Partition a population of $N$ occurrences into $d$ classes.  Let $p$ be its
+histogram and let $\widehat p$ be the histogram of the first $k$ occurrences
+in a uniformly random permutation.  Then
 \begin{equation}
  \EE\|\widehat p-p\|_1\le\sqrt{\frac d k}.
  \label{eq:without-replacement-histogram}
 \end{equation}
-Finally, if $H_{k,j}$ counts class $j$ among the first $k$ entries, then
+\end{lemma}
+
+\begin{proof}
+For a class of mass $p_j$, \cref{eq:without-replacement-variance} and
+Cauchy--Schwarz give
+$\EE|\widehat p_j-p_j|\le\sqrt{p_j/k}$.  Summing over the classes and using
+$\sum_j\sqrt{p_j}\le\sqrt d$ proves the claim.
+\end{proof}
+
+An adaptive policy may stop at a data-dependent time.  We therefore also
+need one event that controls every class at every possible prefix.
+
+\begin{lemma}[Uniform prefix histogram bounds]
+\label{lem:uniform-prefix-histogram}
+In the same population, let $H_{k,j}$ count class $j$ among the first $k$
+entries of a uniformly random permutation.  Then
 \begin{align}
  \Prob\left(
    \max_{0\le k\le N}\max_{1\le j\le d}|H_{k,j}-kp_j|\ge t
@@ -687,22 +744,20 @@ for a universal constant $C$.
 \end{lemma}
 
 \begin{proof}
-The estimate \cref{eq:without-replacement-hoeffding} is Hoeffding's
-sampling-without-replacement inequality~\cite[Section~6]{Hoeffding1963}.
-The variance identity is the elementary finite-population correction.  For a
-class of mass $p_j$, it gives
-$\EE|\widehat p_j-p_j|\le\sqrt{p_j/k}$; summing and applying
-Cauchy--Schwarz proves \cref{eq:without-replacement-histogram}.
 Apply \cref{eq:without-replacement-hoeffding} to every binary class indicator
 and union-bound over $k$ and $j$ to obtain
 \cref{eq:uniform-prefix-hoeffding}.  Integrating that tail bound proves
 \cref{eq:uniform-prefix-mean}.
 \end{proof}
 
+Predictable sampling introduces dependent increments rather than a fixed
+prefix.  The following maximal inequalities provide the needed uniform
+control.
+
 \begin{lemma}[Martingale maximal inequalities]
 \label{lem:martingale-maximal}
 Let $(M_k,\mathcal F_k)_{k=0}^N$ be a real martingale with $M_0=0$.
-If it is square integrable, then Doob's inequality gives
+If $\EE|M_N|^2<\infty$, then Doob's inequality gives
 \begin{equation}
  \EE\max_{0\le k\le N}|M_k|^2\le4\EE|M_N|^2.
  \label{eq:doob-L2}
@@ -714,17 +769,28 @@ then maximal Azuma--Hoeffding gives, for every $t\ge0$,
  \le2\exp\!\left(-\frac{t^2}{2\sum_{k=1}^N b_k^2}\right).
  \label{eq:maximal-azuma}
 \end{equation}
+\end{lemma}
+
 We use the classical forms due to Doob~\cite{Doob1953} and
 Azuma~\cite{Azuma1967}; the maximal version of the latter follows by applying
 the exponential-supermartingale proof at the first crossing time.
-\end{lemma}
+
+The next lemma models an adaptive policy reading a randomly permuted fixed
+input.  The vector $X_k$ records the statistics of the $k$th touched job,
+while the predictable weight $A_k$ records whether the policy selects that
+job before seeing its value.  The lemma says that such adaptive selection
+cannot systematically bias the sample: every selected prefix remains close
+to the corresponding population average, simultaneously over all possible
+stopping times.  We stop before the final $\delta N$ jobs because depletion
+of the remaining urn becomes unstable near the very end.
 
 \begin{lemma}[Predictable sampling from a random permutation]
 \label{lem:predictable-permutation-sampling}
 Let $X_1,\ldots,X_N$ be a uniform random permutation of fixed vectors
 $x_1,\ldots,x_N\in[0,B]^d$, and let
-$\bar x=N^{-1}\sum_i x_i$.  If $A_k\in[0,1]$ is measurable before $X_k$ is
-exposed, then for $\delta,\eta\in(0,1)$, with probability at least
+$\bar x=N^{-1}\sum_i x_i$.  Suppose $A_k\in[0,1]$ is chosen using only the
+previous draws, before $X_k$ is exposed.  Then for
+$\delta,\eta\in(0,1)$, with probability at least
 $1-\eta$, simultaneously for every coordinate $\ell$ and every
 $m\le(1-\delta)N$,
 \begin{equation}
@@ -762,6 +828,10 @@ most $\eta/2$.  The predictable drift is at most $E/\delta$, which proves
 proves the final assertion.
 \end{proof}
 
+Once a sample approximates the input distribution, objective stability must
+transfer a sample-optimal template back to the true distribution.  The next
+deterministic lemma isolates this elementary step.
+
 \begin{lemma}[Lipschitz empirical minimization]
 \label{lem:empirical-minimization}
 Let $\Pi$ be a common family of templates and let $F_D(\pi)$ be their
@@ -789,10 +859,14 @@ $F_E(\pi_E)=\Phi(E)$ between $F_D(\pi_E)$ and $\Phi(D)$ and apply
 \cref{eq:empirical-objective-lipschitz,eq:empirical-value-lipschitz}.
 \end{proof}
 
+Finally, our randomized lower bounds first average over a finite input
+distribution and then require one fixed oblivious input.  The following
+finite form of Yao's principle makes that selection explicit.
+
 \begin{lemma}[Finite Yao selection]
 \label{lem:finite-yao}
-Let $\nu$ be a finite-support distribution on inputs, and let $g(A,I)$ be an
-integrable real payoff.  If
+Let $\nu$ be a finite-support distribution on inputs, and let $g(A,I)$ be a
+real payoff.  If
 \begin{equation}
  \EE_{I\sim\nu}g(A,I)\ge L
  \label{eq:finite-yao-hypothesis}
@@ -813,44 +887,10 @@ one input in the finite support attains this average.  This is the one-sided
 finite form of Yao's principle~\cite{Yao1977} used in our lower bounds.
 \end{proof}
 
-\subsection{Notation and fluid-to-finite transfer}
-\label{sec:notation-transfer}
-
-We use one notation hierarchy in all four models.  An uppercase Roman $D$
-denotes a probability law, and $D[I]$ is the empirical law
-\cref{eq:empirical-distributions} of a finite input object $I$.
-Calligraphic uppercase letters denote curves, sets, or policies.  For a
-model $\mathsf M$, an input law $D$, and a fluid policy template $\pi$, we
-write
-\begin{equation}
- \mathcal C_{\mathsf M,D,\pi}(x)
-   =\text{maximum completed mass by work }x,
- \qquad
- F_{\mathsf M,D}(\pi)
-   =\int_0^\infty\bigl(1-\mathcal C_{\mathsf M,D,\pi}(x)\bigr)\,dx.
- \label{eq:notation-envelope-template}
-\end{equation}
-Uppercase Greek letters are leading $n^2$-coefficients:
-\begin{equation}
- \Omega_{\mathsf M}(D)=\text{offline fluid cost},
- \qquad
- \Phi_{\mathsf M}(D)=\inf_{\pi}F_{\mathsf M,D}(\pi)
-   =\text{instance-optimal online value}.
- \label{eq:notation-leading-values}
-\end{equation}
-Model parameters such as $u$ are appended to the model subscript when
-needed.  Finally, $R_{\mathsf M}^{\rm det}$ and
-$R_{\mathsf M}^{\rm rand}$ denote worst-case ratios.  We reserve $R$ for a
-candidate ratio and $r=R-1$ for its excess.  Lowercase letters denote local
-scalars; in particular $a$ is completion mass, $w$ is work, $q$ is a tested
-fraction, $\mu$ is a mean, $\kappa$ is completion density, and
-$\tau=1/\kappa$ is work per completion.  Specialized formulas may suppress
-a template or a fixed model parameter, but retain these semantic roles.
-
-The following reusable results isolate the finite-size argument shared by the
-instance-optimal sections.  They deliberately separate the model-specific
-task---constructing a fluid envelope and repairing a finite prefix into a
-feasible fluid point---from the generic completion-area and learning steps.
+The next lemma packages the two sampling estimates used later.  It says that
+every sufficiently early prefix contains approximately the expected number
+of selected jobs from each processing-time class, and that the total work of
+the unselected jobs is also close to its expectation.
 
 \begin{lemma}[Uniform first-touch sampling event]
 \label{lem:uniform-first-touch-event}
@@ -882,12 +922,59 @@ The statement remains true after conditioning on an independent policy seed.
 \end{lemma}
 
 \begin{proof}
-By \cref{lem:adaptive-first-touch}, the first-touch values form a uniform
-permutation and $A_k$ is predictable.  Apply
+By deferred decisions, the first-touch values form a uniform permutation
+and $A_k$ is predictable.  Apply
 \cref{lem:predictable-permutation-sampling} to the cell-indicator vector with
 selector $A_k$ and to the scalar value with selector $1-A_k$, assigning
 failure probability $\eta/2$ to each application.
 \end{proof}
+
+\subsection{From fluid curves to finite schedules}
+\label{sec:notation-transfer}
+
+A fluid curve describes fractions of jobs, whereas an actual schedule
+completes jobs one at a time.  For example, if $n=1000$ and a fluid curve
+satisfies $\mathcal C(0.7)=0.4$, it says that after $700$ units of work at
+most about $400$ jobs can be complete.  We do not expect an exact match:
+class sizes must be rounded, and a random prefix contains slightly more or
+fewer jobs of each length.  What we need is a comparison of the form
+\begin{equation}
+ \frac{N_{\mathcal A}(nx)}n
+ \le \mathcal C(x+\alpha)+\beta,
+ \label{eq:finite-fluid-intuition}
+\end{equation}
+where $N_{\mathcal A}(t)$ is the number of jobs completed by time $t$.
+Here $\alpha$ is a small error in work and $\beta$ is a small error in
+completed mass.
+
+For an input law $D$ and a family $\Pi$ of fluid policy templates, let
+$\mathcal C_{D,\pi}(x)$ be the largest mass that template $\pi$ can complete
+using work $x$.  A template records only the few fluid parameters chosen by
+the policy, such as the tested fraction $q$.  Define
+\begin{equation}
+ F_D(\pi)\defeq
+ \int_0^\infty\bigl(1-\mathcal C_{D,\pi}(x)\bigr)\,dx,
+ \qquad
+ \Phi(D)\defeq\inf_{\pi\in\Pi}F_D(\pi).
+ \label{eq:transfer-fluid-values}
+\end{equation}
+This integral has a direct scheduling meaning: total completion time is the
+area under the number of unfinished jobs.  Thus $F_D(\pi)$ is the normalized
+completion cost of the fluid template, and $\Phi(D)$ is the best such cost.
+Model subscripts are restored in later sections when needed.
+
+There are three finite-size errors to control.  Sampling creates the
+horizontal and vertical errors in \cref{eq:finite-fluid-intuition}; a short
+suffix of exceptional jobs may need to be edited; and the good sampling
+event has a small failure probability.  We handle these effects separately
+and then combine them.
+
+\paragraph{Editing a short suffix.}
+Our random-permutation estimates stop before the last few unseen jobs, where
+sampling without replacement becomes unstable.  We may therefore change the
+operations of those jobs.  If only $h$ jobs are affected, each unit of
+changed work can delay at most $n$ jobs, so the resulting cost error is only
+$O(hn)$.
 
 \begin{lemma}[Bounded suffix edit]
 \label{lem:bounded-suffix-edit}
@@ -911,63 +998,17 @@ $h$ affected jobs; summing this discrepancy over total work at most $Wn$
 adds at most $hWn$.
 \end{proof}
 
-\begin{theorem}[Fluid-to-finite completion transfer]
-\label{thm:completion-curve-transfer}
-Fix a law $D$ and a family of templates $\Pi$.  Suppose every envelope
-$\mathcal C_{D,\pi}$ is nondecreasing, takes values in $[0,1]$, and equals
-one for $x\ge H$, where $H<\infty$ is common to $\pi\in\Pi$.  Put
-\begin{equation}
- F_D(\pi)=\int_0^\infty(1-\mathcal C_{D,\pi}(x))\,dx,
- \qquad \Phi(D)=\inf_{\pi\in\Pi}F_D(\pi),
- \label{eq:transfer-fluid-values}
-\end{equation}
-and assume $0\le\Phi(D)\le B$.
+\paragraph{Repairing class capacities.}
+The sampling event does not give the exact fluid constraint
+$c_j\le d_jt$; it gives $c_j\le d_jt+\gamma$.  Remove at most $\gamma$
+completed mass from every class.  The remaining point is feasible for the
+fluid curve, and restoring the removed mass costs at most
+$(s+1)\gamma$.  The next lemma records precisely this simple repair.
 
-Let $\mathcal A$ be a random finite schedule on $n$ jobs.  Suppose that on an
-event $G$ there are an edited completing schedule $\widetilde{\mathcal A}$
-and a possibly random template $\pi\in\Pi$ such that
-\begin{align}
- \cost(\mathcal A)&\ge
-   \cost(\widetilde{\mathcal A})-\varepsilon n^2,
- \label{eq:transfer-edit-cost}\\
- \frac{N_{\widetilde{\mathcal A}}(nx)}n
- &\le \mathcal C_{D,\pi}(x+\alpha)+\beta
- \qquad(0\le x\le H),
- \label{eq:transfer-completion-bound}
-\end{align}
-where $N_{\widetilde{\mathcal A}}(t)$ is the number of jobs completed by
-time $t$.  If $\Prob(G^c)\le\eta$, then
-\begin{equation}
- \frac{\EE\cost(\mathcal A)}{n^2}
- \ge \Phi(D)-\varepsilon-\alpha-H\beta-\eta B.
- \label{eq:completion-curve-transfer}
-\end{equation}
-The same conclusion holds seedwise under a uniform finite placement; in that
-case, for each randomized policy, finite Yao selection produces one fixed
-oblivious labeling satisfying the bound.
-\end{theorem}
-
-\begin{proof}
-Total completion time is the area under the unfinished-job curve.  On $G$,
-\cref{eq:transfer-completion-bound} and the fact that the envelope is one
-after $H$ give
-\begin{align*}
- \frac{\cost(\widetilde{\mathcal A})}{n^2}
- &\ge\int_0^H
-   \bigl(1-\mathcal C_{D,\pi}(x+\alpha)-\beta\bigr)\,dx\\
- &\ge F_D(\pi)-\alpha-H\beta
- \ge\Phi(D)-\alpha-H\beta.
-\end{align*}
-Use \cref{eq:transfer-edit-cost}, average over $G$, and use nonnegativity on
-$G^c$.  The lost factor is at most $\eta\Phi(D)\le\eta B$, proving
-\cref{eq:completion-curve-transfer}.  The final assertion is
-\cref{lem:finite-yao} applied after conditioning on the policy seed.
-\end{proof}
-
-\begin{lemma}[Cell-capacity repair]
+\begin{lemma}[Repairing class capacities]
 \label{lem:cell-capacity-repair}
 Let $D$ have support $0=p_0<p_1<\cdots<p_s$ with masses $d_j$, and consider
-the common envelope $\mathcal C^v_{D,q}$ from
+the common completion curve $\mathcal C^v_{D,q}$ from
 \cref{eq:common-fluid-envelope}.  At a finite schedule prefix, let $t,b,z$
 be normalized tested mass, independent-mode mass, and zero completions, and
 let $c_j$ be normalized processed mass of positive class $j$.  Suppose
@@ -995,6 +1036,73 @@ The repaired variables $t,b,c_j'$ satisfy every constraint in
 $d_0t$ and each $c_j$ by $c_j'$ loses at most $(s+1)\gamma$ completed mass.
 \end{proof}
 
+\paragraph{Putting the errors together.}
+We can now state the transfer principle.  On a good sampling event $G$, the
+edited finite schedule lies below a fluid curve up to horizontal error
+$\alpha$ and vertical error $\beta$.  Editing costs $\varepsilon n^2$, and
+the event $G$ may fail with probability $\eta$.  The conclusion simply adds
+these four losses.
+
+\begin{theorem}[Fluid-to-finite completion transfer]
+\label{thm:completion-curve-transfer}
+Fix a law $D$ and a family of templates $\Pi$.  Suppose every curve
+$\mathcal C_{D,\pi}$ is nondecreasing, takes values in $[0,1]$, and equals
+one for $x\ge H$, where $H<\infty$ is common to $\pi\in\Pi$.  Assume
+$0\le\Phi(D)\le B$.
+
+Let $\mathcal A$ be a random finite schedule on $n$ jobs, and let
+$\varepsilon,\alpha,\beta,\eta\ge0$.  Suppose that on an event $G$ there
+are an edited completing schedule $\widetilde{\mathcal A}$ and a possibly
+random template $\pi\in\Pi$ such that
+\begin{align}
+ \cost(\mathcal A)&\ge
+   \cost(\widetilde{\mathcal A})-\varepsilon n^2,
+ \label{eq:transfer-edit-cost}\\
+ \frac{N_{\widetilde{\mathcal A}}(nx)}n
+ &\le \mathcal C_{D,\pi}(x+\alpha)+\beta
+ \qquad(0\le x\le H).
+ \label{eq:transfer-completion-bound}
+\end{align}
+If $\Prob(G^c)\le\eta$, then
+\begin{equation}
+ \frac{\EE\cost(\mathcal A)}{n^2}
+ \ge \Phi(D)-\varepsilon-\alpha-H\beta-\eta B.
+ \label{eq:completion-curve-transfer}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Total completion time is the area under the unfinished-job curve.  On $G$,
+\cref{eq:transfer-completion-bound} and the fact that the fluid curve is one
+after $H$ give
+\begin{align*}
+ \frac{\cost(\widetilde{\mathcal A})}{n^2}
+ &\ge\int_0^H
+   \bigl(1-\mathcal C_{D,\pi}(x+\alpha)-\beta\bigr)\,dx\\
+ &\ge F_D(\pi)-\alpha-H\beta
+ \ge\Phi(D)-\alpha-H\beta.
+\end{align*}
+Use \cref{eq:transfer-edit-cost}, average over $G$, and use nonnegativity on
+$G^c$.  The lost factor is at most $\eta\Phi(D)\le\eta B$.
+\end{proof}
+
+For randomized lower bounds, we apply the theorem after fixing the policy's
+private seed.  Finite Yao selection, \cref{lem:finite-yao}, then chooses one
+fixed oblivious labeling that satisfies the resulting bound.
+
+\subsection{Learning a fluid policy from a pilot sample}
+
+The preceding subsection transfers fluid lower bounds to finite schedules.
+For instance-optimal upper bounds we need a different approximation: use a
+small pilot sample to choose a good fluid template, then run that template on
+the remaining jobs.
+
+Suppose changing the input law by distance $d(D,E)$ changes the cost of every
+template by at most $L_0d(D,E)$.  Choosing a template using the estimate
+$\widehat D$ then incurs this comparison twice---once for the chosen template
+and once for the optimal template.  A third term accounts for the difference
+between the original input and the jobs left after sampling.
+
 \begin{lemma}[Pilot-learning transfer]
 \label{lem:pilot-learning-transfer}
 Let $\Pi$ be a common template family, suppose
@@ -1003,9 +1111,9 @@ $\Phi(D)=\inf_{\pi\in\Pi}F_D(\pi)$, and assume
  \sup_{\pi\in\Pi}|F_D(\pi)-F_E(\pi)|\le L_0d(D,E).
  \label{eq:pilot-transfer-lipschitz}
 \end{equation}
-Let $\widehat D$ be a pilot estimate, $D^{\rm rem}$ the law of the remaining jobs,
-and let $\widehat\pi$ minimize $F_{\widehat D}$.  If the complete learned
-schedule, including its pilot, satisfies conditionally
+Let $\widehat D$ be a pilot estimate, let $D^{\rm rem}$ be the law of the
+remaining jobs, and let $\widehat\pi$ minimize $F_{\widehat D}$.  If the
+complete learned schedule, including its pilot, satisfies conditionally
 \begin{equation}
  \EE[\cost(\mathcal A)\mid\widehat D,D^{\rm rem}]
  \le n^2F_{D^{\rm rem}}(\widehat\pi)+\varepsilon n^2,

@@ -56,6 +56,42 @@ small-`n` test-all convention used only to make the paper's displayed additive
 bound literally uniform over every `n` is not needed for the asymptotic theorem
 and is not packaged as a separate piecewise Lean strategy.
 
+### Bounded obligatory-testing instance optimality
+
+The full bounded unknown-multiset instance-optimal comparison is assembled in
+Lean for the growing-cutoff policy. `ObligatoryGrowingCutoffTrace` identifies
+the literal strategy's self and pair charges, including the sample/non-sample
+interactions and the stable shortest-processing-time late suffix.
+`ObligatoryGrowingCutoffOperationalUpper` bounds that run by its finite ideal
+pair cost plus the exact pilot penalty, and
+`ObligatoryGrowingCutoffConditionalOrder` averages the block-internal private
+order and exposes `uniformAverage_physicalGrowingRunCost_le`.
+
+`ObligatoryMaximumDensityTemplate` proves that the closed maximum-density
+threshold minimizes the common finite Boolean-template objective.
+`ObligatoryGrowingCutoffAnalytic` and `ObligatoryGrowingCutoffExpected` connect
+the learned result template to the population objective and prove
+`uniformAverage_physicalGrowingRunCost_le_minimum`. The latter includes the
+categorical-to-finite fluid identities and the without-replacement pilot
+learning term. `ObligatoryGrowingCutoffBenchmark` then constructs the aligned
+zero-preserving rounded grid, proves the exact equality between the growing
+template and the rounded obligatory benchmark, combines the upper with the
+arbitrary completing adaptive test-only lower transfer, and uses finite Yao
+selection to obtain one fixed oblivious placement. Its public comparison is
+`exists_fixedPlacement_growingPolicy_le_randomizedCompetitor`.
+
+`ObligatoryGrowingCutoffRates` bounds both sides of the benchmark sandwich by
+`400 (L+3)^2/m` for its explicit finite parameters and separately discharges
+the all-zero case. `ObligatoryGrowingCutoffUniversalRates` removes `L` from
+the policy parameters by using `m^2-1` intervals, mesh `1/m`, cutoff `m-1`,
+and pilot size `n/m^4`. Finally it sets
+`m=floor(sqrt(sixteenthRoot n))`, proves that this integer parameter tends to
+infinity, proves `concreteUniversalGrowingError_tendsto_zero`, and exports
+`exists_fixedPlacement_universalGrowingPolicy_concrete_rate`. The displayed
+comparison loses at most `800 (L+3)^2/m` after normalization by `n^2` for
+each fixed input bound `L`. This is a fully checked vanishing rate, though it
+is intentionally slower than the sharper manuscript rate.
+
 ### Randomized optional-testing structure
 
 `RandomizedOptionalFluid` checks the exact fractional full-module replacement,
@@ -191,6 +227,44 @@ concrete error tends to zero. Hence the full bounded finite and asymptotic
 instance-optimal scheduling/probability chain is closed.
 The detailed analytic proof is in `OPTIONAL_TWO_PHASE_PROOF.md`; this map
 reports only what Lean currently checks.
+
+### Common-upper revealing instance optimality
+
+The bounded common-upper revealing theorem is now assembled end to end for
+literal operational strategies. `RevealingOptimizationRawObserved` extends
+the arbitrary-policy transcript with the raw duration revealed by a raw
+completion and proves exact raw completion-cost accounting.
+`RevealingOptimizationInstanceBenchmark` defines the finite rounded
+raw-block benchmark. `RevealingOptimizationObservedEnvelope` converts every
+prefix of every completing adaptive observed policy into a feasible
+completion envelope, and `RevealingOptimizationObservedAreaLower` integrates
+it, absorbs the simultaneous concentration errors, and applies finite Yao.
+Its public lower theorem
+`exists_fixedPlacement_randomizedRawCost_ge_rawBenchmarkValue` chooses one
+placement before the competitor's finite private seed.
+
+`RevealingOptimizationBenchmarkBridge` proves the tested-pair expectation and
+fluid/grid quadratic identities, the Lipschitz estimate in the tested quota,
+and integral quota rounding. It identifies the analytic raw target with
+`RawBenchmarkData.value` and exports
+`compiledLearnedStrategy_expectedCost_le_rawBenchmark`: the actual fixed-fuel
+pilot learner is at most that same benchmark plus explicit quota, learning,
+finite-kernel, and physical-pilot errors.
+
+`RevealingOptimizationInstanceOptimal` joins these bounds. For positive mean
+it uses the common raw-block certificate. For zero mean it proves a general
+completion-triangle lower bound for every completing transcript-only policy
+and compares the learner with the better of the raw-all and test-all
+templates, whose value is `min u 1 / 2`. The branch-free public sandwich is
+`boundedUniform_matching_value_concrete_rate`; the direct paper-facing
+corollary is
+`exists_fixedPlacement_compiled_le_randomizedCompetitor_concrete_rate`.
+For `m=floor(n^(1/16))`, the latter loses at most
+`1000 (u+1)^2/m` after normalization by `n^2`, uniformly over every bounded
+nonnegative multiset and every finite randomized completing observed policy.
+`concreteRevealingComparisonError_tendsto_zero` proves that this error tends
+to zero for each fixed `u`. The checked rate is deliberately slower than the
+sharper rate in the manuscript.
 
 ### Model, optimum, and asymptotics
 

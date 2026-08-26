@@ -174,7 +174,7 @@ theorem inverseSquarePilotPositions_nonempty
   have hle : inverseSquareSize n m ≤ n := Nat.div_le_self _ _
   omega
 
-private theorem parameter_scales
+theorem parameter_scales
     {n m : ℕ} (hm : 2 ≤ m) (hn : m ^ 16 ≤ n) :
     let k := inverseSquareSize n m
     let d := inverseFourthStep n m
@@ -216,7 +216,7 @@ private theorem parameter_scales
   · exact_mod_cast hdLowerNat
   · exact_mod_cast hdUpperNat
 
-private theorem checkpoint_card_le_three_m4
+theorem checkpoint_card_le_three_m4
     {n m : ℕ} (hm : 2 ≤ m) (hn : m ^ 16 ≤ n) (cutoff : Fin n) :
     (backwardCheckpoints (inverseFourthStep n m) cutoff).card ≤
       3 * m ^ 4 := by
@@ -235,7 +235,7 @@ private theorem checkpoint_card_le_three_m4
   omega
 
 set_option maxHeartbeats 1000000 in
-private theorem inverse_parameter_error_bounds
+theorem inverse_parameter_error_bounds
     {n m : ℕ} (hm : 2 ≤ m) (hn : m ^ 16 ≤ n)
     {L : ℝ} (hL : 0 < L) :
     let k := inverseSquareSize n m

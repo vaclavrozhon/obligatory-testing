@@ -25,6 +25,14 @@ The project now checks substantially more than the initial static model:
   `2n+1` completion bound, a fully discharged operational expected-cost bound,
   and a finite Yao lower bound on actual `0/2` instances whose coefficient
   `4n/(3n+5)` tends to `4/3`;
+- bounded obligatory-testing instance optimality for the literal
+  growing-cutoff learner against every finite randomized completing test-only
+  competitor, including an input-size-only parameter family and a checked
+  vanishing error;
+- bounded common-upper revealing-optimization instance optimality for the
+  literal pilot-learned test/process/raw strategy against every finite
+  randomized completing observed policy, again with an input-size-only
+  vanishing error;
 - the binary stopping scalar game, Zero-prefix interpolation, the full UTE
   endpoint game, and reduction from arbitrary feasible endpoint masses;
 - harmonic finite sums and their limiting optimization;
@@ -85,9 +93,11 @@ main sections of the manuscript.  Lean checks the scalar curve, the explicit
 announced stationary-or-raw upper endpoint, and the randomized lower bound
 end-to-end for literal transcript-only strategies: a generic operational
 compiler, exact finite clairvoyant denominator, fixed-input weighted Yao
-selection, and convergence of the finite coefficients to the curve.  The
-general completion-envelope lower transfer and the universal pilot-learned
-upper half of common-upper instance optimality remain to be assembled.
+selection, and convergence of the finite coefficients to the curve.  Lean now
+also checks common-upper instance optimality end to end: the raw-duration
+observed semantics, completion-envelope lower transfer, fixed-placement Yao
+selection, the shared raw-block benchmark, the pilot-learned operational
+upper, the all-zero branch, and an input-size-only vanishing rate.
 
 The obligatory analytic proof is complete. Lean checks its exact and
 robust fluid certificates, maximum-density optimizer and sample-empty-bin
@@ -99,8 +109,46 @@ expression is proved equal to the literal clairvoyant objective.
 `RandomizedFourThirds.lean` exposes unconditional operational upper and lower
 theorems; the lower theorem includes the generic compiler from every
 terminating public-transcript `Online.Strategy` to its fair binary tree. Thus
-Lean proves the exact asymptotic randomized ratio `4/3`.  For the optional
-proof Lean now checks the pointwise fractional-knapsack envelope, the
+Lean proves the exact asymptotic randomized ratio `4/3`.
+
+The bounded obligatory instance-optimal theorem is now also assembled end to
+end. `ObligatoryGrowingCutoffTrace`,
+`ObligatoryGrowingCutoffOperationalUpper`, and
+`ObligatoryGrowingCutoffConditionalOrder` identify and bound the actual
+completion cost of the learned growing-cutoff transcript strategy.
+`ObligatoryMaximumDensityTemplate`, `ObligatoryGrowingCutoffAnalytic`, and
+`ObligatoryGrowingCutoffExpected` prove population-template optimality and the
+uniform pilot upper bound. `ObligatoryGrowingCutoffBenchmark` aligns that
+upper bound exactly with the rounded benchmark used by the arbitrary adaptive
+test-only lower transfer and finite Yao selection. The positive- and
+zero-mean branches are joined in `ObligatoryGrowingCutoffRates`, while
+`ObligatoryGrowingCutoffUniversalRates` supplies one parameter family
+independent of the input bound: with
+`m=floor(sqrt(sixteenthRoot n))`, the same literal policy is within
+`800 (L+3)^2/m` of every finite randomized completing test-only competitor
+after normalization by `n^2`, and Lean proves that this error tends to zero
+for each fixed `L`. This checked rate is deliberately slower than the sharper
+rate derived in the manuscript.
+
+The common-upper revealing instance-optimal theorem is likewise closed for
+the literal compiled learner. `RevealingOptimizationRawObserved` records raw
+completion durations in the observed trace;
+`RevealingOptimizationObservedEnvelope` and
+`RevealingOptimizationObservedAreaLower` turn every completing adaptive
+observed policy into the same finite raw-block lower benchmark and use finite
+Yao to select one placement before its private seed.
+`RevealingOptimizationBenchmarkBridge` proves the exact fluid/grid quadratic
+identity, constructs an integral quota close to the benchmark minimizer, and
+bounds the learner by that benchmark with explicit quota, sampling, kernel,
+and pilot terms. `RevealingOptimizationInstanceOptimal` joins both directions,
+handles the zero-mean population by a completion-triangle lower bound, and
+exports the direct comparison
+`exists_fixedPlacement_compiled_le_randomizedCompetitor_concrete_rate`.
+With `m=floor(n^(1/16))`, its normalized direct error is
+`1000 (u+1)^2/m`; Lean proves this tends to zero for every fixed `u`.
+This checked rate is intentionally slower than the manuscript rate.
+
+For the optional proof Lean now checks the pointwise fractional-knapsack envelope, the
 long-test area bound, classwise grid repair and integral-shift transfer,
 one-/two-job finite kernel corrections, a `12(L+1)` histogram stability bound,
 the uniform `O_L(n)` fixed-operation-word/product-law lemma (27a), and the
@@ -158,4 +206,40 @@ universal-policy development additionally contains the model-specific
 learnable grid templates, their uniform histogram Lipschitz and empirical
 minimization bounds, an executable mixed test/process/raw quota strategy with
 proved termination and exact completion labels, and its bounded finite
-random-placement pair kernel.
+random-placement pair kernel.  The canonical-trace layer now proves the
+literal strategy's exact one- and two-label projection grammar and identifies
+its completion cost exactly with that kernel (including stable SPT ties).
+The finite kernel is in turn connected to the empirical fluid objective with
+an explicit normalized `(5u+8)/(2n)` error.  The same bridge compiles finite
+grid templates into executable value selectors and composes the literal
+randomized run with the uniform-pilot template learner.
+For upward zero-preserving grids, the selector is pulled back to the actual
+revealed values and charge monotonicity compares the unrounded literal run
+directly with the rounded learned objective, without an extra mesh loss.
+The operational layer also supports a public-transcript-dependent selector:
+its pilot/quota specialization completes the first pilot outcomes immediately,
+then uses a supplied post-pilot selector, and is proved to terminate after
+`2n+1` steps under every private relabelling.
+The literal learned policy now goes one step further: it recomputes its quota
+and selector solely from the first `k` public test-result records, stabilizes
+after that pilot prefix, and terminates with the empirical grid-minimizing
+template without receiving the input histogram as hidden advice.
+Its analysis identifies the entire learned execution with the realized fixed
+pilot/quota run and proves that the histogram read from the public transcript
+is exactly the standard without-replacement sample histogram under private
+random relabelling.
+A physical two-permutation compiler executes each pilot occurrence only once,
+deletes those owners from the virtual learned quota run, and proves the full
+rounded-grid expected bound with explicit normalized pilot overhead
+`2 k (u+1) / n`.
+The corresponding unknown-input `Online.Strategy` is defined using only the
+public grid, two private seeds, and the live transcript.  Its public value
+classifier and literal pilot histogram are proved equal to the rounded cells
+and without-replacement histogram used by the analytic compiler.
+`RevealingOptimizationRawObserved` then equips the arbitrary observed-policy
+side with revealing raw timings.  Its completion envelope and integrated area
+lower bound meet the learned upper at one `RawBenchmarkData` value.
+`RevealingOptimizationBenchmarkBridge` performs the exact benchmark algebra
+and quota rounding; `RevealingOptimizationInstanceOptimal` packages the
+positive- and zero-mean branches, the fixed-placement finite Yao comparison,
+and the concrete vanishing direct error `1000 (u+1)^2/floor(n^(1/16))`.

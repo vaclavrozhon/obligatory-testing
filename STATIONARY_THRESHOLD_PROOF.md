@@ -3,7 +3,9 @@
 Supplementary analytic proof draft, revised 6 August 2026.  This is the stronger
 announced-multiset instance-optimal statement; it is not needed for the
 unknown-multiset `4/3` theorem.  Its fluid algebra is Lean-checked, while the
-general random-permutation lower transfer is not yet a public Lean theorem.
+bounded-grid random-permutation lower transfer is now a public Lean theorem.
+The sharper unbounded, mean-sensitive rate stated in this supplementary note
+is not separately packaged in Lean.
 
 This note proves the fluid part of the stationary-threshold conjecture and
 gives a quantile transfer to every finite announced multiset.
