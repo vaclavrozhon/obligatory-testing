@@ -20,8 +20,9 @@ first be tested for one unit.  The test reveals $p_j$, after which its
 processing operation of length $p_j$ may be performed immediately or
 delayed.
 
-\item[Blind execution $\mathsf{BE}(L)$.]
-Here $p_j\in[0,L]$.  A job may be run blindly for its actual duration $p_j$;
+\item[Blind execution $\mathsf{BE}$.]
+The values $p_j$ are arbitrary finite nonnegative numbers.  A job may be run
+blindly for its actual duration $p_j$;
 the value becomes known only when that execution finishes.  Alternatively,
 the job may be tested for one unit, revealing $p_j$, and its processing
 operation may then be delayed.  Testing provides information but does not
@@ -41,15 +42,17 @@ by processing for $p_j$.  Thus the preliminary action provides both the
 speedup and information about its size.
 \end{description}
 
-The different letters $L$ and $u$ are intentional.  In blind execution,
-$L$ is only a known bound used by the uniform instance-optimal theorem.  In
-the last two models, $u$ is itself an available running time and hence part
-of every scheduling decision.  The number $n$ and the relevant parameter
-$L$ or $u$ are known to the algorithm.
+The notation $\mathsf{BE}$ has no model parameter: blind execution permits
+arbitrary finite nonnegative processing times.  For its bounded
+instance-optimal theorem we restrict the inputs to $[0,L]$ and make $L$
+public.  In the last two models, by contrast, $u$ is itself an available
+running time and hence part of every scheduling decision.  The number $n$
+and any theorem-specific bound $L$ or model parameter $u$ are known to the
+algorithm.
 
 The completion time $C_j$ is the time at which job $j$ finishes.  If a test
 reveals $p_j=0$, the job completes at the end of that test.  A blind zero job
-in $\mathsf{BE}(L)$ completes as soon as it is selected, whereas an optimized
+in $\mathsf{BE}$ completes as soon as it is selected, whereas an optimized
 zero job in $\mathsf{BO}(u)$ first pays its unit optimization cost.  The
 objective is
 \[
@@ -57,9 +60,10 @@ objective is
 \]
 
 Obligatory testing can be viewed as the limit of revealing optimization in
-which raw execution becomes unavailable.  We use this only as intuition:
-the obligatory theorems and their algorithms are proved directly, without
-interchanging the limits $u\to\infty$ and $n\to\infty$.
+which raw execution becomes unavailable.  We use this only as intuition.
+The obligatory theorems and their algorithms are proved directly; deriving
+them from revealing optimization would require controlling the joint limits
+$u\to\infty$ and $n\to\infty$, which we avoid.
 
 We write $\cost(\mathcal A,I)$ for the objective value of an online algorithm
 $\mathcal A$ on an instance $I$, and $\cost(\OPT,I)$ for the value of an
@@ -133,7 +137,7 @@ and associate with job $j$ the model-dependent \emph{effective length}
  \lambda_j\defeq
  \begin{cases}
   1+p_j, & \mathsf{OT},\\
-  p_j, & \mathsf{BE}(L),\\
+  p_j, & \mathsf{BE},\\
   \lambda_u(p_j), & \mathsf{BO}(u)\text{ or }\mathsf{RO}(u).
  \end{cases}
  \label{eq:model-effective-length}
@@ -156,7 +160,7 @@ in this order and has value
     \right).
  \label{eq:unified-opt-symmetric}
 \end{align}
-In $\mathsf{OT}$ it tests every job.  In $\mathsf{BE}(L)$ it runs every job
+In $\mathsf{OT}$ it tests every job.  In $\mathsf{BE}$ it runs every job
 blindly.  In $\mathsf{BO}(u)$ and $\mathsf{RO}(u)$ it uses raw mode when
 $u\le1+p_j$ and the unit preliminary action followed by processing otherwise.
 \end{lemma}

@@ -367,7 +367,8 @@ The exact deterministic and randomized asymptotic competitive ratios satisfy
  \qquad
  \RrandBO(u)=\frac{\sqrt u}{2}+\frac12+o(1).
 \]
-Their exact curves are shown in \cref{fig:intro-bo-curve}.
+Their complete formulas are given in
+\cref{thm:bo-det-curve,thm:bo-curve}.
 \end{theorem}
 
 This poor worst-case behavior is driven by a very specific family of inputs,
@@ -391,8 +392,6 @@ $M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
 \end{theorem}
 
 
-\noindent
-\begin{minipage}[t]{0.485\textwidth}
 \begin{algorithm}[H]
 \caption{Instance-optimal blind optimization}
 \label{alg:intro-blind-optimization}
@@ -403,16 +402,6 @@ and let $\widehat\mu$ be the mean observed length.
 \State Otherwise run every remaining job raw for time $u$.
 \end{algorithmic}
 \end{algorithm}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.485\textwidth}
-\vspace{0pt}
-\centering
-\input{blind_optimization_curve_tikz}
-\captionof{figure}{The exact deterministic and randomized ratios for blind
-optimization; see \cref{thm:bo-det-curve,thm:bo-curve} for their formulas.}
-\label{fig:intro-bo-curve}
-\end{minipage}
-\par\medskip
 
 More precisely, if $\mu_M$ is the mean optimized length in $M$, the best
 possible leading value is
@@ -447,7 +436,8 @@ algorithms.
 \label{thm:intro-common-upper-curves}
 For every $u>0$, the exact deterministic and randomized asymptotic
 competitive ratios $\RdetRO(u)$ and $\RrandRO(u)$ are the six-piece and
-four-piece curves in \cref{fig:intro-curves-det,fig:intro-curves-rand}.
+four-piece curves derived in
+\cref{sec:optional,sec:random-common-upper}, respectively.
 The deterministic curve reaches
 $1.87\ldots$ and then falls to the obligatory value
 $1.57\ldots$.  The randomized curve reaches $1.63\ldots$ and
@@ -554,9 +544,6 @@ For the randomized curve, write
 These three points delimit its four branches.  The exact formulas and
 matching constructions are in \cref{sec:random-common-upper}.
 
-\noindent
-\begin{minipage}[t]{0.485\textwidth}
-\vspace{0pt}
 \begin{algorithm}[H]
 \caption{Instance-optimal revealing-optimization policy}
 \label{alg:intro-common-upper}
@@ -576,20 +563,9 @@ $\widehat\tau$ at once.
 \State Run every untouched job raw for time $u$.
 \end{algorithmic}
 \end{algorithm}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.485\textwidth}
-\vspace{0pt}
-\centering
-\input{randomized_curve_tikz}
-\captionof{figure}{The exact randomized revealing-optimization ratio as a
-function of the raw execution time $u$.}
-\label{fig:intro-curves-rand}
-\end{minipage}
-\par\medskip
 
-Notice that the curves in
-\cref{fig:intro-curves-det,fig:intro-curves-rand} are not monotone.  This is
-not a contradiction.  For very small $u$, testing is
+Notice that the two exact revealing-optimization curves are not monotone.
+This is not a contradiction.  For very small $u$, testing is
 useless, while as $u\to\infty$ the model converges to the obligatory-testing
 setting of \cref{sec:obligatory}.  Both extreme cases are comparatively easy:
 the online cost can be charged directly to the optimum.  Intermediate values

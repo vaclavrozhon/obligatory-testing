@@ -13,10 +13,10 @@ latexmk -pdf paper.tex
 
 from this directory for the complete manuscript, including all appendices.
 
-The build uses only standard LaTeX packages and the
-included vector figures.  The three introduction figures are native
-TikZ/pgfplots sources in `curves_overview_tikz.tex`,
-`randomized_curve_tikz.tex`, and `blind_optimization_curve_tikz.tex`.
+The build uses only standard LaTeX packages and included vector figures.
+The introduction's deterministic overview is a native TikZ/pgfplots source
+in `curves_overview_tikz.tex`; standalone sources for the randomized and
+blind-optimization curves are retained alongside it.
 
 If `latexmk` is unavailable, the equivalent manual build is
 
