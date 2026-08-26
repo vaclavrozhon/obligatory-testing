@@ -7,9 +7,9 @@ draws its random bits; the input convention then privately shuffles its
 coordinates.  The entries are not announced, and no upper bound on
 the processing times is assumed.  The finite-cap zero--two lower bound
 transfers directly.  The upper bound needs one additional uniformization: a
-cutoff and fallback protect the finite-cap stationary policy from an
+cutoff and fallback protect the finite-cap stationary algorithm from an
 arbitrarily large value missed by its sample.  Letting the cutoff grow slowly
-also makes the same policy instance-optimal on every bounded class.  This
+also makes the same algorithm instance-optimal on every bounded class.  This
 subsection proves
 \cref{thm:rand-obligatory},
 the rigorous randomized part of the informal obligatory-testing result
@@ -59,23 +59,23 @@ first prove the uniform upper bound and then give the short transfer.
 
 \subsubsection{Normalization of the offline pair identity}
 
-For a distribution $D$ on $[0,\infty)$, let $P,P'$ be independent with law
-$D$ and define
+For a distribution $D$ on $[0,\infty)$, define the leading offline
+coefficient
 \begin{equation}
  \Omega_{\mathsf{OT}}(D)
- \defeq\frac12\EE\min\{1+P,1+P'\}.
+ \defeq\frac12+\SPT(D).
  \label{eq:rand-omega-ot}
 \end{equation}
-For a fixed vector $p$, use $D[p]$ and its minimum kernel $K(D[p])$ from
-\cref{eq:stationary-kernel-split}.  Then
+For a fixed vector $p$, the finite SPT identity gives
 \begin{equation}
- \Omega_{\mathsf{OT}}(D[p])=\frac{1+K(D[p])}{2},
+ \Omega_{\mathsf{OT}}(D[p])
+ =\frac12+\frac{\SPT([n])}{n^2}
+  -\frac1{2n^2}\sum_i p_i,
  \qquad
  \Delta_{\mathsf{OT}}(p)=\frac{n+\sum_i p_i}{2}.
  \label{eq:rand-KO}
 \end{equation}
-Rewriting the symmetric pair identity
-\cref{eq:unified-opt-symmetric} as two empirical expectations, with
+Combining \cref{eq:unified-opt-symmetric} with the finite SPT identity, with
 $\lambda_i=1+p_i$, gives
 \begin{equation}
  \OPT(p)=n^2\Omega_{\mathsf{OT}}(D[p])+\Delta_{\mathsf{OT}}(p).
@@ -87,11 +87,11 @@ hidden: this makes the analysis valid for unbounded processing times.
 \subsubsection{Stationary prefixes}
 
 Use the processing-time-prefix notation
-\cref{eq:stationary-prefix-notation,eq:stationary-kernel-split} and the
+\cref{eq:stationary-prefix-notation,eq:stationary-spt-split} and the
 coefficient $F_{\mathsf{OT},D[p]}(E)$ from
 \cref{eq:stationary-leading-coefficient}.  We require that $E$ contain every
 zero job; otherwise a supposedly deferred zero completes at its test.  The
-stationary policy and its exact cost are supplied by the common pair identity
+stationary algorithm and its exact cost are supplied by the common pair identity
 \cref{lem:stationary-prefix-cost}.
 
 For a nonempty prefix define its completion density by
@@ -122,10 +122,16 @@ The next identity is the algebraic source of the constant $4/3$.
 For every ordered prefix split with $a>0$ and
 $\tau=(1+\ell_E)/a$,
 \begin{equation}
- 2\tau\bigl(4\Omega_{\mathsf{OT}}(D[p])-3F_{\mathsf{OT},D[p]}(E)\bigr)
-  =(\tau-2)^2
-   +4(\tau K_E-\ell_E^2)
-   +\tau(K_T-\tau h^2).
+ \begin{aligned}
+  &2\tau\bigl(
+     4\Omega_{\mathsf{OT}}(D[p])-3F_{\mathsf{OT},D[p]}(E)\bigr)\\
+  &\quad=(\tau-2)^2
+   +4\left[\tau\left(
+      \frac{2\SPT(E)}{n^2}-\frac{\ell_E}{n}\right)-\ell_E^2\right]\\
+  &\qquad
+   +\tau\left(
+      \frac{2\SPT(T)}{n^2}-\frac{\ell_T}{n}-\tau h^2\right).
+ \end{aligned}
  \label{eq:rand-certificate}
 \end{equation}
 Consequently:
@@ -143,17 +149,30 @@ Consequently:
 
 \begin{proof}
 Expansion using $\ell_E=a\tau-1$, $h=1-a$, and
-\cref{eq:stationary-kernel-split} gives \cref{eq:rand-certificate}.  Under exact
+\cref{eq:stationary-spt-split} gives \cref{eq:rand-certificate}.  Under exact
 separation, $xy\le\tau\min\{x,y\}$ for early $x,y$, hence
-$\ell_E^2\le\tau K_E$; for late $x,y$, one has
-$\min\{x,y\}\ge\tau$, hence $K_T\ge\tau h^2$.  This proves (i).
+\[
+ \ell_E^2\le\tau\left(
+  \frac{2\SPT(E)}{n^2}-\frac{\ell_E}{n}\right).
+\]
+For late $x,y$, one has $\min\{x,y\}\ge\tau$, hence
+\[
+ \frac{2\SPT(T)}{n^2}-\frac{\ell_T}{n}\ge\tau h^2.
+\]
+This proves (i).
 
 Under the relaxed inequalities,
 \[
- \tau K_E-\ell_E^2\ge-sK_E,
- \qquad K_T-\tau h^2\ge-sh^2.
+ \tau\left(\frac{2\SPT(E)}{n^2}-\frac{\ell_E}{n}\right)-\ell_E^2
+ \ge-s\left(\frac{2\SPT(E)}{n^2}-\frac{\ell_E}{n}\right),
 \]
-Moreover $K_E\le a\ell_E\le a^2\tau$.  Substitution into
+and
+\[
+ \frac{2\SPT(T)}{n^2}-\frac{\ell_T}{n}-\tau h^2\ge-sh^2.
+\]
+Moreover
+$2\SPT(E)/n^2-\ell_E/n\le a\ell_E\le a^2\tau$.
+Substitution into
 \cref{eq:rand-certificate} yields
 \[
  F_{\mathsf{OT},D[p]}(E)
@@ -169,7 +188,7 @@ statement useful below.
 
 \begin{corollary}[Announced multiset]
 \label{cor:rand-announced-four-thirds}
-If the multiset is announced, the stationary policy for a maximum-density
+If the multiset is announced, the stationary algorithm for a maximum-density
 prefix satisfies
 \[
  \EE\ALG_{\Stat}(p,E)\le\frac43\OPT(p).
@@ -185,7 +204,8 @@ lower-bound instance before any probabilistic argument is used.
 We also use the following tail-safe estimate.  Direct expansion gives
 \begin{equation}
  F_{\mathsf{OT},D[p]}(E)-\Omega_{\mathsf{OT}}(D[p])
- =\frac{h+a\ell_E-K_E}{2}.
+ =\frac12\left(
+ h+a\ell_E-\frac{2\SPT(E)}{n^2}+\frac{\ell_E}{n}\right).
  \label{eq:rand-crude-identity}
 \end{equation}
 If all early values are at most $L\ge1$, then $\ell_E\le aL$ and therefore
@@ -343,7 +363,8 @@ shows that the true maximum-density reciprocal satisfies
 $\tau_{D[p]}\ge B/4\ge8$.
 The exact threshold inequalities imply
 \begin{equation}
- K(D[p])\ge\frac{(\tau_{D[p]}-1)^2}{\tau_{D[p]}},
+ \frac{2\SPT([n])}{n^2}-\frac1{n^2}\sum_i p_i
+ \ge\frac{(\tau_{D[p]}-1)^2}{\tau_{D[p]}},
  \qquad
  \Omega_{\mathsf{OT}}(D[p])
  \ge\frac{\tau_{D[p]}-1+1/\tau_{D[p]}}{2}\ge\frac{57}{16}.

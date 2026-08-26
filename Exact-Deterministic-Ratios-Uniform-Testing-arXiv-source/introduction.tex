@@ -51,13 +51,13 @@ case open.  We close both gaps.
 In the obligatory-testing model, the best deterministic asymptotic
 competitive ratio is $\RdetOT=1.570574\ldots$.  Against an adversary
 that fixes the input before the algorithm draws its random bits, the best
-randomized ratio is $\RrandOT=4/3$.  The two optimal policies are sketched in
+randomized ratio is $\RrandOT=4/3$.  The two optimal algorithms are sketched in
 \cref{alg:intro-obligatory-det,alg:intro-obligatory-rand}.
 \end{theorem}
 
 Here and below, \emph{shortest first} means processing revealed jobs in
 nondecreasing order of $p_i$.  The following pseudocode gives a little more
-detail about the two policies.  The formulas are not meant to be memorable.
+detail about the two algorithms.  The formulas are not meant to be memorable.
 
 \begin{algorithm}[H]
 \caption{Deterministic threshold}
@@ -84,11 +84,11 @@ positive jobs processed immediately and $d_i$ the number deferred.
 \label{alg:intro-obligatory-rand}
 \begin{algorithmic}
 \State Set $B_n=O(n^{1/20})$ and test $O(n^{3/4})$ random jobs to estimate
-the job-length distribution $P\sim\widehat D$.
+the empirical job-length distribution $\widehat D$.
 \State For each candidate threshold $0\le t\le B_n$, put
 \[
- a(t)=\Pr(P\le t),\qquad
- m(t)=\mathbb E[P\mathbf 1_{P\le t}],
+ a(t)=\widehat D([0,t]),\qquad
+ m(t)=\int_{[0,t]}p\,d\widehat D(p),
 \]
 and define
 \[
@@ -173,7 +173,7 @@ to the public labels.
 
 Here and in the instance-optimal statements below, randomized cost uses the
 \hyperref[par:input-convention]{input convention} formalized in the model
-section: the displayed vector is privately shuffled before the policy starts.
+section: the displayed vector is privately shuffled before the algorithm starts.
 
 Both assumptions in the theorem are necessary.  Without a fixed bound $L$
 there is no randomized instance-optimal algorithm, and without randomization
@@ -187,10 +187,10 @@ strongest possible online benchmark explicit.
 
 Second, the existence of some instance-optimal algorithm is perhaps not
 surprising.  One could imagine a meta-algorithm that samples the input to
-estimate $D[p]$ and then runs an optimal policy for that estimate.  The
+estimate $D[p]$ and then runs an optimal algorithm for that estimate.  The
 substantive part of the theorem is that no complicated meta-algorithm is
-needed.  The optimal leading-order policy for a known input is itself a simple
-threshold policy, so $\mathcal A^*$ has essentially the same form as
+needed.  The optimal leading-order algorithm for a known input is itself a simple
+threshold algorithm, so $\mathcal A^*$ has essentially the same form as
 \cref{alg:intro-obligatory-rand}: sample the input distribution, choose the
 maximum-density threshold, and use it for the rest of the schedule.
 
@@ -245,7 +245,7 @@ speedup without advance information and is related to the model of Damerius
 et al.~\cite{DameriusEtAl2023}.  Revealing optimization, introduced by
 D{\"u}rr et al.~\cite{DurrErlebachMegowMeissner2020}, contains both benefits.
 
-The three optional models have somewhat different optimal policies and
+The three optional models have somewhat different optimal algorithms and
 input-specific benchmarks, so we state their results separately.  Their
 randomized algorithms nevertheless share one design principle: privately
 shuffle the jobs, use a sublinear sample to estimate the input distribution,
@@ -277,32 +277,33 @@ $\mathcal A'$,
 \]
 \end{theorem}
 
-To describe the algorithm, let $P\sim\widehat D$ denote the estimated
-job-length distribution and put $\widehat\mu=\mathbb E P$.  As in
+To describe the algorithm, let $\widehat D$ denote the estimated
+job-length distribution and put
+$\widehat\mu=\int p\,d\widehat D(p)$.  As in
 \cref{alg:intro-obligatory-rand}, define
 \[
- a(t)=\Pr(P\le t),\qquad
- m(t)=\mathbb E[P\mathbf 1_{P\le t}],
+ a(t)=\widehat D([0,t]),\qquad
+ m(t)=\int_{[0,t]}p\,d\widehat D(p),
  \qquad
  \widehat\tau
  =\min_{\substack{t\ge0\\a(t)>0}}\frac{1+m(t)}{a(t)}.
 \]
 
-The optimal policy is more subtle than
+The optimal algorithm is more subtle than
 \cref{alg:intro-obligatory-rand}, because running a job blindly can be better
 than testing it.  Sometimes, after the initial sample, the best choice is to
 run every remaining job blindly.  Even when further testing is useful, it
 need not be useful all the way to the end of the input.
 
 For a simple illustration, suppose that jobs have only two possible lengths.
-The obligatory-testing policy would process short outcomes immediately and
+The obligatory-testing algorithm would process short outcomes immediately and
 defer long ones.  Now consider the last untouched job.  If it is short, we
 want to run it next.  If it is long, it can still be run next, as the first
 job in the arbitrarily ordered long tail.  Thus in either case the useful
 action is to run the job; testing it first only adds one unit of work.  This
 is why the value of testing can disappear before every job has been tested.
 
-In general, the policy tests only a fraction $q$ of the jobs and uses the
+In general, the algorithm tests only a fraction $q$ of the jobs and uses the
 threshold $\widehat\tau$ from \cref{alg:intro-obligatory-rand} to decide
 which tested jobs to process immediately.  After testing stops, deferred
 jobs with $\widehat\tau\le p<\widehat\mu$ are processed before the untouched
@@ -373,9 +374,9 @@ Their complete formulas are given in
 This poor worst-case behavior is driven by a very specific family of inputs,
 which again raises the question of whether the worst-case ratio is the right
 way to evaluate this model.  Instance optimality gives a more informative
-answer.  For every fixed $u$, the simple policy in
+answer.  For every fixed $u$, the simple algorithm in
 \cref{alg:intro-blind-optimization} is instance-optimal.  The structure of
-the optimal policy is particularly simple: at the leading $n^2$ scale, it
+the optimal algorithm is particularly simple: at the leading $n^2$ scale, it
 always either optimizes every job or optimizes none.  The algorithm therefore
 samples the input and chooses between these two options.
 
@@ -459,13 +460,13 @@ They delimit the six branches from left to right.
 \begin{figure}[H]
 \centering
 \input{curves_overview_tikz}
-\caption{The guarantees of the three deterministic policies.  The arrow on
+\caption{The guarantees of the three deterministic algorithms.  The arrow on
 \textsc{Raw} marks its off-scale linear continuation; the teal horizontal
 line is the $\varphi$ guarantee of zero-prefix \textsc{ForcedPrefixUTE}.}
 \label{fig:intro-curves-det}
 \end{figure}
 
-The deterministic curve is the lower envelope of three explicit policy
+The deterministic curve is the lower envelope of three explicit algorithm
 families.  We describe their shape here and defer the exact parameters to
 \cref{sec:optional}.
 
@@ -487,7 +488,7 @@ fraction, at the cost of sometimes processing a long job too early.
 The exact parameter $b(u)$ is defined in
 \cref{eq:opt:ute-parameters}; it is nonnegative on
 $[\uDet{2},\uDet{3}]$ and vanishes at $\uDet{3}$.
-For $u\ge\uDet{4}$, the same zero-prefix policy remains
+For $u\ge\uDet{4}$, the same zero-prefix algorithm remains
 $\varphi$-competitive by \cref{lem:opt:zero-prefix}; this continuation is
 shown in \cref{fig:intro-curves-det} to make the lower envelope visible.
 
@@ -505,11 +506,11 @@ $j_i$ immediately; otherwise add it to $Q$.
 \end{algorithmic}
 \end{algorithm}
 
-Finally, \textsc{AdaptiveThreshold} is the same history-dependent policy as
+Finally, \textsc{AdaptiveThreshold} is the same history-dependent algorithm as
 \cref{alg:intro-obligatory-det}.  For finite $u$, only its parameter $c$
 changes: on $\uDet{4}\le u\le \uDet{5}$ it is chosen by the
 optimization in \cref{eq:opt:mixed-parametrization}, after which it equals
-the obligatory-testing value $0.570574\ldots$.  The three policies form the
+the obligatory-testing value $0.570574\ldots$.  The three algorithms form the
 deterministic lower envelope in \cref{fig:intro-curves-det}:
 \textsc{Raw} wins first, \textsc{ForcedPrefixUTE} in the middle, and
 \textsc{AdaptiveThreshold} for large $u$.  The exact formulas and matching
@@ -517,7 +518,7 @@ constructions are in \cref{sec:optional}.
 
 
 For randomized algorithms, private sampling again gives instance optimality
-with a policy similar in shape to \cref{alg:intro-blind}.  Unlike blind
+with an algorithm similar in shape to \cref{alg:intro-blind}.  Unlike blind
 execution, every tested processing time is at most the raw time $u$, so all
 tested jobs belong before the untouched raw block.
 
@@ -544,15 +545,15 @@ These three points delimit its four branches.  The exact formulas and
 matching constructions are in \cref{sec:random-common-upper}.
 
 \begin{algorithm}[H]
-\caption{Instance-optimal revealing-optimization policy}
+\caption{Instance-optimal revealing-optimization algorithm}
 \label{alg:intro-common-upper}
 \begin{algorithmic}
 \State Shuffle the jobs, test $O(\sqrt n)$ of them, and use the
 observed lengths to estimate the input distribution.
-\State For $P\sim\widehat D$, choose a processing-time prefix $E$ maximizing
+\State Choose a processing-time prefix $E$ of $\widehat D$ maximizing
 $\widehat a/(1+\widehat\ell)$, where
-$\widehat a=\Pr(P\in E)$ and
-$\widehat\ell=\mathbb E[P\mathbf 1_{P\in E}]$.
+$\widehat a=\widehat D(E)$ and
+$\widehat\ell=\int_E p\,d\widehat D(p)$.
 \State Put $\widehat\tau=(1+\widehat\ell)/\widehat a$.  If
 $\widehat\tau\ge u$, set $q=0$; otherwise choose $q$ minimizing
 $F_{\mathsf{RO},u,\widehat D}(q)$ from \cref{eq:cui-F}.
@@ -605,9 +606,9 @@ Scheduling with tests belongs to optimization with \emph{explorable
 uncertainty}, where uncertain data can be queried at a cost; the query
 viewpoint goes back at least to Kahan~\cite{Kahan1991}.  Levi, Magnanti, and
 Shaposhnik study a stochastic scheduling model and derive prefix-testing
-policies followed by an order based on expected processing time per unit
+algorithms followed by an order based on expected processing time per unit
 weight~\cite{LeviMagnantiShaposhnik2019,LeviMagnantiShaposhnik2024}.  Our
-four-block blind-execution policy has a similar shape, but our inputs are
+four-block blind-execution algorithm has a similar shape, but our inputs are
 adversarial, need not converge to a distribution, and are not announced to
 the universal algorithm.
 
@@ -650,21 +651,21 @@ obligatory ratio by a uniform endpoint transfer.
 
 \Cref{sec:common-upper-instance} identifies the optimal leading cost
 separately for every bounded revealing input and learns the associated
-threshold policy from a sublinear sample.  \Cref{sec:random-common-upper}
+threshold algorithm from a sublinear sample.  \Cref{sec:random-common-upper}
 maximizes this benchmark against the clairvoyant optimum and proves the exact
 four-piece randomized curve.  Its final subsection,
 \cref{sec:random-obligatory}, transfers the lower bound to the unbounded
 obligatory endpoint and supplies the cutoff-and-fallback argument needed for
 a uniform $4/3$ upper bound.  \Cref{sec:obligatory-instance} then strengthens
-that endpoint algorithm to a single policy that is asymptotically optimal on
+that endpoint algorithm to a single algorithm that is asymptotically optimal on
 every bounded obligatory input.
 
 \Cref{sec:blind} turns to blind execution.  It derives the announced-input
-benchmark, proves that arbitrary adaptive policies cannot beat it, and
+benchmark, proves that arbitrary adaptive algorithms cannot beat it, and
 removes advance knowledge of the input by sampling; it also explains why no
 finite worst-case ratio is possible without a bound on job lengths.
 \Cref{sec:blind-optimization} studies speedup without revelation, proves the
-deterministic hidden-stopping lower bound and matching two-policy curve,
+deterministic hidden-stopping lower bound and matching two-algorithm curve,
 proves the randomized instance-optimal theorem, and maximizes its mean-based
 benchmark to obtain the exact randomized worst-case curve.
 

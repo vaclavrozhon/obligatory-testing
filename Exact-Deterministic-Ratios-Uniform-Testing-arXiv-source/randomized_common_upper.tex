@@ -61,8 +61,8 @@ The curve is continuous and has global maximum
 attained at $u=(3+\sqrt3)/2$.
 \end{theorem}
 
-The preceding instance-optimal theorem identifies the best policy on each
-input.  Here we compare that value with the clairvoyant minimum kernel and
+The preceding instance-optimal theorem identifies the best algorithm on each
+input.  Here we compare that value with the clairvoyant SPT cost and
 maximize over all empirical distributions.  A survival-function flattening
 argument reduces the outer optimization to binary distributions.  Two
 scalar maximizations give the four branches above.  A sublinear sample removes
@@ -76,25 +76,24 @@ Assume initially that $u>1$ and write
  s=u-1.
  \label{eq:rcu-s}
 \end{equation}
-Let $D$ be a finite distribution on $[0,u]$, let $P,P'$ be independent with
-law $D$, and use the survival function
+Let $D$ be a finite distribution on $[0,u]$ and use the survival function
 \begin{equation}
- S_D(t)=\Prob(P>t),
+ S_D(t)=D((t,u]),
  \qquad S_D(t)=0\quad(t>u).
  \label{eq:rcu-survival}
 \end{equation}
 The convention at atoms does not affect any integral below.  Since a
-clairvoyant job has effective length $1+\min\{s,P\}$, layer cake and the
-symmetric pair identity \cref{eq:unified-opt-symmetric} give, for
-$P_p\sim D[p]$,
+clairvoyant job of length $p$ has effective length $1+\min\{s,p\}$, layer cake and the
+symmetric pair identity \cref{eq:unified-opt-symmetric} give
 \begin{align}
  \Omega_{\mathsf{RO},u}(D)
- &\defeq\frac12\EE\min\{u,1+P,1+P'\}\notag\\
+ &\defeq\frac12\iint
+       \min\{u,1+p,1+q\}\,dD(p)dD(q)\notag\\
  &=\frac12\left(1+\int_0^s S_D(t)^2\,dt\right),
  \label{eq:rcu-offline-fluid}\\
  \OPT_u(p)
  &=n^2\Omega_{\mathsf{RO},u}(D[p])
-   +\frac n2\EE\min\{u,1+P_p\}
+   +\frac12\sum_i\min\{u,1+p_i\}
  \label{eq:rcu-offline-finite}
 \end{align}
 for every empirical distribution $D[p]$.
@@ -108,20 +107,20 @@ threshold prefix has mass $a$ and first moment $\ell$, put
 \end{equation}
 The common threshold equation and the layer-cake identity give
 \begin{equation}
- \EE(\tau_D-P)^+=1,
+ \int(\tau_D-p)^+\,dD(p)=1,
  \qquad
  \int_0^{\tau_D} S_D(t)\,dt=\tau_D-1.
  \label{eq:rcu-threshold-equation}
 \end{equation}
 
-The stationary policy tests all jobs in a uniform random order, processes a
+The stationary algorithm tests all jobs in a uniform random order, processes a
 positive prefix outcome immediately after its test, and after the last test
 processes the residual jobs in SPT order.  The following formula is the
 stationary pair identity specialized to a finite cap.
 
 \begin{lemma}[Stationary survival formula]
 \label{lem:rcu-stationary-survival}
-The doubled leading coefficient of the stationary policy is
+The doubled leading coefficient of the stationary algorithm is
 \begin{equation}
  \mathcal T_u(D)=
  \begin{cases}
@@ -130,7 +129,7 @@ The doubled leading coefficient of the stationary policy is
  \end{cases}
  \label{eq:rcu-stationary-survival}
 \end{equation}
-Consequently the better of the raw and stationary policies has leading
+Consequently the better of the raw and stationary algorithms has leading
 ratio
 \begin{equation}
  \frac{\min\{u,\mathcal T_u(D)\}}
@@ -140,17 +139,17 @@ ratio
 \end{lemma}
 
 \begin{proof}
-Let $h=1-a$ be the residual mass and let $K_T$ be the minimum kernel of two
-residual draws, with their subprobability masses left unnormalized.  The
+Let $h=1-a$ be the residual mass.  The
 stationary prefix identity \cref{lem:stationary-prefix-cost}, applied first
 to empirical laws and then by continuity, gives the leading coefficient
 \begin{equation}
- (1+\ell)\left(1-\frac a2\right)+\frac{K_T}{2}.
+ (1+\ell)\left(1-\frac a2\right)+\SPT(\nu).
  \label{eq:rcu-stationary-pair}
 \end{equation}
 If $\tau_D\le u$, the threshold property gives
 \[
- K_T=\tau_D h^2+\int_{\tau_D}^uS_D(t)^2\,dt,
+ \SPT(\nu)=\frac{\tau_D h^2}{2}
+            +\frac12\int_{\tau_D}^uS_D(t)^2\,dt,
  \qquad
  (1+\ell)\left(1-\frac a2\right)
  =\frac{\tau_D}2(1-h^2).
@@ -163,8 +162,8 @@ execution has leading coefficient $u/2$, and division by
 \end{proof}
 
 This is where the instance-optimal theorem enters the curve calculation.
-In \cref{eq:cui-F}, $q=0$ is the raw policy and $q=1$ is precisely the
-stationary maximum-density policy.  Hence
+In \cref{eq:cui-F}, $q=0$ is the raw algorithm and $q=1$ is precisely the
+stationary maximum-density algorithm.  Hence
 \begin{equation}
  2\PhiRO(D)\le\min\{u,\mathcal T_u(D)\},
  \label{eq:rcu-Phi-endpoint-upper}
@@ -172,8 +171,8 @@ stationary maximum-density policy.  Hence
 and \cref{eq:rcu-announced-ratio} is an upper bound on the
 instance-specific ratio $\PhiRO(D)/\Omega_{\mathsf{RO},u}(D)$.  Interior values of $q$ can
 strictly improve individual inputs; the point of the next two subsections is
-that the two endpoint policies already give the sharp value after maximizing
-over all $D$.  The binary lower bounds at the end apply to every policy, not
+that the two endpoint algorithms already give the sharp value after maximizing
+over all $D$.  The binary lower bounds at the end apply to every algorithm, not
 only to these endpoints.
 
 \subsection{Flattening the survival function}
@@ -263,7 +262,7 @@ $[0,u-1]$ is no smaller than its average on $[0,u]$, and hence
  \ge\frac{(u-1)^3}{u^2}.
  \label{eq:rcu-tau-large}
 \end{equation}
-Here the raw policy is chosen, and its ratio is at most $B_u(u)$.
+Here the raw algorithm is chosen, and its ratio is at most $B_u(u)$.
 We have proved the reduction
 \begin{equation}
  \sup_D\frac{\min\{u,\mathcal T_u(D)\}}
@@ -355,7 +354,7 @@ interior maximum above one occurs at $u=(3+\sqrt3)/2$; substitution gives
 \subsection{Worst-case upper bound from instance optimality}
 
 No second learning argument is needed.  Apply the universal unannounced
-policy of \cref{thm:common-upper-instance} to $D=D[p]$.  The endpoint
+algorithm of \cref{thm:common-upper-instance} to $D=D[p]$.  The endpoint
 comparison \cref{eq:rcu-Phi-endpoint-upper} and the scalar bound
 \cref{eq:rcu-announced-upper} give
 \[
@@ -375,7 +374,7 @@ is exactly clairvoyantly optimal, so no learning is required.
 
 \subsection{Binary oblivious lower bounds}
 
-It remains to show that the two endpoint policies used above cannot be
+It remains to show that the two endpoint algorithms used above cannot be
 improved in the worst case by a more adaptive algorithm.  We first record an
 envelope for shuffled binary vectors.
 
@@ -401,7 +400,7 @@ Every labeling has
 \end{lemma}
 
 \begin{proof}
-First fix a deterministic policy.  If it does not complete all jobs, the
+First fix a deterministic algorithm.  If it does not complete all jobs, the
 claim is immediate.  Otherwise place the occurrences uniformly on the
 public labels, distinguishing equal-valued occurrences as tokens.  By
 deferred decisions, the analytically exposed occurrence word is a uniform
@@ -421,7 +420,7 @@ satisfies
  \label{eq:rcu-predictable-urn}
 \end{equation}
 Here $N_0(t)$ is the number of tested zeros.  The event is simultaneous, so
-we do not condition on the policy's adaptive stopping time.
+we do not condition on the algorithm's adaptive stopping time.
 
 Edit the suffix by running raw every still-untouched job that the original
 schedule would later test, deleting its later known-processing operation.
@@ -460,7 +459,7 @@ It is minimized at $q=1$, giving
 $F_z(1)=(1+x+ux^2)/2$.  The suffix edit, vertical repair, and bad event all
 contribute $o_u(n^2)$.
 
-The argument holds for each deterministic policy.  For a randomized policy,
+The argument holds for each deterministic algorithm.  For a randomized algorithm,
 fix its seed and then average over the seed.  The private shuffle is already
 part of the input convention.  Finally, the effective lengths of the two job types are
 $1$ and $u$, so \eqref{eq:rcu-binary-offline} follows from
@@ -529,8 +528,8 @@ raw jobs & $1-q$ & $u$\\
 Every item costs at least two per completion.  Thus the completion envelope
 lies below $\min\{1,t/2\}$ independently of $q$, whose remaining-mass area is
 one.  This proves the online estimate after the $o_u(n^2)$ repairs and
-averaging over the policy seed.  Since $u>3$, the two effective lengths
-are one and three; their equally weighted minimum kernel gives offline
+averaging over the algorithm seed.  Since $u>3$, the two effective lengths
+are one and three; their equally weighted divisible SPT cost gives offline
 coefficient $3/4$.
 \end{proof}
 

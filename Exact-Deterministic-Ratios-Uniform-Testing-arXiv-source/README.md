@@ -61,7 +61,7 @@ with one absolute constant `C` independent of `u`.
 
 The deterministic revealing-optimization theorem is per parameter: it gives the full
 six-branch function `R_det_RO(u)`, not only its worst value.  The three upper-bound
-policies are specified in numbered `algorithmic` environments.  Its
+algorithms are specified in numbered `algorithmic` environments.  Its
 mixed-regime upper bound is presented by a direct cap-reserve potential and
 accompanied by an independent adjacent-exchange cross-check.
 
@@ -69,13 +69,13 @@ The randomized results give the exact four-piece revealing-optimization
 curve, the sharp unbounded obligatory ratio `4/3`, and instance-optimal
 leading values for bounded obligatory testing, blind execution, revealing
 optimization, and blind optimization.  In obligatory testing, the worst-case
-algorithm uses the fixed cutoff `32`; the bounded-bag instance-optimal policy
+algorithm uses the fixed cutoff `32`; the bounded-bag instance-optimal algorithm
 is its variant with a slowly growing cutoff.
 The full revealing-optimization instance-optimal proof is Section 4 of the
 manuscript; its outer worst-case optimization is the separate four-piece
 curve in Section 5.  Lean now checks this instance theorem end to end for a
 literal pilot-learned transcript-only strategy against every finite
-randomization of completing adaptive observed policies, including the
+randomization of completing adaptive observed algorithms, including the
 fixed-placement Yao lower bound, the zero-mean branch, and a concrete
 input-size-only vanishing error.  It also checks the four-piece randomized
 scalar maximization, including transition uniqueness, attainment, the
@@ -96,7 +96,7 @@ The main file is intentionally short: `paper.tex` contains the build switch,
 preamble, front matter, and chapter order, while the shared model definitions
 and technical tools live in `models_and_preliminaries.tex`.
 
-Section 3 is assembled by `deterministic_revealing.tex` from policy
+Section 3 is assembled by `deterministic_revealing.tex` from algorithm
 guarantees, branchwise lower bounds, curve assembly, and the obligatory
 endpoint.  The independent cap-bubbling certificate is the normal appendix
 source `cap_bubbling.tex`.  Superseded proofs, generated PDF plots, and their

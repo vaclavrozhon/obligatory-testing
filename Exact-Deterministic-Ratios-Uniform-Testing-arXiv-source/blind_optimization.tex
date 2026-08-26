@@ -8,10 +8,10 @@ The difference is that optimization does not reveal $p_i$.  An optimized job
 must be started blindly and its duration becomes known only when it finishes.
 We call this the \emph{blind-optimization} model $\mathsf{BO}(u)$.
 
-We study deterministic worst-case policies, and randomized policies against
+We study deterministic worst-case algorithms, and randomized algorithms against
 an oblivious adversary.  The deterministic optimum has a particularly
 simple form: run everything raw up to $u=2$, and optimize everything after
-that point.  Proving that no adaptive mixture improves these two policies
+that point.  Proving that no adaptive mixture improves these two algorithms
 uses the same raw-safe hidden-stopping idea as the revealing-optimization
 lower bound.  Randomization is still essential for learning the input:
 a private random sample is representative after the initial shuffle,
@@ -45,18 +45,18 @@ $1+\mu_p$ units per completion on average.
 
 Randomization is necessary for attaining this benchmark on every input.
 
-\begin{theorem}[No deterministic instance-optimal policy]
+\begin{theorem}[No deterministic instance-optimal algorithm]
 \label{thm:bo-det-not-instance-optimal}
-For every unannounced deterministic nonanticipating policy $\mathcal A$ and
+For every unannounced deterministic nonanticipating algorithm $\mathcal A$ and
 every even $n$, there are a fixed labeled input $I\in\{0,2\}^n$ and an
-announced randomized policy $\mathcal A'$ such
+announced randomized algorithm $\mathcal A'$ such
 that
 \begin{equation}
  \ALG_{\mathcal A}(I)
  \ge \EE\ALG_{\mathcal A'}(I)+\frac18n^2.
  \label{eq:bo-det-instance-gap}
 \end{equation}
-Consequently no deterministic policy is asymptotically instance-optimal in
+Consequently no deterministic algorithm is asymptotically instance-optimal in
 $\mathsf{BO}(2)$.
 \end{theorem}
 
@@ -100,8 +100,8 @@ the following normal form.
 
 \begin{lemma}[Blind-block normal form]
 \label{lem:bo-normal-form}
-For every nonanticipating policy $\mathcal A$ in $\mathsf{BO}(u)$ there is a
-nonanticipating policy $\mathcal A^{\rm nf}$ which completes every optimized
+For every nonanticipating algorithm $\mathcal A$ in $\mathsf{BO}(u)$ there is a
+nonanticipating algorithm $\mathcal A^{\rm nf}$ which completes every optimized
 job as one contiguous block of length $1+p_i$ and satisfies
 \begin{equation}
  \ALG_{\mathcal A^{\rm nf}}(I)\le \ALG_{\mathcal A}(I)
@@ -112,12 +112,12 @@ $\mathcal A^{\rm nf}$.
 \end{lemma}
 
 \begin{proof}
-Maintain a virtual execution of $\mathcal A$.  When the virtual policy
+Maintain a virtual execution of $\mathcal A$.  When the virtual algorithm
 optimizes a job, record that fact and advance the virtual clock by one unit,
-but perform no physical work.  Immediately before the virtual policy later
+but perform no physical work.  Immediately before the virtual algorithm later
 processes that job, perform its postponed optimization physically and then
 process it.  Observations that occur earlier in physical time are buffered
-until the corresponding virtual completion.  Thus the virtual policy sees
+until the corresponding virtual completion.  Thus the virtual algorithm sees
 exactly its original history and makes the same decisions.  Moving a unit of
 optimization to the right leaves the optimized job and every later job no
 later than before, while jobs completed in between move one unit earlier.
@@ -133,7 +133,7 @@ For $u>1$ define
  \defeq \frac{\sqrt{4u^3-4u+1}-1}{2(u-1)}.
  \label{eq:bo-det-optall-ratio}
 \end{equation}
-The two deterministic policies needed below are \textsc{Raw}, which runs
+The two deterministic algorithms needed below are \textsc{Raw}, which runs
 every job for time $u$, and \textsc{OptimizeAll}, which fixes an arbitrary
 label order and completes every job as a blind block of length $1+p_i$.
 
@@ -150,7 +150,7 @@ $\mathsf{BO}(u)$ is
  \end{cases}
  \label{eq:bo-det-curve}
 \end{equation}
-The policy \textnormal{\textsc{Raw}} is optimal for $u\le2$, and
+The algorithm \textnormal{\textsc{Raw}} is optimal for $u\le2$, and
 \textnormal{\textsc{OptimizeAll}} is optimal for $u\ge2$; both are optimal
 at $u=2$.
 In particular,
@@ -167,7 +167,7 @@ blind-block analogue of \cref{lem:opt:hidden-stopping}.
 \begin{lemma}[Blind raw-safe hidden stopping]
 \label{lem:bo-det-hidden-stopping}
 Fix $u>1$, a target $R\le u$, and $\alpha\in(0,1)$.  Against every
-deterministic policy there is a fixed binary input with $p_j\in\{0,u\}$ on
+deterministic algorithm there is a fixed binary input with $p_j\in\{0,u\}$ on
 which
 \begin{equation}
  \ALG-R\OPT
@@ -183,11 +183,11 @@ $\sigma>0$, and
  \label{eq:bo-det-stopping-f}
 \end{equation}
 Consequently, if $f^{\mathsf{BO}}_{u,R}(\alpha)\ge0$, then every
-deterministic policy has size-asymptotic ratio at least $R$.
+deterministic algorithm has size-asymptotic ratio at least $R$.
 \end{lemma}
 
 \begin{proof}
-By \cref{lem:bo-normal-form}, it is enough to lower-bound a policy whose
+By \cref{lem:bo-normal-form}, it is enough to lower-bound an algorithm whose
 optimized jobs are contiguous blind blocks.  Start in a long phase.  Give
 value zero to every job completed raw and value $u$ to every optimized job.
 If $v$ raw jobs and $L$ optimized-long jobs have been completed, stop at the
@@ -200,7 +200,7 @@ Give value zero to all remaining jobs.  The answers are deterministic
 functions of the transcript and therefore define one fixed labeled binary
 input that reproduces the same execution.
 
-If the policy fails to complete all jobs, its ratio is infinite.  Otherwise,
+If the algorithm fails to complete all jobs, its ratio is infinite.  Otherwise,
 if the line is never crossed, then $L=0$ after all jobs are completed:
 otherwise $n-v=L$ at the end and $L\ge\alpha L$.  Thus the algorithm ran
 every job raw on the all-zero input and has ratio $u\ge R$.
@@ -290,25 +290,23 @@ Thus \cref{lem:bo-det-hidden-stopping} proves the lower bound $R$.
 
 It remains to analyze \textsc{OptimizeAll}.  Put $a(p)=1+p$.  For a fixed
 multiset, its worst label order has the
-$a(p_i)$ in nonincreasing order.  If $P,P'$ are independent draws from the
-empirical distribution, rewriting the diagonal and ordered-pair sums as
-expectations gives
+$a(p_i)$ in nonincreasing order.  Direct pair accounting gives
 \begin{align}
  \ALG_{\textsc{OptimizeAll}}
- &\le \frac{n^2}{2}\EE\max\{a(P),a(P')\}
-      +\frac n2\EE a(P),
+ &\le \frac12\sum_{i,j}\max\{a(p_i),a(p_j)\}
+      +\frac12\sum_i a(p_i),
  \label{eq:bo-det-optall-online}\\
  \OPT
- &=\frac{n^2}{2}\EE\min\{u,1+P,1+P'\}
-      +\frac n2\EE\min\{u,1+P\}.
+ &=\frac12\sum_{i,j}\min\{u,1+p_i,1+p_j\}
+      +\frac12\sum_i\min\{u,1+p_i\}.
  \label{eq:bo-det-optall-offline}
 \end{align}
-Write $S_D(t)=\Prob(P>t)$ for $0\le t\le u$.  Layer cake yields
+Write $S_D(t)=D((t,u])$ for $0\le t\le u$.  Layer cake yields
 \begin{align}
- \EE\max\{a(P),a(P')\}
+ \iint\max\{a(p),a(q)\}\,dD(p)dD(q)
  &=1+\int_0^u(2S_D(t)-S_D(t)^2)\,dt,
  \label{eq:bo-det-optall-layer-online}\\
- \EE\min\{u,1+P,1+P'\}
+ \iint\min\{u,1+p,1+q\}\,dD(p)dD(q)
  &=1+\int_0^{u-1}S_D(t)^2\,dt.
  \label{eq:bo-det-optall-layer-offline}
 \end{align}
@@ -325,9 +323,9 @@ The function $h\mapsto2h-h^2$ is increasing and concave on $[0,1]$.
 Cauchy--Schwarz on the prefix and Jensen's inequality on the unit tail
 therefore give
 \begin{align}
- \EE\max\{a(P),a(P')\}
+ \iint\max\{a(p),a(q)\}\,dD(p)dD(q)
  &\le1+2ub-ub^2,\\
- \EE\min\{u,1+P,1+P'\}
+ \iint\min\{u,1+p,1+q\}\,dD(p)dD(q)
  &\ge1+(u-1)b^2.
 \end{align}
 Consequently their ratio is at most
@@ -362,7 +360,7 @@ The asymptotic formula \eqref{eq:bo-det-asymptotic} follows directly from
 
 \begin{theorem}[Blind-optimization instance optimality]
 \label{thm:bo-instance}
-For every fixed $u<\infty$ there exist a randomized nonanticipating policy
+For every fixed $u<\infty$ there exist a randomized nonanticipating algorithm
 $\mathcal A_{\mathsf{BO}}$, depending only on $n,u$, and a sequence
 $\eps_u(n)\to0$ such that every vector $p\in[0,u]^n$ satisfies
 \begin{equation}
@@ -370,14 +368,14 @@ $\eps_u(n)\to0$ such that every vector $p\in[0,u]^n$ satisfies
  \le n^2\PhiBO(p)+\eps_u(n)n^2.
  \label{eq:bo-instance-upper}
 \end{equation}
-Conversely, every $p\in[0,u]^n$ and every randomized nonanticipating policy
+Conversely, every $p\in[0,u]^n$ and every randomized nonanticipating algorithm
 $\mathcal A$, even an announced one, satisfy
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
  \ge n^2\PhiBO(p)-\eps_u(n)n^2.
  \label{eq:bo-instance-lower}
 \end{equation}
-Thus one policy is asymptotically optimal, at the $n^2$ scale, for every
+Thus one algorithm is asymptotically optimal, at the $n^2$ scale, for every
 input vector simultaneously.  Unlike the benchmarks in the preceding
 sections, $\PhiBO$ depends only on the empirical mean.
 \end{theorem}
@@ -393,21 +391,21 @@ worst-case optimization.
 \subsection{Proof of randomized instance optimality}
 
 By the input convention, the coordinates of $p$ are shuffled uniformly
-before the policy starts.  The lower half simply says that no announced
-policy beats $n^2\PhiBO(p)-o_u(n^2)$ in expectation.
+before the algorithm starts.  The lower half simply says that no announced
+algorithm beats $n^2\PhiBO(p)-o_u(n^2)$ in expectation.
 
 By \cref{lem:bo-normal-form}, we may regard every optimized job as one
 indivisible block of hidden length $1+p_i$.  A raw block has the known length
 $u$.  Both blocks complete exactly one job.
 
 \paragraph{The announced lower bound.}
-Fix the private seed of a policy and place the announced occurrences
-uniformly behind the labels.  We may assume that the policy completes every
+Fix the private seed of an algorithm and place the announced occurrences
+uniformly behind the labels.  We may assume that the algorithm completes every
 job.  Give equal-valued occurrences distinct hidden
 tokens.  By deferred decisions, their analytically exposed order is a
 uniform permutation and the selector of optimized blocks is predictable.
-A raw block does not reveal its token's value to the policy; exposing it
-afterwards only for the analysis does not affect the policy's decisions.
+A raw block does not reveal its token's value to the algorithm; exposing it
+afterwards only for the analysis does not affect the algorithm's decisions.
 
 Fix $\delta>0$ and ignore the last $\delta n$ first touches for the moment.
 The predictable-permutation estimate
@@ -421,7 +419,7 @@ has total hidden processing work
  \label{eq:bo-selected-work}
 \end{equation}
 The event is simultaneous over all prefixes, so a stopping fraction chosen
-adaptively by the policy may be substituted only after the event has been
+adaptively by the algorithm may be substituted only after the event has been
 fixed.  Editing the last $\delta n$ jobs to either mode changes total
 completion cost by $O_u(\delta n^2)$.
 
@@ -464,12 +462,12 @@ choice $\delta=\delta_n$, give
  \frac1{n^2}\EE\ALG_{\mathcal A}(p)
  \ge\frac12\min\{u,1+\mu_p\}-o_u(1).
 \]
-The estimate is uniform in the deterministic policy.  Averaging it over the
-policy seed proves \eqref{eq:bo-instance-lower}.  Together with the upper
+The estimate is uniform in the deterministic algorithm.  Averaging it over the
+algorithm seed proves \eqref{eq:bo-instance-lower}.  Together with the upper
 bound below, one may
 take $\eps_u(n)=O_u(n^{-1/4}\sqrt{\ln(n+2)})$ after enlarging its constant.
 
-\paragraph{One policy for all input vectors.}
+\paragraph{One algorithm for all input vectors.}
 Take $k=\lceil n^{2/3}\rceil$ uniformly random sample jobs.  Optimize each
 sample job and process it immediately, thereby observing its duration, and let
 $\widehat\mu$ be their sample mean.  If $1+\widehat\mu<u$, optimize and
@@ -485,26 +483,27 @@ from $[0,1]$ to $[0,u]$, gives
 Choosing the wrong mode can cost at most
 $O(n^2)|\widehat\mu-\mu_p|$, while choosing the correct mode has leading
 cost $n^2\PhiBO(p)$.  This proves
-\eqref{eq:bo-instance-upper}.  In particular, the universal policy needs to
+\eqref{eq:bo-instance-upper}.  In particular, the universal algorithm needs to
 learn only one number, not a histogram or a threshold.
 
 \subsection{The exact worst-case curve}
 
 The clairvoyant scheduler knows $p_i$, uses the effective length
 $\min\{u,1+p_i\}$ from \cref{eq:model-effective-length}, and orders these
-blocks shortest first.  If $P,P'$ are independent draws from a distribution
-$D$ on $[0,u]$, define its leading offline coefficient by
+blocks shortest first.  For a distribution $D$ on $[0,u]$, define its
+leading offline coefficient by
 \begin{equation}
  \Omega_{\mathsf{BO},u}(D)
- \defeq\frac12\EE\min\{u,1+P,1+P'\}.
+ \defeq\frac12\iint
+  \min\{u,1+p,1+q\}\,dD(p)dD(q).
  \label{eq:bo-offline-coefficient}
 \end{equation}
 Consequently the instance-specific ratio from
 \cref{thm:bo-instance} is
 \begin{equation}
  \alpha_{\mathsf{BO},u}(D)
- =\frac{\min\{u,1+\EE P\}}
-        {\EE\min\{u,1+P,1+P'\}}.
+ =\frac{\min\{u,1+\int p\,dD(p)\}}
+        {\iint\min\{u,1+p,1+q\}\,dD(p)dD(q)}.
  \label{eq:bo-instance-ratio}
 \end{equation}
 
@@ -544,7 +543,7 @@ The two branches agree at $u_{\mathsf{BO}}$.  Moreover,
 The claim is trivial for $u\le1$, because raw execution is no longer than
 the unit optimization operation.  Assume $u>1$ and let
 \[
- S_D(t)=\Prob(P>t),\qquad 0\le t\le u.
+ S_D(t)=D((t,u]),\qquad 0\le t\le u.
 \]
 The layer-cake identity applied to
 \eqref{eq:bo-offline-coefficient} gives
@@ -559,7 +558,7 @@ Put $S=\int_0^{u-1}S_D(t)\,dt$.  Since $S_D$ is nonincreasing,
  \le S_D(u-1)
  \le\frac{S}{u-1}.
 \]
-Therefore, writing $\mu=\EE P=\int_0^uS_D(t)\,dt$,
+Therefore, writing $\mu=\int p\,dD(p)=\int_0^uS_D(t)\,dt$,
 \begin{equation}
  S\ge\frac{u-1}{u}\mu.
  \label{eq:bo-survival-mean}
@@ -581,9 +580,9 @@ Set $b=\mu/u$.  Equations
 \end{equation}
 Equality is attained by the binary distribution
 \begin{equation}
- \Prob(P=u)=b,
+ D(\{u\})=b,
  \qquad
- \Prob(P=0)=1-b.
+ D(\{0\})=1-b.
  \label{eq:bo-binary-hard}
 \end{equation}
 Indeed, its survival function is constant $b$ on $[0,u)$, so both
@@ -613,7 +612,7 @@ optimal afterwards.  Substitution gives
 \]
 This proves \eqref{eq:bo-curve}.  The shuffled binary vectors from
 \eqref{eq:bo-binary-hard} give the lower bounds under the input convention.
-Together with the universal upper policy of
+Together with the universal upper algorithm of
 \cref{thm:bo-instance}, they prove both sides of the competitive-ratio claim.
 If the maximizing mass $b$ is irrational, finite vectors use
 $\lfloor bn\rfloor$ copies of $u$; continuity gives the same asymptotic
@@ -625,7 +624,7 @@ $(u^2+u-1)/(u-1)=u+2+1/(u-1)$ gives
 
 The hard distribution explains the separation.  Most jobs have optimized
 length zero, while a carefully chosen small fraction have length $u$.  Blind
-optimization is attractive on average, so the online policy optimizes the
+optimization is attractive on average, so the online algorithm optimizes the
 jobs.  It cannot recognize a long outcome before committing to it, and an
 early long job delays many zeros.  The clairvoyant optimum optimizes the
 zeros, runs the long jobs raw, and places them last.  In the revealing model,

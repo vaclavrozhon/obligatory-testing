@@ -1,4 +1,4 @@
-\section{Blind execution: instance-optimal four-block policies}
+\section{Blind execution: instance-optimal four-block algorithms}
 \label{sec:blind}
 
 We now turn to $\mathsf{BE}$.  Running an untouched job blindly consumes
@@ -12,7 +12,7 @@ blind-execution theorem \cref{thm:intro-blind-instance}.
 
 \begin{theorem}[Blind-execution instance optimality]
 \label{thm:blind-instance}
-Fix $L<\infty$.  There exist a randomized nonanticipating policy $\mathcal A^*$,
+Fix $L<\infty$.  There exist a randomized nonanticipating algorithm $\mathcal A^*$,
 which knows $n,L$ but not the entries of the input vector, and a deterministic
 sequence $\eps_L(n)\to0$ with the following properties.  Every
 $p\in[0,L]^n$ satisfies
@@ -21,8 +21,8 @@ $p\in[0,L]^n$ satisfies
  \le n^2\PhiBE(D[p])+\eps_L(n)n^2.
  \label{eq:intro-blind-upper}
 \end{equation}
-Every $p\in[0,L]^n$ and every randomized policy $\mathcal A$, even an
-announced policy, satisfy
+Every $p\in[0,L]^n$ and every randomized algorithm $\mathcal A$, even an
+announced algorithm, satisfy
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
  \ge n^2\PhiBE(D[p])-\eps_L(n)n^2.
@@ -39,7 +39,7 @@ In fact, without it even the much weaker worst-case guarantee is impossible.
 
 \begin{theorem}[No finite ratio for unbounded blind execution]
 \label{thm:blind-unbounded-impossible}
-There are no randomized policies $\mathcal A_n$, constant $R<\infty$, and
+There are no randomized algorithms $\mathcal A_n$, constant $R<\infty$, and
 sequence $\eta(n)\to0$ such that every vector
 $p\in[0,\infty)^n$ satisfies
 \begin{equation}
@@ -52,7 +52,7 @@ $p\in[0,\infty)^n$ satisfies
 \begin{proof}
 Suppose that such a guarantee exists, and run $\mathcal A_n$ on the all-zero
 instance.  Its offline cost is zero, so if $Z_n$ denotes the expected online
-cost, then $Z_n\le\eta(n)n^2=o(n^2)$.  We may assume that the policy finishes
+cost, then $Z_n\le\eta(n)n^2=o(n^2)$.  We may assume that the algorithm finishes
 every job, since otherwise its cost is infinite.
 
 Fix its private seed and order the labels by their first touch on this zero
@@ -66,7 +66,7 @@ contributes $n-h+1$ to the objective.  Consequently
 \end{equation}
 
 Now choose one label uniformly and change only its length from zero to
-$H=n^2$.  Until this exceptional label is first touched, the policy sees
+$H=n^2$.  Until this exceptional label is first touched, the algorithm sees
 exactly the zero-instance history.  If its rank $h$ is touched blindly, its
 nonpreemptive execution occupies the machine for $H$ time units while
 $n-h+1$ jobs are unfinished.  Averaging over the exceptional label and the
@@ -90,7 +90,7 @@ The proof first replaces a round of tests and its immediate short outcomes
 by one divisible completion module.  For a fixed tested fraction $q$, a
 fractional-knapsack envelope then forces the four-block order from the
 introduction and gives its exact quadratic cost.  To handle an arbitrary
-adaptive policy, we show that its first-touch order is a bijective
+adaptive algorithm, we show that its first-touch order is a bijective
 relabeling of the shuffled coordinate order; predictable sampling controls
 all touch prefixes at once.  A growing grid extends the bound to arbitrary
 bounded vectors, and a blind sample removes advance knowledge of the input.
@@ -98,12 +98,12 @@ bounded vectors, and a blind sample removes advance knowledge of the input.
 \subsection{The distributional benchmark}
 \label{sec:blind-benchmark}
 
-Let $D$ be a probability distribution on $[0,L]$ and let $P\sim D$.  Write
+Let $D$ be a probability distribution on $[0,L]$.  Write
 \begin{equation}
- \mu=\EE P.
+ \mu=\int p\,dD(p).
  \label{eq:blind-mean}
 \end{equation}
-Blind execution completes one unit of job mass using expected work $\mu$.
+Blind execution completes one unit of job mass using work $\mu$.
 Apply \cref{lem:maximum-density-module} to $D$, choose its threshold selector
 $g_*$, and let $\nu$ be the resulting residual measure.  The best possible
 test-module density and its reciprocal are
@@ -115,7 +115,8 @@ The selector processes all positive values below $\tau_D$ immediately after
 their tests, rejects all values above it, and may split a boundary atom.  With
 that boundary convention, put
 \[
- a=a_D(g_*),\qquad \ell=\EE[P g_*(P)\one_{P>0}].
+ a=a_D(g_*),\qquad
+ \ell=\int_{(0,L]}p g_*(p)\,dD(p).
 \]
 The identities in \cref{lem:maximum-density-module} give
 \begin{equation}
@@ -148,21 +149,20 @@ For the explicit cost, first assume no atom lies at $\tau_D$ or $\mu$, and put
  \mathcal L&=\{p<\tau_D\},&
  \mathcal M&=\{\tau_D<p<\mu\},&
  \mathcal H&=\{p>\mu\},\\
- a&=\Prob(P\in\mathcal L),&
- \ell&=\EE[P\one_{\mathcal L}],&
- \ell_M&=\EE[P\one_{\mathcal M}],\\
- d&=\Prob(P\in\mathcal H),&
- K_M&=\EE[\min(P,P')\one_{P,P'\in\mathcal M}],&
- K_H&=\EE[\min(P,P')\one_{P,P'\in\mathcal H}],
+ a&=D(\mathcal L),&
+ \ell&=\int_{\mathcal L}p\,dD(p),&
+ \ell_M&=\int_{\mathcal M}p\,dD(p),\\
+ d&=D(\mathcal H),&
+ D_M&=D|_{\mathcal M},&D_H&=D|_{\mathcal H},
 \end{align*}
-where $P,P'$ are independent with law $D$.  Put $\bar q=1-q$.  Remaining-mass
+Put $\bar q=1-q$.  Remaining-mass
 accounting gives
 \begin{align}
  F_{\mathsf{BE},D}(q)
  &= (1+\ell)\left(q-\frac{aq^2}{2}\right)
-    +q\ell_M(\bar q+qd)+\frac{q^2K_M}{2}\notag\\
+    +q\ell_M(\bar q+qd)+q^2\SPT(D_M)\notag\\
  &\quad+\mu\left(\bar q qd+\frac{\bar q^2}{2}\right)
-    +\frac{q^2K_H}{2}.
+    +q^2\SPT(D_H).
  \label{eq:blind-F}
 \end{align}
 Atoms at $\tau_D$ are split between the low module and residual stock; atoms at
@@ -171,9 +171,10 @@ holds for the resulting virtual classes.
 
 Each term in \cref{eq:blind-F} has a direct area interpretation.  During the
 test module, work $(1+\ell)dq$ reduces unfinished mass from $1$ to $1-aq$.
-The medium work $q\ell_M$ delays the untouched mass $\bar q$ and high mass $qd$, while
-$K_M$ is the internal SPT pair term.  The blind block delays all high jobs and
-itself loses mass linearly.  Finally $K_H$ is the high-tail pair term.
+The medium work $q\ell_M$ delays the untouched mass $\bar q$ and high mass
+$qd$, while $\SPT(D_M)$ is its internal divisible SPT cost.  The blind block
+delays all high jobs and itself loses mass linearly.  Finally
+$\SPT(D_H)$ is the high-tail SPT cost.
 Expansion gives the quadratic
 \begin{equation}
  F_{\mathsf{BE},D}(q)=\frac\mu2+Aq+Bq^2,
@@ -182,10 +183,10 @@ Expansion gives the quadratic
 where
 \begin{align}
  A&=1+\ell+\ell_M+\mu(d-1)
-   =1-\EE(\mu-P)^+,
+   =1-\int(\mu-p)^+\,dD(p),
  \label{eq:blind-A}\\
- B&=-\frac{a(1+\ell)}2+\ell_M(d-1)+\frac{K_M}{2}
-   +\mu\left(\frac12-d\right)+\frac{K_H}{2}.
+ B&=-\frac{a(1+\ell)}2+\ell_M(d-1)+\SPT(D_M)
+   +\mu\left(\frac12-d\right)+\SPT(D_H).
  \label{eq:blind-B}
 \end{align}
 The envelope proof below implies $B\ge0$.  In the short-test regime
@@ -235,7 +236,7 @@ Define the model envelope
 using the common envelope \cref{eq:common-fluid-envelope}.  Every fluid schedule that ultimately tests
 mass $q$ obeys this envelope, hence
 \begin{equation}
- \ALG\ge\int_0^\infty(1-\mathcal C_{\mathsf{BE},D,q}(x))\,dx.
+ \ALG\ge\Area(\mathcal C_{\mathsf{BE},D,q}).
  \label{eq:blind-envelope-lower}
 \end{equation}
 
@@ -243,7 +244,7 @@ mass $q$ obeys this envelope, hence
 \label{lem:blind-fixed-q-envelope}
 If $\tau_D<\mu$, then for every $q\in[0,1]$ the right side of
 \cref{eq:blind-envelope-lower} equals $F_{\mathsf{BE},D}(q)$ and is attained by the
-four-block fluid policy.  If $\tau_D\ge\mu$, that right side is at least
+four-block fluid algorithm.  If $\tau_D\ge\mu$, that right side is at least
 $\mu/2$ for every $q$, with equality at $q=0$.
 \end{lemma}
 
@@ -272,18 +273,18 @@ area complement $F_{\mathsf{BE},D}(q)$ is convex, proving $B\ge0$.
 \subsection{Adaptive first touches are a uniform urn}
 \label{sec:blind-adaptive-urn}
 
-The fluid proof fixed $q$, but an announced finite policy may choose whom to
+The fluid proof fixed $q$, but an announced finite algorithm may choose whom to
 touch next and when to stop testing as arbitrary functions of its history.
 The next finite lemma is the deferred-decisions statement needed to control
-such a policy.
+such an algorithm.
 
 For a size-$n$ vector whose coordinates lie among
 $0=p_0<p_1<\cdots<p_s\le L$, write $D_n$ for its empirical distribution,
-$D_{n,i}=D_n(\{p_i\})$, and $\mu_n=\EE P_n$ for $P_n\sim D_n$.
+$D_{n,i}=D_n(\{p_i\})$, and $\mu_n=\sum_i p_iD_{n,i}$.
 
 Distinguish occurrences even when their processing times coincide and fix a
-deterministic proper policy, equivalently the private seed of a randomized
-policy.  Apply \cref{lem:uniform-first-touch-event} to the $s+1$ classes with
+deterministic proper algorithm, equivalently the private seed of a randomized
+algorithm.  Apply \cref{lem:uniform-first-touch-event} to the $s+1$ classes with
 failure probability $n^{-2}$, and put
 $\Gamma_n=\max\{\Gamma_{\rm cell},\Gamma_{\rm work}\}$.  On the resulting
 event, for every touch prefix leaving at least $\delta n$ labels untouched
@@ -302,7 +303,7 @@ fraction.
 \subsection{The announced lower bound}
 \label{sec:blind-announced}
 
-Fix a policy seed.  Stop after $\lfloor(1-\delta)n\rfloor$ first touches and
+Fix an algorithm seed.  Stop after $\lfloor(1-\delta)n\rfloor$ first touches and
 let $Q_{n,\delta}$ be the number of tests completed by then, divided by $n$.
 Edit the suffix: every still-untouched job that would later be tested is
 instead executed blindly at its first original operation, and its later
@@ -355,10 +356,10 @@ $\alpha=(L+1)(\gamma_n+\delta)$, and $\beta=(s+1)\gamma_n$.  It gives
 The long-test regime uses the $\mu_n/2$ dominance part of
 \cref{lem:blind-fixed-q-envelope}; the same transfer applies.  The estimate
 is uniform in the fixed seed and therefore remains valid after averaging
-over a randomized announced policy.
+over a randomized announced algorithm.
 
 Write $\operatorname{VAL}_{\rm ann}(p)$ for the minimum expected cost of an
-announced policy under the private-shuffle convention.
+announced algorithm under the private-shuffle convention.
 
 \subsection{A growing grid and arbitrary bounded vectors}
 
@@ -371,8 +372,7 @@ cell, partition $(0,L]$ into
 bins, and round every positive value upward; let $h_n=L/K_n$ be the mesh.
 Zero preservation matters because a tested zero completes at its test.
 Write $D[p]^{\rm grid}$ for the rounded empirical distribution and
-$\mu_p^{\rm grid}=\EE P_p^{\rm grid}$ for
-$P_p^{\rm grid}\sim D[p]^{\rm grid}$.
+$\mu_p^{\rm grid}=\int p\,dD[p]^{\rm grid}(p)$.
 
 Coupling each value with its rounded value and applying
 \cref{lem:zero-preserving-transport} gives
@@ -426,14 +426,14 @@ uniformly over canonical templates $\pi$.  Together with
 
 \subsection{Removing the announcement}
 
-The universal policy first draws a uniform random permutation and blindly
+The universal algorithm first draws a uniform random permutation and blindly
 executes
 \begin{equation}
  k_n=\lceil n^{1/2}\rceil
  \label{eq:blind-pilot-size}
 \end{equation}
 sample jobs.  Their observed durations give a grid histogram $\widehat D_n$.
-The policy minimizes the canonical quadratic over every grid threshold,
+The algorithm minimizes the canonical quadratic over every grid threshold,
 blind-block insertion position, and $q\in[0,1]$, then runs the selected
 four-block template on the remaining jobs in the unused random order.
 
@@ -449,7 +449,7 @@ Let $D_n$ and $D_n^{\rm rem}$ be the full and remaining grid histograms.  Applyi
  \label{eq:blind-histogram-learning}
 \end{align}
 For a fixed canonical template, formula \cref{eq:blind-F} consists only of
-bounded one- and two-draw expectations.  Therefore, uniformly in the grid
+bounded one- and two-fold integrals.  Therefore, uniformly in the grid
 and template,
 \begin{equation}
  |F_{\mathsf{BE},D}(\pi)-F_{\mathsf{BE},E}(\pi)|
@@ -478,7 +478,7 @@ $d(D,E)=\|D-E\|_1$, $L_0=C_L$, and
 \end{equation}
 uniformly over every vector $p\in[0,L]^n$.
 
-For the converse, reveal the entries of $p$ to an arbitrary policy for free.
+For the converse, reveal the entries of $p$ to an arbitrary algorithm for free.
 The announced lower bound \cref{eq:blind-announced-lower} applies seedwise
 and, after averaging over the seed, proves
 \cref{eq:intro-blind-lower}.  This completes the proof of
@@ -488,9 +488,9 @@ and, after averaging over the seed, proves
 
 Let
 \[
- \Prob(P=0)=\frac15,\qquad
- \Prob(P=9)=\frac15,\qquad
- \Prob(P=16)=\frac35.
+ D(\{0\})=\frac15,\qquad
+ D(\{9\})=\frac15,\qquad
+ D(\{16\})=\frac35.
 \]
 Then $\mu=57/5$ and $\tau_D=5$.  Thus tested zeros are immediate, known
 nine-jobs precede the blind block, and known sixteen-jobs follow it.  Formula
@@ -501,5 +501,5 @@ nine-jobs precede the blind block, and known sixteen-jobs follow it.  Formula
 Its minimizer is $q^*=4/5$ and its value is $4.996$.  If all tested nonzero
 jobs are instead deferred until after the blind block, the best value is
 $5.04$.  The gap is a positive constant times $n^2$: the medium SPT block is
-not cosmetic, and a policy of the simpler form ``threshold, then blind, then
+not cosmetic, and an algorithm of the simpler form ``threshold, then blind, then
 all tested residuals'' is not instance optimal.

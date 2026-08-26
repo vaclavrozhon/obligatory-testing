@@ -113,15 +113,15 @@ the sense needed to pass separately to the obligatory endpoint.
 The proof combines two kinds of lower bounds.  Binary hidden-stopping
 instances give the first four branches, while a continuous capped version
 of the harmonic construction gives the mixed branch and the plateau.  Three
-explicit policies match them: raw execution, a forced-prefix uniform
+explicit algorithms match them: raw execution, a forced-prefix uniform
 threshold, and a history-dependent adaptive threshold.
-The upper-bound witness can be read from the following policy map.  The
+The upper-bound witness can be read from the following algorithm map.  The
 algorithms themselves are specified formally in
 \cref{alg:raw,alg:ute,alg:adaptive-threshold}.
 \begin{center}
 \begin{tabular}{@{}lll@{}}
 \toprule
-range & policy & parameter choice \\
+range & algorithm & parameter choice \\
 \midrule
 $0<u\le \uDet{2}$
  & \textsc{Raw} & none \\
@@ -137,8 +137,8 @@ $\uDet{5}\le u<\infty$
 \end{tabular}
 \end{center}
 
-\subsection{Policy guarantees}
-\label{sec:det-policy-guarantees}
+\subsection{Algorithm guarantees}
+\label{sec:det-algorithm-guarantees}
 
 \input{deterministic_policy_guarantees}
 

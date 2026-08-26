@@ -4,21 +4,21 @@
 The goal of this section is to prove \cref{thm:obligatory-instance}, the
 rigorous version of the ``one algorithm for every input'' statement
 \cref{thm:intro-obligatory-instance}.  The algorithm is exactly the
-growing-cutoff policy $\mathcal A_n^*$ from
+growing-cutoff algorithm $\mathcal A_n^*$ from
 \cref{sec:random-obligatory}.  The new point is that, on every bounded input,
-the policy attains the best leading cost available even to an announced
-policy.
+the algorithm attains the best leading cost available even to an announced
+algorithm.
 
 For a vector $p=(p_1,\ldots,p_n)$, we define below an explicit number
 $\PhiOT(D[p])$, using the common empirical notation
 \cref{eq:empirical-distributions}.  It is obtained by scanning the
 processing times in increasing order, choosing the prefix with the largest
 number of completions per unit of discovery work, and evaluating the
-stationary policy for that prefix.
+stationary algorithm for that prefix.
 
 \begin{theorem}[Obligatory-testing instance optimality]
 \label{thm:obligatory-instance}
-There is a single randomized nonanticipating policy $\mathcal A^*$, depending
+There is a single randomized nonanticipating algorithm $\mathcal A^*$, depending
 only on $n$ and not on the input vector, with the following property.  For every
 fixed $L<\infty$ there is a deterministic sequence
 $\eps_L(n)\to0$ such that every vector $p\in[0,L]^n$ satisfies
@@ -27,8 +27,8 @@ $\eps_L(n)\to0$ such that every vector $p\in[0,L]^n$ satisfies
  \le n^2\PhiOT(D[p])+\eps_L(n)n^2.
  \label{eq:ot-instance-upper}
 \end{equation}
-Conversely, every $p\in[0,L]^n$ and every randomized policy $\mathcal A$,
-even an announced policy, satisfy
+Conversely, every $p\in[0,L]^n$ and every randomized algorithm $\mathcal A$,
+even an announced algorithm, satisfy
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
  \ge n^2\PhiOT(D[p])-\eps_L(n)n^2.
@@ -43,25 +43,25 @@ Both estimates below are stated with the common order $O_L(n^{-1/5})$.
 \begin{theorem}[When instance optimality is impossible]
 \label{thm:ot-instance-impossibility}
 \begin{enumerate}[label=\textnormal{(\roman*)}]
-\item There is no deterministic instance-optimal policy, even when all job
-lengths lie in $[0,2]$.  More precisely, for every deterministic policy
+\item There is no deterministic instance-optimal algorithm, even when all job
+lengths lie in $[0,2]$.  More precisely, for every deterministic algorithm
 $\mathcal A$, even an announced one, and every even $n$, there is a fixed
 labeling of the input with $n/2$ zero jobs and $n/2$ length-two jobs for which
 \begin{equation}
  \ALG_{\mathcal A}\ge\frac98n^2.
  \label{eq:ot-det-not-instance-optimal}
 \end{equation}
-On the same input, an announced randomized policy $\mathcal A'$ has
+On the same input, an announced randomized algorithm $\mathcal A'$ has
 \[
  \ALG_{\mathcal A'}=n^2+\frac34n.
 \]
 Thus $\ALG_{\mathcal A}>\ALG_{\mathcal A'}+n^2/8-O(n)$.
 
 \item If job lengths are not bounded by a fixed constant, there is no
-randomized instance-optimal policy with one uniform additive $o(n^2)$ term.
-More precisely, for every randomized policy $\mathcal A$ independent of the
+randomized instance-optimal algorithm with one uniform additive $o(n^2)$ term.
+More precisely, for every randomized algorithm $\mathcal A$ independent of the
 input and every sufficiently large $n$, there is an input with lengths in
-$[0,n^2]$ and an announced randomized policy $\mathcal A'$
+$[0,n^2]$ and an announced randomized algorithm $\mathcal A'$
 such that
 \begin{equation}
  \ALG_{\mathcal A}\ge\ALG_{\mathcal A'}+\frac18n^2.
@@ -73,10 +73,10 @@ such that
 \begin{proof}
 As in the introduction, $\ALG_{\mathcal A}$ includes the expectation over
 the private randomness of $\mathcal A$.  For part~(i), write $n=2m$.
-Against the fixed deterministic policy, reveal
+Against the fixed deterministic algorithm, reveal
 length two on the first $m$ labels it tests and zero on the remaining $m$.
 As usual, replay freezes this interaction into one fixed oblivious labeling.
-If the policy does not finish, the claim is immediate.  Otherwise, let $h$
+If the algorithm does not finish, the claim is immediate.  Otherwise, let $h$
 be the number of length-two jobs completed before the first zero is tested.
 By that time all $m$ positive jobs have been tested, so at least $m+2h$ work
 has elapsed.  The first $h$ completed positive jobs contribute at least
@@ -91,9 +91,9 @@ this remaining work gives
  &=\frac92m^2+\frac12h^2+\frac32m+\frac12h
  \ge\frac98n^2.
 \end{align*}
-The comparison policy $\mathcal A'$ tests in a uniformly random order, completes zeros at
+The comparison algorithm $\mathcal A'$ tests in a uniformly random order, completes zeros at
 their tests, defers every length-two job, and finally processes the deferred
-jobs.  This is the stationary policy with the zero jobs early.  Its exact
+jobs.  This is the stationary algorithm with the zero jobs early.  Its exact
 cost identity \cref{eq:stationary-prefix-cost} gives
 \[
  \ALG_{\mathcal A'}=n^2+\frac34n.
@@ -105,7 +105,7 @@ which every job has length $H$.  For a fixed private seed, let $X_k$ be the
 number of completed jobs immediately before the $k$th test.  Every processing
 operation contributes the same $Hn(n+1)/2$ in total, regardless of its
 position.  The $k$th test delays $n-X_k$ unfinished jobs.  Hence the excess
-over the policy $\mathcal A'$ that tests and processes each job
+over the algorithm $\mathcal A'$ that tests and processes each job
 immediately satisfies
 \begin{equation}
  \ALG_{\mathcal A}-\ALG_{\mathcal A'}
@@ -128,7 +128,7 @@ therefore $X_K$ length-$H$ jobs complete before the zero.  From
  \label{eq:ot-zero-rank-completions}
 \end{equation}
 Forcing the zero job behind $X_K$ length-$H$ jobs adds $HX_K$ to the
-clairvoyant SPT lower bound.  On the other hand, an announced policy can test
+clairvoyant SPT lower bound.  On the other hand, an announced algorithm can test
 in a private random order, defer positive jobs until it finds the zero, and
 then finish the positive jobs.  Its completion order is SPT, and moving its
 unit tests away from the corresponding processing operations costs at most
@@ -164,14 +164,14 @@ Define
  \boxed{
  \PhiOT(D)
  =w_*\left(1-\frac{a_*}{2}\right)
-  +\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q).}
+  +\SPT(\nu).}
  \label{eq:ot-Phi}
 \end{equation}
 For $D=D[p]$ and a whole-occurrence maximizing prefix $E$, this is precisely
 $F_{\mathsf{OT},D[p]}(E)$ from \cref{eq:stationary-leading-coefficient}.  The next
 lemma proves both that the value is
 independent of choices at a tied atom and that it lower-bounds every fluid
-policy.
+algorithm.
 
 \begin{lemma}[Pointwise completion envelope]
 \label{lem:ot-completion-envelope}
@@ -190,7 +190,7 @@ maximum-density schedule: repeat infinitesimal full modules $g_*$ until all
 jobs have been tested, then process the residual measure $\nu$ in SPT order.
 Moreover,
 \begin{equation}
- \PhiOT(D)=\int_0^\infty(1-\mathcal C_{\mathsf{OT},D}(s))\,ds.
+ \PhiOT(D)=\Area(\mathcal C_{\mathsf{OT},D}).
  \label{eq:ot-Phi-area}
 \end{equation}
 \end{lemma}
@@ -208,11 +208,11 @@ then processes $\nu$ in SPT order, proving the pointwise assertion.  Since
 $\nu$ has mass $1-a_*$ and is supported above $\tau_D$, the common area
 formula \cref{eq:common-envelope-area} expands to
 \begin{align*}
- \int_0^\infty(1-\mathcal C_{\mathsf{OT},D}(s))\,ds
+ \Area(\mathcal C_{\mathsf{OT},D})
  &=\tau_D\left(\frac{a_*^2}{2}+a_*(1-a_*)\right)
-   +\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q)\\
+   +\SPT(\nu)\\
  &=w_*\left(1-\frac{a_*}{2}\right)
-   +\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q),
+   +\SPT(\nu),
 \end{align*}
 because $w_*=a_*\tau_D$.  This is \cref{eq:ot-Phi} and is unaffected by
 how a boundary atom is split.
@@ -235,10 +235,10 @@ In particular, if $p\in[0,L]^n$, the remainder is at most
 $(1+L)n/2$.  The announced optimum is therefore at most the claimed fluid
 value plus $O_L(n)$.
 
-\subsection{No adaptive announced policy has a better leading cost}
+\subsection{No adaptive announced algorithm has a better leading cost}
 
 Uniformly shuffle the coordinates of $p$ and fix a
-deterministic nonanticipating policy.  We may assume that it completes every
+deterministic nonanticipating algorithm.  We may assume that it completes every
 job, since otherwise the lower bound is immediate.  In the adaptive order in
 which it tests new labels, the revealed occurrences form a uniform random
 permutation $P_1,\ldots,P_n$ of the coordinates of $p$ by deferred decisions.  Equal-valued
@@ -281,18 +281,18 @@ simultaneously at every prefix,
 \end{equation}
 
 The completion horizon is at most $H=L+2$, and the immediate
-test--process policy gives $0\le\PhiOT(D^+)\le(L+1)/2$.  Apply
+test--process algorithm gives $0\le\PhiOT(D^+)\le(L+1)/2$.  Apply
 \cref{thm:completion-curve-transfer} with $\varepsilon=0$,
 $\alpha=h_n$, $\beta=(K_n+1)\gamma_n$, and $\eta=n^{-2}$.  Finally,
 zero-preserving transport \cref{lem:zero-preserving-transport} changes the
 fluid value by at most $h_n$.  Because
 $(K_n+1)\gamma_n=O(n^{-3/10}\sqrt{\ln(n+2)})$, every deterministic announced
-policy has private-shuffle expected cost at least
+algorithm has private-shuffle expected cost at least
 \begin{equation}
  n^2\PhiOT(D[p])-O_L(n^{9/5}).
  \label{eq:ot-announced-lower}
 \end{equation}
-Condition on the policy seed when applying the transfer theorem and then
+Condition on the algorithm seed when applying the transfer theorem and then
 average over the seed.  This is precisely the randomized cost under the
 input convention.
 
@@ -307,7 +307,7 @@ threshold, and fallback rules as $\mathcal A_n^*$ in
  B_n=32+n^{1/20},\qquad \eta=B_n/d.
  \label{eq:ot-learning-parameters}
 \end{equation}
-The policy privately permutes the labels, tests the first $k$, rounds
+The algorithm privately permutes the labels, tests the first $k$, rounds
 positive values upward to the $B_n$-grid, and uses the threshold closure of a
 maximum-density sample prefix.
 
@@ -349,7 +349,7 @@ Rounding each processing time upward by at most $\eta$ preserves zeros, so
 \end{equation}
 
 Conditional on the unordered sample, compare the actual sample-first
-schedule with the fully stationary policy for $\widehat J$.  The calculation
+schedule with the fully stationary algorithm for $\widehat J$.  The calculation
 in \cref{sec:random-obligatory} bounds the extra cost by
 $O_L(nk+k^2)$.  The diagonal term in the exact stationary identity is
 $O_L(n)$, and using the rounded values can only increase the comparator's

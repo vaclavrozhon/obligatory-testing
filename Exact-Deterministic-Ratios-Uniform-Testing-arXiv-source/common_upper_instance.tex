@@ -15,7 +15,7 @@ vector $p$, use the empirical distribution $D[p]$ from
 
 \begin{theorem}[Revealing-optimization instance optimality]
 \label{thm:common-upper-instance}
-For every fixed $u>0$ there exist randomized nonanticipating policies
+For every fixed $u>0$ there exist randomized nonanticipating algorithms
 $\mathcal A^*_{n,u}$, depending only on $n,u$, and a deterministic sequence
 $\eps_u(n)\to0$ such that every vector $p\in[0,u]^n$ has the following
 properties.
@@ -24,8 +24,8 @@ properties.
  \le n^2\PhiRO(D[p])+\eps_u(n)n^2.
  \label{eq:cui-upper}
 \end{equation}
-Conversely, every $p\in[0,u]^n$ and every randomized nonanticipating policy
-$\mathcal A$, even an announced policy, satisfy
+Conversely, every $p\in[0,u]^n$ and every randomized nonanticipating algorithm
+$\mathcal A$, even an announced algorithm, satisfy
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
  \ge n^2\PhiRO(D[p])-\eps_u(n)n^2.
@@ -41,7 +41,7 @@ One may take
 The proof has three layers.  First, for a fixed final tested fraction $q$, a
 completion envelope reduces every fluid schedule to an ordinary fractional
 knapsack.  Second, an adaptive first-touch trace turns every deterministic
-policy under the private shuffle into predictable sampling without
+algorithm under the private shuffle into predictable sampling without
 replacement.  One event then controls every touch prefix, so the realized
 stopping fraction can be substituted pathwise.  Finally, a growing grid and
 a sublinear sample make the result uniform over arbitrary bounded vectors
@@ -50,13 +50,14 @@ without announcing the input.
 \subsection{The fixed-fraction fluid benchmark}
 \label{sec:cui-fluid}
 
-Let $D$ initially have finite support, let $P\sim D$, and put
-$\mu=\EE P$.
+Let $D$ initially have finite support and put
+$\mu=\int p\,dD(p)$.
 A test automatically completes a zero outcome.  Apply
 \cref{lem:maximum-density-module} and choose its threshold selector $g_*$.
 Write
 \begin{equation}
- a=a_D(g_*),\qquad \ell=\EE[P g_*(P)\one_{P>0}],
+ a=a_D(g_*),\qquad
+ \ell=\int_{(0,u]}p g_*(p)\,dD(p),
  \qquad \tau_D=\frac{1+\ell}{a}.
  \label{eq:cui-tau}
 \end{equation}
@@ -106,7 +107,7 @@ of capacity one and cost $u$.
 Put
 \begin{equation}
  \ell_\nu=\sum_i p_i\nu_i=\mu-\ell,\qquad
- K_\nu=\sum_{i,j}\min\{p_i,p_j\}\nu_i\nu_j.
+ \SPT(\nu)=\frac12\sum_{i,j}\min\{p_i,p_j\}\nu_i\nu_j.
  \label{eq:cui-residual-moments}
 \end{equation}
 The common area identity \cref{eq:common-envelope-area}, specialized through
@@ -114,7 +115,7 @@ The common area identity \cref{eq:common-envelope-area}, specialized through
 \begin{equation}
  F_{\mathsf{RO},u,D}(q)
  =(1+\ell)\left(q-\frac{aq^2}{2}\right)
- +q\ell_\nu(1-q)+\frac{q^2K_\nu}{2}
+ +q\ell_\nu(1-q)+q^2\SPT(\nu)
  +\frac{u(1-q)^2}{2}.
  \label{eq:cui-F}
 \end{equation}
@@ -133,7 +134,7 @@ This is an explicit one-dimensional optimization.  In fact
 \begin{equation}
  F_{\mathsf{RO},u,D}(q)=\frac u2+Aq+Bq^2,\qquad
  A=1+\mu-u,\qquad
- B=-\frac{a(1+\ell)}2-\ell_\nu+\frac{K_\nu}2+\frac u2.
+ B=-\frac{a(1+\ell)}2-\ell_\nu+\SPT(\nu)+\frac u2.
  \label{eq:cui-quadratic}
 \end{equation}
 For each work budget, convexly combining feasible points for $q_1,q_2$
@@ -141,7 +142,7 @@ gives a feasible point for the corresponding convex combination of the two
 fractions.  Hence $\mathcal C_{\mathsf{RO},D,q}(x)$ is concave in $q$, its remaining-mass area is
 convex, and $B\ge0$.  Moreover,
 \[
- \tau_D<u\quad\Longleftrightarrow\quad\EE(u-P)>1
+ \tau_D<u\quad\Longleftrightarrow\quad\int(u-p)\,dD(p)>1
  \quad\Longleftrightarrow\quad A<0.
 \]
 Thus the minimizer is
@@ -150,16 +151,16 @@ Thus the minimizer is
  q^*=\min\{1,-A/(2B)\}\quad(B>0).
  \label{eq:cui-qstar}
 \end{equation}
-We have proved pathwise at the fluid level that a policy with realized final
+We have proved pathwise at the fluid level that an algorithm with realized final
 tested fraction $q$ has area at least
 $F_{\mathsf{RO},u,D}(q)\ge\PhiRO(D)$.
 
-\subsection{Adaptive policies and the announced lower bound}
+\subsection{Adaptive algorithms and the announced lower bound}
 \label{sec:cui-announced}
 
-We now transfer the fluid envelope to a finite policy which may choose labels
+We now transfer the fluid envelope to a finite algorithm which may choose labels
 and its stopping time adaptively.  Equal-valued jobs are first distinguished
-as occurrence tokens, and we fix the private seed of a completing policy.
+as occurrence tokens, and we fix the private seed of a completing algorithm.
 For the present finite-support law, take zero and the $K=s$ positive atoms as
 the cells, with masses $d_j$.
 Apply \cref{lem:uniform-first-touch-event} with failure probability $n^{-2}$,
@@ -231,13 +232,13 @@ Apply \cref{thm:completion-curve-transfer} directly to the rounded grid, with
 $\alpha=h_n$, $\beta=(K_n+1)\gamma_n$, $H=1+u$, and
 $B=u/2$.  Together with the suffix edit and
 \cref{eq:cui-rounding-stability,eq:cui-grid-error}, it proves that every
-announced policy has private-shuffle cost at least
+announced algorithm has private-shuffle cost at least
 \begin{equation}
  n^2\PhiRO(D[p])
  -O_u\!\left(n^{11/6}\sqrt{\ln(n+2)}\right).
  \label{eq:cui-announced-lower}
 \end{equation}
-Condition on the policy seed when applying the transfer theorem and then
+Condition on the algorithm seed when applying the transfer theorem and then
 average over the seed.  This proves \cref{eq:cui-lower} under the input
 convention.
 
@@ -259,7 +260,7 @@ where the template $\pi$ records the low prefix and $q$, and
 $F_{\mathsf{RO},u,D}(\pi)$ is the right-hand side of \cref{eq:cui-F}.
 To verify this, expand the testing phase into one-job terms
 and relative-order kernels for pairs of tested jobs; expand the residual SPT
-block into its work against raw jobs and its minimum kernel; and add the
+block into its work against raw jobs and its internal SPT cost; and add the
 exact raw-block cost
 $u(n-N_{\rm test})(n-N_{\rm test}+1)/2$.  For distinct occurrences the finite
 coefficients
@@ -294,8 +295,8 @@ The sampling-without-replacement histogram estimate
  \label{eq:cui-histogram}
 \end{equation}
 For a fixed template, the quantities $a,\ell,\ell_\nu$ in
-\cref{eq:cui-F} are bounded one-draw expectations and $K_\nu$ is a bounded
-two-draw expectation.  Inserting an intermediate product measure shows
+\cref{eq:cui-F} are bounded one-fold integrals and $\SPT(\nu)$ is a bounded
+double integral.  Inserting an intermediate product measure shows
 \begin{equation}
  |F_{\mathsf{RO},u,D}(\pi)-F_{\mathsf{RO},u,E}(\pi)|
  \le4(u+1)\|D-E\|_1,

@@ -32,7 +32,7 @@ Obligatory-testing impossibility,
 \cref{thm:ot-instance-impossibility}
  & \path{ObligatoryInstance.deterministic_balanced_cost_lower};
    \path{finiteSeed_exists_operational_quadratic_gap}
- & The adversarial-policy side of both parts is end-to-end.  The deterministic proof includes adaptive revelation,
+ & The adversarial-algorithm side of both parts is end-to-end.  The deterministic proof includes adaptive revelation,
    freezing to one balanced labeled input, termination, and the sharp
    $9n^2/8$ cost bound.  The unbounded randomized impossibility is also
    end-to-end for finite private seeds: literal all-long and one-zero runs
@@ -66,14 +66,14 @@ Obligatory-testing instance optimality,
    density certificate and the complete finite fractional pointwise envelope,
    and identifies the exact uniform cost of the announced stationary
    operation word, including its linear diagonal remainder.  The lower
-   transfer is operational: every completing adaptive test-only policy is
+   transfer is operational: every completing adaptive test-only algorithm is
    reindexed by its first-touch permutation, every literal prefix is bounded
    by the rounded completion envelope, the envelope is integrated into the
    actual completion cost, and finite Yao selects one fixed oblivious
    labeling for every finite private-seed family.  The checked block-area
    benchmark is identified with the stationary maximum-density formula.
    The two model-independent transfer principles are also checked.  The
-   growing-cutoff learner is now a literal completing transcript-only policy;
+   growing-cutoff learner is now a literal completing transcript-only algorithm;
    its variable-grid density certificate, bounded-input exclusion of fallback,
    exact-once completion invariant, and the model-specific
    $3(L+2)$ histogram stability estimate are checked.  Lean also constructs
@@ -92,7 +92,7 @@ Blind-execution results,
  & \path{boundedUniform_blindPilot_concrete_rate};
    \path{UnboundedOperational.no_finite_ratio_at_quadratic_scale_operational}
  & End-to-end uniform $o_L(n^2)$ comparison with every complete announced
-   policy; the checked rate is slower than the paper's rate.  The unbounded
+   algorithm; the checked rate is slower than the paper's rate.  The unbounded
    impossibility is also end-to-end: the all-zero first-touch order is
    extracted from each literal transcript, lockstep causality preserves the
    exceptional label's blind rank, suffix accounting charges its actual
@@ -134,7 +134,7 @@ Revealing-optimization instance and randomized curve,
    completion-area and pilot-learning transfer is checked abstractly.  For the
    universal upper bound, the model-correct finite grid objective, its uniform
    histogram stability, empirical minimization, the literal mixed
-   test/process/raw quota policy, completion-label permutation, and the finite
+   test/process/raw quota algorithm, completion-label permutation, and the finite
    random-placement kernel replacement are also checked.  On
    the lower side an exact finite Bellman induction now covers every
    adaptive test--raw--process decision tree and both attaining binary
@@ -151,7 +151,7 @@ Revealing-optimization instance and randomized curve,
    actual run cost satisfies the finite pilot-learning bound.  The bounded
    common-upper instance theorem is now assembled around one raw-block
    benchmark: revealing raw timings are accounted exactly, every completing
-   adaptive observed policy satisfies the integrated completion-envelope
+   adaptive observed algorithm satisfies the integrated completion-envelope
    lower bound, finite Yao fixes one placement before the competitor's seed,
    and the literal learned upper meets the same benchmark.  The all-zero
    branch is discharged by an exact completion triangle.  With
@@ -171,7 +171,7 @@ Blind-optimization results,
    \path{RandomizedCompiler.exists_binary_mass_operational_ratio_tendsto_curve}
  & The deterministic counterexample and exact deterministic curve are
    end-to-end, including replay, adaptive hidden stopping, completing
-   policies, and finite linear remainders.  The randomized upper is checked
+   algorithms, and finite linear remainders.  The randomized upper is checked
    for literal independent pilot/main orders, with without-replacement
    learning error, observable threshold, exact finite offline comparison,
    and explicit remainder; each private seed is now a literal completing

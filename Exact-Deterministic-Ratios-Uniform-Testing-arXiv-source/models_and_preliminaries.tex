@@ -70,6 +70,7 @@ offline optimum that knows all processing times.  We omit algorithm
 subscripts or instance arguments when they are clear.
 
 \subsection{Input, information and adversaries}
+\label{par:input-convention}
 
 The deterministic results use the usual adversarial inputs.  The
 randomized results use an \emph{oblivious} adversary: the processing-time
@@ -80,7 +81,7 @@ adversary.  For a randomized algorithm, this vector is then relabeled by a
 uniform permutation.  We abbreviate the expectation over this shuffle and
 all further private randomness by $\EE\ALG_{\mathcal A}(p)$.  Thus randomized
 performance depends only on the entries of $p$, not on their displayed
-order.  An \emph{announced} policy is additionally given the multiset
+order.  An \emph{announced} algorithm is additionally given the multiset
 $\{p_1,\ldots,p_n\}$, but not its shuffled assignment to labels.
 
 We write
@@ -151,7 +152,7 @@ the first two formulas.  Splitting the double sum into its diagonal and the
 two orientations of every unordered pair gives the symmetric form.
 \end{proof}
 
-\subsection{Stationary prefix policies}
+\subsection{Stationary prefix algorithms}
 
 We isolate the random-order identity used by several revealing arguments.
 For $p=(p_1,\ldots,p_n)$, a set $E\subseteq[n]$ is a
@@ -160,20 +161,27 @@ outside it.  Suppose that $E$ contains all zero jobs, put $T=[n]\setminus E$,
 and use the normalized quantities
 \begin{equation}
  e=|E|,\quad a=\frac en,\quad h=1-a,\quad
- \ell_E=\frac1n\sum_{i\in E}p_i,\quad
- K_X=\frac1{n^2}\sum_{i,j\in X}\min\{p_i,p_j\}.
+ \ell_X=\frac1n\sum_{i\in X}p_i\quad(X\subseteq[n]).
  \label{eq:stationary-prefix-notation}
 \end{equation}
-    For independent $P,P'$ with law $D$, put
-    $K(D)\defeq\EE\min\{P,P'\}$.  The prefix property gives
+For any block $X\subseteq[n]$, let
 \begin{equation}
- K(D[p])=K_E+2h\ell_E+K_T.
- \label{eq:stationary-kernel-split}
+ \SPT(X)\defeq
+ \sum_{i\in X}p_i
+ +\sum_{\substack{i,j\in X\\i<j}}\min\{p_i,p_j\}
+ \label{eq:spt-block-cost}
+\end{equation}
+be the exact cost of processing that block in shortest-processing-time
+(SPT) order.  The prefix property gives the deterministic split
+\begin{equation}
+ \SPT([n])=\SPT(E)+n^2h\ell_E+\SPT(T).
+ \label{eq:stationary-spt-split}
 \end{equation}
 Define its stationary leading coefficient by
 \begin{equation}
  F_{\mathsf{OT},D[p]}(E)
- = (1+\ell_E)\left(1-\frac a2\right)+\frac{K_T}{2}.
+ = (1+\ell_E)\left(1-\frac a2\right)
+   +\frac{\SPT(T)}{n^2}-\frac{\ell_T}{2n}.
  \label{eq:stationary-leading-coefficient}
 \end{equation}
 
@@ -181,7 +189,7 @@ Define its stationary leading coefficient by
 \label{lem:stationary-prefix-cost}
 Test all jobs in a uniformly random order, process a positive $E$-job
 immediately after its test, defer every $T$-job, and finally process $T$ in
-SPT order.  The resulting stationary policy satisfies
+SPT order.  The resulting stationary algorithm satisfies
 \begin{equation}
  \EE\ALG_{\Stat}(p,E)
  =n^2F_{\mathsf{OT},D[p]}(E)+\frac{e+\sum_i p_i}{2}.
@@ -201,8 +209,7 @@ precedes it with probability $1/2$, so all $E$-jobs contribute
 \end{equation}
 Every $T$-job sees the common offset $W$, and the final SPT phase contributes
 \begin{equation}
- (n-e)W+\sum_{i\in T}p_i
- +\sum_{\substack{i<j\\i,j\in T}}\min\{p_i,p_j\}.
+ (n-e)W+\SPT(T).
  \label{eq:stationary-late-cost}
 \end{equation}
 Adding the two displays and collecting the diagonal terms gives
@@ -233,14 +240,13 @@ lengths should be included.
 Let $D$ be a distribution of job lengths with finite mean.  We call one such
 combined operation a \emph{test module}: test one unit mass
 of jobs and immediately process a chosen fraction of each positive length
-class.  Let $D$ be the distribution of job lengths and let $P\sim D$.
-Write $g(p)\in[0,1]$ for the fraction of the length-$p$ class processed
+class.  Write $g(p)\in[0,1]$ for the fraction of the length-$p$ class processed
 immediately.  The module completes mass
 $a_D(g)$ and uses work $w_D(g)$, where
 \begin{equation}
- a_D(g)\defeq D(\{0\})+\EE[g(P)\one_{P>0}],
+ a_D(g)\defeq D(\{0\})+\int_{(0,\infty)}g(p)\,dD(p),
  \qquad
- w_D(g)\defeq 1+\EE[P g(P)\one_{P>0}].
+ w_D(g)\defeq 1+\int_{(0,\infty)}p g(p)\,dD(p).
  \label{eq:common-module-aw}
 \end{equation}
 The initial $1$ in $w_D(g)$ is the work of testing the whole mass.  Zero
@@ -258,7 +264,7 @@ makes this self-consistency precise.
 \label{lem:maximum-density-module}
 There is a unique $\tau_D\ge1$ satisfying
 \begin{equation}
-                         \EE(\tau_D-P)^+=1.
+ \int_{[0,\infty)}(\tau_D-p)^+\,dD(p)=1.
  \label{eq:common-threshold-equation}
 \end{equation}
 Choose $g_*$ to select every positive $p<\tau_D$, reject every $p>\tau_D$,
@@ -273,16 +279,20 @@ $a_*=a_D(g_*)$ and $w_*=w_D(g_*)$.  Then
 \end{lemma}
 
 \begin{proof}
-The function $h(t)=\EE(t-P)^+$ is continuous and nondecreasing, satisfies
-$h(0)=0$, and tends to infinity because $h(t)\ge t-\EE P$.  Once positive it
+The function $h(t)=\int(t-p)^+\,dD(p)$ is continuous and nondecreasing,
+satisfies $h(0)=0$, and tends to infinity because
+$h(t)\ge t-\int p\,dD(p)$.  Once positive it
 is strictly increasing, so $h(t)=1$ has a unique solution; $h(t)\le t$ gives
 $\tau_D\ge1$.
 
 For an arbitrary rule $g$,
 \[
- \tau_D a_D(g)-\EE[P g(P)\one_{P>0}]
- =\tau_D D(\{0\})+\EE[(\tau_D-P)g(P)\one_{P>0}]
- \le\EE(\tau_D-P)^+=1.
+ \begin{aligned}
+  \tau_D a_D(g)-\int_{(0,\infty)}p g(p)\,dD(p)
+   &=\tau_D D(\{0\})
+     +\int_{(0,\infty)}(\tau_D-p)g(p)\,dD(p)\\
+   &\le\int_{[0,\infty)}(\tau_D-p)^+\,dD(p)=1.
+ \end{aligned}
 \]
 This is the dual inequality in \cref{eq:common-density-dual}.  The threshold
 rule $g_*$ attains equality because it keeps exactly the terms with
@@ -334,6 +344,18 @@ $v_k$ per completed job.  A budget $x$ can be divided among these kinds of
 work.  As in shortest-processing-time scheduling, the cheapest work per
 completion should come first.
 
+For a completion curve $C$, write
+\begin{equation}
+ \Area(C)\defeq\int_0^\infty(1-C(x))\,dx
+ \label{eq:completion-curve-area}
+\end{equation}
+for the area below its unfinished-mass curve.  For any finite nonnegative
+measure $\xi$ of block lengths, define its divisible SPT cost by
+\begin{equation}
+ \SPT(\xi)\defeq
+ \frac12\iint\min\{v,w\}\,d\xi(v)d\xi(w).
+ \label{eq:divisible-spt-cost}
+\end{equation}
 Formally, let $\mathcal M=\sum_k c_k\delta_{v_k}$ describe finitely many such
 blocks, where $c_k\ge0$ and $\sum_k c_k=1$.  Its completion curve is
 \begin{equation}
@@ -351,10 +373,9 @@ work $x$, its area is the normalized total completion cost.
 \begin{lemma}[Divisible SPT area]
 \label{lem:divisible-spt-area}
 The curve $K_{\mathcal M}$ processes the items in nondecreasing order of
-$v_k$.  If $V,V'$ are independent with law $\mathcal M$, then
+$v_k$, and its area is the divisible SPT cost:
 \begin{equation}
- \int_0^\infty\bigl(1-K_{\mathcal M}(x)\bigr)\,dx
- =\frac12\EE\min\{V,V'\}.
+ \Area(K_{\mathcal M})=\SPT(\mathcal M).
  \label{eq:divisible-spt-area}
 \end{equation}
 \end{lemma}
@@ -416,11 +437,9 @@ Let $a_*,\tau_D$, and the residual mass $\nu$ be defined above.  Then
 \end{equation}
 Consequently,
 \begin{equation}
- \int_0^\infty\bigl(1-\mathcal C^v_{D,q}(x)\bigr)\,dx
- =\frac12\EE\min\{V,V'\},
+ \Area(\mathcal C^v_{D,q})=\SPT(\mathcal M_{D,q,v}),
  \label{eq:common-envelope-area}
 \end{equation}
-where $V,V'$ are independent with law $\mathcal M_{D,q,v}$.
 \end{lemma}
 
 \begin{proof}
@@ -456,7 +475,7 @@ formula follows from \cref{lem:divisible-spt-area}.
 \label{lem:zero-preserving-transport}
 Suppose distributions $D,D'$ admit a coupling $(P,P')$ such that
 $P=0$ if and only if $P'=0$ and $|P-P'|\le h$ almost surely.  Transporting
-the same fluid policy through this coupling preserves all completion events
+the same fluid algorithm through this coupling preserves all completion events
 and changes accumulated processing work by at most $h$.  Consequently, each
 model-specific fluid value $\Phi$ defined below satisfies
 \begin{equation}
@@ -473,13 +492,13 @@ every prefix, the total mass that has received processing is at most one, so
 replacing its processing times changes cumulative work by at most $h$.  One
 unfinished-mass curve is therefore contained in a horizontal $h$-shift of
 the other, and its area changes by at most $h$.  Taking the infimum over
-policies gives one inequality; exchanging $D,D'$ gives the other.
+algorithms gives one inequality; exchanging $D,D'$ gives the other.
 \end{proof}
 
 \subsection{Competitive-ratio conventions}
 
 Every asymptotic statement in this paper allows a uniform additive
-$o(n^2)$ term.  Formally, a policy family $\mathcal A$ has asymptotic
+$o(n^2)$ term.  Formally, an algorithm family $\mathcal A$ has asymptotic
 competitive ratio at most $R$ if there is a deterministic sequence
 $\eps(n)\to0$ such that every $n$-job instance satisfies
 \begin{equation}
@@ -487,8 +506,8 @@ $\eps(n)\to0$ such that every $n$-job instance satisfies
  \le R\OPT(I)+\eps(n)n^2.
  \label{eq:cr-infty}
 \end{equation}
-For a deterministic policy the expectation is omitted.  The optimal ratio
-in a model is the infimum of such $R$ over all admissible policy families.
+For a deterministic algorithm the expectation is omitted.  The optimal ratio
+in a model is the infimum of such $R$ over all admissible algorithm families.
 
 In obligatory testing every effective length is at least one, and in either
 optimization model it is at least $\min\{u,1\}$.  Hence
@@ -511,7 +530,7 @@ $\EE Y=\int_0^\infty\Prob(Y\ge t)\,dt$.
 
 \paragraph{Deferred decisions.}
 Suppose the coordinates of a fixed vector $p$ are assigned uniformly to the
-public job labels by the private shuffle.  Even if a policy chooses the next untouched label from
+public job labels by the private shuffle.  Even if an algorithm chooses the next untouched label from
 everything it has seen so far, the processing time behind that label is
 uniform among the remaining occurrences.  Repeating this observation shows
 that the processing times encountered at first touch form a uniform random
@@ -521,8 +540,8 @@ copies when making this argument.
 The action chosen at a first touch is determined before the processing time
 behind that label is exposed.  It can therefore be used as a predictable
 selector in the sampling bounds below.  If the chosen action does not reveal
-the processing time to the policy, we may still expose it afterwards for the
-analysis; this does not change the policy's decisions.
+the processing time to the algorithm, we may still expose it afterwards for the
+analysis; this does not change the algorithm's decisions.
 
 We next record the concentration bounds applied to the resulting random
 orders.  Chernoff bounds handle the few places where genuinely independent
@@ -600,7 +619,7 @@ $\EE|\widehat p_j-p_j|\le\sqrt{p_j/k}$.  Summing over the classes and using
 $\sum_j\sqrt{p_j}\le\sqrt d$ proves the claim.
 \end{proof}
 
-An adaptive policy may stop at a data-dependent time.  We therefore also
+An adaptive algorithm may stop at a data-dependent time.  We therefore also
 need one event that controls every class at every possible prefix.
 
 \begin{lemma}[Uniform prefix histogram bounds]
@@ -652,9 +671,9 @@ We use the classical forms due to Doob~\cite{Doob1953} and
 Azuma~\cite{Azuma1967}; the maximal version of the latter follows by applying
 the exponential-supermartingale proof at the first crossing time.
 
-The next lemma models an adaptive policy reading a randomly permuted fixed
+The next lemma models an adaptive algorithm reading a randomly permuted fixed
 input.  The vector $X_k$ records the statistics of the $k$th touched job,
-while the predictable weight $A_k$ records whether the policy selects that
+while the predictable weight $A_k$ records whether the algorithm selects that
 job before seeing its value.  The lemma says that such adaptive selection
 cannot systematically bias the sample: every selected prefix remains close
 to the corresponding population average, simultaneously over all possible
@@ -774,7 +793,7 @@ the unselected jobs is also close to its expectation.
 Fix values $p_1,\ldots,p_n\in[0,L]$, partition their occurrence tokens into
 $s+1$ cells with empirical masses $d_0,\ldots,d_s$, and put
 $\mu=n^{-1}\sum_i p_i$.  Place the tokens uniformly on the public labels,
-fix a deterministic policy, and let $X_k$ be the value encountered at first
+fix a deterministic algorithm, and let $X_k$ be the value encountered at first
 touch $k$.  If $A_k$ is the predictable indicator that this touch uses the
 revealing mode, then for every $\delta,\eta\in(0,1)$, with probability at
 least $1-\eta$, simultaneously for every $m\le(1-\delta)n$,
@@ -795,7 +814,7 @@ where
  \Gamma_{\rm work}
   &=(1+\delta^{-1})E_{n,1,L,\eta/2}.
 \end{align*}
-The statement remains true after conditioning on an independent policy seed.
+The statement remains true after conditioning on an independent algorithm seed.
 \end{lemma}
 
 \begin{proof}
@@ -824,13 +843,12 @@ where $N_{\mathcal A}(t)$ is the number of jobs completed by time $t$.
 Here $\alpha$ is a small error in work and $\beta$ is a small error in
 completed mass.
 
-For an input law $D$ and a family $\Pi$ of fluid policy templates, let
+For an input law $D$ and a family $\Pi$ of fluid algorithm templates, let
 $\mathcal C_{D,\pi}(x)$ be the largest mass that template $\pi$ can complete
 using work $x$.  A template records only the few fluid parameters chosen by
-the policy, such as the tested fraction $q$.  Define
+the algorithm, such as the tested fraction $q$.  Define
 \begin{equation}
- F_D(\pi)\defeq
- \int_0^\infty\bigl(1-\mathcal C_{D,\pi}(x)\bigr)\,dx,
+ F_D(\pi)\defeq\Area(\mathcal C_{D,\pi}),
  \qquad
  \Phi(D)\defeq\inf_{\pi\in\Pi}F_D(\pi).
  \label{eq:transfer-fluid-values}
@@ -952,23 +970,23 @@ If $\Prob(G^c)\le\eta$, then
 Total completion time is the area under the unfinished-job curve.  On $G$,
 \cref{eq:transfer-completion-bound} and the fact that the fluid curve is one
 after $H$ give
-\begin{align*}
+\[
  \frac{\ALG_{\widetilde{\mathcal A}}}{n^2}
- &\ge\int_0^H
-   \bigl(1-\mathcal C_{D,\pi}(x+\alpha)-\beta\bigr)\,dx\\
- &\ge F_D(\pi)-\alpha-H\beta
+ \ge F_D(\pi)-\alpha-H\beta
  \ge\Phi(D)-\alpha-H\beta.
-\end{align*}
+\]
+Indeed, the horizontal shift loses area at most $\alpha$, and the vertical
+error loses at most $H\beta$.
 Use \cref{eq:transfer-edit-cost}, average over $G$, and use nonnegativity on
 $G^c$.  The lost factor is at most $\eta\Phi(D)\le\eta B$.
 \end{proof}
 
-For randomized lower bounds, we apply the theorem after fixing the policy's
+For randomized lower bounds, we apply the theorem after fixing the algorithm's
 private seed and then average over that seed.  The private-shuffle average is
 already part of the cost by the input convention; \cref{lem:finite-yao}
 additionally yields a fixed-labeling version when desired.
 
-\subsection{Learning a fluid policy from a pilot sample}
+\subsection{Learning a fluid algorithm from a pilot sample}
 
 The preceding subsection transfers fluid lower bounds to finite schedules.
 For instance-optimal upper bounds we need a different approximation: use a
