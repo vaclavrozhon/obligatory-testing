@@ -392,7 +392,6 @@ $M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
 
 
 \noindent
-\begin{minipage}[t]{0.485\textwidth}
 \begin{algorithm}[H]
 \caption{Instance-optimal blind optimization}
 \label{alg:intro-blind-optimization}
@@ -403,15 +402,6 @@ and let $\widehat\mu$ be the mean observed length.
 \State Otherwise run every remaining job raw for time $u$.
 \end{algorithmic}
 \end{algorithm}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.485\textwidth}
-\vspace{0pt}
-\centering
-\input{blind_optimization_curve_tikz}
-\captionof{figure}{The exact deterministic and randomized ratios for blind
-optimization; see \cref{thm:bo-det-curve,thm:bo-curve} for their formulas.}
-\label{fig:intro-bo-curve}
-\end{minipage}
 
 More precisely, if $\mu_M$ is the mean optimized length in $M$, the best
 possible leading value is
@@ -551,8 +541,6 @@ The exact formulas and matching constructions are in
 
 [tady bud trochu specifictejsi jak se spocte threshold a q, at je to podobne podrobne jako algoritmy nad tim]
 \noindent
-\begin{minipage}[t]{0.485\textwidth}
-\vspace{0pt}
 \begin{algorithm}[H]
 \caption{Instance-optimal revealing-optimization policy}
 \label{alg:intro-common-upper}
@@ -565,15 +553,7 @@ observed lengths to estimate the input distribution.
 \State Run every untouched job raw for time $u$.
 \end{algorithmic}
 \end{algorithm}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.485\textwidth}
-\vspace{0pt}
-\centering
-\input{randomized_curve_tikz}
-\captionof{figure}{The exact randomized revealing-optimization ratio as a
-function of the raw execution time $u$.}
-\label{fig:intro-curves-rand}
-\end{minipage}
+
 
 Notice that the curves in \cref{fig:intro-curves-det,fig:intro-curves-rand} are not
 monotone.  This is not a contradiction.  For very small $u$, testing is
