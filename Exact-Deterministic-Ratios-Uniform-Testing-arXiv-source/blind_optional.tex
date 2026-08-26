@@ -318,10 +318,14 @@ let $Q_{n,\delta}$ be the number of tests completed by then, divided by $n$.
 Edit the suffix: every still-untouched job that would later be tested is
 instead executed blindly at its first original operation, and its later
 processing record is deleted.  At most $\delta n+O(1)$ jobs and three
-operations per affected job change.  The bounded suffix-edit lemma
-\cref{lem:bounded-suffix-edit}, with $W=L+1$, gives
+operations per affected job change.  Write completion cost as operation
+length times the number of unfinished jobs.  The changed operations affect
+the cost by $O((L+1)(\delta n^2+n))$; during every unchanged operation the
+two unfinished-job counts differ by at most $\delta n+O(1)$, and the total
+work is at most $(L+1)n$.  Thus
 \begin{equation}
- O((L+1)\delta n^2).
+ \ALG_{\rm original}\ge
+ \ALG_{\rm edited}-O((L+1)(\delta n^2+n)).
  \label{eq:blind-suffix-edit}
 \end{equation}
 The edited schedule performs exactly $Q_{n,\delta}n$ tests.
@@ -345,8 +349,11 @@ $\delta n+O(1)$ jobs give
  \le x+(L+1)(\gamma_n+\delta).
  \label{eq:blind-work-repair}
 \end{equation}
-Thus all hypotheses of \cref{lem:cell-capacity-repair} hold with
-$\alpha=(L+1)(\gamma_n+\delta)$, and it gives
+Set $c_i'=(c_i-\gamma_n)^+$.  We also have $t\le q$ and $b\le1-q$, so
+$t,b,c_i'$ satisfy the constraints defining
+$\mathcal C_{\mathsf{BE},D_n,q}$ at work
+$x+(L+1)(\gamma_n+\delta)$.  Replacing $z,c_i$ by
+$D_{n,0}t,c_i'$ removes at most $(s+1)\gamma_n$ completed mass.  Therefore
 \begin{equation}
  \text{completed fraction by }x
  \le \mathcal C_{\mathsf{BE},D_n,q}(x+(L+1)(\gamma_n+\delta))
@@ -354,21 +361,19 @@ $\alpha=(L+1)(\gamma_n+\delta)$, and it gives
  \label{eq:blind-envelope-repair}
 \end{equation}
 The envelope reaches completed mass one by normalized work at most $H=L+1$,
-and pure blind execution gives
-$0\le\PhiBE(D_n)\le L/2$.  Apply
-\cref{thm:completion-curve-transfer} with the suffix-edit error from
-\cref{eq:blind-suffix-edit},
-$\alpha=(L+1)(\gamma_n+\delta)$, and $\beta=(s+1)\gamma_n$.  It gives
+so integrating \cref{eq:blind-envelope-repair} loses at most
+$(L+1)(\gamma_n+\delta)+H(s+1)\gamma_n$ from its fluid area.  By
+\cref{lem:blind-fixed-q-envelope}, this area is
+$F_{\mathsf{BE},D_n}(q)$ when $\tau_{D_n}<\mu_n$ and is at least
+$\mu_n/2$ otherwise; in either case it is at least $\PhiBE(D_n)$.  The
+sampling event fails with probability at most $n^{-2}$, and pure blind
+execution gives $0\le\PhiBE(D_n)\le L/2$.  Averaging and using
+\cref{eq:blind-suffix-edit} now gives
 \begin{equation}
- \frac{\ALG_{\mathcal A}(p)}{n^2}
- \ge F_{\mathsf{BE},D_n}(Q_{n,\delta})
-   -O_{L,s}(\gamma_n+\delta+1/n)
+ \frac{\EE\ALG_{\mathcal A}(p)}{n^2}
  \ge\PhiBE(D_n)-O_{L,s}(\gamma_n+\delta+1/n).
  \label{eq:blind-announced-finite-support}
 \end{equation}
-When $\tau_D\ge\mu_n$, use the $\mu_n/2$ lower bound from
-\cref{lem:blind-fixed-q-envelope}; the preceding application of
-\cref{thm:completion-curve-transfer} applies with the same error parameters.
 The estimate
 is uniform in the fixed seed and therefore remains valid after averaging
 over a randomized announced algorithm.
@@ -399,9 +404,11 @@ This avoids any assumption that the numerical optimizer or threshold is
 stable under rounding.
 
 Apply \cref{lem:uniform-first-touch-event} to all $K_n+1$ cells and take
-$\delta_n=n^{-1/6}$.  The model-specific blind-work discrepancy supplies the
-horizontal error; \cref{lem:cell-capacity-repair} supplies the vertical one.
-After rounding, both are bounded by
+$\delta_n=n^{-1/6}$.  At any prefix of the edited schedule, subtracting
+$\Gamma_n/n$ from the completed mass in each positive class makes all class
+capacities exact.  The blind-work discrepancy, the edited suffix, and upward
+rounding shift normalized work by at most the same order.  Hence both the
+horizontal work error and the total removed completion mass are bounded by
 \begin{equation}
  \zeta_n=O_L\!\left(
   \frac{(K_n+1)\Gamma_n}{n}+h_n+\delta_n\right)
@@ -410,10 +417,12 @@ After rounding, both are bounded by
 \end{equation}
 Consequently the rounded completion curve is bounded by
 $\mathcal C_{\mathsf{BE},D[p]^{\rm grid},q}(x+\zeta_n)+\zeta_n$.
-Apply \cref{thm:completion-curve-transfer} with $H=L+1$, $B=L/2$, the
-suffix-edit error, and the failure probability from the first-touch sampling
-lemma.  Together
-with \cref{eq:blind-rounding-stability}, this yields the announced lower bound
+Integrating this inequality up to normalized work $H=L+1$ loses at most
+$(H+1)\zeta_n$ from the rounded fluid area.  The first-touch event fails with
+probability $n^{-2}$, whose contribution is at most
+$n^{-2}L/2$, and the suffix edit has the cost established in
+\cref{eq:blind-suffix-edit}.  Together with
+\cref{eq:blind-rounding-stability}, this yields the announced lower bound
 \begin{equation}
  \frac{\operatorname{VAL}_{\rm ann}(p)}{n^2}
  \ge\PhiBE(D[p])-O_L(n^{-1/6}\sqrt{\ln(n+2)}).

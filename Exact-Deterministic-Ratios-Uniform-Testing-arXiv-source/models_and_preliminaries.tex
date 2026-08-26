@@ -168,19 +168,7 @@ the first two formulas.  Separating the terms with $i=j$ from the two
 orientations of every pair with $i\ne j$ gives the symmetric form.
 \end{proof}
 
-\subsection{Stationary prefix algorithms}
-
-We isolate the random-order identity used by several revealing arguments.
-For $p=(p_1,\ldots,p_n)$, a set $E\subseteq[n]$ is a
-\emph{processing-time prefix} if every value in $E$ is at most every value
-outside it.  Suppose that $E$ contains all zero jobs, put $T=[n]\setminus E$,
-and use the normalized quantities
-\begin{equation}
- e=|E|,\quad a=\frac en,\quad h=1-a,\quad
- \ell_X=\frac1n\sum_{i\in X}p_i\quad(X\subseteq[n]).
- \label{eq:stationary-prefix-notation}
-\end{equation}
-For any block $X\subseteq[n]$, let
+For later pair calculations, if $X\subseteq[n]$, we write
 \begin{equation}
  \SPT(X)\defeq
  \sum_{i\in X}p_i
@@ -188,52 +176,8 @@ For any block $X\subseteq[n]$, let
  \label{eq:spt-block-cost}
 \end{equation}
 be the exact cost of processing that block in shortest-processing-time
-(SPT) order.  The prefix property gives the deterministic split
-\begin{equation}
- \SPT([n])=\SPT(E)+n^2h\ell_E+\SPT(T).
- \label{eq:stationary-spt-split}
-\end{equation}
-Define its stationary leading coefficient by
-\begin{equation}
- F_{\mathsf{OT},D[p]}(E)
- = (1+\ell_E)\left(1-\frac a2\right)
-   +\frac{\SPT(T)}{n^2}-\frac{\ell_T}{2n}.
- \label{eq:stationary-leading-coefficient}
-\end{equation}
-We call the algorithm below \emph{stationary} because the set $E$ and the
-immediate/deferred rule are fixed before the random test order is exposed;
-the rule does not change with the observed history.
-
-\begin{lemma}[Stationary prefix pair identity]
-\label{lem:stationary-prefix-cost}
-Test all jobs in a uniformly random order, process a positive $E$-job
-immediately after its test, defer every $T$-job, and finally process $T$ in
-SPT order.  The resulting stationary algorithm satisfies
-\begin{equation}
- \EE\ALG_{\Stat}(p,E)
- =n^2F_{\mathsf{OT},D[p]}(E)+\frac{e+\sum_i p_i}{2}.
- \label{eq:stationary-prefix-cost}
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-Let $W=n+\sum_{i\in E}p_i$ and
-$W_E=e+\sum_{i\in E}p_i$.  The initial random test phase has one block per job: an
-$E$-block has length $1+p_i$ and completes its job, whereas a $T$-block is
-its unit test and completes no job.  For an $E$-job, every other block
-precedes it with probability $1/2$, so all $E$-jobs contribute
-\begin{equation}
- \frac{eW+W_E}{2}.
- \label{eq:stationary-early-cost}
-\end{equation}
-Every $T$-job sees the common offset $W$, and the final SPT phase contributes
-\begin{equation}
- (n-e)W+\SPT(T).
- \label{eq:stationary-late-cost}
-\end{equation}
-Adding the two displays and collecting the one-job contributions gives
-\cref{eq:stationary-prefix-cost}.
-\end{proof}
+(SPT) order.  Thus \(\SPT(X)\) is the processing-time part of the offline
+pair formula when the jobs in $X$ are executed without preliminary actions.
 
 \subsection{Maximum-density modules and fluid completion curves}
 \label{sec:common-fluid-envelopes}
@@ -862,174 +806,10 @@ selector $A_k$ and to the scalar value with selector $1-A_k$, assigning
 failure probability $\eta/2$ to each application.
 \end{proof}
 
-\subsection{From fluid curves to finite schedules}
-\label{sec:notation-transfer}
-
-A fluid curve describes fractions of jobs, whereas an actual schedule
-completes jobs one at a time.  For example, if $n=1000$ and a fluid curve
-satisfies $\mathcal C(0.7)=0.4$, it says that after $700$ units of work at
-most about $400$ jobs can be complete.  We do not expect an exact match:
-class sizes must be rounded, and a random prefix contains slightly more or
-fewer jobs of each length.  What we need is a comparison of the form
-\begin{equation}
- \frac{N_{\mathcal A}(nx)}n
- \le \mathcal C(x+\alpha)+\beta,
- \label{eq:finite-fluid-intuition}
-\end{equation}
-where $N_{\mathcal A}(t)$ is the number of jobs completed by time $t$.
-Here $\alpha$ is a small error in work and $\beta$ is a small error in
-completed mass.
-
-For an input law $D$ and a family $\Pi$ of fluid algorithm templates, let
-$\mathcal C_{D,\pi}(x)$ be the largest mass that template $\pi$ can complete
-using work $x$.  Thus, for example, $\pi$ may record the tested fraction
-$q$.  Define
-\begin{equation}
- F_D(\pi)\defeq\Area(\mathcal C_{D,\pi}),
- \qquad
- \Phi(D)\defeq\inf_{\pi\in\Pi}F_D(\pi).
- \label{eq:transfer-fluid-values}
-\end{equation}
-This integral has a direct scheduling meaning: total completion time is the
-area under the number of unfinished jobs.  Thus $F_D(\pi)$ is the normalized
-completion cost of the fluid template, and $\Phi(D)$ is the best such cost.
-Model subscripts are restored in later sections when needed.
-
-There are three finite-size errors to control.  Sampling creates the
-horizontal and vertical errors in \cref{eq:finite-fluid-intuition}; a short
-suffix of exceptional jobs may need to be edited; and the good sampling
-event has a small failure probability.  We handle these effects separately
-and then combine them.
-
-\paragraph{Editing a short suffix.}
-Our random-permutation estimates stop before the last few unseen jobs, where
-sampling without replacement becomes unstable.  We may therefore change the
-operations of those jobs.  If only $h$ jobs are affected, each unit of
-changed work can delay at most $n$ jobs, so the resulting cost error is only
-$O(hn)$.
-
-\begin{lemma}[Bounded suffix edit]
-\label{lem:bounded-suffix-edit}
-Consider two schedules on the same $n$ jobs that finish every job and never
-idle while an operation is available.  Suppose each has total work at most
-$Wn$ and one is obtained from the other by changing
-the operations of at most $h$ jobs, altering at most $ch$ operations of
-individual length at most $W$, while preserving the relative order and
-completion events of all unaffected jobs.  Then
-\begin{equation}
- |\ALG_{\mathcal A}-\ALG_{\widetilde{\mathcal A}}|
- \le(c+1)Whn.
- \label{eq:bounded-suffix-edit}
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-Write completion cost as operation length times the number of unfinished
-jobs.  Altered operations contribute at most $chWn$.  At every unaffected
-operation, the unfinished counts in the two schedules differ only on the
-$h$ affected jobs; summing this discrepancy over total work at most $Wn$
-adds at most $hWn$.
-\end{proof}
-
-\paragraph{Repairing class capacities.}
-The sampling event does not give the exact fluid constraint
-$c_j\le d_jt$; it gives $c_j\le d_jt+\gamma$.  Remove at most $\gamma$
-completed mass from every class.  The remaining point is feasible for the
-fluid curve, and restoring the removed mass costs at most
-$(s+1)\gamma$.  The next lemma records precisely this simple repair.
-
-\begin{lemma}[Repairing class capacities]
-\label{lem:cell-capacity-repair}
-Let $D$ have support $0=p_0<p_1<\cdots<p_s$ with masses $d_j$, and consider
-the common completion curve $\mathcal C^v_{D,q}$ from
-\cref{eq:common-fluid-envelope}.  At a finite schedule prefix, let $t,b,z$
-be normalized tested mass, independent-mode mass, and zero completions, and
-let $c_j$ be normalized processed mass of positive class $j$.  Suppose
-\begin{equation}
- t\le q,\quad b\le1-q,\quad
- z\le d_0t+\gamma,\quad c_j\le d_jt+\gamma,
- \label{eq:cell-repair-capacities}
-\end{equation}
-and, with $c_j'=(c_j-\gamma)^+$,
-\begin{equation}
- t+vb+\sum_{j=1}^sp_jc_j'\le x+\alpha.
- \label{eq:cell-repair-work}
-\end{equation}
-Then
-\begin{equation}
- z+b+\sum_{j=1}^sc_j
- \le \mathcal C^v_{D,q}(x+\alpha)+(s+1)\gamma.
- \label{eq:cell-capacity-repair}
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-The repaired variables $t,b,c_j'$ satisfy every constraint in
-\cref{eq:common-fluid-envelope} at work budget $x+\alpha$.  Replacing $z$ by
-$d_0t$ and each $c_j$ by $c_j'$ loses at most $(s+1)\gamma$ completed mass.
-\end{proof}
-
-\paragraph{Putting the errors together.}
-We can now state the transfer principle.  On a good sampling event $G$, the
-edited finite schedule lies below a fluid curve up to horizontal error
-$\alpha$ and vertical error $\beta$.  Editing costs $\varepsilon n^2$, and
-the event $G$ may fail with probability $\eta$.  The conclusion simply adds
-these four losses.
-
-\begin{theorem}[Fluid-to-finite completion transfer]
-\label{thm:completion-curve-transfer}
-Fix a law $D$ and a family of templates $\Pi$.  Suppose every curve
-$\mathcal C_{D,\pi}$ is nondecreasing, takes values in $[0,1]$, and equals
-one for $x\ge H$, where $H<\infty$ is common to $\pi\in\Pi$.  Assume
-$0\le\Phi(D)\le B$.
-
-Let $\mathcal A$ be a random finite schedule on $n$ jobs, and let
-$\varepsilon,\alpha,\beta,\eta\ge0$.  Suppose that on an event $G$ there
-are an edited completing schedule $\widetilde{\mathcal A}$ and a possibly
-random template $\pi\in\Pi$ such that
-\begin{align}
- \ALG_{\mathcal A}&\ge
-   \ALG_{\widetilde{\mathcal A}}-\varepsilon n^2,
- \label{eq:transfer-edit-cost}\\
- \frac{N_{\widetilde{\mathcal A}}(nx)}n
- &\le \mathcal C_{D,\pi}(x+\alpha)+\beta
- \qquad(0\le x\le H).
- \label{eq:transfer-completion-bound}
-\end{align}
-If $\Prob(G^c)\le\eta$, then
-\begin{equation}
- \frac{\EE\ALG_{\mathcal A}}{n^2}
- \ge \Phi(D)-\varepsilon-\alpha-H\beta-\eta B.
- \label{eq:completion-curve-transfer}
-\end{equation}
-\end{theorem}
-
-\begin{proof}
-Total completion time is the area under the unfinished-job curve.  On $G$,
-\cref{eq:transfer-completion-bound} and the fact that the fluid curve is one
-after $H$ give
-\[
- \frac{\ALG_{\widetilde{\mathcal A}}}{n^2}
- \ge F_D(\pi)-\alpha-H\beta
- \ge\Phi(D)-\alpha-H\beta.
-\]
-Indeed, the horizontal shift loses area at most $\alpha$, and the vertical
-error loses at most $H\beta$.
-Use \cref{eq:transfer-edit-cost}, average over $G$, and use nonnegativity on
-$G^c$.  The lost factor is at most $\eta\Phi(D)\le\eta B$.
-\end{proof}
-
-For randomized lower bounds, we apply the theorem after fixing the algorithm's
-private seed and then average over that seed.  The private-shuffle average is
-already part of the cost by the input convention; \cref{lem:finite-yao}
-additionally yields a fixed-labeling version when desired.
-
 \subsection{Learning a fluid algorithm from a pilot sample}
 
-The preceding subsection transfers fluid lower bounds to finite schedules.
-For instance-optimal upper bounds we need a different approximation: use a
-small pilot sample to choose a good fluid template, then run that template on
-the remaining jobs.
+For instance-optimal upper bounds, we use a small pilot sample to choose a
+good fluid template and then run that template on the remaining jobs.
 
 Suppose changing the input law by distance $d(D,E)$ changes the cost of every
 template by at most $L_0d(D,E)$.  Choosing a template using the estimate

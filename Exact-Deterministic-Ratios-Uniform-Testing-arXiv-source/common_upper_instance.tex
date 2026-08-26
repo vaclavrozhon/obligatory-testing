@@ -183,7 +183,11 @@ Stop after the algorithm has first touched all but $\delta n+O(1)$ labels.
 For each remaining untouched job, replace any future test by raw execution
 at its first scheduled operation and delete its later known processing.
 At most $\delta n+O(1)$ jobs and three operations per affected job change.
-Thus \cref{lem:bounded-suffix-edit}, with $W=u+1$, gives
+Write completion cost as the sum, over all operations, of the operation
+length times the number of unfinished jobs.  Changed operations contribute
+$O_u(\delta n^2+n)$, and during every unchanged operation the two
+unfinished-job counts differ by at most $\delta n+O(1)$.  Since either
+schedule performs at most $(u+1)n$ work, we obtain
 \begin{equation}
  C_{\rm original}\ge C_{\rm edited}-O_u(\delta n^2+n).
  \label{eq:cui-suffix-edit}
@@ -197,20 +201,30 @@ normalize counts and work by $n$.  Let $t,b,z,c_j$ denote the tested
 fraction, the fraction run raw, the fraction of tests that complete zero
 jobs, and the processed fraction whose revealed value lies in the positive
 cell $C_j$, respectively, and put $\gamma_n=\Gamma_n/n$.  The sampling event
-gives the capacity hypotheses of \cref{lem:cell-capacity-repair}; raw work is exactly $ub$, so
-its work hypothesis holds with $\alpha=0$.  Therefore
+gives
+\[
+ t\le q,\quad b\le1-q,\quad
+ z\le d_0t+\gamma_n,\quad c_j\le d_jt+\gamma_n.
+\]
+Set $c_j'=(c_j-\gamma_n)^+$.  Raw work is exactly $ub$, so the variables
+$t,b,c_j'$ satisfy every constraint in
+\cref{eq:common-fluid-envelope} at the work $x$ already performed.  Passing
+from $z,c_j$ to $d_0t,c_j'$ removes at most $(K+1)\gamma_n$ completed mass.
+Therefore, simultaneously throughout the edited schedule,
 \begin{equation}
  \text{completed fraction at work }x
  \le \mathcal C_{\mathsf{RO},D,q}(x)+(K+1)\gamma_n.
  \label{eq:cui-envelope-repair}
 \end{equation}
-The completion curve reaches one by normalized work at most $H=1+u$, and
-$0\le\PhiRO(D)\le u/2$.  Thus \cref{thm:completion-curve-transfer}, with
-the suffix edit in \cref{eq:cui-suffix-edit} contributing
-$\varepsilon=O_u(\delta+1/n)$ and
-$\beta=(K+1)\gamma_n$, gives
+The normalized completion cost is the area under the unfinished fraction.
+The curve in \cref{eq:cui-envelope-repair} reaches one by normalized work
+$H=1+u$, so integrating that equation loses at most
+$H(K+1)\gamma_n$ relative to
+$F_{\mathsf{RO},u,D}(q)\ge\PhiRO(D)$.  The sampling event fails with
+probability at most $n^{-2}$, and $0\le\PhiRO(D)\le u/2$; hence averaging
+over the shuffle and using \cref{eq:cui-suffix-edit} gives
 \begin{equation}
- \frac{C_{\rm original}}{n^2}
+ \frac{\EE C_{\rm original}}{n^2}
  \ge\PhiRO(D)-O_{u,K}(\gamma_n+\delta+1/n).
  \label{eq:cui-fixed-grid-lower}
 \end{equation}
@@ -221,7 +235,8 @@ For an arbitrary input vector, take
  h_n=u/K_n,\qquad \delta_n=n^{-1/6},
  \label{eq:cui-grid-parameters}
 \end{equation}
-keep zero separate, and round every positive value upward.  If two
+keep zero separate, and round every positive value upward; write
+$D[p]^{\rm grid}$ for the resulting empirical distribution.  If two
 distributions admit a zero-preserving coupling with pointwise displacement
 at most $h$, the transport lemma \cref{lem:zero-preserving-transport} gives
 \begin{equation}
@@ -229,30 +244,37 @@ at most $h$, the transport lemma \cref{lem:zero-preserving-transport} gives
  \label{eq:cui-rounding-stability}
 \end{equation}
 Thus the grid consists of $0,h_n,2h_n,\ldots,K_nh_n=u$, and a value in
-$((j-1)h_n,jh_n]$ is rounded to $jh_n$.  For the finite repair, raising a
-processed value to this right endpoint adds at
-most $h_n$ to normalized prefix work, while
-\cref{lem:cell-capacity-repair} loses at most
-$(K_n+1)\gamma_n$ completed mass.  With the parameters from
+$((j-1)h_n,jh_n]$ is rounded to $jh_n$.  Apply the same first-touch sampling
+bound to these $K_n+1$ classes and again put $\gamma_n=\Gamma_n/n$.  At any
+schedule prefix, subtracting $\gamma_n$ from the completed mass in each
+positive class makes the class capacities exact, at a loss of at most
+$(K_n+1)\gamma_n$ completed mass.  Raising processing times to their right
+endpoints adds at most $h_n$ to normalized prefix work.  Consequently the
+completed fraction is at most
+\[
+ \mathcal C_{\mathsf{RO},D[p]^{\rm grid},q}(x+h_n)
+ +(K_n+1)\gamma_n.
+\]
+With the parameters from
 \cref{eq:cui-grid-parameters},
 \begin{equation}
  (K_n+1)\frac{\Gamma_n}{n}
  =O\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right).
  \label{eq:cui-grid-error}
 \end{equation}
-Apply \cref{thm:completion-curve-transfer} directly to the rounded grid, with
-$\alpha=h_n$, $\beta=(K_n+1)\gamma_n$, $H=1+u$, and
-$B=u/2$.  Together with the upward rounding and
-\cref{eq:cui-rounding-stability,eq:cui-grid-error}, it proves that every
+Integrating this inequality up to $H=1+u$ loses at most
+$h_n+H(K_n+1)\gamma_n$ from the rounded fluid area.  The suffix edit costs
+$O_u(\delta_n n^2+n)$, the sampling event fails with probability $n^{-2}$,
+and the corresponding lost fluid value is at most $u/2$.  Together with
+\cref{eq:cui-rounding-stability,eq:cui-grid-error}, this proves that every
 announced algorithm has private-shuffle cost at least
 \begin{equation}
  n^2\PhiRO(D[p])
  -O_u\!\left(n^{11/6}\sqrt{\ln(n+2)}\right).
  \label{eq:cui-announced-lower}
 \end{equation}
-Condition on the algorithm seed when applying the transfer theorem and then
-average over the seed.  This proves \cref{eq:cui-lower} under the input
-convention.
+The argument was uniform in the fixed algorithm seed.  Averaging over that
+seed proves \cref{eq:cui-lower} under the input convention.
 
 \subsection{Removing the announcement}
 \label{sec:cui-learning}

@@ -170,7 +170,7 @@ Define
  \label{eq:ot-Phi}
 \end{equation}
 For $D=D[p]$ and a maximizing prefix $E$ made of whole job occurrences
-rather than fractional mass, this is precisely $F_{\mathsf{OT},D[p]}(E)$
+rather than fractional mass, this is precisely $\operatorname{STAT}(E)$
 from \cref{eq:stationary-leading-coefficient}.  The next
 lemma proves both that the value is
 independent of how probability mass at the threshold is split and that it
@@ -277,11 +277,14 @@ at most $n^{-2}$,
 Put $\gamma_n=\Gamma_n/n$.  At any point in the schedule, let $t=k/n$, let $z$ be
 the normalized number of completed zero jobs, and let $c_j$ be the completed
 positive mass from cell $j$.  Equation~\eqref{eq:ot-cell-discrepancy} gives
-the capacity hypotheses of \cref{lem:cell-capacity-repair} with $q=1$ and
-$b=0$.  Rounding upward adds at most $h_n$ to normalized processed work, so
-the work hypothesis holds with $\alpha=h_n$.  Since
-$\mathcal C^v_{D^+,1}=\mathcal C_{\mathsf{OT},D^+}$, the lemma gives,
-simultaneously at every prefix,
+\[
+ z\le d_0t+\gamma_n,\qquad c_j\le d_jt+\gamma_n.
+\]
+Set $c_j'=(c_j-\gamma_n)^+$.  Rounding upward adds at most $h_n$ to the
+normalized processing work accumulated in any prefix, so $t,c_j'$ satisfy
+the constraints defining $\mathcal C_{\mathsf{OT},D^+}$ at work
+$x+h_n$.  Replacing $z,c_j$ by $d_0t,c_j'$ removes at most
+$(K_n+1)\gamma_n$ completed mass.  Hence, simultaneously at every prefix,
 \begin{equation}
  \frac{N_{\mathcal A}(nx)}n
  \le \mathcal C_{\mathsf{OT},D^+}(x+h_n)
@@ -289,21 +292,22 @@ simultaneously at every prefix,
  \label{eq:ot-pointwise-completion}
 \end{equation}
 
-The completion curve reaches one by normalized work at most $H=L+2$, and the immediate
-test--process algorithm gives $0\le\PhiOT(D^+)\le(L+1)/2$.  Apply
-\cref{thm:completion-curve-transfer} with $\varepsilon=0$,
-$\alpha=h_n$, $\beta=(K_n+1)\gamma_n$, and $\eta=n^{-2}$.  Finally,
-zero-preserving transport \cref{lem:zero-preserving-transport} changes the
-fluid value by at most $h_n$.  Because
+The normalized completion cost is the area under the unfinished fraction.
+The completion curve reaches one by normalized work $H=L+2$, so integrating
+\cref{eq:ot-pointwise-completion} loses at most
+$h_n+H(K_n+1)\gamma_n$ from $\PhiOT(D^+)$.  The good event fails with
+probability at most $n^{-2}$, and the immediate test--process algorithm gives
+$0\le\PhiOT(D^+)\le(L+1)/2$.  Finally, zero-preserving transport
+\cref{lem:zero-preserving-transport} changes the fluid value by at most
+$h_n$.  Because
 $(K_n+1)\gamma_n=O(n^{-3/10}\sqrt{\ln(n+2)})$, every deterministic announced
 algorithm has private-shuffle expected cost at least
 \begin{equation}
  n^2\PhiOT(D[p])-O_L(n^{9/5}).
  \label{eq:ot-announced-lower}
 \end{equation}
-Condition on the algorithm seed when applying the transfer theorem and then
-average over the seed.  This is precisely the randomized cost under the
-input convention.
+The argument was uniform after fixing the algorithm seed.  Averaging over
+that seed gives precisely the randomized cost under the input convention.
 
 \subsection{Removing the announcement}
 

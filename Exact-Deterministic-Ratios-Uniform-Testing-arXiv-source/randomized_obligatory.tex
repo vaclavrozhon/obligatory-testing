@@ -92,14 +92,43 @@ hidden: this makes the analysis valid for unbounded processing times.
 
 \subsubsection{Stationary prefixes}
 
-Use the processing-time-prefix notation
-\cref{eq:stationary-prefix-notation,eq:stationary-spt-split} and the
-coefficient $F_{\mathsf{OT},D[p]}(E)$ from
-\cref{eq:stationary-leading-coefficient}.  We require that $E$ contain every
-zero job; a zero job placed outside $E$ would nevertheless complete during
-its test.  The
-stationary algorithm and its exact cost are supplied by the common pair identity
-\cref{lem:stationary-prefix-cost}.
+For a fixed input $p$, let $E\subseteq[n]$ contain every zero job and suppose
+that every processing time in $E$ is at most every processing time outside
+$E$.  Put $T=[n]\setminus E$ and
+\begin{equation}
+ e=|E|,\qquad a=\frac en,\qquad h=1-a,\qquad
+ \ell_X=\frac1n\sum_{i\in X}p_i\quad(X\subseteq[n]).
+ \label{eq:stationary-prefix-notation}
+\end{equation}
+We call $E$ a \emph{processing-time prefix}.  Since every job in $E$ is no
+longer than every job in $T$, the SPT pair formula gives
+\begin{equation}
+ \SPT([n])=\SPT(E)+n^2h\ell_E+\SPT(T).
+ \label{eq:stationary-spt-split}
+\end{equation}
+
+Consider the stationary algorithm that tests the jobs in a uniformly random
+order, processes each positive $E$-job immediately, and after the last test
+processes $T$ in SPT order.  Here \emph{stationary} means that $E$ and this
+immediate-or-deferred rule are fixed before the random order is exposed.
+We write its leading coefficient as
+\begin{equation}
+ \operatorname{STAT}(E)
+ \defeq(1+\ell_E)\left(1-\frac a2\right)
+   +\frac{\SPT(T)}{n^2}-\frac{\ell_T}{2n}.
+ \label{eq:stationary-leading-coefficient}
+\end{equation}
+This notation has a direct exact interpretation.  Let
+$W=n+\sum_{i\in E}p_i$ and $W_E=e+\sum_{i\in E}p_i$.  Every test or immediate
+processing block precedes a fixed $E$-job with probability $1/2$, so the
+$E$-jobs contribute $(eW+W_E)/2$ in expectation.  Every $T$-job then sees
+the common offset $W$, and the final phase contributes
+$(n-e)W+\SPT(T)$.  Adding these quantities gives
+\begin{equation}
+ \EE\ALG_{\Stat}(p,E)
+ =n^2\operatorname{STAT}(E)+\frac{e+\sum_i p_i}{2}.
+ \label{eq:stationary-prefix-cost}
+\end{equation}
 
 For a nonempty prefix define its completion density by
 \begin{equation}
@@ -131,7 +160,7 @@ $\tau=(1+\ell_E)/a$,
 \begin{equation}
  \begin{aligned}
   &2\tau\bigl(
-     4\Omega_{\mathsf{OT}}(D[p])-3F_{\mathsf{OT},D[p]}(E)\bigr)\\
+     4\Omega_{\mathsf{OT}}(D[p])-3\operatorname{STAT}(E)\bigr)\\
   &\quad=(\tau-2)^2
    +4\left[\tau\left(
       \frac{2\SPT(E)}{n^2}-\frac{\ell_E}{n}\right)-\ell_E^2\right]\\
@@ -144,11 +173,11 @@ $\tau=(1+\ell_E)/a$,
 Consequently:
 \begin{enumerate}[label=\textup{(\roman*)}]
 \item if values in $E$ are at most $\tau$ and values in $T$ are at least
-      $\tau$, then $F_{\mathsf{OT},D[p]}(E)\le4\Omega_{\mathsf{OT}}(D[p])/3$;
+      $\tau$, then $\operatorname{STAT}(E)\le4\Omega_{\mathsf{OT}}(D[p])/3$;
 \item if values in $E$ are at most $\tau+s$ and values in $T$ are at least
       $\tau-s$, where $s\ge0$, then
       \begin{equation}
-       F_{\mathsf{OT},D[p]}(E)\le\frac43\Omega_{\mathsf{OT}}(D[p])+\frac23s.
+       \operatorname{STAT}(E)\le\frac43\Omega_{\mathsf{OT}}(D[p])+\frac23s.
        \label{eq:rand-robust-certificate}
       \end{equation}
 \end{enumerate}
@@ -182,7 +211,7 @@ $2\SPT(E)/n^2-\ell_E/n\le a\ell_E\le a^2\tau$.
 Substitution into
 \cref{eq:rand-certificate} yields
 \[
- F_{\mathsf{OT},D[p]}(E)
+ \operatorname{STAT}(E)
  \le\frac43\Omega_{\mathsf{OT}}(D[p])+\frac23sa^2+\frac16sh^2
  \le\frac43\Omega_{\mathsf{OT}}(D[p])+\frac23s,
 \]
@@ -190,7 +219,7 @@ because $(2/3)a^2+(1/6)(1-a)^2\le2/3$ on $[0,1]$.
 \end{proof}
 
 Combining the exact identity with
-\cref{lem:stationary-prefix-cost,eq:rand-opt-normalized} already gives a finite
+\cref{eq:stationary-prefix-cost,eq:rand-opt-normalized} already gives a finite
 statement useful below.
 
 \begin{corollary}[Announced multiset]
@@ -211,14 +240,14 @@ lower-bound instance before any probabilistic argument is used.
 We also need an estimate whose error is independent of the values outside
 the early set.  Direct expansion gives
 \begin{equation}
- F_{\mathsf{OT},D[p]}(E)-\Omega_{\mathsf{OT}}(D[p])
+ \operatorname{STAT}(E)-\Omega_{\mathsf{OT}}(D[p])
  =\frac12\left(
  h+a\ell_E-\frac{2\SPT(E)}{n^2}+\frac{\ell_E}{n}\right).
  \label{eq:rand-crude-identity}
 \end{equation}
 If all values in $E$ are at most $L\ge1$, then $\ell_E\le aL$ and therefore
 \begin{equation}
- F_{\mathsf{OT},D[p]}(E)\le \Omega_{\mathsf{OT}}(D[p])+\frac L2.
+ \operatorname{STAT}(E)\le \Omega_{\mathsf{OT}}(D[p])+\frac L2.
  \label{eq:rand-bounded-early}
 \end{equation}
 
