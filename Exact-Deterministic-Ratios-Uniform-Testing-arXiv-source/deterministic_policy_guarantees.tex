@@ -82,52 +82,37 @@ Then
 \end{lemma}
 
 \begin{proof}
-For the analysis, put $R=\Rquad(u)$ and $s=u-1$, and abbreviate
-\begin{equation}
- K=s^2+s+1,
- \quad D=K+sR,
- \quad b=\frac{K-s^2R}{D},
- \quad \chi=\frac{1-b}{R},
- \quad \alpha=\frac KD.
- \label{eq:opt:ute-proof-parameters}
-\end{equation}
+For the analysis, put $R=\Rquad(u)$ and $s=u-1$.  In this notation, the
+parameter from \cref{eq:opt:ute-parameters} is
+\[
+ b=\frac{s^2+s+1-s^2R}{s^2+s+1+sR}.
+\]
 
 \medskip
 \noindent\textbf{Claim 1 (Parameter admissibility).}
-The defining equation for $R$ gives
+One has $0\le b<1$, with $b=0$ only at $u=\uDet{3}$.  Indeed, since
+$T_s$ is increasing on positive arguments,
 \begin{equation}
- 0\le b<\chi<\alpha<1,
- \qquad
- \chi=\frac{s(s+1)}D,
- \qquad
- b=(s+1)\alpha-s;
- \label{eq:opt:ute-order}
-\end{equation}
-For completeness, these inequalities follow without numerical root
-isolation.  Since $T_s$ is increasing on positive arguments,
-\begin{equation}
- T_s\!\left(\frac K{s^2}\right)
- =\frac K{s^3}\bigl(-s^3+s^2+2s+1\bigr)\ge0
+ T_s\!\left(\frac{s^2+s+1}{s^2}\right)
+ =\frac{s^2+s+1}{s^3}\bigl(-s^3+s^2+2s+1\bigr)\ge0
  \qquad(s\le s_0),
 \end{equation}
-and hence $b=(K-s^2R)/D\ge0$, with equality only at $s=s_0$.  Moreover,
+and hence $s^2+s+1-s^2R\ge0$, with equality only at $s=s_0$.
+The denominator in $b$ is positive and exceeds its numerator by
+$sR(s+1)$, proving $b<1$.
+
+We will also use the following lower bound on $R$:
 \begin{equation}
- \alpha-\chi=\frac1D,
- \qquad
- \chi-b=\frac{s^2R-1}{D}>0.
-\end{equation}
-For the last sign,
-\begin{equation}
- 9T_s(5/3)=f(s):=6s^3-12s^2-2s-3<0.
+ 9T_s(5/3)=6s^3-12s^2-2s-3<0
  \label{eq:opt:T-five-thirds}
 \end{equation}
 throughout the present interval.  Indeed, on $[4/5,1]$ the polynomial is
-decreasing and $f(4/5)=-1151/125$; on $[1,s_0]$ it has one interior minimum,
-while $f(1)=-11$ and $f(s_0)<f(13/6)=-95/36$.  Here
+decreasing and has value $-1151/125$ at $4/5$; on $[1,s_0]$ it has one
+interior minimum, while its value at $1$ is $-11$ and its value at $s_0$
+is smaller than its value $-95/36$ at $13/6$.  Here
 $s_0<13/6$ follows by substituting $13/6$ in
 $s^3-(s+1)^2$.  Thus $R>5/3$, while $s>4/5$, and
-$s^2R>16/15$.  Finally $K<D$ gives $\alpha<1$.  In particular, $b=0$
-occurs only at $u=\uDet{3}$.
+$s^2R>16/15$.
 
 \medskip
 \noindent\textbf{Claim 2 (The range $\uDet{2}\le u\le2$).}
@@ -153,9 +138,13 @@ G(x)=
 \end{cases}
 \label{eq:opt:binary-upper-gap}
 \end{equation}
-The second quadratic is strictly concave, has its stationary point at
-$x=\alpha$, and satisfies $G(\alpha)=0$; after substituting
-\cref{eq:opt:ute-proof-parameters}, the latter identity is exactly
+The second quadratic is strictly concave.  Its stationary point is
+\[
+ \alpha=\frac{s^2+s+1}{s^2+s+1+sR}.
+\]
+Moreover, $b=(s+1)\alpha-s$, and hence
+$\alpha-b=s(1-\alpha)>0$.  Substitution gives $G(\alpha)=0$; after
+cancelling the positive denominator, this is exactly
 \cref{eq:opt:Rquad-equation}.  Since $b<\alpha$, its right derivative at $b$
 is positive.  The left derivative satisfies
 $G'_-(b)=G'_+(b)+s(1-b)>0$, and the first quadratic is concave, so it is
@@ -228,8 +217,19 @@ Pairwise accounting using \cref{eq:opt:pair-contribution} gives
 \end{align}
 Moving $m$ to $t$ does not change $O$ and increases $A$, so $m=0$.  Put
 $x=a+d$ and write $F(x)=A-R O$ after optimizing the other variables.
-The derivative of the gap in $t$ is
-$1-b-R(x+t)$, so its maximizing value is $(\chi-x)_+$.  At fixed
+The derivative of the gap in $t$ is $1-b-R(x+t)$.  Thus its maximizing
+value is $(\chi-x)_+$, where the critical mass is
+\[
+ \chi=\frac{1-b}{R}
+      =\frac{s(s+1)}{s^2+s+1+sR}.
+\]
+The identities
+\[
+ \alpha-\chi=\frac1{s^2+s+1+sR},
+ \qquad
+ \chi-b=\frac{s^2R-1}{s^2+s+1+sR}
+\]
+show that $b<\chi<\alpha$ on the present range.  At fixed
 $x,t$, moving mass from $d$ to $a$ leaves $O$ unchanged and changes $A$ at
 rate $s(1-x)+b-a\ge0$.  Hence
 \begin{equation}
@@ -241,36 +241,32 @@ rate $s(1-x)+b-a\ge0$.  Hence
 \end{equation}
 
 For $x\ge\chi$, the gap $A-R O$ is the binary concave quadratic already
-discussed; it is tangent to zero at $x=\alpha$.  For $x<\chi$, put
-\begin{equation}
- C_0=-\frac{R-1}{2}+\frac{(1-b)^2}{2R},
- \qquad
- \gamma=s-R(s-1).
-\end{equation}
-Substitution gives
+discussed; it is tangent to zero at $x=\alpha$.  For $x<\chi$, substitution
+gives
 \begin{equation}
  A-R O
- =C_0+a(s+b-sx)-\frac{a^2}{2}+\frac{\gamma x^2}{2}.
+ =-\frac{R-1}{2}+\frac{(1-b)^2}{2R}
+  +a(s+b-sx)-\frac{a^2}{2}+\frac{s-R(s-1)}{2}x^2.
  \label{eq:opt:ute-positive-t}
 \end{equation}
-One has $\gamma>0$ on $1\le s\le s_0$.  Indeed,
+The coefficient $s-R(s-1)$ is positive on $1\le s\le s_0$.  Indeed,
 $T_s(2)=s(s^2-s+1)>0$, so for $s\le2$ the equation $T_s(R)=0$ gives
-$R<2$, and hence $\gamma>2-s\ge0$.  For
+$R<2$, and hence $s-R(s-1)>2-s\ge0$.  For
 $2\le s\le s_0<13/6$,
 \begin{equation}
  16T_s(7/4)=12s^3-20s^2+s-4>0;
 \end{equation}
 the polynomial is $14$ at $s=2$ and has positive derivative thereafter.
-Thus $R<7/4$ and $\gamma>7/4-3s/4>1/8$.
+Thus $R<7/4$ and $s-R(s-1)>7/4-3s/4>1/8$.
 
 On $0\le x\le b$, one has $a=x$, and
 \begin{equation}
- A-R O=C_0+(s+b)x
+ A-R O=-\frac{R-1}{2}+\frac{(1-b)^2}{2R}+(s+b)x
  -\frac{s+1+R(s-1)}2x^2.
  \label{eq:opt:ute-small-x}
 \end{equation}
-Its derivative is decreasing, and the derivative at $b$ multiplied by $D$
-is
+Its derivative is decreasing, and the derivative at $b$ multiplied by the
+positive denominator $s^2+s+1+sR$ is
 \begin{equation}
  R\bigl(1+s^2+R s^2(s-1)\bigr)>0,
 \end{equation}
@@ -279,11 +275,11 @@ so the maximum is at $b$.  On $b\le x\le\chi$,
 The endpoint $\chi$ lies on the binary branch.  Finally,
 \begin{equation}
  F(b)-F(\chi)
- =\frac{\chi-b}{2}\,[2sb-\gamma(b+\chi)],
+ =\frac{\chi-b}{2}\,[2sb-(s-R(s-1))(b+\chi)],
 \end{equation}
-and direct use of \cref{eq:opt:ute-proof-parameters} gives
+and direct substitution of $b$ and $\chi$ gives
 \begin{equation}
- D[\gamma(b+\chi)-2sb]
+ (s^2+s+1+sR)[(s-R(s-1))(b+\chi)-2sb]
  =-s+(1+s-s^3)R+s^2(s-1)R^2>0.
  \label{eq:opt:ute-small-certificate}
 \end{equation}
@@ -292,15 +288,20 @@ and
 \begin{equation}
  9T_s(5/3)=6s^3-12s^2-2s-3<0,
 \end{equation}
-so $R>5/3$.  If the right-hand side of
-\cref{eq:opt:ute-small-certificate} is denoted by $q_s(R)$, then
+so $R>5/3$.  At $R=5/3$, the derivative of the right-hand side of
+\cref{eq:opt:ute-small-certificate} satisfies
 \begin{equation}
- 3\,\partial_R q_s(5/3)=7s^3-10s^2+3s+3>0.
+ 3\left.\frac{\partial}{\partial R}
+ \bigl[-s+(1+s-s^3)R+s^2(s-1)R^2\bigr]\right|_{R=5/3}
+ =7s^3-10s^2+3s+3>0.
 \end{equation}
-The last polynomial is increasing for $s\ge1$, so $q_s$ is increasing for
-$R\ge5/3$.  Finally,
+The last polynomial is increasing for $s\ge1$.  Since the coefficient of
+$R^2$ is nonnegative, the right-hand side of
+\cref{eq:opt:ute-small-certificate} is therefore increasing for
+$R\ge5/3$.  At $R=5/3$ its value satisfies
 \begin{equation}
- 9q_s(5/3)=10s^3-25s^2+6s+15>0.
+ 9\bigl[-s+(1+s-s^3)(5/3)+s^2(s-1)(25/9)\bigr]
+ =10s^3-25s^2+6s+15>0.
 \end{equation}
 For the last sign, write $s=3/2+z$; the expression becomes
 $3/2-3z/2+20z^2+10z^3$.  It is at least $3/2$ for
