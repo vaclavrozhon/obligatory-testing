@@ -16,14 +16,14 @@ which knows $n,L$ but not the processing-time multiset, and a deterministic
 sequence $\eps_L(n)\to0$ with the following properties.  For every multiset
 $M\subseteq[0,L]$ of size $n$ and every fixed labeling $\sigma$,
 \begin{equation}
- \EE\cost(\mathcal A^*,\sigma(M))
+ \EE\ALG_{\mathcal A^*}(\sigma(M))
  \le n^2\PhiBE(D[M])+\eps_L(n)n^2.
  \label{eq:intro-blind-upper}
 \end{equation}
 For every randomized policy $\mathcal A$, even an announced policy, some
 fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
- \EE\cost(\mathcal A,\sigma(M))
+ \EE\ALG_{\mathcal A}(\sigma(M))
  \ge n^2\PhiBE(D[M])-\eps_L(n)n^2.
  \label{eq:intro-blind-lower}
 \end{equation}
@@ -42,8 +42,8 @@ There are no randomized policies $\mathcal A_n$, constant $R<\infty$, and
 sequence $\eta(n)\to0$ such that every vector
 $p\in[0,\infty)^n$ satisfies
 \begin{equation}
- \EE\cost(\mathcal A_n,p)
- \le R\cost(\OPT,p)+\eta(n)n^2.
+ \EE\ALG_{\mathcal A_n}(p)
+ \le R\OPT(p)+\eta(n)n^2.
  \label{eq:blind-unbounded-impossible}
 \end{equation}
 \end{theorem}
@@ -71,7 +71,7 @@ nonpreemptive execution occupies the machine for $H$ time units while
 $n-h+1$ jobs are unfinished.  Averaging over the exceptional label and the
 private seed therefore gives
 \begin{align}
- \EE\cost(\mathcal A_n,p)
+ \EE\ALG_{\mathcal A_n}(p)
  &\ge \frac Hn\,\EE
    \sum_{h:\,\text{rank }h\text{ is blind}}(n-h+1)\notag\\
  &\ge\frac Hn\left(\frac{n(n+1)}2-Z_n\right)
@@ -80,7 +80,7 @@ private seed therefore gives
 \end{align}
 Some fixed choice of the exceptional label has at least this expected cost.
 For every such labeling, the clairvoyant schedule runs all zero jobs first
-and the long job last, so $\cost(\OPT,p)=H$.  With $H=n^2$,
+and the long job last, so $\OPT(p)=H$.  With $H=n^2$,
 \cref{eq:blind-one-long-average} contradicts
 \cref{eq:blind-unbounded-impossible} for all sufficiently large $n$.
 \end{proof}
@@ -234,7 +234,7 @@ Define the model envelope
 using the common envelope \cref{eq:common-fluid-envelope}.  Every fluid schedule that ultimately tests
 mass $q$ obeys this envelope, hence
 \begin{equation}
- \cost\ge\int_0^\infty(1-\mathcal C_{\mathsf{BE},D,q}(x))\,dx.
+ \ALG\ge\int_0^\infty(1-\mathcal C_{\mathsf{BE},D,q}(x))\,dx.
  \label{eq:blind-envelope-lower}
 \end{equation}
 
@@ -345,7 +345,7 @@ $0\le\PhiBE(D_n)\le L/2$.  Apply
 \cref{eq:blind-suffix-edit},
 $\alpha=(L+1)(\gamma_n+\delta)$, and $\beta=(s+1)\gamma_n$.  It gives
 \begin{equation}
- \frac{\cost(\mathcal A,M)}{n^2}
+ \frac{\ALG_{\mathcal A}(M)}{n^2}
  \ge F_{\mathsf{BE},D_n}(Q_{n,\delta})
    -O_{L,s}(\gamma_n+\delta+1/n)
  \ge\PhiBE(D_n)-O_{L,s}(\gamma_n+\delta+1/n).
@@ -466,7 +466,7 @@ template is fixed, so \cref{eq:blind-finite-kernel} applies.  The sample itself
 has work at most $Lk_n$ and delays at most $n$ jobs, adding at most
 $Lnk_n=O_L(n^{3/2})$.  Hence
 \[
- \EE[\cost(\mathcal A^*,p)\mid\widehat D_n,D_n^{\rm rem}]
+ \EE[\ALG_{\mathcal A^*}(p)\mid\widehat D_n,D_n^{\rm rem}]
  \le n^2F_{\mathsf{BE},D_n^{\rm rem}}(\widehat\pi)+O_L(nk_n+n).
 \]
 Apply \cref{lem:pilot-learning-transfer} with
@@ -474,7 +474,7 @@ $d(D,E)=\|D-E\|_1$, $L_0=C_L$, and
 \cref{eq:blind-histogram-learning}; then use
 \cref{eq:blind-rounding-stability}.  This gives
 \begin{equation}
- \frac{\EE\cost(\mathcal A^*,p)}{n^2}
+ \frac{\EE\ALG_{\mathcal A^*}(p)}{n^2}
  \le\PhiBE(D[M])
  +O_L\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right)
  \label{eq:blind-unannounced-upper}

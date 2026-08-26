@@ -20,27 +20,27 @@ There are a universal constant $C$ and a randomized nonanticipating
 algorithm $\mathcal A_n^*$, depending only on $n$, such that every fixed
 vector $p\in[0,\infty)^n$ satisfies
 \begin{equation}
- \EE\cost(\mathcal A_n^*,p)
- \le \frac43\cost(\OPT,p)+Cn^{19/10}
- \le\left(\frac43+2Cn^{-1/10}\right)\cost(\OPT,p).
+ \EE\ALG_{\mathcal A_n^*}(p)
+ \le \frac43\OPT(p)+Cn^{19/10}
+ \le\left(\frac43+2Cn^{-1/10}\right)\OPT(p).
  \label{eq:rand-obligatory-upper}
 \end{equation}
 A fixed-cutoff companion $\mathcal A_n^{(32)}$, using $B=32$ and the more
 conservative fallback criterion $\widehat\kappa<2/B$, satisfies the sharper
 explicit estimate
 \begin{equation}
- \EE\cost(\mathcal A_n^{(32)},p)
- \le \frac43\cost(\OPT,p)+20378n^{7/4}.
+ \EE\ALG_{\mathcal A_n^{(32)}}(p)
+ \le \frac43\OPT(p)+20378n^{7/4}.
  \label{eq:rand-obligatory-fixed-upper}
 \end{equation}
 Conversely, for every randomized algorithm $\mathcal A$ and every $\eps>0$,
 arbitrarily large even $n$ admit a fixed labeling of $n/2$ zero jobs and
 $n/2$ jobs of processing time two such that
 \begin{equation}
- \EE\cost(\mathcal A,p)
- \ge\left(\frac43-\eps\right)\cost(\OPT,p),
+ \EE\ALG_{\mathcal A}(p)
+ \ge\left(\frac43-\eps\right)\OPT(p),
  \qquad
- \cost(\OPT,p)=\frac34n^2+n.
+ \OPT(p)=\frac34n^2+n.
  \label{eq:rand-obligatory-lower}
 \end{equation}
 Hence the exact randomized size-asymptotic competitive ratio against an

@@ -21,14 +21,14 @@ $\eps_u(n)\to0$ such that every size-$n$ multiset
 $M\subseteq[0,u]$ has the following properties.
 For every fixed labeling $\sigma$,
 \begin{equation}
- \EE\cost(\mathcal A^*_{n,u},\sigma(M))
+ \EE\ALG_{\mathcal A^*_{n,u}}(\sigma(M))
  \le n^2\PhiRO(D[M])+\eps_u(n)n^2.
  \label{eq:cui-upper}
 \end{equation}
 Conversely, for every randomized nonanticipating policy $\mathcal A$, even
 an announced policy, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
- \EE\cost(\mathcal A,\sigma(M))
+ \EE\ALG_{\mathcal A}(\sigma(M))
  \ge n^2\PhiRO(D[M])-\eps_u(n)n^2.
  \label{eq:cui-lower}
 \end{equation}
@@ -321,7 +321,7 @@ $L_0=4(u+1)$, and \cref{eq:cui-histogram}.  Finally use
 \]
 the resulting bound is
 \begin{equation}
- \EE\cost(\mathcal A^*_{n,u},\sigma(M))
+ \EE\ALG_{\mathcal A^*_{n,u}}(\sigma(M))
  \le n^2\PhiRO(D[M])+O_u(n^{11/6})
  \label{eq:cui-universal-upper}
 \end{equation}

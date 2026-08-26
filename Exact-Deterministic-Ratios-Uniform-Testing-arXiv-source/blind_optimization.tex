@@ -52,8 +52,8 @@ every even $n$, there are a fixed labeled input $I\in\{0,2\}^n$ and an
 announced randomized policy $\mathcal A'$ such
 that
 \begin{equation}
- \cost(\mathcal A,I)
- \ge \EE\cost(\mathcal A',I)+\frac18n^2.
+ \ALG_{\mathcal A}(I)
+ \ge \EE\ALG_{\mathcal A'}(I)+\frac18n^2.
  \label{eq:bo-det-instance-gap}
 \end{equation}
 Consequently no deterministic policy is asymptotically instance-optimal in
@@ -74,7 +74,7 @@ Irrespective of interleaving, the completion times are therefore bounded
 below by the shortest-first schedule of $n-m$ blocks of length two and $m$
 blocks of length three.  Hence
 \begin{equation}
- \cost(\mathcal A,I)
+ \ALG_{\mathcal A}(I)
  \ge n^2+n+\frac{m^2+m}{2}.
  \label{eq:bo-det-instance-online}
 \end{equation}
@@ -84,7 +84,7 @@ $\mathcal A'$ privately permute the jobs and optimize and process them one at
 a time in that order.  Every position sees the average block length
 $(n+2m)/n$, so
 \begin{equation}
- \EE\cost(\mathcal A',I)=\frac{(n+1)(n+2m)}2.
+ \EE\ALG_{\mathcal A'}(I)=\frac{(n+1)(n+2m)}2.
  \label{eq:bo-det-instance-comparator-opt}
 \end{equation}
 Subtracting this from \cref{eq:bo-det-instance-online} gives
@@ -104,7 +104,7 @@ For every nonanticipating policy $\mathcal A$ in $\mathsf{BO}(u)$ there is a
 nonanticipating policy $\mathcal A^{\rm nf}$ which completes every optimized
 job as one contiguous block of length $1+p_i$ and satisfies
 \begin{equation}
- \cost(\mathcal A^{\rm nf},I)\le \cost(\mathcal A,I)
+ \ALG_{\mathcal A^{\rm nf}}(I)\le \ALG_{\mathcal A}(I)
  \label{eq:bo-normal-form}
 \end{equation}
 on every input $I$.  If $\mathcal A$ is deterministic, then so is
@@ -294,7 +294,7 @@ $a(p_i)$ in nonincreasing order.  If $P,P'$ are independent draws from the
 empirical distribution, online pair accounting and the empirical offline
 identity \cref{cor:empirical-offline} give
 \begin{align}
- \cost(\textsc{OptimizeAll})
+ \ALG_{\textsc{OptimizeAll}}
  &\le \frac{n^2}{2}\EE\max\{a(P),a(P')\}
       +\frac n2\EE a(P),
  \label{eq:bo-det-optall-online}\\
@@ -354,7 +354,7 @@ with a $b$-fraction of values $u$ and the remaining values zero, labeled so
 that the long optimized blocks occur first.
 Equations \eqref{eq:bo-det-optall-online}--
 \eqref{eq:bo-det-optall-envelope} prove
-$\cost(\textsc{OptimizeAll})\le R\OPT+O_u(n)$.
+$\ALG_{\textsc{OptimizeAll}}\le R\OPT+O_u(n)$.
 This matches the lower bound and proves \eqref{eq:bo-det-curve}.
 The asymptotic formula \eqref{eq:bo-det-asymptotic} follows directly from
 \eqref{eq:bo-det-optall-ratio}.
@@ -367,14 +367,14 @@ $\mathcal A_{\mathsf{BO}}$, depending only on $n,u$, and a sequence
 $\eps_u(n)\to0$ such that every size-$n$ multiset $M\subseteq[0,u]$ and every
 fixed labeling $\sigma$ satisfy
 \begin{equation}
- \EE\cost(\mathcal A_{\mathsf{BO}},\sigma(M))
+ \EE\ALG_{\mathcal A_{\mathsf{BO}}}(\sigma(M))
  \le n^2\PhiBO(D[M])+\eps_u(n)n^2.
  \label{eq:bo-instance-upper}
 \end{equation}
 Conversely, for every randomized nonanticipating policy $\mathcal A$, even
 an announced one, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
- \EE\cost(\mathcal A,\sigma(M))
+ \EE\ALG_{\mathcal A}(\sigma(M))
  \ge n^2\PhiBO(D[M])-\eps_u(n)n^2.
  \label{eq:bo-instance-lower}
 \end{equation}
@@ -462,7 +462,7 @@ the shorter cost per completion first.  Equations
 \eqref{eq:bo-selected-work}--\eqref{eq:bo-fluid-raw-first}, with the uniform
 choice $\delta=\delta_n$, give
 \[
- \frac1{n^2}\EE\cost(\mathcal A,M)
+ \frac1{n^2}\EE\ALG_{\mathcal A}(M)
  \ge\frac12\min\{u,1+\mu_M\}-o_u(1).
 \]
 The estimate is uniform in the deterministic policy.  Applying

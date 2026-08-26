@@ -64,18 +64,10 @@ which raw execution becomes unavailable.  We use this only as intuition.
 The obligatory theorems and their algorithms are proved directly; deriving
 them from revealing optimization would require arguing about both $u$ and $n$ going to infinity, which we avoid.
 
-We write $\cost(\mathcal A,I)$ for the objective value of an online algorithm
-$\mathcal A$ on an instance $I$, and $\cost(\OPT,I)$ for the value of an
-offline optimum that knows all processing times.  In calculations we use the
-shorter abbreviations
-\[
- \ALG_{\mathcal A}(I)=\cost(\mathcal A,I),
- \qquad
- \OPT(I)=\cost(\OPT,I),
-\]
-and omit algorithms or instances when they are clear.  Thus $\OPT$ denotes
-the algorithm inside $\cost(\OPT,I)$, while the abbreviation $\OPT(I)$
-denotes its cost.
+We write $\ALG_{\mathcal A}(I)$ for the objective value of an online
+algorithm $\mathcal A$ on an instance $I$, and $\OPT(I)$ for the value of an
+offline optimum that knows all processing times.  We omit algorithm
+subscripts or instance arguments when they are clear.
 
 \subsection{Information and adversaries}
 
@@ -96,9 +88,9 @@ assumption on the adversarial multiset.
 For a multiset $M$ of $n$ occurrences and a randomized policy $\mathcal A$,
 write
 \[
- \cost^{\mathrm{oo}}(\mathcal A,M)
+ \ALG_{\mathcal A}^{\mathrm{oo}}(M)
  \defeq \max_{\sigma\in\mathfrak S_n}
-       \EE\cost(\mathcal A,\sigma(M)).
+       \EE\ALG_{\mathcal A}(\sigma(M)).
 \]
 This is the standard order-oblivious view of instance optimality: the input
 is a multiset and its order carries no instance
@@ -108,11 +100,11 @@ policy $\mathcal A$, let $\mathcal A^{\mathrm{sym}}$ first draw a uniform
 permutation $\Pi$ of the public labels and then simulate $\mathcal A$ through
 that relabeling.  For every fixed labeling $\sigma$,
 \[
- \EE\cost(\mathcal A^{\mathrm{sym}},\sigma(M))
- =\EE_{\Pi}\EE\cost(\mathcal A,\Pi\sigma(M)),
+ \EE\ALG_{\mathcal A^{\mathrm{sym}}}(\sigma(M))
+ =\EE_{\Pi}\EE\ALG_{\mathcal A}(\Pi\sigma(M)),
 \]
 which is independent of $\sigma$ and at most
-$\cost^{\mathrm{oo}}(\mathcal A,M)$.  Hence randomized policies may be
+$\ALG_{\mathcal A}^{\mathrm{oo}}(M)$.  Hence randomized policies may be
 symmetrized without loss, after which only the multiset matters.  When the
 introduction compares costs ``on $M$,'' it uses this convention.  An
 announced policy knows $M$, but not its assignment to the public labels.
@@ -983,7 +975,7 @@ the operations of at most $h$ jobs, altering at most $ch$ operations of
 individual length at most $W$, while preserving the relative order and
 completion events of all unaffected jobs.  Then
 \begin{equation}
- |\cost(\mathcal A)-\cost(\widetilde{\mathcal A})|
+ |\ALG_{\mathcal A}-\ALG_{\widetilde{\mathcal A}}|
  \le(c+1)Whn.
  \label{eq:bounded-suffix-edit}
 \end{equation}
@@ -1054,8 +1046,8 @@ $\varepsilon,\alpha,\beta,\eta\ge0$.  Suppose that on an event $G$ there
 are an edited completing schedule $\widetilde{\mathcal A}$ and a possibly
 random template $\pi\in\Pi$ such that
 \begin{align}
- \cost(\mathcal A)&\ge
-   \cost(\widetilde{\mathcal A})-\varepsilon n^2,
+ \ALG_{\mathcal A}&\ge
+   \ALG_{\widetilde{\mathcal A}}-\varepsilon n^2,
  \label{eq:transfer-edit-cost}\\
  \frac{N_{\widetilde{\mathcal A}}(nx)}n
  &\le \mathcal C_{D,\pi}(x+\alpha)+\beta
@@ -1064,7 +1056,7 @@ random template $\pi\in\Pi$ such that
 \end{align}
 If $\Prob(G^c)\le\eta$, then
 \begin{equation}
- \frac{\EE\cost(\mathcal A)}{n^2}
+ \frac{\EE\ALG_{\mathcal A}}{n^2}
  \ge \Phi(D)-\varepsilon-\alpha-H\beta-\eta B.
  \label{eq:completion-curve-transfer}
 \end{equation}
@@ -1075,7 +1067,7 @@ Total completion time is the area under the unfinished-job curve.  On $G$,
 \cref{eq:transfer-completion-bound} and the fact that the fluid curve is one
 after $H$ give
 \begin{align*}
- \frac{\cost(\widetilde{\mathcal A})}{n^2}
+ \frac{\ALG_{\widetilde{\mathcal A}}}{n^2}
  &\ge\int_0^H
    \bigl(1-\mathcal C_{D,\pi}(x+\alpha)-\beta\bigr)\,dx\\
  &\ge F_D(\pi)-\alpha-H\beta
@@ -1114,13 +1106,13 @@ Let $\widehat D$ be a pilot estimate, let $D^{\rm rem}$ be the law of the
 remaining jobs, and let $\widehat\pi$ minimize $F_{\widehat D}$.  If the
 complete learned schedule, including its pilot, satisfies conditionally
 \begin{equation}
- \EE[\cost(\mathcal A)\mid\widehat D,D^{\rm rem}]
+ \EE[\ALG_{\mathcal A}\mid\widehat D,D^{\rm rem}]
  \le n^2F_{D^{\rm rem}}(\widehat\pi)+\varepsilon n^2,
  \label{eq:pilot-transfer-finite-cost}
 \end{equation}
 then
 \begin{equation}
- \frac{\EE\cost(\mathcal A)}{n^2}
+ \frac{\EE\ALG_{\mathcal A}}{n^2}
  \le \Phi(D)+2L_0\EE d(\widehat D,D^{\rm rem})
        +L_0\EE d(D^{\rm rem},D)+\varepsilon.
  \label{eq:pilot-learning-transfer}

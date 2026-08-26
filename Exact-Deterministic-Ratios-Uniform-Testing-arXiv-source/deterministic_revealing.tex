@@ -95,15 +95,15 @@ u, &\uDet{1}\le u\le \uDet{2},\\[1mm]
 \end{equation}
 For every branch there is an explicit deterministic algorithm satisfying
 \[
- \cost(\mathcal A,I)\le \RdetRO(u)\cost(\OPT,I)+O_u(n).
+ \ALG_{\mathcal A}(I)\le \RdetRO(u)\OPT(I)+O_u(n).
 \]
 On $u\ge \uDet{5}$ the remainder is one absolute $O(n)$ term, uniform over all
 finite $u$.
 Conversely, for every deterministic algorithm $\mathcal A$ and every
 $\eps>0$, there are arbitrarily large fixed instances $I$ such that
 \[
- \cost(\mathcal A,I)
- \ge\bigl(\RdetRO(u)-\eps\bigr)\cost(\OPT,I).
+ \ALG_{\mathcal A}(I)
+ \ge\bigl(\RdetRO(u)-\eps\bigr)\OPT(I).
 \]
 For $u\ge \uDet{5}$, these lower-bound instances may be chosen cap-free:
 $p_j<u-1$ for every job.  Thus both witnesses on the plateau are uniform in

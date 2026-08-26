@@ -18,12 +18,12 @@ $\uDet{5}-3=\ln \uDet{5}$, and set
 For every deterministic online algorithm $\mathcal B$ and every $\eps>0$,
 there are arbitrarily large obligatory-testing instances $I$ such that
 \[
- \cost(\mathcal B,I)\ge(\RdetOT-\eps)\cost(\OPT,I).
+ \ALG_{\mathcal B}(I)\ge(\RdetOT-\eps)\OPT(I).
 \]
 Conversely, there are a deterministic algorithm $\mathcal A$ and an absolute
 constant $B$ such that every $n$-job obligatory instance satisfies
 \[
- \cost(\mathcal A,I)\le\RdetOT\cost(\OPT,I)+Bn.
+ \ALG_{\mathcal A}(I)\le\RdetOT\OPT(I)+Bn.
 \]
 Consequently the optimal deterministic size-asymptotic competitive ratio is
 exactly $\RdetOT$.

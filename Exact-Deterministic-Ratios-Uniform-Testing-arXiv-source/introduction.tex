@@ -162,7 +162,7 @@ Fix $L<\infty$.  The algorithm $\mathcal A^*$ in
 \cref{alg:intro-obligatory-rand} has the following property: for every
 size-$n$ multiset $M\subseteq[0,L]$ and every online algorithm $\mathcal A'$,
 \[
- \cost(\mathcal A^*)\le \cost(\mathcal A')+o_L(n^2),
+ \ALG_{\mathcal A^*}\le \ALG_{\mathcal A'}+o_L(n^2),
 \]
 where both costs are measured on $M$ and include the algorithms' randomness.
 The competing algorithm $\mathcal A'$ may even be designed specifically for
@@ -274,7 +274,7 @@ Fix $L<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
 for every size-$n$ multiset $M\subseteq[0,L]$ and every online algorithm
 $\mathcal A'$,
 \[
- \cost(\mathcal A^*)\le \cost(\mathcal A')+o_L(n^2).
+ \ALG_{\mathcal A^*}\le \ALG_{\mathcal A'}+o_L(n^2).
 \]
 \end{theorem}
 
@@ -387,7 +387,7 @@ Consider the blind-optimization model with some $u<\infty$.  There is one
 randomized algorithm $\mathcal A^*$ such that, for every size-$n$ multiset
 $M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
 \[
- \cost(\mathcal A^*)\le \cost(\mathcal A')+o_u(n^2).
+ \ALG_{\mathcal A^*}\le \ALG_{\mathcal A'}+o_u(n^2).
 \]
 \end{theorem}
 
@@ -530,7 +530,7 @@ Fix $u<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
 for every size-$n$ multiset $M\subseteq[0,u]$ and every online algorithm
 $\mathcal A'$,
 \[
- \cost(\mathcal A^*)\le \cost(\mathcal A')+o_u(n^2).
+ \ALG_{\mathcal A^*}\le \ALG_{\mathcal A'}+o_u(n^2).
 \]
 
 \end{theorem}

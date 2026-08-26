@@ -24,14 +24,14 @@ fixed $L<\infty$ there is a deterministic sequence
 $\eps_L(n)\to0$ such that, for every size-$n$ multiset
 $M\subseteq[0,L]$ and every fixed labeling $\sigma$,
 \begin{equation}
- \EE\cost(\mathcal A^*,\sigma(M))
+ \EE\ALG_{\mathcal A^*}(\sigma(M))
  \le n^2\PhiOT(D[M])+\eps_L(n)n^2.
  \label{eq:ot-instance-upper}
 \end{equation}
 Conversely, for every randomized policy $\mathcal A$, even an announced
 policy, some fixed oblivious labeling $\sigma$ satisfies
 \begin{equation}
- \EE\cost(\mathcal A,\sigma(M))
+ \EE\ALG_{\mathcal A}(\sigma(M))
  \ge n^2\PhiOT(D[M])-\eps_L(n)n^2.
  \label{eq:ot-instance-lower}
 \end{equation}
@@ -49,14 +49,14 @@ lengths lie in $[0,2]$.  More precisely, for every deterministic policy
 $\mathcal A$, even an announced one, and every even $n$, there is a fixed
 labeling of the input with $n/2$ zero jobs and $n/2$ length-two jobs for which
 \begin{equation}
- \cost(\mathcal A)\ge\frac98n^2.
+ \ALG_{\mathcal A}\ge\frac98n^2.
  \label{eq:ot-det-not-instance-optimal}
 \end{equation}
 On the same input, an announced randomized policy $\mathcal A'$ has
 \[
- \cost(\mathcal A')=n^2+\frac34n.
+ \ALG_{\mathcal A'}=n^2+\frac34n.
 \]
-Thus $\cost(\mathcal A)>\cost(\mathcal A')+n^2/8-O(n)$.
+Thus $\ALG_{\mathcal A}>\ALG_{\mathcal A'}+n^2/8-O(n)$.
 
 \item If job lengths are not bounded by a fixed constant, there is no
 randomized instance-optimal policy with one uniform additive $o(n^2)$ term.
@@ -65,14 +65,14 @@ input and every sufficiently large $n$, there is an input with lengths in
 $[0,n^2]$, a fixed labeling, and an announced randomized policy $\mathcal A'$
 such that
 \begin{equation}
- \cost(\mathcal A)\ge\cost(\mathcal A')+\frac18n^2.
+ \ALG_{\mathcal A}\ge\ALG_{\mathcal A'}+\frac18n^2.
  \label{eq:ot-unbounded-not-instance-optimal}
 \end{equation}
 \end{enumerate}
 \end{theorem}
 
 \begin{proof}
-As in the introduction, $\cost(\mathcal A)$ includes the expectation over
+As in the introduction, $\ALG_{\mathcal A}$ includes the expectation over
 the private randomness of $\mathcal A$.  For part~(i), write $n=2m$.
 Against the fixed deterministic policy, reveal
 length two on the first $m$ labels it tests and zero on the remaining $m$.
@@ -85,7 +85,7 @@ $3h(h+1)/2$.  At that point the remaining jobs consist of $m$ unit tests of
 zero jobs and $m-h$ processing operations of length two.  Even SPT order for
 this remaining work gives
 \begin{align*}
- \cost(\mathcal A,M)
+ \ALG_{\mathcal A}(M)
  &\ge \frac{3h(h+1)}2
  +(2m-h)(m+2h)+\frac{m(m+1)}2\\
  &\hspace{22mm}{}+m(m-h)+(m-h)(m-h+1)\\
@@ -97,7 +97,7 @@ their tests, defers every length-two job, and finally processes the deferred
 jobs.  This is the stationary policy with the zero jobs early.  Its exact
 cost identity \cref{eq:stationary-prefix-cost} gives
 \[
- \cost(\mathcal A')=n^2+\frac34n.
+ \ALG_{\mathcal A'}=n^2+\frac34n.
 \]
 This proves the first claim.
 
@@ -109,7 +109,7 @@ position.  The $k$th test delays $n-X_k$ unfinished jobs.  Hence the excess
 over the policy $\mathcal A'$ that tests and processes each job
 immediately satisfies
 \begin{equation}
- \cost(\mathcal A)-\cost(\mathcal A')
+ \ALG_{\mathcal A}-\ALG_{\mathcal A'}
  =\EE\sum_{k=1}^n(k-1-X_k).
  \label{eq:ot-all-H-excess}
 \end{equation}
@@ -135,7 +135,7 @@ then finish the positive jobs.  Its completion order is SPT, and moving its
 unit tests away from the corresponding processing operations costs at most
 $n^2$.  Thus
 \[
- \cost(\mathcal A)-\cost(\mathcal A')
+ \ALG_{\mathcal A}-\ALG_{\mathcal A'}
  \ge H\left(\frac{3n}{8}-\frac12\right)-n^2.
 \]
 For $H=n^2$ this exceeds $n^2/8$ for all sufficiently large $n$.  Averaging
@@ -227,7 +227,7 @@ an $E$-job immediately, and finish the residual jobs in SPT order.  The exact
 identity \cref{eq:stationary-prefix-cost} and
 \cref{eq:ot-Phi} give
 \begin{equation}
- \EE\cost(\mathrm{stat},M)
+ \EE\ALG_{\mathrm{stat}}(M)
  =n^2\PhiOT(D[M])
   +\frac12\left(|E|+\sum_i p_i\right).
  \label{eq:ot-announced-upper}
@@ -356,7 +356,7 @@ $O_L(nk+k^2)$.  The diagonal term in the exact stationary identity is
 $O_L(n)$, and using the rounded values can only increase the comparator's
 processing delays.  Therefore
 \begin{equation}
- \EE[\cost(\mathcal A^*,M)\mid S]
+ \EE[\ALG_{\mathcal A^*}(M)\mid S]
  \le n^2F_{\mathsf{OT},D^{\rm rem}}(\widehat J)+O_L(nk+k^2+n).
  \label{eq:ot-sample-first-instance}
 \end{equation}
@@ -372,7 +372,7 @@ Since
 \]
 we obtain
 \begin{equation}
- \EE\cost(\mathcal A^*,\sigma(M))
+ \EE\ALG_{\mathcal A^*}(\sigma(M))
  \le n^2\PhiOT(D[M])+O_L(n^{9/5})
  \label{eq:ot-instance-upper-rate}
 \end{equation}
