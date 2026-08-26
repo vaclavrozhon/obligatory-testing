@@ -4,7 +4,7 @@
 The previous section identified the optimal leading online cost for every
 fixed input in the revealing-optimization model.  We now compare that cost with the
 clairvoyant optimum and maximize over all inputs.  The cap $u$ is fixed, but
-the algorithm is not told the processing-time multiset.  This section proves
+the algorithm is not told the entries of the input vector.  This section proves
 \cref{thm:random-common-upper}, the rigorous randomized half of the informal
 curve theorem \cref{thm:intro-common-upper-curves}.  Its three transition
 points are
@@ -36,7 +36,7 @@ ratio against an oblivious adversary is
  \label{eq:intro-random-common-upper-curve}
 \end{equation}
 More precisely, there are randomized nonanticipating algorithms
-$\mathcal A_{n,u}$ and numbers $\eps_u(n)\to0$ such that every fixed labeled
+$\mathcal A_{n,u}$ and numbers $\eps_u(n)\to0$ such that every
 vector $p\in[0,u]^n$ satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A_{n,u}}(p)
@@ -66,7 +66,7 @@ input.  Here we compare that value with the clairvoyant minimum kernel and
 maximize over all empirical distributions.  A survival-function flattening
 argument reduces the outer optimization to binary distributions.  Two
 scalar maximizations give the four branches above.  A sublinear sample removes
-advance knowledge of the input, and binary random labelings give matching Yao
+advance knowledge of the input, and shuffled binary vectors give matching
 lower bounds.
 
 \subsection{Offline and stationary fluid coefficients}
@@ -85,17 +85,17 @@ law $D$, and use the survival function
 \end{equation}
 The convention at atoms does not affect any integral below.  Since a
 clairvoyant job has effective length $1+\min\{s,P\}$, the layer-cake identity
-and \cref{cor:empirical-offline} give, for $P_M\sim D[M]$,
+and \cref{cor:empirical-offline} give, for $P_p\sim D[p]$,
 \begin{align}
  \Omega_{\mathsf{RO},u}(D)
  &=\frac12\left(1+\int_0^s S_D(t)^2\,dt\right),
  \label{eq:rcu-offline-fluid}\\
- \OPT_u(M)
- &=n^2\Omega_{\mathsf{RO},u}(D[M])
-   +\frac n2\EE\min\{u,1+P_M\}
+ \OPT_u(p)
+ &=n^2\Omega_{\mathsf{RO},u}(D[p])
+   +\frac n2\EE\min\{u,1+P_p\}
  \label{eq:rcu-offline-finite}
 \end{align}
-for every empirical distribution $D[M]$.
+for every empirical distribution $D[p]$.
 
 We next specialize the maximum-density module
 \cref{lem:maximum-density-module} to a form suited to the cap.  If its
@@ -353,12 +353,12 @@ interior maximum above one occurs at $u=(3+\sqrt3)/2$; substitution gives
 \subsection{Worst-case upper bound from instance optimality}
 
 No second learning argument is needed.  Apply the universal unannounced
-policy of \cref{thm:common-upper-instance} to $D=D[M]$.  The endpoint
+policy of \cref{thm:common-upper-instance} to $D=D[p]$.  The endpoint
 comparison \cref{eq:rcu-Phi-endpoint-upper} and the scalar bound
 \cref{eq:rcu-announced-upper} give
 \[
- \PhiRO(D[M])
- \le \RrandRO(u)\Omega_{\mathsf{RO},u}(D[M]).
+ \PhiRO(D[p])
+ \le \RrandRO(u)\Omega_{\mathsf{RO},u}(D[p]).
 \]
 The exact empirical identity \cref{eq:rcu-offline-finite} has a nonnegative
 linear correction.  Therefore the instance-optimal upper bound immediately
@@ -374,14 +374,14 @@ is exactly clairvoyantly optimal, so no learning is required.
 \subsection{Binary oblivious lower bounds}
 
 It remains to show that the two endpoint policies used above cannot be
-improved in the worst case by a more adaptive algorithm.  We first record a
-binary random-labeling envelope.
+improved in the worst case by a more adaptive algorithm.  We first record an
+envelope for shuffled binary vectors.
 
 \begin{lemma}[Binary cap envelope]
 \label{lem:rcu-binary-lower}
-Fix $u>1$, $x\in[0,1]$, and put $z=1-x$.  Let $M_n$ have $xn+O(1)$ jobs of
-value $u$ and $zn+O(1)$ zero jobs.  For every randomized nonanticipating
-algorithm, even an announced one, some fixed labeling satisfies
+Fix $u>1$, $x\in[0,1]$, and put $z=1-x$.  Let $p^{(n)}$ have $xn+O(1)$
+coordinates of value $u$ and $zn+O(1)$ zero coordinates.  For every
+randomized nonanticipating algorithm, even an announced one,
 \begin{equation}
  \frac{\EE\ALG}{n^2}\ge
  \begin{cases}
@@ -459,10 +459,8 @@ $F_z(1)=(1+x+ux^2)/2$.  The suffix edit, vertical repair, and bad event all
 contribute $o_u(n^2)$.
 
 The argument holds for each deterministic policy.  For a randomized policy,
-fix its seed, average the result over seeds and the finite uniform placement
-space, and select a placement whose seed-expected cost is at least the joint
-average.  This placement is fixed before the seed and is therefore an
-oblivious input.  Finally, the effective lengths of the two job types are
+fix its seed and then average over the seed.  The private shuffle is already
+part of the input convention.  Finally, the effective lengths of the two job types are
 $1$ and $u$, so \eqref{eq:rcu-binary-offline} follows from
 \cref{lem:offline}.
 \end{proof}
@@ -501,7 +499,7 @@ one.
 \begin{lemma}[Balanced zero--two lower bound]
 \label{lem:rcu-zero-two-lower}
 For every $u\ge\uRand{3}$ and every randomized algorithm, arbitrarily large even
-$n$ admit a fixed labeling with $n/2$ jobs of value zero and $n/2$ jobs of
+$n$ admit a vector with $n/2$ zero coordinates and $n/2$ coordinates of
 value two such that
 \begin{equation}
  \EE\ALG\ge n^2-o_u(n^2),
@@ -528,8 +526,8 @@ raw jobs & $1-q$ & $u$\\
 \end{center}
 Every item costs at least two per completion.  Thus the completion envelope
 lies below $\min\{1,t/2\}$ independently of $q$, whose remaining-mass area is
-one.  This proves the online estimate after the $o_u(n^2)$ repairs and finite
-Yao selection \cref{lem:finite-yao}.  Since $u>3$, the two effective lengths
+one.  This proves the online estimate after the $o_u(n^2)$ repairs and
+averaging over the policy seed.  Since $u>3$, the two effective lengths
 are one and three; their equally weighted minimum kernel gives offline
 coefficient $3/4$.
 \end{proof}

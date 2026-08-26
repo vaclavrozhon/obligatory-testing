@@ -84,11 +84,11 @@ positive jobs processed immediately and $d_i$ the number deferred.
 \label{alg:intro-obligatory-rand}
 \begin{algorithmic}
 \State Set $B_n=O(n^{1/20})$ and test $O(n^{3/4})$ random jobs to estimate
-the job-length distribution $X\sim\widehat D$.
+the job-length distribution $P\sim\widehat D$.
 \State For each candidate threshold $0\le t\le B_n$, put
 \[
- a(t)=\Pr(X\le t),\qquad
- m(t)=\mathbb E[X\mathbf 1_{X\le t}],
+ a(t)=\Pr(P\le t),\qquad
+ m(t)=\mathbb E[P\mathbf 1_{P\le t}],
 \]
 and define
 \[
@@ -160,36 +160,34 @@ lengths.
 \label{thm:intro-obligatory-instance}
 Fix $L<\infty$.  The algorithm $\mathcal A^*$ in
 \cref{alg:intro-obligatory-rand} has the following property: for every
-size-$n$ multiset $M\subseteq[0,L]$ and every online algorithm $\mathcal A'$,
+vector $p\in[0,L]^n$ and every online algorithm $\mathcal A'$,
 \[
- \ALG_{\mathcal A^*}\le \ALG_{\mathcal A'}+o_L(n^2),
+ \EE\ALG_{\mathcal A^*}\le \EE\ALG_{\mathcal A'}+o_L(n^2),
 \]
-where both costs are measured on $M$ and include the algorithms' randomness.
+where both costs are measured on $p$ and include the private shuffle and the
+algorithms' remaining randomness.
 The competing algorithm $\mathcal A'$ may even be designed specifically for
-$M$ and told the entire input multiset in advance, though not its assignment
+$p$ and told all its entries in advance, though not their shuffled assignment
 to the public labels.
 \end{theorem}
 
-Here and in the instance-optimal statements below, cost on a multiset uses
-the \hyperref[par:order-oblivious]{order-oblivious convention} formalized in
-the model section.  A private
-shuffle makes the original labeling irrelevant, so the comparison is made
-separately for every multiset $M$.
+Here and in the instance-optimal statements below, randomized cost uses the
+\hyperref[par:input-convention]{input convention} formalized in the model
+section: the displayed vector is privately shuffled before the policy starts.
 
 Both assumptions in the theorem are necessary.  Without a fixed bound $L$
 there is no randomized instance-optimal algorithm, and without randomization
 there is no deterministic one; see \cref{thm:ot-instance-impossibility}.
 
 Two points about the theorem are worth emphasizing.  First, the comparison
-is made separately on every multiset.  We must therefore compete not only
+is made separately on every input vector.  We must therefore compete not only
 with one fixed online algorithm, but also with algorithms optimized for this
-particular $M$.
-Allowing $\mathcal A'$ to know $M$ makes this strongest possible online
-benchmark explicit.
+particular $p$.  Allowing $\mathcal A'$ to know the entries of $p$ makes this
+strongest possible online benchmark explicit.
 
 Second, the existence of some instance-optimal algorithm is perhaps not
 surprising.  One could imagine a meta-algorithm that samples the input to
-estimate $M$ and then runs an optimal policy for that estimate.  The
+estimate $D[p]$ and then runs an optimal policy for that estimate.  The
 substantive part of the theorem is that no complicated meta-algorithm is
 needed.  The optimal leading-order policy for a known input is itself a simple
 threshold policy, so $\mathcal A^*$ has essentially the same form as
@@ -265,26 +263,26 @@ Without an upper bound on the job lengths, no randomized algorithm has a
 finite competitive ratio, even if we ignore an additive $o(n^2)$ term; see
 \cref{thm:blind-unbounded-impossible} for a simple counterexample.  For every
 fixed bound $L$, however, sampling again gives one algorithm that is optimal
-on every bounded multiset.
+on every bounded input vector.
 
 
 \begin{theorem}[Blind-execution instance optimality, informal version of
 \protect\cref{thm:blind-instance}]
 \label{thm:intro-blind-instance}
 Fix $L<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
-for every size-$n$ multiset $M\subseteq[0,L]$ and every online algorithm
+for every vector $p\in[0,L]^n$ and every online algorithm
 $\mathcal A'$,
 \[
- \ALG_{\mathcal A^*}\le \ALG_{\mathcal A'}+o_L(n^2).
+ \EE\ALG_{\mathcal A^*}\le \EE\ALG_{\mathcal A'}+o_L(n^2).
 \]
 \end{theorem}
 
-To describe the algorithm, let $X\sim\widehat D$ denote the estimated
-job-length distribution and put $\widehat\mu=\mathbb E X$.  As in
+To describe the algorithm, let $P\sim\widehat D$ denote the estimated
+job-length distribution and put $\widehat\mu=\mathbb E P$.  As in
 \cref{alg:intro-obligatory-rand}, define
 \[
- a(t)=\Pr(X\le t),\qquad
- m(t)=\mathbb E[X\mathbf 1_{X\le t}],
+ a(t)=\Pr(P\le t),\qquad
+ m(t)=\mathbb E[P\mathbf 1_{P\le t}],
  \qquad
  \widehat\tau
  =\min_{\substack{t\ge0\\a(t)>0}}\frac{1+m(t)}{a(t)}.
@@ -385,10 +383,10 @@ samples the input and chooses between these two options.
 \protect\cref{thm:bo-instance}]
 \label{thm:intro-bo-instance}
 Consider the blind-optimization model with some $u<\infty$.  There is one
-randomized algorithm $\mathcal A^*$ such that, for every size-$n$ multiset
-$M\subseteq[0,u]$ and every online algorithm $\mathcal A'$,
+randomized algorithm $\mathcal A^*$ such that, for every vector
+$p\in[0,u]^n$ and every online algorithm $\mathcal A'$,
 \[
- \ALG_{\mathcal A^*}\le \ALG_{\mathcal A'}+o_u(n^2).
+ \EE\ALG_{\mathcal A^*}\le \EE\ALG_{\mathcal A'}+o_u(n^2).
 \]
 \end{theorem}
 
@@ -404,13 +402,13 @@ and let $\widehat\mu$ be the mean observed length.
 \end{algorithmic}
 \end{algorithm}
 
-More precisely, if $\mu_M$ is the mean optimized length in $M$, the best
+More precisely, if $\mu_p$ is the mean optimized length in $p$, the best
 possible leading value is
 \[
- \frac{n^2}{2}\min\{u,1+\mu_M\}.
+ \frac{n^2}{2}\min\{u,1+\mu_p\}.
 \]
 The two terms correspond respectively to running every job raw and to
-optimizing every job.  Thus the mean $\mu_M$ is the only statistic that the
+optimizing every job.  Thus the mean $\mu_p$ is the only statistic that the
 algorithm needs to estimate.
 
 \subsection{Revealing optimization}
@@ -528,10 +526,10 @@ tested jobs belong before the untouched raw block.
 \protect\cref{thm:common-upper-instance}]
 \label{thm:intro-common-upper-instance}
 Fix $u<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
-for every size-$n$ multiset $M\subseteq[0,u]$ and every online algorithm
+for every vector $p\in[0,u]^n$ and every online algorithm
 $\mathcal A'$,
 \[
- \ALG_{\mathcal A^*}\le \ALG_{\mathcal A'}+o_u(n^2).
+ \EE\ALG_{\mathcal A^*}\le \EE\ALG_{\mathcal A'}+o_u(n^2).
 \]
 
 \end{theorem}
@@ -551,10 +549,10 @@ matching constructions are in \cref{sec:random-common-upper}.
 \begin{algorithmic}
 \State Shuffle the jobs, test $O(\sqrt n)$ of them, and use the
 observed lengths to estimate the input distribution.
-\State For $X\sim\widehat D$, choose a processing-time prefix $E$ maximizing
+\State For $P\sim\widehat D$, choose a processing-time prefix $E$ maximizing
 $\widehat a/(1+\widehat\ell)$, where
-$\widehat a=\Pr(X\in E)$ and
-$\widehat\ell=\mathbb E[X\mathbf 1_{X\in E}]$.
+$\widehat a=\Pr(P\in E)$ and
+$\widehat\ell=\mathbb E[P\mathbf 1_{P\in E}]$.
 \State Put $\widehat\tau=(1+\widehat\ell)/\widehat a$.  If
 $\widehat\tau\ge u$, set $q=0$; otherwise choose $q$ minimizing
 $F_{\mathsf{RO},u,\widehat D}(q)$ from \cref{eq:cui-F}.

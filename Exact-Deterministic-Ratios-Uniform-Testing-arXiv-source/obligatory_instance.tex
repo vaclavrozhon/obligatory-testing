@@ -9,8 +9,8 @@ growing-cutoff policy $\mathcal A_n^*$ from
 the policy attains the best leading cost available even to an announced
 policy.
 
-For a multiset $M=\{p_1,\ldots,p_n\}$, we define below an explicit number
-$\PhiOT(D[M])$, using the common empirical notation
+For a vector $p=(p_1,\ldots,p_n)$, we define below an explicit number
+$\PhiOT(D[p])$, using the common empirical notation
 \cref{eq:empirical-distributions}.  It is obtained by scanning the
 processing times in increasing order, choosing the prefix with the largest
 number of completions per unit of discovery work, and evaluating the
@@ -19,20 +19,19 @@ stationary policy for that prefix.
 \begin{theorem}[Obligatory-testing instance optimality]
 \label{thm:obligatory-instance}
 There is a single randomized nonanticipating policy $\mathcal A^*$, depending
-only on $n$ and not on the multiset, with the following property.  For every
+only on $n$ and not on the input vector, with the following property.  For every
 fixed $L<\infty$ there is a deterministic sequence
-$\eps_L(n)\to0$ such that, for every size-$n$ multiset
-$M\subseteq[0,L]$ and every fixed labeling $\sigma$,
+$\eps_L(n)\to0$ such that every vector $p\in[0,L]^n$ satisfies
 \begin{equation}
- \EE\ALG_{\mathcal A^*}(\sigma(M))
- \le n^2\PhiOT(D[M])+\eps_L(n)n^2.
+ \EE\ALG_{\mathcal A^*}(p)
+ \le n^2\PhiOT(D[p])+\eps_L(n)n^2.
  \label{eq:ot-instance-upper}
 \end{equation}
-Conversely, for every randomized policy $\mathcal A$, even an announced
-policy, some fixed oblivious labeling $\sigma$ satisfies
+Conversely, every $p\in[0,L]^n$ and every randomized policy $\mathcal A$,
+even an announced policy, satisfy
 \begin{equation}
- \EE\ALG_{\mathcal A}(\sigma(M))
- \ge n^2\PhiOT(D[M])-\eps_L(n)n^2.
+ \EE\ALG_{\mathcal A}(p)
+ \ge n^2\PhiOT(D[p])-\eps_L(n)n^2.
  \label{eq:ot-instance-lower}
 \end{equation}
 One may take $\eps_L(n)=O_L(n^{-1/5})$.  Thus $\mathcal A^*$ is
@@ -62,7 +61,7 @@ Thus $\ALG_{\mathcal A}>\ALG_{\mathcal A'}+n^2/8-O(n)$.
 randomized instance-optimal policy with one uniform additive $o(n^2)$ term.
 More precisely, for every randomized policy $\mathcal A$ independent of the
 input and every sufficiently large $n$, there is an input with lengths in
-$[0,n^2]$, a fixed labeling, and an announced randomized policy $\mathcal A'$
+$[0,n^2]$ and an announced randomized policy $\mathcal A'$
 such that
 \begin{equation}
  \ALG_{\mathcal A}\ge\ALG_{\mathcal A'}+\frac18n^2.
@@ -85,7 +84,7 @@ $3h(h+1)/2$.  At that point the remaining jobs consist of $m$ unit tests of
 zero jobs and $m-h$ processing operations of length two.  Even SPT order for
 this remaining work gives
 \begin{align*}
- \ALG_{\mathcal A}(M)
+ \ALG_{\mathcal A}(p)
  &\ge \frac{3h(h+1)}2
  +(2m-h)(m+2h)+\frac{m(m+1)}2\\
  &\hspace{22mm}{}+m(m-h)+(m-h)(m-h+1)\\
@@ -101,7 +100,7 @@ cost identity \cref{eq:stationary-prefix-cost} gives
 \]
 This proves the first claim.
 
-For part~(ii), put $H=n^2$ and first run $\mathcal A$ on the input $M^0$ in
+For part~(ii), put $H=n^2$ and first run $\mathcal A$ on the input $p^0$ in
 which every job has length $H$.  For a fixed private seed, let $X_k$ be the
 number of completed jobs immediately before the $k$th test.  Every processing
 operation contributes the same $Hn(n+1)/2$ in total, regardless of its
@@ -116,7 +115,7 @@ immediately satisfies
 If this sum has expectation at least $n^2/8$, we are done.
 
 Otherwise, replace one uniformly random label by a zero and leave every
-other length equal to $H$; call the resulting input $M^1$.  Conditional on the
+other length equal to $H$; call the resulting input $p^1$.  Conditional on the
 seed, the rank $K$ at which the zero label is tested is uniform on
 $\{1,\ldots,n\}$.  Until that test, the run agrees with the all-$H$ run, and
 therefore $X_K$ length-$H$ jobs complete before the zero.  From
@@ -139,8 +138,8 @@ $n^2$.  Thus
  \ge H\left(\frac{3n}{8}-\frac12\right)-n^2.
 \]
 For $H=n^2$ this exceeds $n^2/8$ for all sufficiently large $n$.  Averaging
-over the possible zero labels shows that one fixed oblivious labeling has
-the same lower bound.  This proves part~(ii).
+over the possible zero labels is exactly the private-shuffle expectation
+from the input convention.  This proves part~(ii).
 \end{proof}
 
 \subsection{The maximum-density benchmark}
@@ -168,8 +167,8 @@ Define
   +\frac12\iint\min\{p,q\}\,d\nu(p)d\nu(q).}
  \label{eq:ot-Phi}
 \end{equation}
-For $D=D[M]$ and a whole-occurrence maximizing prefix $E$, this is precisely
-$F_{\mathsf{OT},D[M]}(E)$ from \cref{eq:stationary-leading-coefficient}.  The next
+For $D=D[p]$ and a whole-occurrence maximizing prefix $E$, this is precisely
+$F_{\mathsf{OT},D[p]}(E)$ from \cref{eq:stationary-leading-coefficient}.  The next
 lemma proves both that the value is
 independent of choices at a tied atom and that it lower-bounds every fluid
 policy.
@@ -227,22 +226,22 @@ an $E$-job immediately, and finish the residual jobs in SPT order.  The exact
 identity \cref{eq:stationary-prefix-cost} and
 \cref{eq:ot-Phi} give
 \begin{equation}
- \EE\ALG_{\mathrm{stat}}(M)
- =n^2\PhiOT(D[M])
+ \EE\ALG_{\mathrm{stat}}(p)
+ =n^2\PhiOT(D[p])
   +\frac12\left(|E|+\sum_i p_i\right).
  \label{eq:ot-announced-upper}
 \end{equation}
-In particular, if $M\subseteq[0,L]$, the remainder is at most
+In particular, if $p\in[0,L]^n$, the remainder is at most
 $(1+L)n/2$.  The announced optimum is therefore at most the claimed fluid
 value plus $O_L(n)$.
 
 \subsection{No adaptive announced policy has a better leading cost}
 
-Assign the occurrences of $M$ uniformly to the public labels and fix a
+Uniformly shuffle the coordinates of $p$ and fix a
 deterministic nonanticipating policy.  We may assume that it completes every
 job, since otherwise the lower bound is immediate.  In the adaptive order in
 which it tests new labels, the revealed occurrences form a uniform random
-permutation $P_1,\ldots,P_n$ of $M$ by deferred decisions.  Equal-valued
+permutation $P_1,\ldots,P_n$ of the coordinates of $p$ by deferred decisions.  Equal-valued
 occurrences may be kept distinct as temporary tokens.
 Because every first touch is a test, no suffix edit is needed and we may use
 the sharper all-prefix sampling bound directly.
@@ -288,14 +287,14 @@ $\alpha=h_n$, $\beta=(K_n+1)\gamma_n$, and $\eta=n^{-2}$.  Finally,
 zero-preserving transport \cref{lem:zero-preserving-transport} changes the
 fluid value by at most $h_n$.  Because
 $(K_n+1)\gamma_n=O(n^{-3/10}\sqrt{\ln(n+2)})$, every deterministic announced
-policy has uniform-placement expected cost at least
+policy has private-shuffle expected cost at least
 \begin{equation}
- n^2\PhiOT(D[M])-O_L(n^{9/5}).
+ n^2\PhiOT(D[p])-O_L(n^{9/5}).
  \label{eq:ot-announced-lower}
 \end{equation}
-Condition on the policy seed when applying the transfer theorem.  Finite Yao
-selection, \cref{lem:finite-yao}, then gives the same lower bound on one fixed
-oblivious placement for every randomized policy.
+Condition on the policy seed when applying the transfer theorem and then
+average over the seed.  This is precisely the randomized cost under the
+input convention.
 
 \subsection{Removing the announcement}
 
@@ -345,7 +344,7 @@ learned from the sample.
 Rounding each processing time upward by at most $\eta$ preserves zeros, so
 \cref{lem:zero-preserving-transport} gives
 \begin{equation}
- \PhiOT(D^+)\le\PhiOT(D[M])+\eta.
+ \PhiOT(D^+)\le\PhiOT(D[p])+\eta.
  \label{eq:ot-rounding-stability}
 \end{equation}
 
@@ -356,7 +355,7 @@ $O_L(nk+k^2)$.  The diagonal term in the exact stationary identity is
 $O_L(n)$, and using the rounded values can only increase the comparator's
 processing delays.  Therefore
 \begin{equation}
- \EE[\ALG_{\mathcal A^*}(M)\mid S]
+ \EE[\ALG_{\mathcal A^*}(p)\mid S]
  \le n^2F_{\mathsf{OT},D^{\rm rem}}(\widehat J)+O_L(nk+k^2+n).
  \label{eq:ot-sample-first-instance}
 \end{equation}
@@ -372,11 +371,11 @@ Since
 \]
 we obtain
 \begin{equation}
- \EE\ALG_{\mathcal A^*}(\sigma(M))
- \le n^2\PhiOT(D[M])+O_L(n^{9/5})
+ \EE\ALG_{\mathcal A^*}(p)
+ \le n^2\PhiOT(D[p])+O_L(n^{9/5})
  \label{eq:ot-instance-upper-rate}
 \end{equation}
-for every fixed labeling $\sigma$.  Together with
+for every $p\in[0,L]^n$.  Together with
 \cref{eq:ot-announced-lower}, this proves
 \cref{thm:obligatory-instance}.
 

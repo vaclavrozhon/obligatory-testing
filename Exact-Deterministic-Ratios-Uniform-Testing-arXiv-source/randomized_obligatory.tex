@@ -2,8 +2,9 @@
 \label{sec:random-obligatory}
 
 We now pass from the finite-cap randomized curve to the unbounded obligatory
-endpoint.  The adversary fixes the labeled vector $p\in[0,\infty)^n$ before the algorithm
-draws its random bits.  The multiset is not announced, and no upper bound on
+endpoint.  The adversary fixes a vector $p\in[0,\infty)^n$ before the algorithm
+draws its random bits; the input convention then privately shuffles its
+coordinates.  The entries are not announced, and no upper bound on
 the processing times is assumed.  The finite-cap zero--two lower bound
 transfers directly.  The upper bound needs one additional uniformization: a
 cutoff and fallback protect the finite-cap stationary policy from an
@@ -34,8 +35,8 @@ explicit estimate
  \label{eq:rand-obligatory-fixed-upper}
 \end{equation}
 Conversely, for every randomized algorithm $\mathcal A$ and every $\eps>0$,
-arbitrarily large even $n$ admit a fixed labeling of $n/2$ zero jobs and
-$n/2$ jobs of processing time two such that
+arbitrarily large even $n$ admit a vector with $n/2$ zero coordinates and
+$n/2$ coordinates of value two such that
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
  \ge\left(\frac43-\eps\right)\OPT(p),

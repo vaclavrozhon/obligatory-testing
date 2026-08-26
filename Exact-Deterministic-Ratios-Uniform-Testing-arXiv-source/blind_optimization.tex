@@ -14,7 +14,7 @@ simple form: run everything raw up to $u=2$, and optimize everything after
 that point.  Proving that no adaptive mixture improves these two policies
 uses the same raw-safe hidden-stopping idea as the revealing-optimization
 lower bound.  Randomization is still essential for learning the input:
-a private random sample is representative under every fixed labeling,
+a private random sample is representative after the initial shuffle,
 whereas an adversary can make a deterministic exploration history atypical.
 
 This small change removes the threshold decision entirely.  It also shows
@@ -30,18 +30,18 @@ rigorous version of \cref{thm:intro-bo-curve} and maximizes that
 instance-specific value relative to the clairvoyant optimum.  Keeping the
 results together avoids repeating the same blind-block reduction.
 
-For a multiset $M$, let $P\sim D[M]$ and put
+For a vector $p$, let $P\sim D[p]$ and put
 \[
- \mu_M=\EE P=\frac1n\sum_{i=1}^n p_i
+ \mu_p=\EE P=\frac1n\sum_{i=1}^n p_i
 \]
 and define
 \begin{equation}
- \PhiBO(D[M])=\frac12\min\{u,1+\mu_M\}.
+ \PhiBO(D[p])=\frac12\min\{u,1+\mu_p\}.
  \label{eq:bo-phi}
 \end{equation}
 The two terms have an immediate meaning.  Running every job raw uses $u$
 units per completion.  Optimizing and then blindly processing every job uses
-$1+\mu_M$ units per completion on average.
+$1+\mu_p$ units per completion on average.
 
 Randomization is necessary for attaining this benchmark on every input.
 
@@ -364,38 +364,37 @@ The asymptotic formula \eqref{eq:bo-det-asymptotic} follows directly from
 \label{thm:bo-instance}
 For every fixed $u<\infty$ there exist a randomized nonanticipating policy
 $\mathcal A_{\mathsf{BO}}$, depending only on $n,u$, and a sequence
-$\eps_u(n)\to0$ such that every size-$n$ multiset $M\subseteq[0,u]$ and every
-fixed labeling $\sigma$ satisfy
+$\eps_u(n)\to0$ such that every vector $p\in[0,u]^n$ satisfies
 \begin{equation}
- \EE\ALG_{\mathcal A_{\mathsf{BO}}}(\sigma(M))
- \le n^2\PhiBO(D[M])+\eps_u(n)n^2.
+ \EE\ALG_{\mathcal A_{\mathsf{BO}}}(p)
+ \le n^2\PhiBO(D[p])+\eps_u(n)n^2.
  \label{eq:bo-instance-upper}
 \end{equation}
-Conversely, for every randomized nonanticipating policy $\mathcal A$, even
-an announced one, some fixed oblivious labeling $\sigma$ satisfies
+Conversely, every $p\in[0,u]^n$ and every randomized nonanticipating policy
+$\mathcal A$, even an announced one, satisfy
 \begin{equation}
- \EE\ALG_{\mathcal A}(\sigma(M))
- \ge n^2\PhiBO(D[M])-\eps_u(n)n^2.
+ \EE\ALG_{\mathcal A}(p)
+ \ge n^2\PhiBO(D[p])-\eps_u(n)n^2.
  \label{eq:bo-instance-lower}
 \end{equation}
 Thus one policy is asymptotically optimal, at the $n^2$ scale, for every
-multiset simultaneously.  Unlike the benchmarks in the preceding sections,
-$\PhiBO$ depends only on the empirical mean.
+input vector simultaneously.  Unlike the benchmarks in the preceding
+sections, $\PhiBO$ depends only on the empirical mean.
 \end{theorem}
 
 The proof is simpler than in the revealing models.  Because optimization
 reveals nothing, it can be moved next to the processing of its job.  Every
 job is then either a raw block of known length $u$ or an optimized blind
-block with average length $1+\mu_M$.  A predictable-sampling bound rules out
-an adaptive advantage, while a sample estimates the one number $\mu_M$.  The
+block with average length $1+\mu_p$.  A predictable-sampling bound rules out
+an adaptive advantage, while a sample estimates the one number $\mu_p$.  The
 first subsection makes this argument formal; the second performs the outer
 worst-case optimization.
 
 \subsection{Proof of randomized instance optimality}
 
-In the equivalent random-labeling formulation, the labels are shuffled uniformly
-before the policy starts.  Then the lower half simply says that no announced
-policy beats $n^2\PhiBO(D[M])-o_u(n^2)$ in expectation.
+By the input convention, the coordinates of $p$ are shuffled uniformly
+before the policy starts.  The lower half simply says that no announced
+policy beats $n^2\PhiBO(D[p])-o_u(n^2)$ in expectation.
 
 By \cref{lem:bo-normal-form}, we may regard every optimized job as one
 indivisible block of hidden length $1+p_i$.  A raw block has the known length
@@ -418,7 +417,7 @@ on which every earlier prefix containing $t n$ completed optimized blocks
 has total hidden processing work
 \begin{equation}
  \sum_{i\text{ optimized in the prefix}}p_i
-   =\mu_M t n+o_\delta(n).
+   =\mu_p t n+o_\delta(n).
  \label{eq:bo-selected-work}
 \end{equation}
 The event is simultaneous over all prefixes, so a stopping fraction chosen
@@ -437,7 +436,7 @@ and failure probability $o(1)$, simultaneously over all relevant prefixes.
 After division by $n$, both this deviation and the edited suffix contribute
 $O_u(n^{-1/4}\sqrt{\ln(n+2)})$ to the normalized completion-area bound.
 
-Put $a=1+\mu_M$.  If the final optimized fraction is $q$, the best possible
+Put $a=1+\mu_p$.  If the final optimized fraction is $q$, the best possible
 fluid ordering puts the cheaper of the two block types first.  When $a\le u$
 its area is
 \begin{equation}
@@ -462,16 +461,15 @@ the shorter cost per completion first.  Equations
 \eqref{eq:bo-selected-work}--\eqref{eq:bo-fluid-raw-first}, with the uniform
 choice $\delta=\delta_n$, give
 \[
- \frac1{n^2}\EE\ALG_{\mathcal A}(M)
- \ge\frac12\min\{u,1+\mu_M\}-o_u(1).
+ \frac1{n^2}\EE\ALG_{\mathcal A}(p)
+ \ge\frac12\min\{u,1+\mu_p\}-o_u(1).
 \]
-The estimate is uniform in the deterministic policy.  Applying
-\cref{lem:finite-yao} and the same relabeling argument as in
-\cref{sec:blind-announced} proves
-\eqref{eq:bo-instance-lower}.  Together with the upper bound below, one may
+The estimate is uniform in the deterministic policy.  Averaging it over the
+policy seed proves \eqref{eq:bo-instance-lower}.  Together with the upper
+bound below, one may
 take $\eps_u(n)=O_u(n^{-1/4}\sqrt{\ln(n+2)})$ after enlarging its constant.
 
-\paragraph{One policy for all multisets.}
+\paragraph{One policy for all input vectors.}
 Take $k=\lceil n^{2/3}\rceil$ uniformly random sample jobs.  Optimize each
 sample job and process it immediately, thereby observing its duration, and let
 $\widehat\mu$ be their sample mean.  If $1+\widehat\mu<u$, optimize and
@@ -482,11 +480,11 @@ The sample contributes at most $O_u(nk)=o_u(n^2)$ beyond the main schedule.
 The variance estimate \cref{eq:without-replacement-variance}, after scaling
 from $[0,1]$ to $[0,u]$, gives
 \[
- \EE|\widehat\mu-\mu_M|=O_u(k^{-1/2}+k/n)=o_u(1).
+ \EE|\widehat\mu-\mu_p|=O_u(k^{-1/2}+k/n)=o_u(1).
 \]
 Choosing the wrong mode can cost at most
-$O(n^2)|\widehat\mu-\mu_M|$, while choosing the correct mode has leading
-cost $n^2\PhiBO(D[M])$.  This proves
+$O(n^2)|\widehat\mu-\mu_p|$, while choosing the correct mode has leading
+cost $n^2\PhiBO(D[p])$.  This proves
 \eqref{eq:bo-instance-upper}.  In particular, the universal policy needs to
 learn only one number, not a histogram or a threshold.
 
@@ -609,11 +607,11 @@ optimal afterwards.  Substitution gives
  f_u(b_*)=\frac12\left(
   1+\sqrt{\frac{u^2+u-1}{u-1}}\right).
 \]
-This proves \eqref{eq:bo-curve}.  The uniformly relabeled binary distributions
-\eqref{eq:bo-binary-hard}, together with \cref{lem:finite-yao}, give the
-oblivious lower bounds.  Together with the universal upper policy of
+This proves \eqref{eq:bo-curve}.  The shuffled binary vectors from
+\eqref{eq:bo-binary-hard} give the lower bounds under the input convention.
+Together with the universal upper policy of
 \cref{thm:bo-instance}, they prove both sides of the competitive-ratio claim.
-If the maximizing mass $b$ is irrational, finite multisets use
+If the maximizing mass $b$ is irrational, finite vectors use
 $\lfloor bn\rfloor$ copies of $u$; continuity gives the same asymptotic
 ratio.
 Finally,

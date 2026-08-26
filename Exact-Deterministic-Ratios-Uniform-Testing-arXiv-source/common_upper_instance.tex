@@ -9,27 +9,26 @@ revealing-optimization theorem \cref{thm:intro-common-upper-instance}.
 
 For a distribution $D$ on $[0,u]$, we define an explicit value
 $\PhiRO(D)$ in \cref{eq:cui-Phi}.  It is obtained by choosing one threshold
-and minimizing a quadratic over the tested fraction $q$.  For a multiset
-$M$, use the empirical distribution $D[M]$ from
+and minimizing a quadratic over the tested fraction $q$.  For an input
+vector $p$, use the empirical distribution $D[p]$ from
 \cref{eq:empirical-distributions}.
 
 \begin{theorem}[Revealing-optimization instance optimality]
 \label{thm:common-upper-instance}
 For every fixed $u>0$ there exist randomized nonanticipating policies
 $\mathcal A^*_{n,u}$, depending only on $n,u$, and a deterministic sequence
-$\eps_u(n)\to0$ such that every size-$n$ multiset
-$M\subseteq[0,u]$ has the following properties.
-For every fixed labeling $\sigma$,
+$\eps_u(n)\to0$ such that every vector $p\in[0,u]^n$ has the following
+properties.
 \begin{equation}
- \EE\ALG_{\mathcal A^*_{n,u}}(\sigma(M))
- \le n^2\PhiRO(D[M])+\eps_u(n)n^2.
+ \EE\ALG_{\mathcal A^*_{n,u}}(p)
+ \le n^2\PhiRO(D[p])+\eps_u(n)n^2.
  \label{eq:cui-upper}
 \end{equation}
-Conversely, for every randomized nonanticipating policy $\mathcal A$, even
-an announced policy, some fixed oblivious labeling $\sigma$ satisfies
+Conversely, every $p\in[0,u]^n$ and every randomized nonanticipating policy
+$\mathcal A$, even an announced policy, satisfy
 \begin{equation}
- \EE\ALG_{\mathcal A}(\sigma(M))
- \ge n^2\PhiRO(D[M])-\eps_u(n)n^2.
+ \EE\ALG_{\mathcal A}(p)
+ \ge n^2\PhiRO(D[p])-\eps_u(n)n^2.
  \label{eq:cui-lower}
 \end{equation}
 One may take
@@ -42,10 +41,10 @@ One may take
 The proof has three layers.  First, for a fixed final tested fraction $q$, a
 completion envelope reduces every fluid schedule to an ordinary fractional
 knapsack.  Second, an adaptive first-touch trace turns every deterministic
-policy under a uniform placement into predictable sampling without
+policy under the private shuffle into predictable sampling without
 replacement.  One event then controls every touch prefix, so the realized
 stopping fraction can be substituted pathwise.  Finally, a growing grid and
-a sublinear sample make the result uniform over arbitrary bounded multisets
+a sublinear sample make the result uniform over arbitrary bounded vectors
 without announcing the input.
 
 \subsection{The fixed-fraction fluid benchmark}
@@ -206,7 +205,7 @@ $\beta=(K+1)\gamma_n$, gives
  \label{eq:cui-fixed-grid-lower}
 \end{equation}
 
-For an arbitrary multiset, take
+For an arbitrary input vector, take
 \begin{equation}
  K_n=\lfloor n^{1/6}\rfloor,\qquad
  h_n=u/K_n,\qquad \delta_n=n^{-1/6},
@@ -232,15 +231,15 @@ Apply \cref{thm:completion-curve-transfer} directly to the rounded grid, with
 $\alpha=h_n$, $\beta=(K_n+1)\gamma_n$, $H=1+u$, and
 $B=u/2$.  Together with the suffix edit and
 \cref{eq:cui-rounding-stability,eq:cui-grid-error}, it proves that every
-announced policy has uniform-placement cost at least
+announced policy has private-shuffle cost at least
 \begin{equation}
- n^2\PhiRO(D[M])
+ n^2\PhiRO(D[p])
  -O_u\!\left(n^{11/6}\sqrt{\ln(n+2)}\right).
  \label{eq:cui-announced-lower}
 \end{equation}
-Condition on the policy seed when applying the transfer theorem.  Finite Yao
-selection, \cref{lem:finite-yao}, then chooses a fixed oblivious labeling
-before that seed is drawn.  This proves \cref{eq:cui-lower}.
+Condition on the policy seed when applying the transfer theorem and then
+average over the seed.  This proves \cref{eq:cui-lower} under the input
+convention.
 
 \subsection{Removing the announcement}
 \label{sec:cui-learning}
@@ -321,11 +320,11 @@ $L_0=4(u+1)$, and \cref{eq:cui-histogram}.  Finally use
 \]
 the resulting bound is
 \begin{equation}
- \EE\ALG_{\mathcal A^*_{n,u}}(\sigma(M))
- \le n^2\PhiRO(D[M])+O_u(n^{11/6})
+ \EE\ALG_{\mathcal A^*_{n,u}}(p)
+ \le n^2\PhiRO(D[p])+O_u(n^{11/6})
  \label{eq:cui-universal-upper}
 \end{equation}
-for every fixed labeling.  Together with the announced lower bound
+for every $p\in[0,u]^n$.  Together with the announced lower bound
 \cref{eq:cui-announced-lower}, this proves
 \cref{thm:common-upper-instance}.  The larger logarithmic lower-bound error
 gives the common sequence in \cref{eq:cui-rate}.

@@ -4,27 +4,28 @@
 We now turn to $\mathsf{BE}$.  Running an untouched job blindly consumes
 its actual processing time and completes it; testing consumes one unit,
 reveals the value, and permits the processing operation to be delayed.  The
-adversary fixes an arbitrary labeled vector in $[0,L]^n$ before the private
-seed is drawn.  The goal of this section is to prove
+adversary fixes a vector $p\in[0,L]^n$ before the private seed is drawn; the
+private shuffle from the input convention then assigns its entries to labels.
+The goal of this section is to prove
 \cref{thm:blind-instance}, the rigorous version of the informal
 blind-execution theorem \cref{thm:intro-blind-instance}.
 
 \begin{theorem}[Blind-execution instance optimality]
 \label{thm:blind-instance}
 Fix $L<\infty$.  There exist a randomized nonanticipating policy $\mathcal A^*$,
-which knows $n,L$ but not the processing-time multiset, and a deterministic
-sequence $\eps_L(n)\to0$ with the following properties.  For every multiset
-$M\subseteq[0,L]$ of size $n$ and every fixed labeling $\sigma$,
+which knows $n,L$ but not the entries of the input vector, and a deterministic
+sequence $\eps_L(n)\to0$ with the following properties.  Every
+$p\in[0,L]^n$ satisfies
 \begin{equation}
- \EE\ALG_{\mathcal A^*}(\sigma(M))
- \le n^2\PhiBE(D[M])+\eps_L(n)n^2.
+ \EE\ALG_{\mathcal A^*}(p)
+ \le n^2\PhiBE(D[p])+\eps_L(n)n^2.
  \label{eq:intro-blind-upper}
 \end{equation}
-For every randomized policy $\mathcal A$, even an announced policy, some
-fixed oblivious labeling $\sigma$ satisfies
+Every $p\in[0,L]^n$ and every randomized policy $\mathcal A$, even an
+announced policy, satisfy
 \begin{equation}
- \EE\ALG_{\mathcal A}(\sigma(M))
- \ge n^2\PhiBE(D[M])-\eps_L(n)n^2.
+ \EE\ALG_{\mathcal A}(p)
+ \ge n^2\PhiBE(D[p])-\eps_L(n)n^2.
  \label{eq:intro-blind-lower}
 \end{equation}
 The benchmark $\PhiBE$ is defined explicitly in
@@ -90,9 +91,9 @@ by one divisible completion module.  For a fixed tested fraction $q$, a
 fractional-knapsack envelope then forces the four-block order from the
 introduction and gives its exact quadratic cost.  To handle an arbitrary
 adaptive policy, we show that its first-touch order is a bijective
-relabeling of the occurrence permutation; predictable sampling controls all
-touch prefixes at once.  A growing grid extends the bound to arbitrary
-bounded multisets, and a blind sample removes advance knowledge of the input.
+relabeling of the shuffled coordinate order; predictable sampling controls
+all touch prefixes at once.  A growing grid extends the bound to arbitrary
+bounded vectors, and a blind sample removes advance knowledge of the input.
 
 \subsection{The distributional benchmark}
 \label{sec:blind-benchmark}
@@ -276,7 +277,7 @@ touch next and when to stop testing as arbitrary functions of its history.
 The next finite lemma is the deferred-decisions statement needed to control
 such a policy.
 
-For a size-$n$ multiset whose values lie among
+For a size-$n$ vector whose coordinates lie among
 $0=p_0<p_1<\cdots<p_s\le L$, write $D_n$ for its empirical distribution,
 $D_{n,i}=D_n(\{p_i\})$, and $\mu_n=\EE P_n$ for $P_n\sim D_n$.
 
@@ -345,25 +346,21 @@ $0\le\PhiBE(D_n)\le L/2$.  Apply
 \cref{eq:blind-suffix-edit},
 $\alpha=(L+1)(\gamma_n+\delta)$, and $\beta=(s+1)\gamma_n$.  It gives
 \begin{equation}
- \frac{\ALG_{\mathcal A}(M)}{n^2}
+ \frac{\ALG_{\mathcal A}(p)}{n^2}
  \ge F_{\mathsf{BE},D_n}(Q_{n,\delta})
    -O_{L,s}(\gamma_n+\delta+1/n)
  \ge\PhiBE(D_n)-O_{L,s}(\gamma_n+\delta+1/n).
  \label{eq:blind-announced-finite-support}
 \end{equation}
 The long-test regime uses the $\mu_n/2$ dominance part of
-\cref{lem:blind-fixed-q-envelope}; the same transfer applies.  Its finite-Yao
-conclusion also proves the lower bound for randomized announced policies.
+\cref{lem:blind-fixed-q-envelope}; the same transfer applies.  The estimate
+is uniform in the fixed seed and therefore remains valid after averaging
+over a randomized announced policy.
 
-The random-labeling and announced minimax values coincide.  The transfer
-lemma gives one inequality.  For the
-other, privately relabel the physical jobs before running an optimal
-deterministic urn policy; against every fixed assignment, the policy sees a
-uniform assignment.  Thus the lower bound above applies to the announced
-oblivious minimax problem, not merely to one randomized input model.
-Write $\operatorname{VAL}_{\rm ann}(M)$ for this common minimax value.
+Write $\operatorname{VAL}_{\rm ann}(p)$ for the minimum expected cost of an
+announced policy under the private-shuffle convention.
 
-\subsection{A growing grid and arbitrary bounded multisets}
+\subsection{A growing grid and arbitrary bounded vectors}
 
 The number of distinct values may grow with $n$.  Keep zero as a separate
 cell, partition $(0,L]$ into
@@ -373,9 +370,9 @@ cell, partition $(0,L]$ into
 \end{equation}
 bins, and round every positive value upward; let $h_n=L/K_n$ be the mesh.
 Zero preservation matters because a tested zero completes at its test.
-Write $D[M]^{\rm grid}$ for the rounded empirical distribution and
-$\mu_M^{\rm grid}=\EE P_M^{\rm grid}$ for
-$P_M^{\rm grid}\sim D[M]^{\rm grid}$.
+Write $D[p]^{\rm grid}$ for the rounded empirical distribution and
+$\mu_p^{\rm grid}=\EE P_p^{\rm grid}$ for
+$P_p^{\rm grid}\sim D[p]^{\rm grid}$.
 
 Coupling each value with its rounded value and applying
 \cref{lem:zero-preserving-transport} gives
@@ -397,32 +394,32 @@ After rounding, both are bounded by
  \label{eq:blind-zeta}
 \end{equation}
 Consequently the rounded completion curve is bounded by
-$\mathcal C_{\mathsf{BE},D[M]^{\rm grid},q}(x+\zeta_n)+\zeta_n$.
+$\mathcal C_{\mathsf{BE},D[p]^{\rm grid},q}(x+\zeta_n)+\zeta_n$.
 Apply \cref{thm:completion-curve-transfer} with $H=L+1$, $B=L/2$, the
 suffix-edit error, and the failure probability from the urn lemma.  Together
 with \cref{eq:blind-rounding-stability}, this yields the announced lower bound
 \begin{equation}
- \frac{\operatorname{VAL}_{\rm ann}(M)}{n^2}
- \ge\PhiBE(D[M])-O_L(n^{-1/6}\sqrt{\ln(n+2)}).
+ \frac{\operatorname{VAL}_{\rm ann}(p)}{n^2}
+ \ge\PhiBE(D[p])-O_L(n^{-1/6}\sqrt{\ln(n+2)}).
  \label{eq:blind-announced-lower}
 \end{equation}
 
 For the matching upper bound, compute an optimal canonical template for the
-rounded empirical multiset, choose $\lfloor q^*n\rfloor$ uniformly random
+rounded empirical vector, choose $\lfloor q^*n\rfloor$ uniformly random
 labels to test, and execute the four blocks.  Pairwise delay accounting
 expresses its expectation as bounded one-occurrence and two-distinct-
 occurrence kernels.  The without-replacement pair coefficients differ from
 their product-law values by $O(1/n)$ uniformly in the tested count.  Hence
 if $\pi$ records the virtual classes and the tested fraction,
 \begin{equation}
- \EE C_n(\pi)=n^2F_{\mathsf{BE},D[M]^{\rm grid}}(\pi)+O_L(n)
+ \EE C_n(\pi)=n^2F_{\mathsf{BE},D[p]^{\rm grid}}(\pi)+O_L(n)
  \label{eq:blind-finite-kernel}
 \end{equation}
 uniformly over canonical templates $\pi$.  Together with
 \cref{eq:blind-rounding-stability}, this proves
 \begin{equation}
- \left|\frac{\operatorname{VAL}_{\rm ann}(M)}{n^2}
-       -\PhiBE(D[M])\right|
+ \left|\frac{\operatorname{VAL}_{\rm ann}(p)}{n^2}
+       -\PhiBE(D[p])\right|
  \le O_L(n^{-1/6}\sqrt{\ln(n+2)}).
  \label{eq:blind-announced-sandwich}
 \end{equation}
@@ -475,17 +472,15 @@ $d(D,E)=\|D-E\|_1$, $L_0=C_L$, and
 \cref{eq:blind-rounding-stability}.  This gives
 \begin{equation}
  \frac{\EE\ALG_{\mathcal A^*}(p)}{n^2}
- \le\PhiBE(D[M])
+ \le\PhiBE(D[p])
  +O_L\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right)
  \label{eq:blind-unannounced-upper}
 \end{equation}
-uniformly over every fixed labeled vector $p\in[0,L]^n$.
+uniformly over every vector $p\in[0,L]^n$.
 
-For the converse, reveal $M$ to an arbitrary policy for free and draw a
-uniform labeling.  The announced lower bound
-\cref{eq:blind-announced-lower} applies seedwise.  Finite Yao selection
-\cref{lem:finite-yao} gives a fixed labeling with cost at least the average,
-which proves
+For the converse, reveal the entries of $p$ to an arbitrary policy for free.
+The announced lower bound \cref{eq:blind-announced-lower} applies seedwise
+and, after averaging over the seed, proves
 \cref{eq:intro-blind-lower}.  This completes the proof of
 \cref{thm:blind-instance}.
 
