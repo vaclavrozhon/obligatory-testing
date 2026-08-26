@@ -116,9 +116,10 @@ The common threshold equation and the layer-cake identity give
  \label{eq:rcu-threshold-equation}
 \end{equation}
 
-The stationary algorithm tests all jobs in a uniform random order, processes a
-positive prefix outcome immediately after its test, and after the last test
-processes the residual jobs in SPT order.  The following formula is the
+The stationary algorithm tests all jobs in a uniform random order.  It
+immediately processes a positive job if its revealed value lies in the
+selected threshold prefix, and after the last test it processes all remaining
+jobs in SPT order.  The following formula is the
 stationary pair identity specialized to the finite offline cap $u$.
 
 \begin{lemma}[Stationary survival formula]
@@ -166,7 +167,7 @@ execution has leading coefficient $u/2$, and division by
 
 This is where the instance-optimal theorem enters the curve calculation.
 In \cref{eq:cui-F}, $q=0$ is the raw algorithm and $q=1$ is precisely the
-stationary maximum-density algorithm.  Hence
+stationary algorithm using the selected threshold prefix.  Hence
 \begin{equation}
  2\PhiRO(D)\le\min\{u,\mathcal T_u(D)\},
  \label{eq:rcu-Phi-endpoint-upper}
@@ -415,8 +416,8 @@ next value is revealed.
 Take $\delta_n=n^{-1/4}$.  The predictable-permutation bound
 \cref{lem:predictable-permutation-sampling}, applied to the zero indicator
 and the test selector, gives one event of probability $1-o(1)$ on which
-every first-touch prefix
-ending with at least $\delta_n n$ untouched labels and containing $t$ tests
+every prefix of the order in which labels are first touched that ends with at
+least $\delta_n n$ untouched labels and contains $t$ tests
 satisfies
 \begin{equation}
  \bigl|N_0(t)-zt\bigr|\le
@@ -439,13 +440,13 @@ dominated, up to $o(1)$ vertical error, by the divisible items
 \toprule
 item & completion capacity & work per completion\\
 \midrule
-zero-test module & $zq$ & $1/z$\\
+tests that reveal zero jobs & $zq$ & $1/z$\\
 processing of tested $p=u$ jobs & $xq$ & $u$\\
 raw jobs & $1-q$ & $u$\\
 \bottomrule
 \end{tabular}
 \end{center}
-When $z=0$, the zero-test module is simply omitted.
+When $z=0$, the first row is simply omitted.
 Indeed, $t$ tests complete at most $zt+\Delta_n$ zeros and expose at most
 $xt+\Delta_n$ jobs with $p=u$; raw execution and processing of a known
 $p=u$ job both use $u$ work per completion.  Ordering these three divisible
@@ -455,8 +456,8 @@ work value.  Integrating the remaining mass gives a lower bound on total
 completion time.
 
 If $z\le1/u$, every displayed item costs at least $u$ per completion, so the
-normalized area is at least $u/2-o_u(1)$.  If $z\ge1/u$, the zero-test module
-comes first.  For fixed $q$ its remaining-mass area is
+normalized area is at least $u/2-o_u(1)$.  If $z\ge1/u$, the tests that
+reveal zero jobs come first.  For fixed $q$ the resulting remaining-mass area is
 \begin{equation}
  F_z(q)=q-\frac{zq^2}{2}+\frac u2(1-zq)^2,
  \qquad
@@ -521,7 +522,8 @@ value two such that
 \end{lemma}
 
 \begin{proof}
-Expose values at first touch, apply the same uniform-prefix sampling event,
+Expose values when their labels are first touched, apply the same sampling
+event simultaneously to every prefix of that order,
 and replace tests among the final $o(n)$ untouched jobs by raw execution,
 exactly as in \cref{lem:rcu-binary-lower}.  For a realized tested fraction
 $q$, the three divisible blocks now have capacities and costs
@@ -530,8 +532,8 @@ $q$, the three divisible blocks now have capacities and costs
 \toprule
 item & completion capacity & work per completion\\
 \midrule
-zero-test module & $q/2$ & $2$\\
-tested two processing & $q/2$ & $2$\\
+tests that reveal zero jobs & $q/2$ & $2$\\
+processing of tested jobs with $p=2$ & $q/2$ & $2$\\
 raw jobs & $1-q$ & $u$\\
 \bottomrule
 \end{tabular}

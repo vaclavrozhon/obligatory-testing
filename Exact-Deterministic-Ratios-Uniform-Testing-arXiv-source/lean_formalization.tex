@@ -95,11 +95,11 @@ exact real numbers.
 For either formal model parameter \texttt{Cap.finite u} or
 \texttt{Cap.infinite}, and a candidate value \(R\),
 \texttt{FixedSizeLowerBound} expands to the following statement.  For every
-size-indexed family of deterministic strategies \(\mathcal B_n\), every
+sequence of deterministic strategies \(\mathcal B_n\), every
 \(\eps>0\), and every \(N\), there exist \(n\ge N\), a genuine fixed
-admissible \(n\)-job input \(I\), and a finite execution with no internal
-administrative transition left---called \emph{settled} in the Lean
-development---such that
+admissible \(n\)-job input \(I\), and a finite execution in which all internal
+bookkeeping transitions have finished (the Lean predicate
+\texttt{settled}), such that
 either the execution leaves a job incomplete or
 \begin{equation}
   (R-\eps)\cdot\OPT(I)\le \ALG_{\mathcal B_n}(I).
@@ -118,9 +118,9 @@ The predicate \texttt{SizeAsymptoticUpper} is the epsilon formulation
  \label{eq:lean-upper-expansion}
 \end{equation}
 The accompanying completion field proves that every job is done after at
-most \(2n+1\) internal action-selection steps (the ``analysis fuel'' in the
-Lean definition), rather than merely assigning a cost to a partial
-transcript.  Consequently,
+most \(2n+1\) choices of the next action.  This number is the \texttt{fuel}
+bound in the Lean definition.  Thus the theorem analyzes a complete run,
+not merely a partial transcript.  Consequently,
 \cref{eq:lean-lower-expansion,eq:lean-upper-expansion} are the two matching
 operational statements that characterize the optimal value in
 \cref{eq:cr-infty}.  The Lean theorem packages these two directions; it does
@@ -140,7 +140,7 @@ least $\min\{u,1\}$ in the two optimization models with finite
 raw-execution cap $u$,
 \cref{eq:unified-opt-prefix} then implies
 \eqref{eq:lean-upper-expansion}.  For \(u\ge\uDet{5}\), the separately verified
-plateau certificate uses the same strategy and the same \(C\), independent
+proof for the plateau uses the same strategy and the same \(C\), independent
 of \(u\), including the obligatory limit.  This uniformity is stronger
 than the quantifier order displayed by \texttt{exact\_ratio\_main}, which
 only exposes one strategy after the formal \texttt{Cap} parameter has been
@@ -173,14 +173,14 @@ The public theorem does not assume any unproved property of the formal
 execution interface, and the
 development contains no \texttt{sorry}, \texttt{admit}, or project-defined
 \texttt{axiom}.  It does use mathlib's classical real analysis and
-noncomputable choices of exact real parameters.  Thus it certifies
-deterministic mathematical strategy terms, not an extracted floating-point
-implementation.
+noncomputable choices of exact real parameters.  Thus it proves mathematical
+properties of strategies with exact real parameters; it does not extract a
+floating-point implementation.
 
 The theorem recorded here is specifically the size-asymptotic result.  It
 does not assert the pointwise inequality \(\ALG\le R\cdot\OPT\) without a
 remainder.  Its checked remainder is the linear term in
 \eqref{eq:lean-linear-certificate}, and is therefore $o(n^2)$.  The
-machine-checked mixed-regime upper bound follows the reserve potential for
-the endpoint $p=u$; the bubbling argument in
-\cref{app:cap-bubbling} remains an independent manuscript cross-check.
+machine-checked upper bound on $[\uDet{4},\uDet{5}]$ uses the additional
+potential for jobs with $p=u$; \cref{app:cap-bubbling} gives an independent
+proof in the manuscript.

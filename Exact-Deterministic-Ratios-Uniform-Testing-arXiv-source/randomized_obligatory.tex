@@ -52,8 +52,9 @@ oblivious adversary is $\RrandOT=4/3$.
 \end{theorem}
 
 When the multiset of values is revealed in advance, the algorithmic core is
-the processing-time prefix with maximum completions per unit test-and-process
-work.  Testing jobs in a uniformly random order gives an exact pair identity
+the prefix of the shortest processing times that maximizes completions per
+unit of testing and processing work.  Testing jobs in a uniformly random
+order gives an exact pair identity
 whose nonnegative terms prove the factor $4/3$.  The universal algorithm
 learns an approximately separated prefix from a sublinear sample; the
 threshold and the safe test-all schedule described below protect it from
@@ -95,7 +96,8 @@ Use the processing-time-prefix notation
 \cref{eq:stationary-prefix-notation,eq:stationary-spt-split} and the
 coefficient $F_{\mathsf{OT},D[p]}(E)$ from
 \cref{eq:stationary-leading-coefficient}.  We require that $E$ contain every
-zero job; otherwise a supposedly deferred zero completes at its test.  The
+zero job; a zero job placed outside $E$ would nevertheless complete during
+its test.  The
 stationary algorithm and its exact cost are supplied by the common pair identity
 \cref{lem:stationary-prefix-cost}.
 
@@ -122,7 +124,7 @@ where tied occurrences may be assigned to either side.
 
 The next identity is the algebraic source of the constant $4/3$.
 
-\begin{lemma}[Exact and robust certificates]
+\begin{lemma}[Exact identity and robust bound]
 \label{lem:rand-four-thirds-certificate}
 For every ordered prefix split with $a>0$ and
 $\tau=(1+\ell_E)/a$,
@@ -141,9 +143,9 @@ $\tau=(1+\ell_E)/a$,
 \end{equation}
 Consequently:
 \begin{enumerate}[label=\textup{(\roman*)}]
-\item if early values are at most $\tau$ and late values are at least
+\item if values in $E$ are at most $\tau$ and values in $T$ are at least
       $\tau$, then $F_{\mathsf{OT},D[p]}(E)\le4\Omega_{\mathsf{OT}}(D[p])/3$;
-\item if early values are at most $\tau+s$ and late values are at least
+\item if values in $E$ are at most $\tau+s$ and values in $T$ are at least
       $\tau-s$, where $s\ge0$, then
       \begin{equation}
        F_{\mathsf{OT},D[p]}(E)\le\frac43\Omega_{\mathsf{OT}}(D[p])+\frac23s.
@@ -155,12 +157,12 @@ Consequently:
 \begin{proof}
 Expansion using $\ell_E=a\tau-1$, $h=1-a$, and
 \cref{eq:stationary-spt-split} gives \cref{eq:rand-certificate}.  Under exact
-separation, $xy\le\tau\min\{x,y\}$ for early $x,y$, hence
+separation, $xy\le\tau\min\{x,y\}$ for $x,y\in E$, hence
 \[
  \ell_E^2\le\tau\left(
   \frac{2\SPT(E)}{n^2}-\frac{\ell_E}{n}\right).
 \]
-For late $x,y$, one has $\min\{x,y\}\ge\tau$, hence
+For $x,y\in T$, one has $\min\{x,y\}\ge\tau$, hence
 \[
  \frac{2\SPT(T)}{n^2}-\frac{\ell_T}{n}\ge\tau h^2.
 \]
@@ -187,7 +189,7 @@ Substitution into
 because $(2/3)a^2+(1/6)(1-a)^2\le2/3$ on $[0,1]$.
 \end{proof}
 
-Combining the exact certificate with
+Combining the exact identity with
 \cref{lem:stationary-prefix-cost,eq:rand-opt-normalized} already gives a finite
 statement useful below.
 
@@ -214,7 +216,7 @@ the early set.  Direct expansion gives
  h+a\ell_E-\frac{2\SPT(E)}{n^2}+\frac{\ell_E}{n}\right).
  \label{eq:rand-crude-identity}
 \end{equation}
-If all early values are at most $L\ge1$, then $\ell_E\le aL$ and therefore
+If all values in $E$ are at most $L\ge1$, then $\ell_E\le aL$ and therefore
 \begin{equation}
  F_{\mathsf{OT},D[p]}(E)\le \Omega_{\mathsf{OT}}(D[p])+\frac L2.
  \label{eq:rand-bounded-early}
@@ -259,17 +261,19 @@ For a finite category prefix $J$, define
  \widehat\kappa(J)=\frac{\widehat a(J)}{1+\widehat\ell(J)}.
 \]
 Let $\widehat\kappa$ be the maximum and
-$\widehat\tau=1/\widehat\kappa$.  The learned early set is not an arbitrary
-maximizing category prefix.  It is its \emph{threshold closure}
+$\widehat\tau=1/\widehat\kappa$.  Starting with a maximizing category
+prefix, also include every finite category whose endpoint is at most
+$\widehat\tau$.  Thus the algorithm uses
 \begin{equation}
  \widehat J=\{\text{finite categories }b:q_b\le\widehat\tau\}.
  \label{eq:rand-threshold-closure}
 \end{equation}
 
-\begin{lemma}[Threshold closure]
+\begin{lemma}[Closing a maximum-density prefix at its threshold]
 \label{lem:rand-threshold-closure}
-The prefix \cref{eq:rand-threshold-closure} has the same maximum sample
-density.  Every category in it has endpoint at most $\widehat\tau$, and
+The prefix $\widehat J$ from \cref{eq:rand-threshold-closure} has the same
+maximum sample density.  Every category in it has endpoint at most
+$\widehat\tau$, and
 every finite category outside it has endpoint greater than
 $\widehat\tau$, including categories with zero sample count.
 \end{lemma}
@@ -279,8 +283,9 @@ The removal/addition calculation in
 \cref{cor:empirical-density-prefix} applies to every positive-mass sample
 category.  Empty categories do not change the sample statistics, and adding
 mass at equality preserves the identity
-$1+\widehat\ell=\widehat a\widehat\tau$.  Closing the prefix therefore
-preserves optimality and makes the two pointwise assertions tautological.
+$1+\widehat\ell=\widehat a\widehat\tau$.  Adding all categories up to the
+threshold therefore preserves optimality and makes the two pointwise
+assertions tautological.
 \end{proof}
 
 For large $n$, set
@@ -290,19 +295,21 @@ For large $n$, set
  \label{eq:rand-parameters}
 \end{equation}
 The algorithm draws a uniform permutation and first tests its first $k$ jobs,
-leaving positive sample jobs pending.  It computes the closed sample prefix.
+leaving positive sample jobs pending.  It computes $\widehat J$ as above.
 If
 \begin{equation}
  \widehat\kappa<\frac1B,
  \label{eq:rand-fallback-test}
 \end{equation}
 it enters \emph{fallback mode}: test every remaining job and then process all
-positive jobs in SPT order.  Otherwise it enters \emph{learned mode}: process
-positive sampled early jobs in SPT order; test the remaining jobs in their
-random order, processing early outcomes immediately; and finish the deferred
-tail in SPT order.  Overflow is never early.
+positive jobs in SPT order.  Otherwise it enters \emph{learned mode}: first
+process the positive sampled jobs whose categories lie in $\widehat J$;
+then test the remaining jobs in random order and immediately process each
+positive job whose category lies in $\widehat J$; finally process all other
+positive tested jobs in SPT order.  The overflow category never belongs to
+$\widehat J$.
 
-\subsubsection{Good samples, fallback, and bad-event excess}
+\subsubsection{Analysis on good and bad samples}
 
 Put
 \begin{equation}
@@ -316,8 +323,9 @@ Markov's inequality, recalled in \cref{sec:probabilistic-tools}, and
  \label{eq:rand-bad-probability}
 \end{equation}
 
-Assume $G$ and learned mode.  Let $E$ be the population set selected by the
-closed category prefix, and let $a,\ell_E,\tau=(1+\ell_E)/a$ be its true statistics.
+Assume that $G$ holds and the algorithm uses the learned schedule.  Let $E$
+contain all jobs whose categories belong to $\widehat J$, and let
+$a,\ell_E,\tau=(1+\ell_E)/a$ be its true statistics.
 Since $\widehat\tau\le B$ and
 $\widehat a=(1+\widehat\ell)/\widehat\tau\ge1/B$, we have
 $a\ge1/(B+1)$.  For
@@ -332,8 +340,8 @@ Consequently
  \le2B(B+1)\Delta+(B+1)\eta.
  \label{eq:rand-threshold-transfer}
 \end{equation}
-Every early actual value is at most $\widehat\tau$, while every late value
-is greater than $\widehat\tau-\eta$.  Thus the robust certificate applies
+Every value in $E$ is at most $\widehat\tau$, while every value outside $E$
+is greater than $\widehat\tau-\eta$.  Thus the robust bound applies
 with
 \begin{equation}
  s=2B(B+1)\Delta+(B+2)\eta.
@@ -343,20 +351,21 @@ with
 The algorithm tests the sample before all other jobs, so its order is not
 exactly the stationary schedule in which all jobs share one uniform order.
 The difference is only lower order.  Conditional on the unordered sample,
-write $e_S,e_T$ for the sample and remaining early counts and
+put $e_S=|E\cap S|$, $e_T=|E\setminus S|$, and
 \[
  W_S=k+\sum_{i\in E\cap S}p_i,\qquad
  W_T=n-k+\sum_{i\in E\setminus S}p_i.
 \]
 Comparing the two independent random internal orders with one fully random
-order, the early-cost difference is
+order, the difference in the cost contributed by jobs in $E$ is
 \[
  \frac{e_TW_S-e_SW_T}{2}
  \le\frac12nk(1+B).
 \]
-Postponing positive sampled early jobs until all sample tests finish adds at
-most $k^2(1+B)$.  The late tail is identical because every zero is early.
-Therefore, on a good learned sample,
+Postponing the positive jobs in $E\cap S$ until all sample tests finish adds
+at most $k^2(1+B)$.  Jobs outside $E$ are processed identically at the end
+because every zero belongs to $E$.  Therefore, on event $G$ when the learned
+schedule is used,
 \begin{equation}
  \EE[\ALG\mid S]
  \le\frac43\cdot\OPT
@@ -365,8 +374,9 @@ Therefore, on a good learned sample,
  \label{eq:rand-good-learned}
 \end{equation}
 
-On a good fallback sample, comparison of sample and population densities
-shows that the true maximum-density reciprocal satisfies
+On event $G$ when the fallback schedule is used, comparison of sample and
+population densities shows that the reciprocal of the true maximum density
+satisfies
 $\tau_{D[p]}\ge B/4\ge8$.
 The exact threshold inequalities imply
 \begin{equation}
@@ -390,11 +400,12 @@ sum to $n(n-1)/2$.  Combining
 \cref{eq:rand-fallback-opt-large,eq:rand-fallback-crude} gives
 $\ALG_{\rm fb}<\frac43\cdot\OPT$.
 
-Because processing times are unbounded, a bad-event estimate must control
-excess over $\frac43\cdot\OPT$, not raw cost.  In learned mode every early value is at
-most $B$, so \cref{eq:rand-bounded-early} bounds the stationary excess by
-$(B/2)n^2$; in fallback mode \cref{eq:rand-fallback-crude} bounds it by
-$n^2/2$.  Averaging \cref{eq:rand-good-learned} and these bad-event bounds,
+Because processing times are unbounded, the estimate on $G^c$ must control
+excess over $\frac43\cdot\OPT$, not raw cost.  Under the learned schedule
+every value in $E$ is at most $B$, so \cref{eq:rand-bounded-early} bounds the
+stationary excess by $(B/2)n^2$; under the fallback schedule
+\cref{eq:rand-fallback-crude} bounds it by
+$n^2/2$.  Averaging \cref{eq:rand-good-learned} and these bounds on $G^c$,
 and using \cref{eq:rand-bad-probability}, yields the uniform estimate
 \begin{equation}
  \EE\ALG

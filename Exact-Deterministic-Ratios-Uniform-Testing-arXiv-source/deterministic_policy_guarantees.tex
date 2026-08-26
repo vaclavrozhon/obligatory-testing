@@ -525,10 +525,9 @@ value.
 
 The final algorithm changes its threshold as work accumulates.  We prove its
 mixed-range guarantee on $[\uDet{4},\uDet{5}]$ and its uniform plateau
-guarantee for $u\ge\uDet{5}$.  We call an outcome with $p_i=u$
-\emph{capped}; every outcome with $p_i<u$ is \emph{noncapped}.  The proof
-also records explicitly why a capped outcome cannot be treated as an
-ordinary deferred outcome.
+guarantee for $u\ge\uDet{5}$.  In the proof, a revealed value $p_i=u$ must
+be treated separately from a smaller value placed in the final queue,
+because the two have different pair contributions to the offline optimum.
 Throughout this subsection, $R=1+c$, and we retain $\varphi$, $\uDet{5}$,
 and $r$ from
 \cref{eq:opt:u1-u2,eq:opt:obligatory-constant}.
@@ -606,7 +605,8 @@ Fix the finite raw-execution cap $u$ in the stated range.
 
 Here is the structure of the argument.  We first rewrite
 $\ALG-R\cdot\OPT$ as a sum of contributions from ordered pairs of jobs plus
-$O_u(n)$ one-job terms.  We then reduce each processing value to one of five
+$O_u(n)$ terms contributed by individual jobs.  We then reduce each
+processing value to one of five
 boundary values that preserve the algorithm's decision; these boundary
 representatives are called \emph{endpoint types}.  When an endpoint is
 revealed, we assign to it the pair contributions involving earlier jobs and
@@ -616,8 +616,9 @@ inequality
 \[
  \ell_i+W_{i+1}-W_i\le0
 \]
-in the continuous calculation.  The base part of $W$ handles the four
-noncapped types, an additional term handles jobs with $p_i=u$, and a Taylor
+in the continuous calculation.  The base part of $W$ handles the endpoint
+types $Z,E,M,Q$, an additional term handles type $U$ (that is, $p_i=u$), and
+a Taylor
 estimate converts these continuous inequalities into the stated finite
 $O_u(n)$ bound.  Claims 1--6 carry out these steps in this order.
 
@@ -625,8 +626,9 @@ $O_u(n)$ bound.  Claims 1--6 carry out these steps in this order.
 Use \textsc{AdaptiveThreshold}$(J,c)$ from
 \cref{alg:adaptive-threshold}; on the high interval use $c=r$.
 For the analysis, immediately before a test let $x$ be the number of jobs not
-yet tested, $N$ the number of earlier strictly positive outcomes, and $N_{\mathrm{def}}$ the
-number of those outcomes deferred to the final tail.  Thus
+yet tested, $N$ the number of earlier tests that revealed a positive value,
+and $N_{\mathrm{def}}$ the number of those jobs placed in the final queue.
+Thus
 \begin{equation}
  y=\frac{N_{\mathrm{def}}-RN}{x}\le0
  \label{eq:opt:state-y}
@@ -638,21 +640,23 @@ $c\ge r$, and hence
  \label{eq:opt:threshold-below-cap}
 \]
 The same inequality holds on the high interval, where we use $c=r$.
-Thus every outcome in $[u-1,u]$, where its offline effective length has
-reached the offline cap $u$, is deferred.
+Thus every revealed value $p_i\in[u-1,u]$, for which the offline effective
+length has reached the offline cap $u$, is placed in the final queue.
 
 The state $y$ never increases.  Indeed, the numerator in
 \eqref{eq:opt:state-y} changes by $0$, $-R$, or $-c$ after a zero, a
-positive immediate outcome, or a positive deferred outcome, respectively,
-while $x$ decreases.  This monotonicity will allow us to allocate every
-pair cost when its relevant endpoint becomes known.
+positive job processed immediately after its test, or a positive job placed
+in the final queue, respectively, while $x$ decreases.  This monotonicity
+will allow us to allocate every pair cost when its relevant endpoint becomes
+known.
 
 \medskip
 \noindent\textbf{Claim 1 (Five-endpoint reduction).}
-After fixing the sequence of immediate/deferred decisions, a worst value of
-the leading pairwise gap is attained by a sequence of the five endpoint types
-listed in \cref{eq:opt:five-endpoints} below.  We derive the pairwise gap
-first and then justify this reduction.
+After fixing, for every job, whether it is processed after its test or placed
+in the final queue, a worst value of the leading pairwise gap is attained by
+a sequence of the five endpoint types listed in
+\cref{eq:opt:five-endpoints} below.  We derive the pairwise gap first and then
+justify this reduction.
 
 Write
 \[
@@ -667,14 +671,14 @@ $1+\bar p_i=\min\{1+p_i,u\}$.  For two jobs tested in the order $i<j$, let
   (p_i-p_j)_+,
      &i\text{ is processed immediately},\\
   1+(p_j-p_i)_+,
-     &i\text{ is deferred and }j\text{ is immediate},\\
+     &i\text{ is placed in the final queue and }j\text{ is processed immediately},\\
   1,
-     &i\text{ and }j\text{ are deferred}.
+     &i\text{ and }j\text{ are placed in the final queue}.
  \end{cases}
  \label{eq:opt:pair-excess}
 \end{equation}
-The first line applies whenever $i$ is immediate, regardless of the
-action taken on $j$.  Pairwise completion-time accounting for the online
+The first line applies whenever $i$ is processed after its test, regardless
+of the action taken on $j$.  Pairwise completion-time accounting for the online
 schedule gives
 \begin{equation}
  \ALG
@@ -710,50 +714,53 @@ $i$-th summand is $-c(1+p_i)$.  If $p_i\ge u-1$, its offline effective
 length is $u$ and the summand is at most $1-cu\le0$.  Thus it is enough to
 control $\Gamma_n$.
 
-Now fix only the sequence of immediate/deferred decisions made by the
-algorithm.  Varying a processing value inside an interval that preserves its
-decision does not alter any later threshold state.  On each such interval,
+Now fix only, for each tested job, whether it is processed immediately or
+placed in the final queue.  Varying a processing value inside an interval
+that preserves this choice does not alter any later threshold state.  On
+each such interval,
 \eqref{eq:opt:pair-objective} is convex in that value, so its maximum occurs
 at a boundary.  The resulting five endpoint types are
 \begin{equation}
 \begin{array}{c|c|c}
- \text{type}&\text{outcome}&\text{action}\\ \hline
- Z&0&\text{immediate}\\
- E&0^+&\text{immediate}\\
- M&a_c(y)&\text{immediate}\\
- Q&a_c(y)^+&\text{deferred}\\
- U&u&\text{deferred}.
+ \text{type}&\text{value}&\text{action}\\ \hline
+ Z&0&\text{process after the test}\\
+ E&0^+&\text{process after the test}\\
+ M&a_c(y)&\text{process after the test}\\
+ Q&a_c(y)^+&\text{place in the final queue}\\
+ U&u&\text{place in the final queue}.
 \end{array}
  \label{eq:opt:five-endpoints}
 \end{equation}
 Here $0^+$ means a positive value tending to zero, and $a_c(y)^+$ means a
 value tending to the current threshold from above.  They are kept distinct
 from $0$ and $a_c(y)$ because the former pairs lead to different state
-updates or actions.  For an immediate job the positive interval has
-endpoints $0^+$ and $a_c(y)$.  A deferred value below $u-1$ has endpoints
-$a_c(y)^+$ and $u-1$; on $[u-1,u]$ the offline contribution is constant and
-the online contribution is nondecreasing, so $u$ is worst.  Thus the
-intermediate value $u-1$ can be moved further to $u$.  This proves the
-claimed reduction without changing any later threshold decision.
+updates or actions.  For a job processed after its test, the positive
+interval has endpoints $0^+$ and $a_c(y)$.  If a value $p_i<u-1$ is placed
+in the final queue, its interval has endpoints $a_c(y)^+$ and $u-1$.  On
+$[u-1,u]$ the offline contribution is constant and the online contribution
+is nondecreasing, so $u$ is worst.  Thus the intermediate value $u-1$ can
+be moved further to $u$.  This proves the claimed reduction without
+changing any later threshold decision.
 
 \medskip
 \noindent\textbf{Claim 2 (Local pair allocation).}
 Assign every term of $\Gamma_n$ for a pair $i<j$ to the later endpoint $j$.
 The resulting total charge is at most the sum of the local quantities
-$\ell_i$ defined below.  To express them, distinguish earlier $E$ outcomes
+$\ell_i$ defined below.  To express them, distinguish earlier endpoints of
+type $E$
 from the positive endpoint types $M,Q,U$.  Let
 \[
  P=\#\{\text{earlier }M,Q,U\},\qquad
  E=\#\{\text{earlier }E\},\qquad
  N_{\mathrm{def}}=\#\{\text{earlier }Q,U\},
 \]
-and let $K$ be the number of earlier $U$ outcomes.  Among the noncapped
-positive outcomes, let $I,d$ be the numbers of $M,Q$ outcomes and
-let $A_I,A_D$ be the sums of their processing values.  Thus
+and let $K$ be the number of earlier endpoints of type $U$.  Let $I,d$ be the
+numbers of earlier endpoints of types $M,Q$, respectively, and let $A_I,A_D$ be the
+corresponding sums of their processing values.  Thus
 $P=I+d+K$ and $N_{\mathrm{def}}=d+K$.
 
-For a current noncapped endpoint, with $a=a_c(y)$, the allocated charges are
-bounded by
+For a current endpoint of type $Z,E,M,$ or $Q$, with $a=a_c(y)$, the
+allocated charges are bounded by
 \begin{equation}
  \ell_Z=\ell_E=N_{\mathrm{def}},
  \qquad
@@ -773,21 +780,21 @@ the exact charge
  h_U=1+u-R(u-1).
  \label{eq:opt:cap-local-charge}
 \end{align}
-To verify these formulas, pair the current outcome once with each earlier
-endpoint type and use \cref{eq:opt:pair-objective}.  An earlier immediate
-outcome already received its online processing-delay term when it appeared,
-so a current endpoint $U$, whose value is $u$, contributes only $-Rp$
-against such an outcome.  Against an
-earlier noncapped deferred value $p$ it contributes
-$p-Rp=-cp$, and against an earlier endpoint $U$ it contributes $h_U$.
+To verify these formulas, pair the current job once with each earlier
+endpoint type and use \cref{eq:opt:pair-objective}.  An earlier job processed
+after its test was already charged for the delay that its processing causes
+when it appeared.  Hence a current endpoint $U$, whose value is $u$, contributes
+only $-Rp$ against such an earlier job.  Against an earlier endpoint $Q$ of
+value $p$ it contributes $p-Rp=-cp$, and against an earlier endpoint $U$ it
+contributes $h_U$.
 Summing the
 corresponding cases gives
 \begin{equation}
  \Gamma_n\le\sum_i\ell_i;
  \label{eq:opt:pair-allocation-dominates}
 \end{equation}
-the difference is exactly the sum of nonnegative processing-delay terms by
-which the displayed $M$ charges overestimate the true pair contributions.
+the difference is exactly the sum of nonnegative extra delays by which the
+displayed $M$ charges overestimate the true pair contributions.
 Formula
 \eqref{eq:opt:cap-local-charge}, rather than a substitution $p=u$ into
 $\ell_Q$, is essential before the $U$-endpoints have been put into a prefix.
@@ -805,10 +812,10 @@ same state gives the exact identity
 \end{align}
 
 \medskip
-\noindent\textbf{Claim 3 (Base potential for noncapped outcomes).}
+\noindent\textbf{Claim 3 (Base potential for types $Z,E,M,Q$).}
 There is a nonnegative potential $W_{\mathrm{base}}$ for which the
-infinitesimal one-step inequality holds for each of the four noncapped types
-$Z,E,M,Q$.  We now construct it explicitly.  The type $U$, representing
+infinitesimal one-step inequality holds for each of the types $Z,E,M,Q$.
+We now construct it explicitly.  The type $U$, representing
 $p=u$, will require
 one additional potential term in Claim~4.
 Define
@@ -921,14 +928,14 @@ In Region II, the same calculation gives
 For $-1\le\eta\le0$, substitution of
 $g_c'=(1+\eta)/R$ makes these values $-(1+\eta)/R$,
 $-(1+\eta)/R$, and $0$, respectively.  For $\eta\le-1$ their signs
-are immediate from $g_c=g_c'=0$.  Hence $J_T\le0$ for every noncapped
-endpoint type, as claimed.
+are immediate from $g_c=g_c'=0$.  Hence $J_T\le0$ for
+$T\in\{Z,E,M,Q\}$, as claimed.
 
 \medskip
-\noindent\textbf{Claim 4 (Additional potential for outcomes with $p=u$).}
+\noindent\textbf{Claim 4 (Additional potential for jobs with $p=u$).}
 We can add a nonnegative term depending on the number $K$ of earlier
-$U$-outcomes so that the one-step inequality also holds for type $U$, without
-spoiling it for $Z,E,M,Q$.  We call this additional term the $U$-reserve.
+$U$ endpoints so that the one-step inequality also holds for type $U$, without
+spoiling it for $Z,E,M,Q$.
 Define
 \begin{equation}
  Z(c)=2+\frac1c+\frac12\ln\!\left(1+\frac2c\right),
@@ -966,8 +973,9 @@ define the full potential
 \end{equation}
 It is nonnegative.
 
-For a noncapped endpoint, $K$ is fixed while $x$ decreases, so the reserve
-contributes, after division by $x$,
+For an endpoint of type $Z,E,M,$ or $Q$, the value of $K$ is fixed while
+$x$ decreases, so the additional potential contributes, after division by
+$x$,
 \begin{equation}
  L_0(q)=-2\mathcal H(q)+q\mathcal H'(q).
  \label{eq:opt:L0}
@@ -982,8 +990,8 @@ nonzero, differentiation of
  L_0=-2(1+q)\mathcal V-q\beta(\mu)\le0.
  \label{eq:opt:reserve-derivatives}
 \end{equation}
-Thus the reserve can only decrease the left-hand side of every noncapped
-one-step inequality.
+Thus the additional potential can only decrease the left-hand side of the
+one-step inequality for each of $Z,E,M,Q$.
 
 For a current endpoint $U$, feasibility $N_{\mathrm{def}}\le P$ and
 $P\ge K$ gives
@@ -1007,21 +1015,21 @@ The change of variables in \eqref{eq:opt:reserve-H} satisfies
  (1+q)\beta(\mu)=B(q).
  \label{eq:opt:B-beta}
 \end{equation}
-Consequently the extra positive charge of a $U$-outcome is cancelled
-exactly by the change in the reserve:
+Consequently the extra positive charge of an endpoint of type $U$ is
+cancelled exactly by the change in the additional potential:
 \begin{equation}
  L_0+\mathcal H'+B(q)=0
  \qquad(\mu\le m).
  \label{eq:opt:reserve-cancellation}
 \end{equation}
-When $\mu\ge m$, the reserve vanishes.  At
+When $\mu\ge m$, the additional potential vanishes.  At
 $q_*=m/(1-m)$, the bracket in
 \eqref{eq:opt:cap-versus-q}, evaluated at the largest possible threshold
 $a_c(-cq_*)$, is zero by
 \eqref{eq:opt:delta-atanh} and \eqref{eq:opt:B-beta}.  For $q\ge q_*$,
 \eqref{eq:opt:y-cap-bound} only decreases the threshold, so that bracket is
 nonpositive.  The one-step inequality for type $U$ therefore holds for every
-state and for arbitrary interleavings of $U$ and non-$U$ outcomes.
+state and for arbitrary interleavings of type $U$ with the other four types.
 
 \medskip
 \noindent\textbf{Claim 5 (Initial calibration).}
@@ -1054,8 +1062,9 @@ Thus $W_{\mathrm{initial}}=cn^2/2$.
 
 \medskip
 \noindent\textbf{Claim 6 (Finite jobs and a linear remainder).}
-For an actual one-job transition, the infinitesimal inequalities from
-Claims~3--4 incur only $O_u(1)$ error.  Summed over all jobs, this gives the
+For the transition caused by one actual job, the infinitesimal inequalities
+from Claims~3--4 incur only $O_u(1)$ error.  Summed over all jobs, this gives
+the
 required $O_u(n)$ remainder; when $c=r$, the constant is independent of
 $u\ge\uDet{5}$.  We now verify the needed regularity on feasible states.
 In Region I, $y\ge-1$ implies
@@ -1066,7 +1075,8 @@ In Region I, $y\ge-1$ implies
 All terms in the middle expression are nonnegative.  Hence
 $P/x,N_{\mathrm{def}}/x,q\le1/c$ and $b\le1/R$.  The normalized arguments of
 $G_c$ in \eqref{eq:opt:base-potential} therefore stay in a bounded set, and
-all derivatives needed for a one-job Taylor estimate are bounded.  In
+all derivatives needed for the Taylor estimate of one transition are
+bounded.  In
 Region II the unnormalized base potential is simply
 \begin{equation}
  xN_{\mathrm{def}}+\frac{(x+N_{\mathrm{def}}-RP)_+^2}{2R},
@@ -1076,7 +1086,7 @@ which has bounded one-sided second derivatives.  The two pieces are $C^1$ at
 $y=-1$, as verified above, and the positive-part square is $C^1$ at
 $\eta=-1$.
 
-For the reserve $\mathcal R(x,K)=x^2\mathcal H(K/x)$, whenever
+For the additional term $\mathcal R(x,K)=x^2\mathcal H(K/x)$, whenever
 $0\le q\le q_*$ one has bounded $\mathcal H''$, and
 \begin{equation}
  \mathcal R_{xx}=2\mathcal H-2q\mathcal H'+q^2\mathcal H'',
@@ -1094,12 +1104,12 @@ $\mathcal R(\theta x,\theta K)=\theta^2\mathcal R(x,K)$ gives zero gradient
 at $(x,K)=(0,0)$.  Altogether $W$ is continuously differentiable with a Lipschitz
 gradient on all states that the algorithm can reach.  On the
 mixed interval its regularity constant may depend on the fixed value of $u$.
-When $c=r$ and $m=0$, however, the reserve is identically zero and the base
+When $c=r$ and $m=0$, however, the additional term is identically zero and the base
 potential depends only on the absolute constant $r$; its regularity constant is
 therefore uniform over all $u\ge \uDet{5}$.  This includes the last transition
 from $x=1$ to $x=0$.
 
-It follows that a unit transition has the Taylor remainder
+It follows that each transition caused by one job has Taylor remainder
 \begin{equation}
  \ell_i+W_{i+1}-W_i\le O_u(1).
  \label{eq:opt:finite-taylor}
@@ -1111,7 +1121,7 @@ a finite sum of affine and minimum terms, converges as
 $\eps\downarrow0$.  Equivalently, retain an
 $O(\eps n^2)$ error and take this limit for each fixed $n$.
 Therefore the one-step inequality for the formal type $E$ transfers to
-genuine outcome vectors without an asymptotic loss.
+actual input vectors without an asymptotic loss.
 
 Summing \eqref{eq:opt:finite-taylor}, using $W\ge0$, and applying
 \eqref{eq:opt:initial-calibration} gives
@@ -1129,10 +1139,12 @@ Together with \eqref{eq:opt:gap-decomposition} and
 \end{align}
 
 At $u=\uDet{5}$, one has $c=r$, $m=0$, and
-$Z(r)=\uDet{5}$.  The $U$-reserve is identically zero, while
+$Z(r)=\uDet{5}$.  The additional potential for type $U$ is identically zero,
+while
 \eqref{eq:opt:initial-calibration} remains valid.  If $u$ is increased
-above $\uDet{5}$, the only adverse fifth-endpoint bracket
-$1-r(u-1-a_r(y))$ decreases, and the one-job term for $U$ in
+above $\uDet{5}$, the bracket controlling an endpoint of type $U$,
+$1-r(u-1-a_r(y))$ decreases, and the contribution of an individual job of
+type $U$ in
 \eqref{eq:opt:gap-decomposition} also decreases.
 
 Here is the promised uniform finite calculation.  The base potential and the
@@ -1148,9 +1160,10 @@ Because $W_0=rn^2/2$ and $W_n=0$, telescoping gives
  \sum_i\ell_i\le\frac r2n^2+C_{\rm step}n.
  \label{eq:opt:uniform-ell}
 \end{equation}
-In the one-job sum of \cref{eq:opt:gap-decomposition}, every endpoint other
+In the final sum over individual jobs in \cref{eq:opt:gap-decomposition},
+every endpoint other
 than $U$ has $p_i<u-1$ and contributes $-r(1+p_i)$.  The endpoint $U$ has
-$p_i=u$ and contributes at most $1-r u\le0$.  Hence the one-job sum is
+$p_i=u$ and contributes at most $1-r u\le0$.  Hence this sum is
 nonpositive uniformly on
 $[\uDet{5},\infty)$.  Combining
 \cref{eq:opt:gap-decomposition,eq:opt:pair-allocation-dominates,eq:opt:uniform-ell}

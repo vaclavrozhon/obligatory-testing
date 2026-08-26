@@ -213,7 +213,8 @@ at $u=\uDet{3}$.  For $u\ge \uDet{3}$, use the zero-$b$ maximizing point from
 \cref{eq:opt:zero-b-tangency}.  The branch conditions are precisely the two
 inequalities checked above.  Finally, $\RdetRO(u)\ge1$ is trivial for $u\le1$.
 In each nontrivial case \cref{lem:opt:hidden-stopping} supplies fixed binary
-instances by the answer-freezing argument at the end of its proof.
+instances: its proof records every adaptive answer on the corresponding job
+label and then reruns the deterministic algorithm on that fixed vector.
 \end{proof}
 
 
@@ -627,15 +628,15 @@ $\alpha=t-1=K/\xi$.  Before rescaling, the number of jobs divided by $H$ is
 $K+\xi=\xi t$.  Multiply every normalized group size by the common factor
 $s/(\xi t)$.
 
-Multiplying every normalized group size by a common factor multiplies the
-phase accounting, harmonic cancellation, and completion of squares in
-\cref{eq:lower-accounting,eq:lower-telescope,eq:lower-QK} are multiplied by
+If every normalized group size is multiplied by a common factor, each term
+in the phase accounting, harmonic cancellation, and completion of squares in
+\cref{eq:lower-accounting,eq:lower-telescope,eq:lower-QK} is multiplied by
 the square of that factor.  The Riemann-sum limit
 \cref{eq:lower-I} substituted into \cref{eq:lower-DK} therefore gives
 \[
  O_0=\frac{s^2}{4}(1+t^{-2}+2\ln t).
 \]
-Likewise $C_K-D_K=\xi K+K^2/2$, while the $O(K)$ square-completion loss in
+Likewise $C_K-D_K=\xi K+K^2/2$, while the $O(K)$ loss from completing the square in
 \cref{eq:lower-QK} disappears after division by the quadratic scale.  After
 the same rescaling this gives the guaranteed lower benchmark
 \[
@@ -645,50 +646,48 @@ Finally, summing the limiting processing-time curve
 $1+\ln(1+x)$ over the positive mass gives $L=s\ln t$, and
 \cref{eq:lower-harmonic} gives $p_0\to1+\ln t$.  Choose successively finer
 rational approximations, clear their denominators, and apply the
-answer-freezing argument from the theorem.  This produces arbitrarily large
-fixed rational instances with the stated limit and liminf bounds.
+same recording argument as in the theorem: assign each revealed answer to
+its job label and rerun the deterministic algorithm on the resulting fixed
+vector.  This produces arbitrarily large fixed rational instances with the
+stated limit and liminf bounds.
 \end{proof}
 
 \subsubsection{The mixed lower bound}
 \label{sec:opt:mixed-lower}
 
 For $\uDet{4}<u<\uDet{5}$, neither the binary family nor the pure harmonic
-family is tight.  Here a \emph{capped} job has $p=u$, while a block is
-\emph{cap-free} if every job in it satisfies $1+p\le u$.  The correct
-adversary puts a capped block before a scaled harmonic core: it first reveals
-a prescribed fraction of jobs with $p=u$ and then reveals the cap-free
-multilevel instance from the preceding subsection.
-Two lemmas show that neither raw execution nor early processing of the capped
-jobs can avoid the resulting lower bound.
-
-The cap-free construction needed below is exactly the scaled harmonic core
-from \cref{lem:opt:harmonic-block}; no second phase-accounting proof is
-needed here.  We now prepend capped jobs to that reusable core.
+family is tight.  The adversary first reveals a prescribed fraction of jobs
+with $p=u$.  It then reveals the scaled harmonic instance from the preceding
+subsection, chosen so that every later job satisfies $1+p\le u$.  Two lemmas
+show that neither raw execution nor processing one of the initial jobs early
+can avoid the resulting lower bound.  The later part is exactly the
+construction from \cref{lem:opt:harmonic-block}, so its accounting need not
+be repeated here.
 
 \begin{lemma}[Deferring jobs with $p=u$]
 \label{lem:opt:cap-deferral}
-Prepend a fraction $m$ of capped jobs (that is, jobs with $p=u$) to a later
-cap-free block occupying the remaining fraction $s=1-m$ and having total normalized
-processing time $L$.  Suppose every later value satisfies
-$1+p\le u$ and
+Prepend a fraction $m$ of jobs with $p=u$ to a later block occupying the
+remaining fraction $s=1-m$ and having total normalized processing time $L$.
+Suppose every job in the later block satisfies $1+p\le u$ and
 \begin{equation}
  s(u-1)-L-m\ge0.
  \label{eq:opt:cap-deferral-condition}
 \end{equation}
-Then processing any capped job before all later jobs are complete cannot
-decrease the leading online cost.
+Then processing any initial job with $p=u$ before all later jobs are complete
+cannot decrease the leading online cost.
 \end{lemma}
 
 \begin{proof}
-A capped job completed after all jobs with $p=u$ have been tested but before
-a later job of value $p$ contributes $1+u$ to their pairwise online cost.  If we postpone
-the capped job until after the later job, the same pair contributes $2+p$.
-The postponement lowers the cost by $u-1-p\ge0$, so the postponed schedule is
-a valid lower bound on the algorithm's actual cost.
+Consider an initial job with $p=u$ that is completed after all initial jobs
+have been tested but before a later job of value $p$.  The pair contributes
+$1+u$ to the online cost.  If we postpone the initial job until after the
+later job, the same pair contributes $2+p$.  The postponement lowers the cost
+by $u-1-p\ge0$, so the postponed schedule is a valid lower bound on the
+algorithm's actual cost.
 
-It remains to cover capped jobs completed while the initial block of
-$p=u$ jobs is still being tested.  Let $q$ be their fraction of the full
-instance.  Their
+It remains to consider jobs completed while the initial group of $p=u$ jobs
+is still being tested.  Let $q$ be the fraction of the full instance formed
+by these completed jobs.  Their
 pairs with all later jobs add
 $q[s(u-1)-L]$.  Their largest possible saving against not-yet-tested jobs
 with $p=u$ is $qm-q^2/2$.  Relative to leaving every such job pending, the
@@ -700,11 +699,12 @@ at least
 The omitted one-job terms are lower order.
 \end{proof}
 
-\begin{lemma}[Capped-block accounting]
+\begin{lemma}[Accounting for the initial $p=u$ jobs]
 \label{lem:opt:mixed-accounting}
 Let $O_0$, $A_0^{\rm lb}$, and $L$ be the offline coefficient, guaranteed
-online coefficient, and total normalized positive processing time of the later
-cap-free block.  After postponing all initial capped jobs, the corresponding
+online coefficient, and total normalized positive processing time of the
+later block, where every job satisfies $1+p\le u$.  After postponing all
+initial jobs with $p=u$, the corresponding
 coefficients $O$ and $A^{\rm lb}$ of the combined instance satisfy
 \begin{align}
  A^{\rm lb}={}&A_0^{\rm lb}+m(1-m)+m(1+L)+\frac u2m^2,
@@ -717,21 +717,22 @@ In particular, $A^{\rm lb}-O=(A_0^{\rm lb}-O_0)+m$.
 
 \begin{proof}
 A pair consisting of one initial job with $p=u$ and one later job of value $p$
-contributes $2+p$ online and $1+p$ offline.  Summed over capped fraction $m$
+contributes $2+p$ online and $1+p$ offline.  Summed over the initial fraction $m$
 and later fraction $1-m$, these give the cross terms involving $m(1-m)$ and
 $mL$.
-A pair of capped jobs contributes $2+u$ online and $u$ offline, which gives
-the terms proportional to $m^2$.  Adding the cap-free coefficients yields
-the two displayed formulas.
+A pair of initial jobs with $p=u$ contributes $2+u$ online and $u$ offline,
+which gives the terms proportional to $m^2$.  Adding the coefficients of the
+later block yields the two displayed formulas.
 Subtracting the two identities gives the final assertion.
 \end{proof}
 
 \begin{lemma}[Quota adversary allowing raw execution]
 \label{lem:opt:mixed-quota}
-Fix $m\in(0,1)$ and a later cap-free block satisfying the hypotheses of
-\cref{lem:opt:cap-deferral}.  Against every deterministic revealing algorithm
-there are fixed instances whose asymptotic excess is at least the combined
-coefficient $A^{\rm lb}-R\cdot O$ obtained from the capped prefix and
+Fix $m\in(0,1)$ and a later block satisfying the hypotheses of
+\cref{lem:opt:cap-deferral}, in particular $1+p\le u$ for each of its jobs.
+Against every deterministic revealing algorithm there are fixed instances
+whose asymptotic excess is at least the combined
+coefficient $A^{\rm lb}-R\cdot O$ obtained from the initial $p=u$ jobs and
 the later block in
 \cref{eq:opt:mixed-A,eq:opt:mixed-O} for every target
 $R\le u$.
@@ -753,8 +754,9 @@ Thus every job was run raw and the all-zero hidden instance has ratio
 $u\ge R$.
 
 At a crossing, scale the prescribed later instance to the remaining
-$S-\ell$ first touches, absorbing the one-job quota overshoot and integer
-rounding into its zero group.  Fix an order of the job types in this later
+$S-\ell$ first touches.  The crossing exceeds the target by fewer than one
+job; absorb this error and integer rounding into the zero group.  Fix an
+order of the job types in this later
 block.  A test reveals the next value in that order; a raw action assigns the
 next value to the touched job but does not reveal it to the algorithm.
 
@@ -807,7 +809,8 @@ Equivalently,
 
 \begin{proof}
 The construction has two continuous parameters: $m$ is the fraction of
-initial capped jobs, and $t$ selects the scaled harmonic block that follows.
+initial jobs with $p=u$, and $t$ selects the scaled harmonic block that
+follows.
 We first write its online/offline ratio, then solve the first-order conditions
 for a worst parameter pair.  The remaining two claims verify that the pair is
 feasible and can be approximated by fixed finite instances.
@@ -876,10 +879,10 @@ $u\in[\uDet{4},\uDet{5}]$ has exactly one parameter pair.
 To pass to fixed finite instances, first approximate $(m,t)$ rationally
 while retaining the strict inequalities $1+p<u$, then choose a sufficiently
 fine harmonic family, and finally multiply all rational block sizes by a
-common integer $H$.  For a fixed number of positive levels, quota overshoot,
-one-job
-terms, and rounding are $O_u(H)$ whereas the displayed pair costs are
-$\Theta(H^2)$.  Let $H\to\infty$ first, then increase the harmonic depth, and finally
+common integer $H$.  For a fixed number of positive levels, the error of
+fewer than one job at the quota crossing, the terms contributed by
+individual jobs, and rounding are $O_u(H)$, whereas the displayed pair costs
+are $\Theta(H^2)$.  Let $H\to\infty$ first, then increase the harmonic depth, and finally
 let the rational approximation converge to $(m,t)$.  Together with
 \cref{lem:opt:mixed-quota}, this proves the proposition.
 The construction above applies directly in the open interval.  At
@@ -887,7 +890,7 @@ $u=\uDet{4}$ and $u=\uDet{5}$ the same statement follows by approaching from
 the interior, so the endpoints are included.
 \end{proof}
 
-\subsubsection{The plateau lower bound by a below-cap transfer}
+\subsubsection{Transferring the lower bound when raw execution is no shorter}
 
 The harmonic construction uses only values with $1+p_j\le u$, for which the
 offline cap $u$ is inactive.  The next lemma shows that any revealing
@@ -895,7 +898,7 @@ algorithm with raw-execution cap $u$ induces an obligatory-testing algorithm
 on these inputs without changing either the transcript comparison or the
 offline optimum.
 
-\begin{lemma}[Bounded below-cap transfer]
+\begin{lemma}[Transfer from jobs with $1+p\le u$]
 \label{lem:opt:obligatory-transfer}
 Let $u\ge1$, and let $L_{\mathsf{OT}}(P)$ denote the deterministic
 size-asymptotic value in obligatory testing, restricted to

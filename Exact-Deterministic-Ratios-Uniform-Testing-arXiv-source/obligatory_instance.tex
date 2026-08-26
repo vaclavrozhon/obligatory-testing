@@ -169,8 +169,9 @@ Define
   +\SPT(\nu).}
  \label{eq:ot-Phi}
 \end{equation}
-For $D=D[p]$ and a whole-occurrence maximizing prefix $E$, this is precisely
-$F_{\mathsf{OT},D[p]}(E)$ from \cref{eq:stationary-leading-coefficient}.  The next
+For $D=D[p]$ and a maximizing prefix $E$ made of whole job occurrences
+rather than fractional mass, this is precisely $F_{\mathsf{OT},D[p]}(E)$
+from \cref{eq:stationary-leading-coefficient}.  The next
 lemma proves both that the value is
 independent of how probability mass at the threshold is split and that it
 lower-bounds every fluid
@@ -188,9 +189,10 @@ For scaled time $s\ge0$, let
   \end{array}\right\}.
  \label{eq:ot-envelope}
 \end{equation}
-Then $\mathcal C_{\mathsf{OT},D}$ is attained simultaneously at all times by the stationary
-maximum-density schedule: repeat infinitesimal full modules $g_*$ until all
-jobs have been tested, then process the residual measure $\nu$ in SPT order.
+Then $\mathcal C_{\mathsf{OT},D}$ is attained simultaneously at all times by
+the following stationary schedule: repeatedly test an infinitesimal fraction
+and immediately process the outcomes selected by $g_*$ until all jobs have
+been tested, then process the residual measure $\nu$ in SPT order.
 Moreover,
 \begin{equation}
  \PhiOT(D)=\Area(\mathcal C_{\mathsf{OT},D}).
@@ -200,14 +202,16 @@ Moreover,
 
 \begin{proof}
 The envelope in \cref{eq:ot-envelope} is
-$\mathcal C^v_{D,1}$ from \cref{eq:common-fluid-envelope}; the independent-mode term
-has zero capacity, so $v$ is immaterial.  By
+$\mathcal C^v_{D,1}$ from \cref{eq:common-fluid-envelope}; the part
+representing jobs handled without testing has zero capacity, so $v$ is
+immaterial.  By
 \cref{lem:test-module-envelope}, its item measure is
 \[
                          a_*\delta_{\tau_D}+\nu.
 \]
-The optimal realization first repeats the full maximum-density module and
-then processes $\nu$ in SPT order, proving the pointwise assertion.  Since
+The optimal realization first performs the tests and selected processing
+described above and then processes $\nu$ in SPT order, proving the pointwise
+assertion.  Since
 $\nu$ has mass $1-a_*$ and is supported above $\tau_D$, the common area
 formula \cref{eq:common-envelope-area} expands to
 \begin{align*}
@@ -224,8 +228,9 @@ how probability mass at the boundary is split.
 \subsection{The announced upper bound}
 
 Suppose the input is announced but its labeling is not.  Choose a maximizing
-whole-occurrence prefix $E$, test labels in a uniformly random order, process
-an $E$-job immediately, and finish the residual jobs in SPT order.  The exact
+prefix $E$ made of whole job occurrences, test labels in a uniformly random
+order, process a job immediately when it belongs to $E$, and finish the
+remaining jobs in SPT order.  The exact
 identity \cref{eq:stationary-prefix-cost} and
 \cref{eq:ot-Phi} give
 \begin{equation}
@@ -246,8 +251,9 @@ job, since otherwise the lower bound is immediate.  In the adaptive order in
 which it tests new labels, the revealed occurrences form a uniform random
 permutation $P_1,\ldots,P_n$ of the coordinates of $p$ by deferred decisions.
 When values are equal, we still treat the corresponding jobs as distinct.
-Because every first touch is a test, no suffix edit is needed and we may use
-the sharper all-prefix sampling bound directly.
+Because the algorithm first touches every job by testing it, no final part of
+the schedule needs to be modified, and we may directly use the sampling bound
+that holds simultaneously for every prefix.
 
 Keep zero separate, partition $(0,L]$ into
 \begin{equation}
@@ -268,7 +274,7 @@ at most $n^{-2}$,
  \label{eq:ot-cell-discrepancy}
 \end{equation}
 
-Put $\gamma_n=\Gamma_n/n$.  At an operation prefix, let $t=k/n$, let $z$ be
+Put $\gamma_n=\Gamma_n/n$.  At any point in the schedule, let $t=k/n$, let $z$ be
 the normalized number of completed zero jobs, and let $c_j$ be the completed
 positive mass from cell $j$.  Equation~\eqref{eq:ot-cell-discrepancy} gives
 the capacity hypotheses of \cref{lem:cell-capacity-repair} with $q=1$ and
@@ -310,12 +316,14 @@ threshold, and fallback rules as $\mathcal A_n^*$ in
  B_n=32+n^{1/20},\qquad \eta=B_n/d.
  \label{eq:ot-learning-parameters}
 \end{equation}
-The algorithm privately permutes the labels, tests the first $k$, rounds
-positive values upward to the $B_n$-grid, and uses the threshold closure of a
-maximum-density sample prefix.
+The algorithm privately permutes the labels, tests the first $k$, and rounds
+positive values upward to the $B_n$-grid.  It starts with a sample prefix that
+maximizes density and then includes every finite grid category up to the
+resulting threshold.
 
 Fix $L$.  For all sufficiently large $n$, $B_n>L$ and the grid has no
-overflow job.  Moreover, the full sample prefix has density at least
+value in its overflow category.  Moreover, the prefix containing the entire
+sample has density at least
 $1/(1+L+\eta)>1/B_n$, so fallback never occurs.  Let $D^+$ be the rounded
 population histogram, $D^{\rm rem}$ the rounded histogram of the remaining jobs,
 $\widehat D$ the sample histogram, and
@@ -352,8 +360,9 @@ Rounding each processing time upward by at most $\eta$ preserves zeros, so
  \label{eq:ot-rounding-stability}
 \end{equation}
 
-Conditional on the unordered sample, compare the actual sample-first
-schedule with the fully stationary algorithm for $\widehat J$.  The calculation
+Conditional on the unordered sample, compare the actual schedule, which
+tests the sample before the other jobs, with the fully stationary algorithm
+for $\widehat J$.  The calculation
 in \cref{sec:random-obligatory} bounds the extra cost by
 $O_L(nk+k^2)$.  The one-job contribution in the exact stationary identity is
 $O_L(n)$, and using the rounded values can only increase the processing
@@ -383,9 +392,8 @@ for every $p\in[0,L]^n$.  Together with
 \cref{eq:ot-announced-lower}, this proves
 \cref{thm:obligatory-instance}.
 
-Finally, the exact certificate \cref{eq:rand-certificate} says that
+Finally, the exact identity \cref{eq:rand-certificate} says that
 $\PhiOT(D)$ is at most $4/3$ times the leading clairvoyant SPT value
 for every $D$.  Equality is attained by
-$D=\tfrac12\delta_0+\tfrac12\delta_2$.  Thus the sharp $4/3$ theorem is
-exactly the worst-input consequence of the stronger instance-optimal
-description.
+$D=\tfrac12\delta_0+\tfrac12\delta_2$.  Thus the sharp $4/3$ theorem follows
+from the stronger instance-optimal description by maximizing over inputs.

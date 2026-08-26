@@ -53,7 +53,7 @@ told the input vector.
 
 Let $D$ initially have finite support and put
 $\mu=\int p\,dD(p)$.
-A test automatically completes a zero outcome.  Apply
+A test automatically completes a job when it reveals $p_i=0$.  Apply
 \cref{lem:maximum-density-module} and choose its threshold selector $g_*$.
 Write
 \begin{equation}
@@ -75,8 +75,7 @@ For a fixed final tested fraction $q\in[0,1]$, define the model envelope
  \label{eq:cui-model-envelope}
 \end{equation}
 where the right-hand side is the common envelope
-\cref{eq:common-fluid-envelope} with independent-mode work $v=u$; the
-independent mode is raw execution.
+\cref{eq:common-fluid-envelope}, with $v=u$ representing raw execution.
 
 \begin{lemma}[Fixed-$q$ completion envelope]
 \label{lem:cui-envelope}
@@ -87,14 +86,15 @@ curve obtained from the following divisible blocks:
 \toprule
 item & completion capacity & work per completion\\
 \midrule
-maximum-density test module & $aq$ & $\tau_D$\\
-residual tested class $i$ & $q\nu_i$ & $p_i$\\
-raw module & $1-q$ & $u$\\
+tests and selected outcomes & $aq$ & $\tau_D$\\
+tested jobs of residual value $p_i$ & $q\nu_i$ & $p_i$\\
+jobs run raw & $1-q$ & $u$\\
 \bottomrule
 \end{tabular}
 \end{center}
-If $\tau_D<u$, their optimal order is the test module, the residual classes in
-nondecreasing $p_i$, and the raw module.  If $\tau_D\ge u$, the all-raw curve
+If $\tau_D<u$, first perform the tests and process the selected outcomes,
+then process the residual classes in nondecreasing order of $p_i$, and
+finally run the remaining jobs raw.  If $\tau_D\ge u$, the all-raw curve
 pointwise dominates every choice with $q>0$.
 \end{lemma}
 
@@ -121,9 +121,10 @@ The common area identity \cref{eq:common-envelope-area}, specialized through
  +\frac{u(1-q)^2}{2}.
  \label{eq:cui-F}
 \end{equation}
-Indeed, the four terms are respectively the test-module contribution, the
-work of positive tested jobs delaying raw jobs, the pair contribution within
-the positive tested jobs, and the contribution of the equal-length raw jobs.
+Indeed, the four terms are respectively the contribution of the tests and
+the selected outcomes processed after them, the work of positive tested jobs
+delaying raw jobs, the pair contribution among the positive tested jobs, and
+the contribution of the equal-length raw jobs.
 Define
 \begin{equation}
  \PhiRO(D)=
@@ -169,17 +170,18 @@ finite-support distribution, let $C_0=\{0\}$ and
 $C_j=\{p_j\}$ for $1\le j\le K=s$, and put $d_j=D(C_j)$.
 Apply \cref{lem:uniform-first-touch-event} with failure probability $n^{-2}$,
 using its notation $X_k,A_k$, and let $\Gamma_n=\Gamma_{\rm cell}$.  With
-that probability, simultaneously
-for every cell $j$ and every touch prefix $m\le(1-\delta)n$,
+that probability, simultaneously for every cell $j$ and every prefix of
+length $m\le(1-\delta)n$ in the order in which the algorithm first touches
+the labels,
 \begin{equation}
  \left|\sum_{k\le m}A_k\one_{X_k\in C_j}
        -d_j\sum_{k\le m}A_k\right|\le\Gamma_n.
  \label{eq:cui-urn-discrepancy}
 \end{equation}
 
-Stop the first-touch sequence when only $\delta n+O(1)$ labels remain.  In
-the suffix, replace every future test of an untouched job by raw execution
-at its first original operation and delete its later known processing.
+Stop after the algorithm has first touched all but $\delta n+O(1)$ labels.
+For each remaining untouched job, replace any future test by raw execution
+at its first scheduled operation and delete its later known processing.
 At most $\delta n+O(1)$ jobs and three operations per affected job change.
 Thus \cref{lem:bounded-suffix-edit}, with $W=u+1$, gives
 \begin{equation}
@@ -190,11 +192,13 @@ The edited schedule has a fixed final tested fraction $q$, but we do not
 condition on its value.
 
 On the single sampling event \cref{eq:cui-urn-discrepancy}, consider any
-operation prefix and
-normalize counts and work by $n$.  Let $t,b,z,c_j$ denote tested mass, raw
-mass, tested-zero completions, and processed known mass from positive cell
-$C_j$, and put $\gamma_n=\Gamma_n/n$.  The sampling event gives the capacity
-hypotheses of \cref{lem:cell-capacity-repair}; raw work is exactly $ub$, so
+point in the schedule and
+normalize counts and work by $n$.  Let $t,b,z,c_j$ denote the tested
+fraction, the fraction run raw, the fraction of tests that complete zero
+jobs, and the processed fraction whose revealed value lies in the positive
+cell $C_j$, respectively, and put $\gamma_n=\Gamma_n/n$.  The sampling event gives the capacity
+cell $C_j$, respectively, and put $\gamma_n=\Gamma_n/n$.  The sampling event
+gives the capacity hypotheses of \cref{lem:cell-capacity-repair}; raw work is exactly $ub$, so
 its work hypothesis holds with $\alpha=0$.  Therefore
 \begin{equation}
  \text{completed fraction at work }x
@@ -203,7 +207,8 @@ its work hypothesis holds with $\alpha=0$.  Therefore
 \end{equation}
 The completion curve reaches one by normalized work at most $H=1+u$, and
 $0\le\PhiRO(D)\le u/2$.  Thus \cref{thm:completion-curve-transfer}, with
-the suffix edit as $\varepsilon=O_u(\delta+1/n)$ and
+the preceding modification contributing
+$\varepsilon=O_u(\delta+1/n)$ and
 $\beta=(K+1)\gamma_n$, gives
 \begin{equation}
  \frac{C_{\rm original}}{n^2}
@@ -237,7 +242,7 @@ $(K_n+1)\gamma_n$ completed mass.  With the parameters above,
 \end{equation}
 Apply \cref{thm:completion-curve-transfer} directly to the rounded grid, with
 $\alpha=h_n$, $\beta=(K_n+1)\gamma_n$, $H=1+u$, and
-$B=u/2$.  Together with the suffix edit and
+$B=u/2$.  Together with this modification and
 \cref{eq:cui-rounding-stability,eq:cui-grid-error}, it proves that every
 announced algorithm has private-shuffle cost at least
 \begin{equation}
@@ -268,9 +273,9 @@ grid values and the chosen initial segment,
 where
 $F_{\mathsf{RO},u,D}(\pi)$ is the right-hand side of \cref{eq:cui-F}.
 To verify this, expand the testing phase into the contribution of each job
-and each pair of tested jobs; expand the remaining positive tested block into
-its contribution against raw jobs and its internal SPT cost; and add the
-exact raw-block cost
+and each pair of tested jobs; expand the remaining tested positive jobs into
+their contribution against raw jobs and their internal SPT cost; and add the
+exact cost of running all untested jobs raw,
 $u(n-N_{\rm test})(n-N_{\rm test}+1)/2$.  For distinct occurrences the finite
 coefficients
 \[

@@ -29,7 +29,8 @@ is the rigorous version of the informal instance-optimality theorem
 \cref{thm:intro-bo-instance}.  The second, \cref{thm:bo-curve}, is the
 rigorous version of \cref{thm:intro-bo-curve} and maximizes that
 instance-specific value relative to the clairvoyant optimum.  Keeping the
-results together avoids repeating the same blind-block reduction.
+results together avoids repeating the same reduction to contiguous
+optimization-and-processing blocks.
 
 For a vector $p$, put
 \[
@@ -99,7 +100,7 @@ $(m^2+m)/2>n^2/8$.  This proves \cref{eq:bo-det-instance-gap}.
 An optimization operation reveals no information.  We will repeatedly use
 the following normal form.
 
-\begin{lemma}[Blind-block normal form]
+\begin{lemma}[Contiguous-block normal form for optimized jobs]
 \label{lem:bo-normal-form}
 For every nonanticipating algorithm $\mathcal A$ in $\mathsf{BO}(u)$ there is a
 nonanticipating algorithm $\mathcal A^{\rm nf}$ which completes every optimized
@@ -136,7 +137,8 @@ For $u>1$ define
 \end{equation}
 The two deterministic algorithms needed below are \textsc{Raw}, which runs
 every job for time $u$, and \textsc{OptimizeAll}, which fixes an arbitrary
-label order and completes every job as a blind block of length $1+p_i$.
+label order and completes every job by one contiguous optimization-and-processing
+block of length $1+p_i$.
 
 \begin{theorem}[Exact deterministic blind-optimization curve]
 \label{thm:bo-det-curve}
@@ -163,9 +165,10 @@ In particular,
 \end{theorem}
 
 We first prove the adaptive lower bound.  Its stopping rule is the direct
-blind-block analogue of \cref{lem:opt:hidden-stopping}.
+analogue of \cref{lem:opt:hidden-stopping} for optimization without
+revelation.
 
-\begin{lemma}[Hidden binary stopping with blind blocks]
+\begin{lemma}[Hidden binary stopping for optimized jobs]
 \label{lem:bo-det-hidden-stopping}
 Fix $u>1$, a target $R\le u$, and $\alpha\in(0,1)$.  Against every
 deterministic algorithm there is a fixed binary input with $p_j\in\{0,u\}$ on
@@ -188,11 +191,12 @@ deterministic algorithm has size-asymptotic ratio at least $R$.
 \end{lemma}
 
 \begin{proof}
-By \cref{lem:bo-normal-form}, it is enough to lower-bound an algorithm whose
-optimized jobs are contiguous blind blocks.  Until the stopping condition
+By \cref{lem:bo-normal-form}, it is enough to lower-bound an algorithm that
+optimizes and processes each such job in one contiguous block.  Until the
+stopping condition
 below is met, give value zero to every job completed raw and value $u$ to
 every optimized job.
-If $v$ raw jobs and $L$ optimized-long jobs have been completed, stop at the
+If $v$ raw jobs and $L$ optimized jobs with $p=u$ have been completed, stop at the
 first completion for which $L>0$ and
 \begin{equation}
  L\ge\alpha(n-v).
@@ -208,10 +212,11 @@ otherwise $n-v=L$ at the end and $L\ge\alpha L$.  Thus the algorithm ran
 every job raw on the all-zero input and has ratio $u\ge R$.
 
 Suppose the line is crossed.  Put $x=n-v-L$.  For a lower bound, discard
-idle time, put the already completed raw blocks before the already completed
-optimized-long blocks, reveal the future, and let all $x$ remaining zero
+idle time, put the already completed raw jobs before the already completed
+optimized jobs with $p=u$, reveal the future, and let all $x$ remaining zero
 jobs be optimized.  These exchanges only favor the algorithm: among the
-past blocks, shortest first is optimal, while no untouched future job could
+operations already completed, shortest first is optimal, while no untouched
+future job could
 have completed before the crossing.  The resulting exact cost and the
 clairvoyant optimum are
 \begin{align}
@@ -224,8 +229,8 @@ clairvoyant optimum are
  \frac{n(n+1)}2+(u-1)\frac{L(L+1)}2.
  \label{eq:bo-det-stopping-Oexact}
 \end{align}
-Here the offline optimum first completes the $n-L$ zero jobs as unit
-optimized blocks and then runs the $L$ long jobs raw.
+Here the offline optimum first optimizes and processes the $n-L$ zero jobs,
+using one unit per job, and then runs the $L$ jobs with $p=u$ raw.
 
 Set
 \begin{equation}
@@ -260,7 +265,7 @@ the claimed lower bound.
 \end{proof}
 
 \begin{proof}[Proof of \cref{thm:bo-det-curve}]
-If $u\le1$, raw execution is an offline-optimal block for every job, so the
+If $u\le1$, raw execution is an offline-optimal action for every job, so the
 ratio is one.  If $1<u\le2$, use
 \begin{equation}
  R=u,
@@ -353,7 +358,7 @@ $G_{\mathsf{BO}}(u)$; hence
 \end{equation}
 All survival-function inequalities above are tight for a binary multiset
 with a $b$-fraction of values $u$ and the remaining values zero, labeled so
-that the long optimized blocks occur first.
+that the optimized jobs with $p=u$ occur first.
 Equations \eqref{eq:bo-det-optall-online}--
 \eqref{eq:bo-det-optall-envelope} prove
 $\ALG_{\textsc{OptimizeAll}}\le R\cdot\OPT+O_u(n)$.
@@ -386,8 +391,9 @@ sections, $\PhiBO$ depends only on the empirical mean.
 
 The proof is simpler than in the revealing models.  Because optimization
 reveals nothing, it can be moved next to the processing of its job.  Every
-job is then either a raw block of known length $u$ or an optimized blind
-block with average length $1+\mu_p$.  A predictable-sampling bound rules out
+job is then completed either by raw execution of known length $u$ or by one
+contiguous optimization-and-processing operation whose average length is
+$1+\mu_p$.  A sampling bound that holds for every adaptive prefix rules out
 an adaptive advantage, while a sample estimates the one number $\mu_p$.  The
 first subsection makes this argument formal; the second performs the outer
 worst-case optimization.
@@ -399,8 +405,8 @@ before the algorithm starts.  The lower half simply says that no announced
 algorithm beats $n^2\PhiBO(p)-o_u(n^2)$ in expectation.
 
 By \cref{lem:bo-normal-form}, we may regard every optimized job as one
-indivisible block of hidden length $1+p_i$.  A raw block has the known length
-$u$.  Both blocks complete exactly one job.
+indivisible operation of hidden length $1+p_i$.  Raw execution has the known
+length $u$.  Either action completes exactly one job.
 
 \paragraph{The announced lower bound.}
 Fix the private seed of an algorithm and place the announced occurrences
@@ -408,15 +414,16 @@ uniformly behind the labels.  We may assume that the algorithm completes every
 job.  Treat equal-valued jobs as distinct and reveal their values in the
 analysis in first-touch order.  By deferred decisions this order is a
 uniform permutation, and the decision whether to optimize the next job is
-made from the preceding observations.  A raw block does not reveal its
-job's value to the algorithm; exposing it
+made from the preceding observations.  Running a job raw does not reveal its
+value to the algorithm; exposing it
 afterwards only for the analysis does not affect the algorithm's decisions.
 
 Fix $\delta>0$ and ignore the last $\delta n$ first touches for the moment.
 The predictable-permutation estimate
 \cref{lem:predictable-permutation-sampling}, applied to the processing times
-and the optimized-block selector, gives one event of probability $1-o(1)$
-on which every earlier prefix containing $t n$ completed optimized blocks
+and the indicator of the decision to optimize, gives one event of
+probability $1-o(1)$ on which every earlier prefix containing $t n$
+completed optimized jobs
 has total hidden processing work
 \begin{equation}
  \sum_{i\text{ optimized in the prefix}}p_i
@@ -436,7 +443,8 @@ $\delta_n=n^{-1/4}$.  The bounded selected-work estimate used in
  =O_u\!\left(n^{3/4}\sqrt{\ln(n+2)}\right)
 \]
 and failure probability $o(1)$, simultaneously over all relevant prefixes.
-After division by $n$, both this deviation and the edited suffix contribute
+After division by $n$, both this deviation and the modification of the last
+$\delta_n n$ jobs contribute
 $O_u(n^{-1/4}\sqrt{\ln(n+2)})$ to the normalized completion-area bound.
 
 Put $a=1+\mu_p$.  If the final optimized fraction is $q$, the best possible
@@ -451,7 +459,7 @@ its area is
  F'_{a,u}(q)=(a-u)(1-q).
  \label{eq:bo-fluid-opt-first}
 \end{equation}
-It is minimized at $q=1$, with value $a/2$.  When $a\ge u$, raw blocks go
+It is minimized at $q=1$, with value $a/2$.  When $a\ge u$, jobs run raw go
 first and the area is
 \begin{equation}
  F_{a,u}(q)
@@ -631,9 +639,10 @@ $(u^2+u-1)/(u-1)=u+2+1/(u-1)$ gives
 The hard distribution explains the separation.  Most jobs have optimized
 length zero, while a carefully chosen small fraction have length $u$.  Blind
 optimization is attractive on average, so the online algorithm optimizes the
-jobs.  It cannot recognize a long outcome before committing to it, and an
-early long job delays many zeros.  The clairvoyant optimum optimizes the
-zeros, runs the long jobs raw, and places them last.  In the revealing model,
-by contrast, the same long outcomes can be deferred after their tests.  The
+jobs.  It cannot recognize a job with $p=u$ before committing to it, and
+processing such a job early delays many zeros.  The clairvoyant optimum
+optimizes the zeros, runs the jobs with $p=u$ raw, and places them last.  In
+the revealing model, by contrast, the same jobs can be deferred after their
+tests.  The
 gap between the two curves therefore measures the scheduling value of the
 revealed information itself.

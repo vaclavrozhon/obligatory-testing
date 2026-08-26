@@ -170,10 +170,10 @@ accounting gives
     +q^2\SPT(D_H).
  \label{eq:blind-F}
 \end{align}
-Probability mass at $\tau_D$ is split between the low module and the
-remaining tested jobs; mass at $\mu$ may be placed on either side of the
-blind block.  The same formula then holds after treating the two portions as
-separate classes.
+Probability mass at $\tau_D$ is split between outcomes processed immediately
+after their tests and the remaining tested jobs; mass at $\mu$ may be placed
+on either side of the jobs run blindly.  The same formula then holds after
+treating the two portions as separate classes.
 
 Each term in \cref{eq:blind-F} has a direct area interpretation.  During the
 test module, work $(1+\ell)dq$ reduces unfinished mass from $1$ to $1-aq$.
@@ -256,14 +256,15 @@ $\mu/2$ for every $q$, with equality at $q=0$.
 \end{lemma}
 
 \begin{proof}
-Apply \cref{lem:test-module-envelope} with independent-mode work $v=\mu$.
+Apply \cref{lem:test-module-envelope} with work $v=\mu$ for jobs run blindly.
 The resulting item measure is
 \[
                  qa\delta_{\tau_D}+q\nu+(1-q)\delta_\mu.
 \]
 When $\tau_D<\mu$, sorting these items by work per completion gives exactly
-the low test module, residual classes below $\mu$, the blind module, and
-residual classes above $\mu$, which is the four-block order
+the tests followed by selected low values, the remaining tested values below
+$\mu$, the jobs run blindly, and the tested values above $\mu$.  This is the
+four-block order
 \cref{eq:blind-four-block-order}.  Expanding the common area formula
 \cref{eq:common-envelope-area} across these four blocks gives
 \cref{eq:blind-F}.
@@ -278,13 +279,13 @@ $\tau_D<\mu$, its
 area complement $F_{\mathsf{BE},D}(q)$ is convex, proving $B\ge0$.
 \end{proof}
 
-\subsection{First-touch sampling for adaptive algorithms}
+\subsection{Sampling in the order jobs are first touched}
 \label{sec:blind-adaptive-urn}
 
 The fluid proof fixed $q$, but an announced finite algorithm may choose whom to
 touch next and when to stop testing as arbitrary functions of its history.
-The next finite lemma is the deferred-decisions statement needed to control
-such an algorithm.
+The next argument uses the fact that, conditional on the history, the values
+on untouched labels remain uniformly permuted.
 
 For a size-$n$ vector whose coordinates lie among
 $0=p_0<p_1<\cdots<p_s\le L$, write $D_n$ for its empirical distribution,
@@ -296,8 +297,8 @@ private seed of a randomized algorithm.  Apply
 \cref{lem:uniform-first-touch-event} to the $s+1$ classes with
 failure probability $n^{-2}$, and put
 $\Gamma_n=\max\{\Gamma_{\rm cell},\Gamma_{\rm work}\}$.  On the resulting
-event, for every touch prefix leaving at least $\delta n$ labels untouched
-and every class $i$,
+event, for every prefix of the order in which jobs are first touched that
+leaves at least $\delta n$ labels untouched, and for every class $i$,
 \begin{align}
  |\#\text{tested class }i-D_{n,i}\#\text{tests}|
  &\le\Gamma_n,
@@ -330,13 +331,15 @@ Work on the single event
 $q=Q_{n,\delta}$.  Normalize mass and work by $n$, and let
 $\gamma_n=\Gamma_n/n$.  At any operation boundary, let $t,b,z,c_i$ denote
 tested mass, blindly completed mass, zero mass completed by tests, and
-processed known positive mass of class $i$.  The event gives
+the processed mass of jobs whose revealed positive value belongs to class
+$i$, respectively.  The event gives
 \[
  z\le D_{n,0}t+\gamma_n,\qquad
  c_i\le D_{n,i}t+\gamma_n.
 \]
-If $x$ is the actual normalized prefix work, the blind-work discrepancy and
-the suffix edit give
+If $x$ is the normalized work performed so far, the bound
+\cref{eq:blind-work-discrepancy} and the modification of the final
+$\delta n+O(1)$ jobs give
 \begin{equation}
  t+\mu_nb+\sum_i p_i(c_i-\gamma_n)^+
  \le x+(L+1)(\gamma_n+\delta).
@@ -363,7 +366,7 @@ $\alpha=(L+1)(\gamma_n+\delta)$, and $\beta=(s+1)\gamma_n$.  It gives
  \ge\PhiBE(D_n)-O_{L,s}(\gamma_n+\delta+1/n).
  \label{eq:blind-announced-finite-support}
 \end{equation}
-When $\tau_D\ge\mu_n$, the $\mu_n/2$ dominance part of
+When $\tau_D\ge\mu_n$, use the $\mu_n/2$ lower bound from
 \cref{lem:blind-fixed-q-envelope}; the same transfer applies.  The estimate
 is uniform in the fixed seed and therefore remains valid after averaging
 over a randomized announced algorithm.
@@ -446,7 +449,7 @@ executes
 \end{equation}
 sample jobs.  Their observed durations give a grid histogram $\widehat D_n$.
 The algorithm minimizes the quadratic \cref{eq:blind-quadratic} over every grid threshold,
-blind-block insertion position, and $q\in[0,1]$, then runs the selected
+position at which the jobs run blindly are inserted, and $q\in[0,1]$, then runs the selected
 four-block template on the remaining jobs in the unused random order.
 
 Let $D_n$ and $D_n^{\rm rem}$ be the full and remaining grid histograms.  Applying
@@ -496,7 +499,7 @@ and, after averaging over the seed, proves
 \cref{eq:intro-blind-lower}.  This completes the proof of
 \cref{thm:blind-instance}.
 
-\subsection{Why the medium block is necessary}
+\subsection{Why some tested jobs must come before blind execution}
 
 Let
 \[
@@ -504,14 +507,16 @@ Let
  D(\{9\})=\frac15,\qquad
  D(\{16\})=\frac35.
 \]
-Then $\mu=57/5$ and $\tau_D=5$.  Thus tested zeros are immediate, known
-nine-jobs precede the blind block, and known sixteen-jobs follow it.  Formula
+Then $\mu=57/5$ and $\tau_D=5$.  Thus tested zeros complete during their
+tests, tested jobs with $p=9$ precede the jobs run blindly, and tested jobs
+with $p=16$ follow them.  Formula
 \cref{eq:blind-F} becomes
 \[
  F_{\mathsf{BE},D}(q)=\frac{57}{10}-\frac{44}{25}q+\frac{11}{10}q^2.
 \]
 Its minimizer is $q^*=4/5$ and its value is $4.996$.  If all tested nonzero
 jobs are instead deferred until after the blind block, the best value is
-$5.04$.  The gap is a positive constant times $n^2$: the medium SPT block is
-not cosmetic, and an algorithm of the simpler form ``threshold, then blind, then
-all tested residuals'' is not instance optimal.
+$5.04$.  The gap is a positive constant times $n^2$: processing the tested
+jobs with $\tau_D<p<\mu$ before the jobs run blindly is necessary.  An
+algorithm of the simpler form ``threshold, then blind, then all tested
+residuals'' is not instance optimal.

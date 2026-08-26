@@ -1,16 +1,18 @@
-\section{Independent proof by moving jobs with $p=u$ to a prefix}
+\section{Independent proof by moving jobs with \texorpdfstring{$p=u$}{p = u} to a prefix}
 \label{app:cap-bubbling}
 For completeness, we give a second proof of the pairwise estimate behind
 \cref{thm:opt:optional-middle-upper}.  This
 argument is also a useful audit of the endpoint type $U$, which represents
-$p=u$, in the five-endpoint reduction \cref{eq:opt:five-endpoints}: it never
-inserts $p=u$ into the formula for a deferred type below $u$ before the
-$U$-endpoints have actually been moved.
+$p=u$, in the five-endpoint reduction \cref{eq:opt:five-endpoints}.  In
+particular, it never substitutes $p=u$ into the formula for type $Q$, whose
+value is just above the current threshold and strictly below $u$, before the
+$U$ endpoints have actually been moved.
 
-Recall the endpoint symbols from \cref{eq:opt:five-endpoints}: $Z$ is an
-actual zero, $E$ a positive value tending to zero, $M$ an immediate
-threshold value, $Q$ a deferred value just above the threshold, and $U$ the
-value $p=u$.  A word in these symbols records their reveal order.
+Recall the endpoint symbols from \cref{eq:opt:five-endpoints}: $Z$ has value
+zero; $E$ is a positive value tending to zero; $M$ equals the current
+threshold and is processed after its test; $Q$ lies just above that threshold
+and is placed in the final queue; and $U$ has value $p=u$.  A word in these
+symbols records their reveal order.
 For neighboring symbols $X,U$, the expression $UX-XU$ denotes the change in
 the pair objective when $U$ is moved one position to the left.
 
@@ -95,7 +97,7 @@ $a_c'=0$.  Hence $Z,E$ can be moved to the end, and a worst word has the form
 Here $U^\mu$ denotes a block of $U$-mass $\mu$, and the star denotes an
 arbitrary finite sequence of symbols from the set inside the braces.
 
-On the middle block use the simpler potential
+On the segment containing the types $M,Q$, use the simpler potential
 \[
  \widehat W(x,N,N_{\mathrm{def}})=xN_{\mathrm{def}}+x^2f_c\!\left(\frac{N_{\mathrm{def}}-RN}{x}\right).
 \]
@@ -148,7 +150,7 @@ $\mu=0$, and increasing $u$ only lowers
 
 To make this independent exchange proof finite, fix
 $\eps>0$ and first replace the last
-$\eps n+O(1)$ outcomes by genuine zeros.  Earlier states and
+$\eps n+O(1)$ values by actual zeros.  Earlier states and
 actions are unchanged, and only $O(\eps n^2+n)$ pair terms are
 affected.  All swaps between $U$ and non-$U$ endpoints among the retained
 jobs then
@@ -160,7 +162,7 @@ boundary $y=-1$, split a swap at the boundary and use the two one-sided
 formulae, whose values agree.  The artificial zeros already form the
 last block, so no $U$-endpoint remaining later in the word invalidates
 \eqref{eq:opt:ordinary-commutators}.  The normalized one-job remainder in
-the continuation-potential calculation is
+the change of the potential for the final $M,Q,Z,E$ segment is
 $O_{u,\eps}(n^{-2})$.  For fixed $\eps$, first let
 $n\to\infty$, and then let $\eps\downarrow0$.  Equations
 \eqref{eq:opt:ordinary-HJB}--\eqref{eq:opt:prefix-maximum} give
