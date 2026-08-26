@@ -1,7 +1,10 @@
-\subsubsection{Low and intermediate caps}
+\subsubsection{Raw execution}
 \label{sec:opt:low-upper}
 
-The first algorithm is formalized in \cref{alg:raw}.
+We first handle the range in which testing is unnecessary.  Running every
+job raw is optimal for $u\le1$ and gives the matching factor $u$ until the
+first nontrivial transition point $\uDet{2}$.  The following lemma records
+the guarantee for all $u$, although we use it only on the first two branches.
 
 \begin{algorithm}[H]
 \caption{\textsc{Raw}$(J,u)$}
@@ -13,12 +16,55 @@ The first algorithm is formalized in \cref{alg:raw}.
 \end{algorithmic}
 \end{algorithm}
 
-For $u\le \uDet{2}$, use \textsc{Raw}.  It is optimal when $u\le\uDet{1}$;
-when $u>1$, every effective length $\min\{u,1+p_j\}$ from
-\cref{eq:model-effective-length} is at least one, so the ratio is at most
-$u$.
+\begin{lemma}[Raw-execution guarantee]
+\label{lem:opt:raw-upper}
+For every $u>0$, \textnormal{\textsc{Raw}} satisfies
+\begin{equation}
+ \ALG_{\textnormal{\textsc{Raw}}}(I)\le \max\{1,u\}\OPT(I).
+ \label{eq:opt:raw-upper}
+\end{equation}
+In particular, it is optimal for $0<u\le\uDet{1}$ and is $u$-competitive
+for $\uDet{1}\le u\le\uDet{2}$.
+\end{lemma}
 
-For the next interval, let $R=\Rquad(u)$, $s=u-1$, and define
+\begin{proof}
+The raw blocks all have length $u$, so
+$\ALG_{\textnormal{\textsc{Raw}}}=u n(n+1)/2$.  If $u\le1$, every offline effective
+length is $\min\{u,1+p_j\}=u$, and equality holds.  If $u>1$, every offline
+effective length is at least one, so
+$\OPT\ge n(n+1)/2$ and the ratio is at most $u$.
+\end{proof}
+
+\subsubsection{Forced-prefix uniform thresholds}
+\label{sec:opt:forced-prefix-upper}
+
+The next algorithm tests every job.  It processes a forced prefix regardless
+of the observed values and thereafter processes only short outcomes
+immediately.  We prove its complete guarantee on
+$[\uDet{2},\uDet{3}]$ and then analyze the zero-prefix specialization that
+continues through $\uDet{4}$.
+
+\begin{algorithm}[H]
+\caption{\textsc{ForcedPrefixUTE}$(J,u,b)$}
+\label{alg:ute}
+\begin{algorithmic}
+\Statex \textbf{Input:} jobs $J$, finite $u>1$, and $b\in[0,1]$.
+\State Fix a test order $j_1,\ldots,j_n$; set
+       $k\gets\lfloor bn\rfloor$, $\theta_u\gets\min\{1,u-1\}$,
+       and $Q\gets\varnothing$.
+\State \textbf{For} $i=1,\ldots,n$ \textbf{do}:
+\State \quad Test $j_i$ for one unit and observe $p_{j_i}$.
+\State \quad \textbf{If} $i\le k$ or $p_{j_i}\le\theta_u$, process $j_i$
+       immediately.
+\State \quad \textbf{Otherwise}, add $j_i$ to $Q$.
+\State Process the jobs of $Q$ in nondecreasing revealed processing time.
+\end{algorithmic}
+\end{algorithm}
+
+\begin{lemma}[Forced-prefix UTE guarantee]
+\label{lem:opt:ute-endpoint-game}
+For every $\uDet{2}\le u\le\uDet{3}$, let $R=\Rquad(u)$, $s=u-1$, and
+define
 \begin{equation}
  K=s^2+s+1,
  \quad D=K+sR,
@@ -27,6 +73,17 @@ For the next interval, let $R=\Rquad(u)$, $s=u-1$, and define
  \quad \alpha=\frac KD.
  \label{eq:opt:ute-parameters}
 \end{equation}
+Then
+\textnormal{\textsc{ForcedPrefixUTE}}$(J,u,b)$ satisfies
+\begin{equation}
+ \ALG\le\Rquad(u)\OPT+O_u(n).
+ \label{eq:opt:ute-full-upper}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+\medskip
+\noindent\textbf{Claim 1 (Parameter admissibility).}
 The defining equation for $R$ gives
 \begin{equation}
  0\le b<\chi<\alpha<1,
@@ -61,31 +118,10 @@ $s_0<13/6$ follows by substituting $13/6$ in
 $s^3-(s+1)^2$.  Thus $R>5/3$, while $s>4/5$, and
 $s^2R>16/15$.  Finally $K<D$ gives $\alpha<1$.  In particular, $b=0$
 occurs only at $u=\uDet{3}$.
-The remaining two elementary branches use the single procedure in
-\cref{alg:ute}.
 
-\begin{algorithm}[H]
-\caption{\textsc{ForcedPrefixUTE}$(J,u,b)$}
-\label{alg:ute}
-\begin{algorithmic}
-\Statex \textbf{Input:} jobs $J$, finite $u>1$, and $b\in[0,1]$.
-\State Fix a test order $j_1,\ldots,j_n$; set
-       $k\gets\lfloor bn\rfloor$, $\theta_u\gets\min\{1,u-1\}$,
-       and $Q\gets\varnothing$.
-\State \textbf{For} $i=1,\ldots,n$ \textbf{do}:
-\State \quad Test $j_i$ for one unit and observe $p_{j_i}$.
-\State \quad \textbf{If} $i\le k$ or $p_{j_i}\le\theta_u$, process $j_i$
-       immediately.
-\State \quad \textbf{Otherwise}, add $j_i$ to $Q$.
-\State Process the jobs of $Q$ in nondecreasing revealed processing time.
-\end{algorithmic}
-\end{algorithm}
-
-On $\uDet{2}\le u\le \uDet{3}$, use
-\textsc{ForcedPrefixUTE} with $b$ from \cref{eq:opt:ute-parameters}.  Rounding
-$bn$ changes the cost by $O_u(n)$.
-
-Here is the complete binary calculation.  Adjacent exchanges place as many
+\medskip
+\noindent\textbf{Claim 2 (The range $\uDet{2}\le u\le2$).}
+Adjacent exchanges place as many
 long jobs as possible in the forced prefix and put all suffix-long jobs
 before suffix zeros.  If $x$ is the total long mass, then the prefix-long
 mass is $a=\min\{b,x\}$ and the deferred-long mass is
@@ -154,19 +190,8 @@ and $u$ for a deferred value.  Since the minimum is jointly concave,
 $\EE\min(\lambda_i',\lambda_j')\le\min(\lambda_i,\lambda_j)$.  Thus some binary realization
 has competitive excess at least that of the original instance.
 
-It remains to justify arbitrary values for $2\le u\le \uDet{3}$.  The following
-quadratic lemma records the entire endpoint calculation.
-
-\begin{lemma}[UTE endpoint game]
-\label{lem:opt:ute-endpoint-game}
-For $2\le u\le \uDet{3}$, UTE with the parameters
-\cref{eq:opt:ute-parameters} satisfies
-\begin{equation}
- \ALG\le\Rquad(u)\OPT+O_u(n).
-\end{equation}
-\end{lemma}
-
-\begin{proof}
+\medskip
+\noindent\textbf{Claim 3 (The range $2\le u\le\uDet{3}$).}
 Fix the symbolic prefix/immediate/deferred decisions.  Convexity in one
 coordinate reduces a prefix job to $p\in\{0,u\}$, a suffix-immediate job to
 $p\in\{0,1\}$, and a suffix-deferred job to $p\in\{1^+,u\}$.  For the last
@@ -317,14 +342,15 @@ $u\le\uDet{4}$.  Binary instances attain the second value.
 \end{proof}
 
 
-\subsubsection{High caps}
+\subsubsection{Adaptive thresholds in the mixed range and plateau}
 \label{sec:optional-upper}
 
-We now prove the upper bounds on the two ranges on which capped outcomes
-matter.  Besides completing the upper-bound side of the revealing-optimization curve,
-the proof records explicitly why an outcome at the raw cap cannot be
-treated as an ordinary deferred outcome.  Throughout this subsection,
-$R=1+c$, and we retain $\varphi$, $\uDet{5}$, and $r$ from
+The final algorithm changes its threshold as work accumulates.  We prove its
+mixed-range guarantee on $[\uDet{4},\uDet{5}]$ and its uniform plateau
+guarantee for $u\ge\uDet{5}$.  The proof also records explicitly why an
+outcome at the raw cap cannot be treated as an ordinary deferred outcome.
+Throughout this subsection, $R=1+c$, and we retain $\varphi$, $\uDet{5}$,
+and $r$ from
 \cref{eq:opt:u1-u2,eq:opt:obligatory-constant}.
 
 For every $c>0$ define the history-dependent threshold
@@ -398,7 +424,7 @@ size-asymptotic competitive ratio.
 
 Fix a finite cap $u$ in the stated range.
 
-\paragraph{The algorithm.}
+\paragraph{Setup.}
 Use \textsc{AdaptiveThreshold}$(J,c)$ from
 \cref{alg:adaptive-threshold}; on the high interval use $c=r$.
 For the analysis, immediately before a test let $x$ be the number of jobs not
@@ -423,7 +449,8 @@ positive immediate outcome, or a positive deferred outcome, respectively,
 while $x$ decreases.  This monotonicity will allow us to allocate every
 pair cost when its relevant endpoint becomes known.
 
-\paragraph{Exact pair objective and the five endpoints.}
+\medskip
+\noindent\textbf{Claim 1 (Five-endpoint reduction).}
 Write
 \[
  \bar p_i=\min\{p_i,u-1\}.
@@ -501,7 +528,8 @@ moves to $u$.  The symbolic categories, and therefore all later
 threshold states, remain unchanged during each coordinate move.  This is
 the only endpoint reduction used below.
 
-\paragraph{A local pair allocation.}
+\medskip
+\noindent\textbf{Claim 2 (Local pair allocation).}
 Separate the earlier $E$-outcomes from the substantive outcomes
 $M,Q,U$.  Let
 \[
@@ -561,7 +589,8 @@ same state gives the exact identity
  \label{eq:opt:cap-versus-q}
 \end{align}
 
-\paragraph{The reusable four-endpoint bank.}
+\medskip
+\noindent\textbf{Claim 3 (The ordinary-endpoint bank).}
 The states $Z,E,M,Q$ are the four ordinary, noncap endpoints.  The potential
 below proves their inequalities simultaneously for every target parameter
 $c$ on the mixed interval.  The fifth endpoint $U$ is handled only through
@@ -675,7 +704,8 @@ $-(1+\eta)/R$, and $0$, respectively.  For $\eta\le-1$ their signs
 are immediate from $g_c=g_c'=0$.  Hence the base bank pays every
 ordinary endpoint.
 
-\paragraph{The cap reserve.}
+\medskip
+\noindent\textbf{Claim 4 (The cap reserve).}
 Define
 \begin{equation}
  Z(c)=2+\frac1c+\frac12\ln\!\left(1+\frac2c\right),
@@ -766,7 +796,8 @@ $a_c(-cq_*)$, is zero by
 nonpositive.  The fifth Hamiltonian inequality therefore holds for every
 state and for arbitrary interleavings of capped and ordinary outcomes.
 
-\paragraph{Initial calibration.}
+\medskip
+\noindent\textbf{Claim 5 (Initial calibration).}
 Initially $y=b=q=0$, and
 \begin{equation}
  f_c(0)=\frac12-\frac c4\ln\!\left(1+\frac2c\right).
@@ -792,7 +823,8 @@ Using \eqref{eq:opt:mixed-parametrization} and
 \end{equation}
 Thus $W_{\mathrm{initial}}=cn^2/2$.
 
-\paragraph{Finite jobs, and uniformity on the plateau.}
+\medskip
+\noindent\textbf{Claim 6 (Finite jobs and a linear remainder).}
 We spell out the regularity needed to pass from the fluid Hamiltonian to
 unit job transitions.  It is important here to restrict attention to
 feasible states.  In Region I, $y\ge-1$ implies

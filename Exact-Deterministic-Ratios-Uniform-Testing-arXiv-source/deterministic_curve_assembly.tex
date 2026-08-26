@@ -1,8 +1,21 @@
-\subsubsection{The shape of the claimed curve}
+\subsubsection{Shape of the candidate curve}
 
-The global-maximum assertion follows directly from the displayed formulas.
-Only the algebraic branch needs a check.  Implicit differentiation of
-$T_s(\Rquad(u))=0$, with $s=u-1$, gives
+Before matching the bounds, we verify that the six displayed branches have
+the advertised shape.  The only nontransparent part is the algebraic branch
+$\Rquad$; the remaining monotonicity follows directly from the reciprocal
+formula and the mixed parametrization.
+
+\begin{lemma}[Monotonicity of the deterministic curve]
+\label{lem:opt:curve-monotonicity}
+The function $\Rquad(u)$ is strictly decreasing on
+$[\uDet{2},\uDet{3}]$.  The reciprocal and mixed branches are strictly
+decreasing on their nonconstant ranges.  Consequently the six-branch
+function in \cref{eq:opt:full-curve} attains its global maximum only at
+$u=\uDet{2}$.
+\end{lemma}
+
+\begin{proof}
+Implicit differentiation of $T_s(\Rquad(u))=0$, with $s=u-1$, gives
 \begin{equation}
  \Rquad'(u)=
  -\frac{R^2+(3s^2+2s)R-3(s+1)^2}
@@ -18,32 +31,71 @@ Using $T_s(R)=0$, its numerator factors as
 On the relevant interval $s\ge \uDet{2}-1>2/3$, the prefactor is
 positive, while the fraction in parentheses is at most $5/3$ because
 $4s^3-4s^2+1>0$.  The sign certificate
-\eqref{eq:opt:T-five-thirds} gives $R>5/3$.  Hence
-$\Rquad'(u)<0$.  The reciprocal branch and the mixed parametrization are
-also decreasing, so $\RdetRO(u)$ attains its global maximum only at
-$u=\uDet{2}$.
+\eqref{eq:opt:T-five-thirds} gives $R>5/3$, and hence
+$\Rquad'(u)<0$.  The reciprocal branch is visibly decreasing.  In the
+mixed parametrization, $m(c)$ is increasing and
+$u(c)=1+2/c-m(c)$ is decreasing, so $1+c$ decreases with $u$.
+The first nonconstant branch increases up to $u=\uDet{2}$, all subsequent
+nonconstant branches decrease, and the last branch is constant.  This proves
+the global-maximum assertion.
+\end{proof}
 
-\subsubsection{Completion of the curve and consistency at the joins}
+\subsubsection{Exact joins and completion of the proof}
 
-The branchwise lower bounds are:
-\cref{prop:opt:binary-lower} supplies the first four branches,
-\cref{eq:opt:mixed-lower-final} the fifth, and
-\cref{eq:opt:high-lower} the last.  The raw algorithm,
-\cref{lem:opt:ute-endpoint-game,lem:opt:zero-prefix}, supplies the matching
-upper bounds through $\uDet{4}$, while \cref{sec:optional-upper} supplies
-the last two.  Together these statements prove \cref{thm:optional-curve}.
+We next check that adjacent formulas agree at every transition point.  Once
+this consistency is recorded, the theorem follows by pairing the upper and
+lower result already proved for each interval.
 
-For clarity, all five joins are exact:
-\begin{align*}
- \Rquad(\uDet{2})&=\uDet{2},\\
+\begin{lemma}[Exact joins]
+\label{lem:opt:curve-joins}
+The six branches in \cref{eq:opt:full-curve} agree at all five transition
+points.  More explicitly, the first two branches both equal one at
+$\uDet{1}$, and
+\begin{align}
+ \Rquad(\uDet{2})&=\uDet{2},
+ \notag\\
  \Rquad(\uDet{3})&=1+\frac1{\sqrt{s_0}}
-              =1.682327803828019\ldots,\\
+              =1.682327803828019\ldots,
+ \notag\\
  1+\frac1{\sqrt{\uDet{4}-1}}&=\varphi
-              =\Rmix(\uDet{4}),\\
+              =\Rmix(\uDet{4}),
+ \notag\\
  \Rmix(\uDet{5})&=1+r=\RdetOT.
-\end{align*}
-At $u=\uDet{1}$, both initial branches equal one.  Representative values of the
-new mixed branch are
+ \label{eq:opt:curve-joins}
+\end{align}
+\end{lemma}
+
+\begin{proof}
+The equality at $\uDet{1}=1$ is immediate.  Substitution of the defining
+equations for $\uDet{2}$ and $s_0=\uDet{3}-1$ into $T_s$ gives the first
+two displayed identities; uniqueness of the positive root identifies the
+values with $\Rquad$.  Since
+$\uDet{4}-1=\varphi+1=\varphi^2$, the reciprocal branch equals
+$1+1/\varphi=\varphi$.  The two remaining equalities are exactly the endpoint
+conditions of the mixed parametrization in
+\cref{eq:opt:mixed-endpoints}.
+\end{proof}
+
+\begin{proof}[Proof of \cref{thm:optional-curve}]
+For the upper bounds, \cref{lem:opt:raw-upper} gives the first two branches,
+\cref{lem:opt:ute-endpoint-game} gives the algebraic branch, and
+\cref{lem:opt:zero-prefix} gives the reciprocal branch.  The mixed branch
+and the uniform plateau follow from
+\cref{thm:opt:optional-middle-upper}.
+
+For the matching lower bounds, \cref{prop:opt:binary-lower} supplies the
+first four branches, \cref{prop:opt:mixed-lower} supplies the fifth, and
+\cref{lem:opt:obligatory-transfer,thm:lower} supplies the plateau with
+cap-free instances.  The exact joins are given by
+\cref{lem:opt:curve-joins}, and the claimed shape follows from
+\cref{lem:opt:curve-monotonicity}.  The finite upper bounds have the stated
+$O_u(n)$ remainders, while
+\cref{thm:opt:optional-middle-upper} gives one absolute $O(n)$ remainder on
+the plateau.  This proves every assertion of the theorem.
+\end{proof}
+
+\begin{remark}[Representative mixed values]
+For orientation, some values on the mixed branch are
 \begin{center}
 \begin{tabular}{@{}rrrr@{}}
 \toprule
@@ -56,17 +108,13 @@ $4.300000$ & $1.571692026$ & $0.198387083$ & $1.734651379$\\
 \bottomrule
 \end{tabular}
 \end{center}
+\end{remark}
 
 \begin{remark}[Asymptotic scope]
 \label{rem:opt:curve-audit}
 All statements above concern the fixed-$u$ size-asymptotic ratio.  Below the
 plateau, the upper bounds have additive error $O_u(n)$.  On
-$u\in[\uDet{5},\infty)$ the same algorithm has one uniform $O(n)$ error.  The
-unbounded obligatory endpoint is not included in the statement of the
-curve; it is derived after the finite-$u$ proof in
-\cref{sec:obligatory}.
+$u\in[\uDet{5},\infty)$ the same algorithm has one uniform $O(n)$ error.
+The unbounded obligatory endpoint is not included in the statement of the
+curve; it is derived in \cref{sec:obligatory}.
 \end{remark}
-
-The next subsection, \cref{sec:optional-upper}, proves the matching
-middle- and high-$u$ upper bounds and thereby completes the proof of
-\cref{thm:optional-curve}.

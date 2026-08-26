@@ -1,4 +1,4 @@
-\section{Deterministic revealing optimization: the exact curve}
+\section{Deterministic revealing optimization and its obligatory endpoint}
 \label{sec:optional}
 
 This section proves two exact deterministic results: the revealing-optimization
@@ -36,17 +36,15 @@ The fourth transition point is
  \uDet{4}=\varphi+2=3.618033988749895\ldots .
  \label{eq:opt:u4}
 \end{equation}
-For $s=u-1$, put
-\begin{equation}
+For $s=u-1$, define
+\[
  T_s(z)=sz^2+(s^3+s^2+1)z-(s^2+s+1)(s+2),
- \label{eq:opt:Ts}
-\end{equation}
-and let $\Rquad(u)$ be the positive root of
+\]
+and let $\Rquad(u)$ be its positive root, so
 \begin{equation}
-sR^2+(s^3+s^2+1)R-(s^2+s+1)(s+2)=0.
-\label{eq:opt:Rquad-equation}
+ T_s(\Rquad(u))=0.
+ \label{eq:opt:Rquad-equation}
 \end{equation}
-Denote the left-hand side by $T_s(R)$.
 Equivalently,
 \begin{equation}
  \Rquad(u)=
@@ -163,18 +161,34 @@ $\uDet{5}\le u<\infty$
 \end{tabular}
 \end{center}
 
-\subsection{Algorithm guarantees}
+\subsection{Upper bounds}
 \label{sec:det-algorithm-guarantees}
+
+We prove the six upper branches using three algorithms.  Raw execution
+covers the first two branches, a forced-prefix uniform threshold covers the
+next two, and an adaptive threshold gives the mixed branch and the plateau.
+Each of the following subsubsections treats one algorithm and ends with its
+complete guarantee on the relevant range of $u$.
 
 \input{deterministic_policy_guarantees}
 
-\subsection{Branchwise lower bounds}
+\subsection{Lower bounds}
 \label{sec:det-branchwise-lower}
+
+The lower bounds use three adversarial constructions.  A hidden binary
+stopping game gives the first four branches, a harmonic cap-free core gives
+the plateau, and a capped block prepended to a scaled harmonic core gives the
+mixed branch.  The final transfer lemma converts the cap-free construction
+back to every sufficiently large finite $u$.
 
 \input{deterministic_lower_bounds}
 
 \subsection{Assembly of the curve}
 \label{sec:det-curve-assembly}
+
+It remains to verify the shape and joins of the candidate branches and to
+pair each upper bound with its matching lower bound.  We do this explicitly
+before transferring the uniform plateau witnesses to obligatory testing.
 
 \input{deterministic_curve_assembly}
 

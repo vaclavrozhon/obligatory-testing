@@ -107,6 +107,25 @@ tested answer was fixed when revealed, and every raw job's zero value stayed
 hidden.  This proves the lemma.
 \end{proof}
 
+\begin{proposition}[Binary lower curve]
+\label{prop:opt:binary-lower}
+Every deterministic algorithm has size-asymptotic ratio at least
+\begin{equation}
+ B(u)=
+ \begin{cases}
+  1,&0<u\le1,\\
+  u,&\uDet{1}\le u\le \uDet{2},\\
+  \Rquad(u),&\uDet{2}\le u\le \uDet{3},\\[1mm]
+  \displaystyle1+\frac1{\sqrt{u-1}},&u\ge \uDet{3}.
+ \end{cases}
+ \label{eq:opt:binary-curve}
+\end{equation}
+The lower bound uses only $p_j\in\{0,u\}$.
+\end{proposition}
+
+\begin{proof}
+\medskip
+\noindent\textbf{Claim 1 (Two quadratic branches).}
 Minimizing \cref{eq:opt:stopping-f} over the algorithm's completion choice
 gives
 \begin{equation}
@@ -149,31 +168,17 @@ and tangency gives
 The latter point belongs to the zero-$b$ branch iff
 $(u-1)^3\ge u^2$, with equality at $u=\uDet{3}$.
 
+\medskip
+\noindent\textbf{Claim 2 (The first transition point).}
 For $R=u$, the maximum in
 \cref{eq:opt:stopping-positive-branch} is nonnegative exactly while
 \begin{equation}
  [u(u-1)]^2-u(u-1)-1\le0,
 \end{equation}
-whose positive equality is $u=\uDet{2}$.  We have proved the following
-binary lower envelope.
+whose positive equality is $u=\uDet{2}$.
 
-\begin{proposition}[Binary lower curve]
-\label{prop:opt:binary-lower}
-Every deterministic algorithm has size-asymptotic ratio at least
-\begin{equation}
- B(u)=
- \begin{cases}
- 1,&0<u\le1,\\
- u,&\uDet{1}\le u\le \uDet{2},\\
- \Rquad(u),&\uDet{2}\le u\le \uDet{3},\\[1mm]
- \displaystyle1+\frac1{\sqrt{u-1}},&u\ge \uDet{3}.
- \end{cases}
- \label{eq:opt:binary-curve}
-\end{equation}
-The lower bound uses only $p_j\in\{0,u\}$.
-\end{proposition}
-
-\begin{proof}
+\medskip
+\noindent\textbf{Claim 3 (Attainment of the envelope).}
 For $\uDet{1}<u\le \uDet{2}$, use $R=u$ and the maximizing point of
 \cref{eq:opt:stopping-positive-branch}.  For
 $\uDet{2}\le u\le \uDet{3}$, use the positive root $\Rquad(u)$ and
@@ -210,7 +215,9 @@ processing times such that
 \]
 \end{theorem}
 
-\paragraph{The revelation experiment.}
+\begin{proof}
+\medskip
+\noindent\textbf{Claim 1 (Fixed-input revelation experiment).}
 Fix an integer $K$, a rational number $\xi>0$, and a rational slack
 $\gamma\in(0,1)$; one may keep $\gamma=1/2$ throughout.  For a large scaling
 integer $H$, the instance will contain $H$ jobs of each of $K$ positive types
@@ -235,7 +242,8 @@ If the algorithm never tests or completes some job, its cost is infinite and
 the lower bound is immediate; otherwise every job label is recorded.
 Hence it is enough to lower-bound the cost in the revelation experiment.
 
-\paragraph{Why each phase can be relaxed to shortest processing time.}
+\medskip
+\noindent\textbf{Claim 2 (Shortest-first phase relaxation).}
 Let $T_\ell$ be the start of the first test in positive block $\ell$, and let
 $T_K$ be the start of the first test in the zero block.  Phase $\ell$ contains
 the completions in $(T_\ell,T_{\ell+1}]$; a completion exactly at $T_\ell$
@@ -283,7 +291,8 @@ starts with all zero jobs and then uses the positive types from shortest to
 longest.  These are the only two places where
 \cref{eq:lower-span} is used.
 
-\paragraph{The finite accounting identity.}
+\medskip
+\noindent\textbf{Claim 3 (Finite accounting identity).}
 We now record the online algorithm's possible behavior.  Normalize all job
 counts by $H$.  Let
 \begin{itemize}
@@ -365,7 +374,8 @@ later positive phase is represented by $d_{j,\ell}$ and its bracket.  We next
 choose the processing times so that every such bracket is nonnegative and all
 $\theta_j$ are equal.
 
-\paragraph{The harmonic choice and its telescoping cancellation.}
+\medskip
+\noindent\textbf{Claim 4 (Harmonic cancellation).}
 Set
 \begin{equation}
   p_{K-1}=1+\frac{\gamma}{\xi},
@@ -444,7 +454,8 @@ pairs, the unit-test part of positive--positive pairs, and the processing
 part of positive--positive pairs.  Thus the finite-$K$ lower-bound
 certificate is simply $Q_K/D_K$.
 
-\paragraph{Passing to a smooth curve.}
+\medskip
+\noindent\textbf{Claim 5 (Smooth limit and its maximum).}
 Write
 \[
   \alpha=\frac K\xi
@@ -523,7 +534,8 @@ and therefore
 Moreover, $\sqrt{\uDet{5}}-1=1.12255\ldots<e-1$, so the maximizer lies in the
 range where \cref{eq:lower-span} holds.
 
-\begin{proof}[Proof of \cref{thm:lower}]
+\medskip
+\noindent\textit{Final parameter choice.}
 Choose a rational $\alpha$ sufficiently close to
 $\alpha_\star=\sqrt{\uDet{5}}-1$, and choose any rational
 $\gamma\in(0,1)$.  For a sufficiently large $K$, set $\xi=K/\alpha$ and use
@@ -534,6 +546,10 @@ $\RdetOT-\eps$ for all sufficiently large $H$.  Finally, the replay argument
 at the beginning of the proof converts the revelation experiment into a fixed
 instance for the given deterministic algorithm.
 \end{proof}
+
+The mixed branch needs the same construction at an arbitrary total mass and
+at a prescribed point of its limiting curve.  The next lemma packages this
+rescaled form so that no phase accounting has to be repeated later.
 
 \begin{lemma}[Scaled harmonic core]
 \label{lem:opt:harmonic-block}
@@ -626,18 +642,25 @@ at least
 The finite diagonal discrepancy is lower order.
 \end{proof}
 
-After cap deferral, pairwise accounting gives the offline coefficient $O$
-and the guaranteed online lower benchmark $A^{\rm lb}$:
+\begin{lemma}[Capped-block accounting]
+\label{lem:opt:mixed-accounting}
+After cap deferral, the offline coefficient $O$ and the guaranteed online
+lower benchmark $A^{\rm lb}$ satisfy
 \begin{align}
  A^{\rm lb}={}&A_0^{\rm lb}+m(1-m)+m(1+L)+\frac u2m^2,
  \label{eq:opt:mixed-A}\\
  O={}&O_0+m(1-m+L)+\frac u2m^2.
  \label{eq:opt:mixed-O}
 \end{align}
-Indeed, a cap--later pair contributes $2+p$ online and $1+p$ offline,
+In particular, $A^{\rm lb}-O=(A_0^{\rm lb}-O_0)+m$.
+\end{lemma}
+
+\begin{proof}
+A cap--later pair contributes $2+p$ online and $1+p$ offline,
 whereas a cap--cap pair contributes $2+u$ online and $u$ offline; collecting
 these pairs yields the two cross terms and the cap squares above.
-In particular, $A^{\rm lb}-O=(A_0^{\rm lb}-O_0)+m$.
+Subtracting the two identities gives the final assertion.
+\end{proof}
 
 \begin{lemma}[Raw-safe quota and replay]
 \label{lem:opt:mixed-raw-safe}
@@ -697,6 +720,20 @@ the values learned only by the physical simulation were hidden from the
 virtual algorithm.  This proves legality.
 \end{proof}
 
+\begin{proposition}[Mixed lower branch]
+\label{prop:opt:mixed-lower}
+For every $\uDet{4}\le u\le\uDet{5}$, every deterministic revealing
+algorithm has size-asymptotic competitive ratio at least $\Rmix(u)$.
+Equivalently,
+\begin{equation}
+ \RdetRO(u)\ge\Rmix(u).
+ \label{eq:opt:mixed-lower-final}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+\medskip
+\noindent\textbf{Claim 1 (Two-parameter lower ratio).}
 Apply \cref{lem:opt:harmonic-block} with $s=1-m$.  Substitution into
 \cref{eq:opt:mixed-A,eq:opt:mixed-O} gives the guaranteed two-parameter
 lower ratio
@@ -707,6 +744,8 @@ lower ratio
   +m(1-m)(1+\ln t)+\frac u2m^2}.
  \label{eq:opt:mixed-ratio}
 \end{equation}
+\medskip
+\noindent\textbf{Claim 2 (Mixed parametrization).}
 At an interior stationary point with value $1+c$, differentiation and the
 zero-gap equation give
 \begin{equation}
@@ -719,6 +758,8 @@ Eliminating $t$ gives precisely
 \cref{eq:opt:mixed-parametrization}.  Conversely, those equations make
 $\mathcal R_u(m,t)=1+c$.
 
+\medskip
+\noindent\textbf{Claim 3 (Feasibility and uniqueness).}
 The branch runs from
 \begin{equation}
  (u,m,t)=\left(\uDet{4},\frac1\varphi,1\right)
@@ -749,6 +790,8 @@ $g(1/\varphi)=h(1/\varphi)$ give the two endpoints in
 \cref{eq:opt:mixed-endpoints}; consequently every
 $u\in[\uDet{4},\uDet{5}]$ has exactly one parameter pair.
 
+\medskip
+\noindent\textbf{Claim 4 (Fixed finite instances).}
 To pass to fixed finite instances, first approximate $(m,t)$ rationally
 while retaining the strict cap inequalities, then choose a sufficiently
 fine harmonic family, and finally multiply all rational block sizes by a
@@ -756,17 +799,18 @@ common integer $H$.  For fixed harmonic depth, quota overshoot, diagonals,
 and rounding are $O_u(H)$ whereas the displayed costs are $\Theta(H^2)$.
 Send first $H$, then the harmonic depth, and finally the rational
 approximation to their limits.  Together with
-\cref{lem:opt:mixed-raw-safe}, this proves
-\begin{equation}
- \RdetRO(u)\ge \Rmix(u)
- \qquad(\uDet{4}\le u\le \uDet{5}).
- \label{eq:opt:mixed-lower-final}
-\end{equation}
+\cref{lem:opt:mixed-raw-safe}, this proves the proposition.
 The construction above applies directly in the open interval.  At
 $u=\uDet{4}$ and $u=\uDet{5}$ the same statement follows by approaching from
 the interior, so the endpoints are included.
+\end{proof}
 
-\subsubsection{The large-upper-limit lower bound by cap-free transfer}
+\subsubsection{The plateau lower bound by cap-free transfer}
+
+The harmonic construction contains no capped outcomes.  The next lemma
+shows that any revealing algorithm at cap $u$ induces an obligatory-testing
+algorithm on inputs with $p_j\le u-1$, so the cap-free lower bound transfers
+without changing either the transcript comparison or the offline optimum.
 
 \begin{lemma}[Bounded cap-free transfer]
 \label{lem:opt:obligatory-transfer}
