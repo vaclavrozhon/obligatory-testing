@@ -460,20 +460,19 @@ They delimit the six branches from left to right.
 \begin{figure}[H]
 \centering
 \input{curves_overview_tikz}
-\caption{The guarantees of the three deterministic algorithms.  The arrow on
-\textsc{Raw} marks its off-scale linear continuation; the teal horizontal
-line is the $\varphi$ guarantee of zero-prefix \textsc{ForcedPrefixUTE}.}
+\caption{The three deterministic algorithms, each shown only on the range
+where it gives the best guarantee.}
 \label{fig:intro-curves-det}
 \end{figure}
 
-The deterministic curve is the lower envelope of three explicit algorithm
-families.  We describe their shape here and defer the exact parameters to
-\cref{sec:optional}.
+The deterministic curve is realized by three explicit algorithm families,
+used on consecutive ranges of $u$.  We describe them here and defer the exact
+parameters to \cref{sec:optional}.
 
 The first algorithm, \textsc{Raw}$(u)$, simply fixes an arbitrary job order
-and executes every job untested for the public raw time $u$.  Its ratio is
-$1$ for $u\le\uDet{1}$ and $u$ for $u>\uDet{1}$, and it supplies the lower
-envelope up to $\uDet{2}$; see \cref{fig:intro-curves-det}.
+and executes every job untested for the public raw time $u$.  On its relevant
+range, its ratio is $1$ for $u\le\uDet{1}$ and $u$ for
+$\uDet{1}\le u\le\uDet{2}$; see \cref{fig:intro-curves-det}.
 
 The second algorithm, \textsc{ForcedPrefixUTE} in
 \cref{alg:intro-ro-ute}, tests every job and normally processes only
@@ -488,20 +487,21 @@ fraction, at the cost of sometimes processing a long job too early.
 The exact parameter $b(u)$ is defined in
 \cref{eq:opt:ute-parameters}; it is nonnegative on
 $[\uDet{2},\uDet{3}]$ and vanishes at $\uDet{3}$.
-For $u\ge\uDet{4}$, the same zero-prefix algorithm remains
-$\varphi$-competitive by \cref{lem:opt:zero-prefix}; this continuation is
-shown in \cref{fig:intro-curves-det} to make the lower envelope visible.
+The zero-prefix specialization then gives the next branch through
+$u=\uDet{4}$.
 
 \begin{algorithm}[htbp]
 \caption{\textsc{ForcedPrefixUTE}$(J,u)$}
 \label{alg:intro-ro-ute}
 \begin{algorithmic}
-\State Fix a test order $j_1,\ldots,j_n$ and set $Q\gets\varnothing$.
+\Statex \textbf{Range:} $\uDet{2}\le u\le\uDet{4}$.
+\State Fix the test order $1,\ldots,n$ and set $Q\gets\varnothing$.
 \State Set $\theta_u\gets\min\{1,u-1\}$.  If
-$\uDet{2}\le u\le\uDet{3}$, set $b\gets b(u)$; otherwise set $b\gets0$.
-\State For $i=1,\ldots,n$, test $j_i$ and observe $p_{j_i}$.
-\State \quad If $i\le\lfloor bn\rfloor$ or $p_{j_i}\le\theta_u$, process
-$j_i$ immediately; otherwise add it to $Q$.
+$\uDet{2}\le u\le\uDet{3}$, set $b\gets b(u)$; for
+$\uDet{3}\le u\le\uDet{4}$, set $b\gets0$.
+\State For $i=1,\ldots,n$, test job $i$ and observe $p_i$.
+\State \quad If $i\le\lfloor bn\rfloor$ or $p_i\le\theta_u$, process
+job $i$ immediately; otherwise add it to $Q$.
 \State Process the jobs of $Q$ in nondecreasing revealed processing time.
 \end{algorithmic}
 \end{algorithm}
@@ -510,9 +510,9 @@ Finally, \textsc{AdaptiveThreshold} is the same history-dependent algorithm as
 \cref{alg:intro-obligatory-det}.  For finite $u$, only its parameter $c$
 changes: on $\uDet{4}\le u\le \uDet{5}$ it is chosen by the
 optimization in \cref{eq:opt:mixed-parametrization}, after which it equals
-the obligatory-testing value $0.570574\ldots$.  The three algorithms form the
-deterministic lower envelope in \cref{fig:intro-curves-det}:
-\textsc{Raw} wins first, \textsc{ForcedPrefixUTE} in the middle, and
+the obligatory-testing value $0.570574\ldots$.  The three algorithms cover
+the deterministic curve in \cref{fig:intro-curves-det} in that order:
+\textsc{Raw} first, \textsc{ForcedPrefixUTE} in the middle, and
 \textsc{AdaptiveThreshold} for large $u$.  The exact formulas and matching
 constructions are in \cref{sec:optional}.
 

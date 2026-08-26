@@ -3,8 +3,7 @@
 
 We first handle the range in which testing is unnecessary.  Running every
 job raw is optimal for $u\le1$ and gives the matching factor $u$ until the
-first nontrivial transition point $\uDet{2}$.  The following lemma records
-the guarantee for all $u$, although we use it only on the first two branches.
+first nontrivial transition point $\uDet{2}$.
 
 \begin{algorithm}[H]
 \caption{\textsc{Raw}$(J,u)$}
@@ -18,7 +17,7 @@ the guarantee for all $u$, although we use it only on the first two branches.
 
 \begin{lemma}[Raw-execution guarantee]
 \label{lem:opt:raw-upper}
-For every $u>0$, \textnormal{\textsc{Raw}} satisfies
+For every $0<u\le\uDet{2}$, \textnormal{\textsc{Raw}} satisfies
 \begin{equation}
  \ALG_{\textnormal{\textsc{Raw}}}(I)\le \max\{1,u\}\OPT(I).
  \label{eq:opt:raw-upper}
@@ -455,22 +454,17 @@ algorithm parameter throughout $[\uDet{2},\uDet{3}]$.  The guarantees in
 give \cref{eq:opt:ute-full-upper} with $R=\Rquad(u)$.
 \end{proof}
 
-At $u=\uDet{3}$, $b=0$.  The same zero-prefix algorithm remains exact through
-$u=\uDet{4}$ and continues with a $\varphi$ guarantee afterwards.  We state
-the continuation so that the comparison among the three algorithm guarantees
-in \cref{fig:intro-curves-det} is literal rather than schematic.
+At $u=\uDet{3}$, $b=0$.  The zero-prefix specialization supplies the next
+branch of the curve until $u=\uDet{4}$.  We prove only this range, where the
+algorithm is used.
 
-\begin{lemma}[Zero-prefix extension]
+\begin{lemma}[Zero-prefix guarantee]
 \label{lem:opt:zero-prefix}
-For every $u\ge \uDet{3}$,
-\textnormal{\textsc{ForcedPrefixUTE}}$(J,u,0)$ from \cref{alg:ute} is
+Fix $\uDet{3}\le u\le\uDet{4}$ and set $b=0$ in \cref{alg:ute}.  Then
 \begin{equation}
- \max\left\{\varphi,1+\frac1{\sqrt{u-1}}\right\}
- \label{eq:opt:zero-prefix-full-guarantee}
+ \ALG\le\left(1+\frac1{\sqrt{u-1}}\right)\OPT+O_u(n).
+ \label{eq:opt:zero-prefix-guarantee}
 \end{equation}
-competitive up to $O_u(n)$.  Thus its guarantee is
-$1+1/\sqrt{u-1}$ on $[\uDet{3},\uDet{4}]$ and $\varphi$ on
-$[\uDet{4},\infty)$.
 \end{lemma}
 
 \begin{proof}
@@ -492,18 +486,25 @@ $m=0$ and write $y=d+t$ for the total positive mass.  For fixed $y$, both
 $A$ and $O$ are affine functions of $d^2$, so their ratio is monotone in
 $d^2$.  Its maximum is attained at one of the two extreme compositions:
 \begin{equation}
- \frac{1+2y}{1+y^2}\le\varphi
+ \frac{1+2y}{1+y^2}
  \quad(d=0),
  \qquad
- 1+\frac{2y}{1+s y^2}\le1+\frac1{\sqrt s}
+ 1+\frac{2y}{1+s y^2}
  \quad(d=y).
 \end{equation}
 The first case has only value-$1^+$ positive jobs; the second has only capped
 positive jobs.
-The first one-variable function is maximized at $y=1/\varphi$ and the second
-at $y=1/\sqrt s$, which gives the two displayed constants.
-The second value dominates the first exactly when
-$u\le\uDet{4}$.  Binary instances attain the second value.
+For $d=y$, the desired bound is equivalent to
+$(\sqrt{s}y-1)^2\ge0$.  For $d=0$, put $r=1/\sqrt{s}$.  The desired
+inequality is
+\[
+ (1+r)y^2-2y+r\ge0.
+\]
+On the range of the lemma, $s=u-1\le\uDet{4}-1=\varphi^2$, and hence
+$r(1+r)\ge1$.  The quadratic on the left has nonpositive discriminant and
+is therefore nonnegative for every $y$.  Thus both extreme compositions are
+bounded by $1+1/\sqrt{u-1}$, as required.  Binary instances attain this
+value.
 \end{proof}
 
 
