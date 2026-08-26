@@ -145,16 +145,16 @@ integer rounding will be restored at the end.  Their positions do not affect
 OPT, which knows all values and sorts by effective length.  We determine the
 worst positions for ALG directly.
 
-Suppose exactly $A$ long jobs lie in the prefix and put $D=L-A$.  Within the
+Suppose exactly $q$ long jobs lie in the prefix and put $D=L-q$.  Within the
 prefix, moving a long job before a zero delays that zero and every later
 immediate completion by the long processing time $u$.  Within the suffix,
 moving a deferred long job before a zero delays the zero by one unit of test
-time and does not change the final queue.  Thus, for fixed $A$, the worst
+time and does not change the final queue.  Thus, for fixed $q$, the worst
 order is
 
 \[
- \underbrace{u,\ldots,u}_{A}
- \underbrace{0,\ldots,0}_{k-A}
+ \underbrace{u,\ldots,u}_{q}
+ \underbrace{0,\ldots,0}_{k-q}
  \mathbin{|}
  \underbrace{u,\ldots,u}_{D}
  \underbrace{0,\ldots,0}_{n-k-D},
@@ -162,18 +162,18 @@ order is
 where the vertical bar separates the forced prefix from the suffix.  The
 completion cost of this order is
 \begin{equation}
- C(A)=\frac{n(n+1)}2
+ C(q)=\frac{n(n+1)}2
  +D\left(n-k-\frac{D+1}{2}\right)
- +u\left(An-\frac{A(A-1)}2+\frac{D(D+1)}2\right).
+ +u\left(qn-\frac{q(q-1)}2+\frac{D(D+1)}2\right).
  \label{eq:opt:binary-order-cost}
 \end{equation}
 The first term is the unit-test baseline.  The second records the positions
 of the tests of the $D$ long jobs in the suffix, and the last records all
 delays caused by long processing.  Moving one long job from the suffix into
 the prefix changes
-$A$ to $A+1$ and $D$ to $D-1$, and hence
+$q$ to $q+1$ and $D$ to $D-1$, and hence
 \[
- C(A+1)-C(A)=(u-1)(n-L)+k-A\ge0.
+ C(q+1)-C(q)=(u-1)(n-L)+k-q\ge0.
 \]
 Consequently a worst input puts as many long jobs in the prefix as possible,
 then all remaining long jobs at the start of the suffix, and all zeros last.
@@ -308,10 +308,13 @@ We next choose the worst test order for fixed numbers of these endpoint
 types.  OPT depends only on those numbers.  In ALG, swapping two neighboring
 positions shows the following: capped jobs in the prefix may be moved before
 zero jobs in the prefix; deferred jobs in the suffix may be moved before
-immediate jobs in the suffix; and
-suffix jobs of value one may be moved before zero jobs in the suffix.  Each swap weakly
-increases ALG.  The order among two deferred jobs is irrelevant because the
-last line of \cref{eq:opt:pair-contribution} is symmetric.
+immediate jobs in the suffix; and suffix jobs of value one may be moved
+before zero jobs in the suffix.  These are three direct comparisons, not an
+additional scheduling principle: substitute the two endpoint values in
+\cref{eq:opt:pair-contribution}; all unaffected pair terms cancel and the
+remaining difference is nonnegative.  The order among two deferred jobs is
+irrelevant because the last line of \cref{eq:opt:pair-contribution} is
+symmetric.
 
 Normalize each class size by $n$.  Let $a$ be the mass of prefix jobs with
 $p=u$, $d$ the mass of suffix jobs with $p=u$, $t$ the mass of deferred
@@ -740,7 +743,7 @@ bounded by
  \ell_M=N_{\mathrm{def}}+a(x+N_{\mathrm{def}}-RP),
  \qquad
  \ell_Q=N_{\mathrm{def}}+a(N_{\mathrm{def}}-RP).
- \label{eq:opt:ordinary-local-charges}
+ \label{eq:opt:noncapped-local-charges}
 \end{equation}
 For a current capped endpoint $U$, direct pair counting gives the exact
 charge
@@ -1044,7 +1047,7 @@ all derivatives needed for a one-job Taylor estimate are bounded.  In
 Region II the unnormalized base potential is simply
 \begin{equation}
  xN_{\mathrm{def}}+\frac{(x+N_{\mathrm{def}}-RP)_+^2}{2R},
- \label{eq:opt:region-two-raw-bank}
+ \label{eq:opt:region-two-base-potential}
 \end{equation}
 which has bounded one-sided second derivatives.  The two pieces are $C^1$ at
 $y=-1$, as verified above, and the positive-part square is $C^1$ at
