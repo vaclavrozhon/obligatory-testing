@@ -877,7 +877,11 @@ increasing.  Consequently
 \end{equation}
 is strictly decreasing.  At $c=r$ both sides of the first equation vanish,
 so $m=0$; at $c=1/\varphi$, direct substitution gives $m=1/\varphi$.
-These are exactly the two endpoints in \cref{eq:opt:mixed-endpoints}.
+Together with $t$ from \cref{eq:opt:mixed-stationarity}, the boundary value
+$c=r$ gives $(u,m,t)=(\uDet{5},0,\sqrt{\uDet{5}})$, while
+$c=1/\varphi$ gives
+$(u,m,t)=(\uDet{4},1/\varphi,1)$, as recorded in
+\cref{eq:opt:mixed-endpoints}.
 Consequently every
 $u\in[\uDet{4},\uDet{5}]$ has exactly one parameter pair.
 
@@ -954,6 +958,7 @@ processing time
  =\frac{\uDet{5}-1}{2}=\frac1r,
  \qquad y_*=\sqrt{\uDet{5}}-1.
 \end{equation}
-Approximation from below also gives the endpoint, proving
+Choosing finite constructions whose largest processing time approaches
+$1/r$ from below includes the equality case $u=1+1/r$ and proves
 \cref{eq:opt:high-lower}.
 \end{proof}

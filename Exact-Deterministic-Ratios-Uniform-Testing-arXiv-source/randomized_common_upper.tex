@@ -177,8 +177,8 @@ and \cref{eq:rcu-announced-ratio} is an upper bound on the
 instance-specific ratio $\PhiRO(D)/\Omega_{\mathsf{RO},u}(D)$.  Interior values of $q$ can
 strictly improve individual inputs; the point of the next two subsections is
 that the two choices $q=0$ and $q=1$ already give the sharp value after maximizing
-over all $D$.  The binary lower bounds at the end apply to every algorithm, not
-only to these endpoints.
+over all $D$.  The binary lower bounds at the end apply to every algorithm,
+not only to algorithms restricted to $q\in\{0,1\}$.
 
 \subsection{Flattening the survival function}
 
@@ -245,8 +245,8 @@ Consequently
  \label{eq:rcu-linear-fractional-E}
 \end{equation}
 For fixed $\tau_D$ this is linear-fractional in $E$, so its derivative has a
-constant sign.  Its maximum on $[0,Ly^2]$ occurs at an endpoint.  The two
-endpoint values are
+constant sign.  Its maximum on $[0,Ly^2]$ therefore occurs at $E=0$ or
+$E=Ly^2$.  Substitution of these two values gives, respectively,
 \begin{align}
  A(\tau_D)&\defeq\frac{\tau_D}{1+\tau_D y^2}
               =\frac{\tau_D^2}{\tau_D^2-\tau_D+1},

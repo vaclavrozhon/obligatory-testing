@@ -320,7 +320,8 @@ positions shows the following: capped jobs in the prefix may be moved before
 zero jobs in the prefix; deferred jobs in the suffix may be moved before
 immediate jobs in the suffix; and suffix jobs of value one may be moved
 before zero jobs in the suffix.  These are three direct comparisons, not an
-additional scheduling principle: substitute the two endpoint values in
+additional scheduling principle: substitute the processing times of the two
+jobs being swapped in
 \cref{eq:opt:pair-contribution}; all unaffected pair terms cancel and the
 remaining difference is nonnegative.  The order among two deferred jobs is
 irrelevant because the last line of \cref{eq:opt:pair-contribution} is
@@ -571,11 +572,13 @@ determined by the common parametrization
 \cref{eq:opt:mixed-parametrization}.
 The right-hand side of the first equation is strictly increasing in $c$,
 as is the left-hand side in $m$.  Consequently $m(c)$ is increasing and
-$u(c)$ is decreasing.  The endpoints are
+$u(c)$ is decreasing.  At the two boundary values of the parameter $c$, the
+parametrization gives
 \[
- (c,m,u)=\left(\frac1\varphi,\frac1\varphi,\uDet{4}\right)
- \quad\text{and}\quad
- (c,m,u)=(r,0,\uDet{5}).
+ c=\frac1\varphi:\quad
+ (m,u)=\left(\frac1\varphi,\uDet{4}\right),
+ \qquad
+ c=r:\quad (m,u)=(0,\uDet{5}).
 \]
 
 \begin{theorem}[Middle and high revealing upper bounds]
