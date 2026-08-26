@@ -69,14 +69,12 @@ algorithm $\mathcal A$ on an instance $I$, and $\OPT(I)$ for the value of an
 offline optimum that knows all processing times.  We omit algorithm
 subscripts or instance arguments when they are clear.
 
-\subsection{Information and adversaries}
+\subsection{Input, information and adversaries}
 
-The deterministic curve results use the usual adversarial inputs.  The
+The deterministic results use the usual adversarial inputs.  The
 randomized results use an \emph{oblivious} adversary: the processing-time
 vector is fixed before the algorithm draws its private random seed.
 
-\paragraph{Input convention.}
-\label{par:input-convention}
 An input is a vector $p=(p_1,\ldots,p_n)$ of job lengths chosen by the
 adversary.  For a randomized algorithm, this vector is then relabeled by a
 uniform permutation.  We abbreviate the expectation over this shuffle and
@@ -166,8 +164,8 @@ and use the normalized quantities
  K_X=\frac1{n^2}\sum_{i,j\in X}\min\{p_i,p_j\}.
  \label{eq:stationary-prefix-notation}
 \end{equation}
-For independent $P,P'$ with law $D$, put
-$K(D)\defeq\EE\min\{P,P'\}$.  The prefix property gives
+    For independent $P,P'$ with law $D$, put
+    $K(D)\defeq\EE\min\{P,P'\}$.  The prefix property gives
 \begin{equation}
  K(D[p])=K_E+2h\ell_E+K_T.
  \label{eq:stationary-kernel-split}
@@ -497,7 +495,7 @@ optimization model it is at least $\min\{u,1\}$.  Hence
 \cref{eq:unified-opt-prefix} gives $\OPT=\Omega(n^2)$ in these models, and the
 definition above is equivalent to the usual worst-case ratio after taking
 $n\to\infty$.  This equivalence fails for blind execution, where $\OPT$ can
-be $o(n^2)$.  Accordingly,
+be $o(n^2)$ in the special case where most of the jobs have length zero.  Accordingly,
 \cref{thm:blind-instance} makes the absolute statement
 $\EE\ALG=n^2\PhiBE(D[p])+o_L(n^2)$ and does not claim a bounded ratio to the
 clairvoyant optimum on every sparse input.
