@@ -179,6 +179,33 @@ be the exact cost of processing that block in shortest-processing-time
 (SPT) order.  Thus \(\SPT(X)\) is the processing-time part of the offline
 pair formula when the jobs in $X$ are executed without preliminary actions.
 
+\subsection{Competitive-ratio conventions}
+
+Every asymptotic statement in this paper allows a uniform additive
+$o(n^2)$ term.  Formally, an algorithm family $\mathcal A$ has asymptotic
+competitive ratio at most $R$ if there is a deterministic sequence
+$\eps(n)\to0$ such that every $n$-job instance satisfies
+\begin{equation}
+ \EE\ALG_{\mathcal A}(I)
+ \le R\cdot\OPT(I)+\eps(n)n^2.
+ \label{eq:cr-infty}
+\end{equation}
+For a deterministic algorithm the expectation is omitted.  The optimal ratio
+in a model is the infimum of such $R$ over all admissible algorithm families.
+We also call this the \emph{size-asymptotic} ratio to emphasize that the
+model parameters are fixed while the number of jobs $n$ tends to infinity.
+
+In obligatory testing every effective length is at least one, and in either
+optimization model it is at least $\min\{u,1\}$.  Hence
+\cref{eq:unified-opt-prefix} gives $\OPT=\Omega(n^2)$ in these models, and the
+definition above is equivalent to the usual worst-case ratio after taking
+$n\to\infty$.  This equivalence fails for blind execution, where $\OPT$ can
+be $o(n^2)$ in the special case where most of the jobs have length zero.  Accordingly,
+\cref{thm:blind-instance} makes the absolute statement
+$\EE\ALG=n^2\PhiBE(D[p])+o_L(n^2)$, where the benchmark $\PhiBE$ is defined
+in \cref{sec:blind-benchmark}.  It does not claim a bounded ratio to the
+clairvoyant optimum when most jobs have length zero.
+
 \subsection{Maximum-density modules and fluid completion curves}
 \label{sec:common-fluid-envelopes}
 
@@ -537,33 +564,6 @@ same lemma gives
 $\Phi(D^{\rm rem})\le\Phi(D)+L_0d(D^{\rm rem},D)$.  Substitute both estimates
 in \cref{eq:pilot-transfer-finite-cost} and average.
 \end{proof}
-
-\subsection{Competitive-ratio conventions}
-
-Every asymptotic statement in this paper allows a uniform additive
-$o(n^2)$ term.  Formally, an algorithm family $\mathcal A$ has asymptotic
-competitive ratio at most $R$ if there is a deterministic sequence
-$\eps(n)\to0$ such that every $n$-job instance satisfies
-\begin{equation}
- \EE\ALG_{\mathcal A}(I)
- \le R\cdot\OPT(I)+\eps(n)n^2.
- \label{eq:cr-infty}
-\end{equation}
-For a deterministic algorithm the expectation is omitted.  The optimal ratio
-in a model is the infimum of such $R$ over all admissible algorithm families.
-We also call this the \emph{size-asymptotic} ratio to emphasize that the
-model parameters are fixed while the number of jobs $n$ tends to infinity.
-
-In obligatory testing every effective length is at least one, and in either
-optimization model it is at least $\min\{u,1\}$.  Hence
-\cref{eq:unified-opt-prefix} gives $\OPT=\Omega(n^2)$ in these models, and the
-definition above is equivalent to the usual worst-case ratio after taking
-$n\to\infty$.  This equivalence fails for blind execution, where $\OPT$ can
-be $o(n^2)$ in the special case where most of the jobs have length zero.  Accordingly,
-\cref{thm:blind-instance} makes the absolute statement
-$\EE\ALG=n^2\PhiBE(D[p])+o_L(n^2)$, where the benchmark $\PhiBE$ is defined
-in \cref{sec:blind-benchmark}.  It does not claim a bounded ratio to the
-clairvoyant optimum when most jobs have length zero.
 
 \subsection{Probabilistic tools}
 \label{sec:probabilistic-tools}
