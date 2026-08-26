@@ -142,15 +142,14 @@ Every deterministic algorithm has size-asymptotic ratio at least
 The lower bound uses only $p_j\in\{0,u\}$.
 \end{proposition}
 
-\begin{proof}
 We optimize the stopping lemma in three steps.  First we minimize over the
 fraction $b$ of revealed long jobs that the algorithm has already completed.
 This produces two quadratic formulas, according to whether the minimizing
 $b$ is positive or zero.  We then locate their transition points and choose
 the stopping fraction $\alpha$ at which the relevant quadratic is largest.
 
-\medskip
-\noindent\textbf{Claim 1 (Two cases for the minimizing $b$).}
+\begin{claim}[Minimization over completed long jobs]
+\label{clm:opt:binary-b-minimization}
 For fixed revealed-long fraction $y$, minimizing
 \cref{eq:opt:stopping-f} over the completed-long fraction $b$ gives
 \begin{equation}
@@ -159,33 +158,30 @@ For fixed revealed-long fraction $y$, minimizing
 \end{equation}
 The upper constraint $b\le y$ never binds, because
 $uy-(u-1)\le y$ for $y\le1$.
-There are therefore two quadratic formulas.  When $uy-(u-1)>0$,
-substitution gives
+When $uy-(u-1)>0$, the minimum equals
 \begin{equation}
  \min_b f_{u,R}(y,b)
  =1-R-(u-1)^2+2(u^2-u+1)y
   -\bigl(u^2-u+1+(u-1)R\bigr)y^2.
  \label{eq:opt:stopping-positive-branch}
 \end{equation}
-Its maximizing stopping fraction is
+and its unconstrained maximum over $y$ occurs at
 \[
  \alpha=\frac{u^2-u+1}{u^2-u+1+(u-1)R}.
 \]
-The largest admissible target ratio occurs when this maximum is exactly zero,
-that is,
+This maximum is zero exactly when
 \begin{equation}
  \bigl(1-R-(u-1)^2\bigr)
  \bigl(u^2-u+1+(u-1)R\bigr)+(u^2-u+1)^2=0.
  \label{eq:opt:stopping-tangency}
 \end{equation}
-Expanding \cref{eq:opt:stopping-tangency} gives
-\cref{eq:opt:Rquad-equation}.  When $uy-(u-1)\le0$, the minimizing choice is
-$b=0$, and
+which is equivalent to \cref{eq:opt:Rquad-equation}.  When
+$uy-(u-1)\le0$, the minimum equals
 \begin{equation}
  \min_b f_{u,R}(y,b)
  =1-R+2y+(u-1)(1-R)y^2.
 \end{equation}
-Requiring the maximum of this quadratic to equal zero gives
+and its unconstrained maximum is zero for
 \begin{equation}
  R=1+\frac1{\sqrt{u-1}},
  \qquad
@@ -194,18 +190,48 @@ Requiring the maximum of this quadratic to equal zero gives
 \end{equation}
 This maximizing point indeed lies in the region where $b=0$ if and only if
 $(u-1)^3\ge u^2$, with equality at $u=\uDet{3}$.
+\end{claim}
 
-\medskip
-\noindent\textbf{Claim 2 (The first transition point).}
+\begin{proof}
+The part of $f_{u,R}(y,b)$ that depends on $b$ is
+$b^2+2b(u-1-uy)$, whose unconstrained minimizer is
+$uy-(u-1)$.  Taking the maximum with zero gives
+\cref{eq:opt:bstar}; its upper bound follows from
+$uy-(u-1)\le y$.  Substitution gives the two displayed quadratics.
+Differentiating each concave quadratic in $y$ gives the stated maximizing
+value of $\alpha$.  Substitution of that value gives
+\cref{eq:opt:stopping-tangency} in the positive-$b$ case and
+\cref{eq:opt:zero-b-tangency} in the zero-$b$ case.  Expanding the former
+gives \cref{eq:opt:Rquad-equation}; substituting the latter value of
+$\alpha$ into $u\alpha-(u-1)\le0$ gives $(u-1)^3\ge u^2$.
+\end{proof}
+
+\begin{claim}[The transition from the ratio $u$]
+\label{clm:opt:binary-first-transition}
 For $R=u$, the maximum in
 \cref{eq:opt:stopping-positive-branch} is nonnegative exactly while
 \begin{equation}
  [u(u-1)]^2-u(u-1)-1\le0,
 \end{equation}
 whose positive equality is $u=\uDet{2}$.
+\end{claim}
 
-\medskip
-\noindent\textbf{Claim 3 (Choosing the hard stopping point).}
+\begin{proof}
+Substitute $R=u$ and the maximizing value of $\alpha$ from
+\cref{clm:opt:binary-b-minimization} into
+\cref{eq:opt:stopping-positive-branch}.  After multiplication by its
+positive denominator, nonnegativity is equivalent to the displayed
+inequality.  With $x=u(u-1)$, its equality is $x^2-x-1=0$, so
+$x=\varphi$.  Since $u(u-1)$ is strictly increasing for $u>1$, the unique
+positive solution is
+\[
+ u=\frac{1+\sqrt{1+4\varphi}}2
+  =\frac{1+\sqrt{3+2\sqrt5}}2=\uDet{2}.
+\]
+\end{proof}
+
+\begin{claim}[Stopping fractions for the three nontrivial intervals]
+\label{clm:opt:binary-stopping-choices}
 For $\uDet{1}<u\le \uDet{2}$, use $R=u$ and the maximizing point of
 \cref{eq:opt:stopping-positive-branch}.  For
 $\uDet{2}\le u\le \uDet{3}$, use the positive root $\Rquad(u)$ and
@@ -213,15 +239,38 @@ $\alpha=(u^2-u+1)/(u^2-u+1+(u-1)\Rquad(u))$; the zero-maximum identity makes the
 maximum zero.  The minimizing completed-long fraction $b$ is positive in the
 interior and becomes zero
 at $u=\uDet{3}$.  For $u\ge \uDet{3}$, use the zero-$b$ maximizing point from
-\cref{eq:opt:zero-b-tangency}.  Finally, $\RdetRO(u)\ge1$ is trivial for
-$u\le1$.
-In each nontrivial case \cref{lem:opt:hidden-stopping} supplies fixed binary
-instances: its proof records every adaptive answer on the corresponding job
-label and then reruns the deterministic algorithm on that fixed vector.
+\cref{eq:opt:zero-b-tangency}.  Each choice satisfies
+\[
+ \min_{0\le b\le\alpha} f_{u,R}(\alpha,b)\ge0.
+\]
+\end{claim}
+
+\begin{proof}
+For $\uDet{1}<u\le\uDet{2}$, the assertion follows from
+\cref{clm:opt:binary-first-transition}.  For
+$\uDet{2}\le u\le\uDet{3}$, the defining equation for $\Rquad(u)$ is the
+zero-maximum identity in
+\cref{clm:opt:binary-b-minimization}; the minimizing completed-long fraction
+is positive in the interior and becomes zero at $u=\uDet{3}$.  For
+$u\ge\uDet{3}$, the zero-$b$ formula and its feasibility are exactly
+\cref{eq:opt:zero-b-tangency} and the final assertion of
+\cref{clm:opt:binary-b-minimization}.
+\end{proof}
+
+We can now prove the proposition.
+
+\begin{proof}[Proof of \Cref{prop:opt:binary-lower}]
+For $u\le1$, the lower bound $\RdetRO(u)\ge1$ is immediate.  For $u>1$,
+use the target ratio and stopping fraction from
+\cref{clm:opt:binary-stopping-choices} in
+\cref{lem:opt:hidden-stopping}, and let the number of jobs tend to infinity.
+The recording step in that lemma converts every adaptive interaction into a
+fixed binary instance.  This proves all four formulas in
+\cref{eq:opt:binary-curve}.
 \end{proof}
 
 
-\subsubsection{The harmonic core below the raw-execution cap}
+\subsubsection{The harmonic construction for short jobs}
 \label{sec:lower}
 
 This subsection develops the harmonic construction used for the lower bounds
@@ -249,18 +298,14 @@ processing times such that
 \]
 \end{theorem}
 
-\begin{proof}
-The construction has five steps.  We first describe an adaptive reveal order
-and explain why it determines a fixed input for a deterministic algorithm.
-We then divide the execution into phases and replace the algorithm's work
-inside each phase by the cheapest possible shortest-first completion order;
-this replacement only lowers its cost.  The third step records the resulting
-finite accounting formula.  The harmonic choice of processing times makes
-all terms depending on the algorithm nonnegative, and the final step takes a
-one-variable smooth limit and optimizes it.
+We prove the theorem through five claims.  They establish, in order, that the
+adaptive reveal order defines a fixed input, that a shortest-first relaxation
+lower-bounds every phase, that this relaxation gives an explicit finite
+accounting formula, that harmonic processing-time gaps remove all
+algorithm-dependent terms, and that the resulting one-variable limit is
+maximized at $\RdetOT$.
 
-\medskip
-\noindent\textbf{Claim 1 (Adversarial reveal order and a fixed input).}
+\paragraph{Common construction.}
 Fix an integer $K$, a rational number $\xi>0$, and a rational parameter
 $\gamma\in(0,1)$; one may keep $\gamma=1/2$ throughout.  For a large scaling
 integer $H$, the instance will contain $H$ jobs of each of $K$ positive types
@@ -277,6 +322,14 @@ remaining job receives processing time zero.  Thus
 so the algorithm sees the positive types from longest to shortest and learns
 about the zero jobs only at the end.
 
+\begin{claim}[The reveal order defines a fixed input]
+\label{clm:lower-fixed-input}
+For every deterministic algorithm, assigning each answer produced by this
+reveal order to the label of the tested job gives a fixed input on which the
+algorithm repeats the same tests, answers, and completion decisions.
+\end{claim}
+
+\begin{proof}
 This adaptive description is only a convenient way to construct the input.
 After running the interaction against a fixed deterministic algorithm, assign
 to every job label the value revealed when that label was tested.  Rerunning
@@ -284,30 +337,16 @@ the algorithm on this fixed assignment produces exactly the same transcript.
 If the algorithm never tests or completes some job, its cost is infinite and
 the lower bound is immediate; otherwise every job label is recorded.
 Hence it is enough to lower-bound the cost under this adaptive reveal order.
+\end{proof}
 
-\medskip
-\noindent\textbf{Claim 2 (A shortest-first lower bound in each phase).}
+\begin{claim}[A shortest-first lower bound in each phase]
+\label{clm:lower-phase-relaxation}
 Let $T_\ell$ be the start of the first test in positive block $\ell$, and let
 $T_K$ be the start of the first test in the zero block.  Phase $\ell$ contains
 the completions in $(T_\ell,T_{\ell+1}]$; a completion exactly at $T_\ell$
-belongs to the preceding phase.  Each $T_\ell$ is the boundary between two
-nonpreemptive operations.  Consequently, a previously tested job that is
-unfinished at $T_\ell$ has not started processing and still needs its entire
-processing time.
-
-We repeatedly use the following elementary observation.  Suppose jobs with
-remaining work $v_1,\ldots,v_m$ complete after some time $T$.  If their
-completion order is $q_1,\ldots,q_m$, then the $g$th relative completion time
-is at least $\sum_{h\le g}v_{q_h}$.  Summing these prefix inequalities shows
-that their total relative completion time is minimized by arranging the
-$v_i$ in nondecreasing order.  This is merely a lower bound; the online
-algorithm need not actually use that order.  We will apply this observation
-separately inside each phase.
-
-Here and below in this construction, the \emph{mass} of a group means its
-number of jobs divided by $H$.  For group masses $q_1,\ldots,q_m$ and
-remaining lengths
-$v_1\le\cdots\le v_m$, this shortest-first bound has leading coefficient
+belongs to the preceding phase.  In this construction, the mass of a group
+is its number of jobs divided by $H$.  For group masses $q_1,\ldots,q_m$ and
+remaining lengths $v_1\le\cdots\le v_m$, define
 \begin{equation}
  \mathcal S((q_g,v_g)_{g=1}^m)
  =\sum_{g=1}^m
@@ -315,32 +354,43 @@ $v_1\le\cdots\le v_m$, this shortest-first bound has leading coefficient
     +q_g\sum_{h<g}v_hq_h\right).
  \label{eq:lower-S}
 \end{equation}
-More precisely, the corresponding contribution for groups of size $q_gH$
-is $H^2\mathcal S+O(H)$.  The quadratic term is simply the familiar sum
-$v_g(1+\cdots+q_gH)$ inside one group; the cross term is the waiting caused
-by all shorter groups.
-
-We ensure that
+If groups of size $q_gH$ finish within one phase, their relative completion
+cost is at least $H^2\mathcal S+O(H)$.  If
 \begin{equation}
   p_0-p_{K-1}<1.
   \label{eq:lower-span}
 \end{equation}
-In phase $\ell$, an unfinished job of an older type $j<\ell$ therefore has
-remaining length $p_j$, whereas a type-$\ell$ job completed in its own phase
-needs both its test and processing, of total length $1+p_\ell$.  Their order
-in the shortest-first relaxation is
+then the nondecreasing remaining lengths in a positive phase are
 \[
   p_{\ell-1}<p_{\ell-2}<\cdots<p_0<1+p_\ell.
 \]
-At $T_K$, an untested zero job has remaining length $1$, so the relaxed tail
-starts with all zero jobs and then uses the positive types from shortest to
-longest.  These are the only two places where
-\cref{eq:lower-span} is used.
+In the final phase, the order starts with the zero jobs of remaining length
+one and continues with the positive types from shortest to longest.
+\end{claim}
 
-\medskip
-\noindent\textbf{Claim 3 (Variables and finite accounting).}
-We now record the online algorithm's possible behavior.  Normalize all job
-counts by $H$.  Let
+\begin{proof}
+Each $T_\ell$ is the boundary between two nonpreemptive operations.
+Consequently, a previously tested job that is unfinished at $T_\ell$ has
+not started processing and still needs its entire processing time.
+
+Suppose jobs with remaining work $v_1,\ldots,v_m$ complete after some time
+$T$.  If their completion order is $\pi_1,\ldots,\pi_m$, then the $g$th relative
+completion time is at least $\sum_{h\le g}v_{\pi_h}$.  Summing these prefix
+inequalities shows that their total relative completion time is minimized by
+arranging the $v_i$ in nondecreasing order.  For groups of size $q_gH$, the
+within-group sums give $v_gq_g^2H^2/2+O(H)$, and the waiting caused by shorter
+groups gives the cross term in \cref{eq:lower-S}.
+
+In phase $\ell$, an unfinished job of an older type $j<\ell$ has remaining
+length $p_j$, whereas a type-$\ell$ job completed in its own phase needs its
+test and processing, of total length $1+p_\ell$.  The inequalities in the
+claim follow from $p_0-p_{K-1}<1$.  At $T_K$, each untested zero job has
+remaining length one, which proves the asserted final-phase order.
+\end{proof}
+
+\begin{claim}[Finite phase accounting]
+\label{clm:lower-finite-accounting}
+For each positive type $j$, let
 \begin{itemize}
 \item $s_j\in[0,1]$ be the mass of type-$j$ jobs completed in their own
       phase;
@@ -354,9 +404,7 @@ counts by $H$.  Let
 be the mass of type $j$ completed before phase $\ell$.  Thus
 $X_{j,\ell+1}$ is the mass completed by the end of phase $\ell$.
 \end{itemize}
-At time $T_\ell$, the machine has already performed the tests of the $\ell H$
-jobs in earlier positive blocks and has processed every earlier job that has
-completed.  Thus
+Then the start of phase $\ell$ satisfies
 \begin{equation}
   \frac{T_\ell}{H}
   \ge \ell+\sum_{j<\ell}p_jX_{j,\ell}.
@@ -389,10 +437,17 @@ where $K,\xi,\gamma$ are fixed while $H\to\infty$, and
  P_K&=\sum_{j=0}^{K-1}\left(j+\frac12\right)p_j.
  \label{eq:lower-CP}
 \end{align}
+\end{claim}
 
-For completeness, here is how to audit
-\cref{eq:lower-accounting} without guessing its origin.  In phase $\ell$,
-the masses in the shortest-first relaxation are
+\begin{proof}
+At time $T_\ell$, the machine has already performed the tests of the $\ell H$
+jobs in earlier positive blocks and has processed every earlier job that has
+completed.  This gives \cref{eq:lower-start}.
+
+For each phase, charge its completions their common start time from
+\cref{eq:lower-start}, and charge their relative completion times using
+\cref{clm:lower-phase-relaxation}.  In phase $\ell$, the masses in the
+shortest-first relaxation are
 \[
  d_{\ell-1,\ell},d_{\ell-2,\ell},\ldots,d_{0,\ell},s_\ell
 \]
@@ -412,6 +467,7 @@ of each $d_{j,\ell}$ is precisely the bracket in
 \cref{eq:lower-accounting}.  Thus the displayed identity is just the
 phasewise shortest-first bound with the phase start times retained.  No
 optimality assumption about the online schedule is hidden in it.
+\end{proof}
 
 The meaning of the expression is useful.  Completing an $s_j$ fraction of a
 type in its own phase creates a quadratic completion cost but saves later
@@ -420,9 +476,9 @@ later positive phase is represented by $d_{j,\ell}$ and its bracket.  We next
 choose the processing times so that every such bracket is nonnegative and all
 $\theta_j$ are equal.
 
-\medskip
-\noindent\textbf{Claim 4 (Choosing processing times to cancel decisions).}
-Set
+\begin{claim}[Harmonic gaps remove the algorithm-dependent terms]
+\label{clm:lower-harmonic-cancellation}
+Assume \cref{eq:lower-span} and choose the processing times by
 \begin{equation}
   p_{K-1}=1+\frac{\gamma}{\xi},
   \qquad
@@ -430,12 +486,37 @@ Set
   \quad(0\le i<K-1).
   \label{eq:lower-harmonic}
 \end{equation}
-In other words, measured upward from the shortest type, the consecutive gaps
-are
+Then every $\theta_j$ in \cref{eq:lower-theta} equals
+\begin{equation}
+ \theta_j=1-\gamma,
+ \label{eq:lower-theta-constant}
+\end{equation}
+every coefficient of $d_{j,\ell}$ in \cref{eq:lower-accounting} is
+nonnegative, and
+\begin{equation}
+ \liminf_{H\to\infty}\frac{\ALG}{H^2}
+ \ge Q_K
+ \defeq C_K-\frac K2(1-\gamma)^2.
+ \label{eq:lower-QK}
+\end{equation}
+The corresponding offline coefficient is
+\begin{equation}
+ D_K=\frac{\xi^2}{2}+\xi K+\frac{K^2}{2}+P_K,
+ \qquad
+ \lim_{H\to\infty}\frac{\OPT}{H^2}=D_K.
+ \label{eq:lower-DK}
+\end{equation}
+Thus $Q_K/D_K$ is a lower bound for the limiting ratio of the finite-$K$
+construction.
+\end{claim}
+
+\begin{proof}
+Measured upward from the shortest type, the consecutive gaps in
+\cref{eq:lower-harmonic} are
 \[
-  \frac1{\xi+1},\frac1{\xi+2},\ldots,\frac1{\xi+K-1}.
+ \frac1{\xi+1},\frac1{\xi+2},\ldots,\frac1{\xi+K-1}.
 \]
-This is the key design choice.  If $m=K-1-j$, then
+If $m=K-1-j$, then
 \begin{align*}
  p_j-1
    &=\frac\gamma \xi+\sum_{h=1}^m\frac1{\xi+h},\\
@@ -450,14 +531,10 @@ denominator cancel:
  =\gamma+m.
  \label{eq:lower-telescope}
 \end{equation}
-Substitution in \cref{eq:lower-theta} gives the same value for every type,
-\begin{equation}
-  \theta_j=1-\gamma.
-  \label{eq:lower-theta-constant}
-\end{equation}
-This is why the increments in \cref{eq:lower-harmonic} are harmonic: the
-factor $\xi$ coming from the zero block and the multiplicity $h$ coming from the
-$h$ shorter positive types add up to the denominator $\xi+h$.
+Substitution in \cref{eq:lower-theta} gives
+\cref{eq:lower-theta-constant}.  This cancellation explains the harmonic
+increments: the factor $\xi$ from the zero block and the multiplicity $h$
+from the $h$ shorter positive types add up to the denominator $\xi+h$.
 
 The delayed-completion terms are now harmless as well.  Since
 $X_{k,\ell+1}\le1$, their brackets are at least
@@ -477,39 +554,42 @@ problem: complete one square for each $j$,
    -\frac12(1-\gamma)^2.
 \]
 Because $1-\gamma\in(0,1)$, this minimum is feasible for
-$s_j\in[0,1]$.  Hence every online algorithm obeys
-\begin{equation}
- \liminf_{H\to\infty}\frac{\ALG}{H^2}
- \ge Q_K
- \defeq C_K-\frac K2(1-\gamma)^2.
- \label{eq:lower-QK}
-\end{equation}
+$s_j\in[0,1]$, which proves \cref{eq:lower-QK}.
 
-It remains to compute the offline benchmark.  Knowing all processing times,
+Knowing all processing times,
 the optimum runs the zero jobs first and the positive types from shortest to
 longest.  Equivalently, the pairwise contribution of two jobs is
-$1+\min\{p_i,p_j\}$.  Its leading coefficient is
-\begin{equation}
-  D_K=\frac{\xi^2}{2}+\xi K+\frac{K^2}{2}+P_K,
-  \qquad
-  \lim_{H\to\infty}\frac{\OPT}{H^2}=D_K.
-  \label{eq:lower-DK}
-\end{equation}
+$1+\min\{p_i,p_j\}$.
 The four terms respectively account for zero--zero pairs, zero--positive
 pairs, the unit-test part of positive--positive pairs, and the processing
-part of positive--positive pairs.  Thus, after removing the
-algorithm-dependent terms, the guaranteed online coefficient is $Q_K$, the
-offline coefficient is $D_K$, and their ratio $Q_K/D_K$ is the finite-$K$
-lower bound.
+part of positive--positive pairs.  This gives \cref{eq:lower-DK} and
+completes the proof.
+\end{proof}
 
-\medskip
-\noindent\textbf{Claim 5 (Smooth limit and one-variable maximization).}
-Write
-\[
-  \alpha=\frac K\xi
-\]
-for the ratio of positive mass to zero mass, and keep $\alpha$ fixed while
-$K\to\infty$.  We restrict to $0<\alpha<e-1$.  Then
+\begin{claim}[Limit and one-variable maximization]
+\label{clm:lower-smooth-limit}
+Fix $0<\alpha<e-1$ and set $\xi=K/\alpha$.  As $K\to\infty$, the
+processing times in \cref{eq:lower-harmonic} satisfy
+\cref{eq:lower-span}, and
+\begin{equation}
+ \lim_{K\to\infty}\frac{Q_K}{D_K}
+ =R(\alpha)
+ \defeq 1+
+ \frac{\alpha+\alpha^2/2}
+ {\frac12+\frac\alpha2+\frac{\alpha^2}{4}
+  +\frac12(1+\alpha)^2\ln(1+\alpha)}.
+ \label{eq:lower-Ralpha}
+\end{equation}
+The function $R(\alpha)$ has a unique maximum at
+\begin{equation}
+ \alpha_\star=\sqrt{\uDet{5}}-1<e-1,
+ \qquad R(\alpha_\star)=\RdetOT.
+ \label{eq:lower-alpha-star}
+\end{equation}
+\end{claim}
+
+\begin{proof}
+The total span is
 \[
  p_0-p_{K-1}
  =\sum_{h=1}^{K-1}\frac1{\xi+h}
@@ -545,20 +625,11 @@ the limiting processing-time curve $1+\ln(1+t)$ against the remaining
 positive mass $\alpha-t$.
 The subtraction in \cref{eq:lower-QK} is only $O(K)$, whereas
 $C_K,D_K=\Theta(K^2)$.  Since $C_K-D_K=\xi K+K^2/2$, we obtain
-\begin{equation}
- R(\alpha)
- \defeq\lim_{K\to\infty}\frac{Q_K}{D_K}
- =1+
- \frac{\alpha+\alpha^2/2}
- {\frac12+\frac\alpha2+\frac{\alpha^2}{4}
-  +\frac12(1+\alpha)^2\ln(1+\alpha)}.
- \label{eq:lower-Ralpha}
-\end{equation}
+\cref{eq:lower-Ralpha}.
 
-This last one-variable maximization is where the constant in the theorem
-comes from.  Put $z=(1+\alpha)^2$.  Then
+Put $z=(1+\alpha)^2$.  In terms of $z$, the limiting ratio is
 \begin{equation}
-  R(z)=1+\frac{2(z-1)}{1+z+z\ln z}.
+  \widehat R(z)=1+\frac{2(z-1)}{1+z+z\ln z}.
   \label{eq:lower-Rz}
 \end{equation}
 The derivative of the fraction has the sign of
@@ -577,21 +648,26 @@ the global maximum.  At the root,
 \]
 and therefore
 \[
-  R(\uDet{5})=1+\frac{2}{\uDet{5}-1}=\RdetOT.
+  \widehat R(\uDet{5})=1+\frac{2}{\uDet{5}-1}=\RdetOT.
 \]
 Moreover, $\sqrt{\uDet{5}}-1=1.12255\ldots<e-1$, so the condition
-$\alpha<e-1$ in \cref{eq:lower-span} holds at the maximizer.
+$\alpha<e-1$ holds at the maximizer.  This proves
+\cref{eq:lower-alpha-star}.
+\end{proof}
 
-\medskip
-\noindent\textit{Final parameter choice.}
-Choose a rational $\alpha$ sufficiently close to
+We can now prove the theorem.
+
+\begin{proof}[Proof of \Cref{thm:lower}]
+By \cref{clm:lower-smooth-limit}, choose a rational $\alpha$ sufficiently close to
 $\alpha_\star=\sqrt{\uDet{5}}-1$, and choose any rational
 $\gamma\in(0,1)$.  For a sufficiently large $K$, set $\xi=K/\alpha$ and use
 \cref{eq:lower-harmonic}; then $Q_K/D_K>\RdetOT-\eps/2$.
 All parameters are rational.  Let $H$ tend to infinity through multiples of
-their common denominators.  \Cref{eq:lower-QK,eq:lower-DK} make the actual
-ratio exceed $\RdetOT-\eps$ for all sufficiently large $H$.  Finally, freeze
-the adaptively revealed answers on their job labels as in Claim~1.  The
+their common denominators.
+\Cref{clm:lower-finite-accounting,clm:lower-harmonic-cancellation} make the actual ratio exceed
+$\RdetOT-\eps$ for all sufficiently large $H$.  Finally, freeze
+the adaptively revealed answers on their job labels as in
+\cref{clm:lower-fixed-input}.  The
 resulting fixed input produces the same transcript for the given
 deterministic algorithm.
 \end{proof}
@@ -622,8 +698,9 @@ Their total positive processing time, divided by $M_\nu$, converges to
  \label{eq:opt:harmonic-processing-mass}
 \end{equation}
 and their largest processing time converges to $1+\ln t<2$.
-Freezing each revealed answer on its job label, as in Claim~1 of
-\cref{thm:lower}, converts the adaptive description into a fixed instance.
+Freezing each revealed answer on its job label, as in
+\cref{clm:lower-fixed-input}, converts the adaptive description into a fixed
+instance.
 \end{lemma}
 
 \begin{proof}
@@ -652,13 +729,13 @@ Finally, summing the limiting processing-time curve
 $1+\ln(1+x)$ over the positive mass gives $L=s\ln t$, and
 \cref{eq:lower-harmonic} gives $p_0\to1+\ln t$.  Choose successively finer
 rational approximations, clear their denominators, and apply the recording
-argument from Claim~1 in the proof of \cref{thm:lower}: assign each revealed answer to
+argument from \cref{clm:lower-fixed-input}: assign each revealed answer to
 its job label and rerun the deterministic algorithm on the resulting fixed
 vector.  This produces arbitrarily large fixed rational instances with the
 stated limit and liminf bounds.
 \end{proof}
 
-\subsubsection{Combining capped jobs with a harmonic block}
+\subsubsection{Combining jobs with \texorpdfstring{$p=u$}{p = u} and a harmonic block}
 \label{sec:opt:middle-lower}
 
 For $\uDet{4}<u<\uDet{5}$, neither the binary family nor the pure harmonic
@@ -814,7 +891,6 @@ Equivalently,
 \end{equation}
 \end{proposition}
 
-\begin{proof}
 The construction has two continuous parameters: $m$ is the fraction of
 initial jobs with $p=u$, and $t$ selects the scaled harmonic block that
 follows.
@@ -822,11 +898,11 @@ We first write its online/offline ratio, then solve the first-order conditions
 for a worst parameter pair.  The remaining two claims verify that the pair is
 feasible and can be approximated by fixed finite instances.
 
-\medskip
-\noindent\textbf{Claim 1 (Two-parameter lower ratio).}
-Apply \cref{lem:opt:harmonic-block} with $s=1-m$.  Substitution into
-\cref{eq:opt:combined-A,eq:opt:combined-O} gives the guaranteed two-parameter
-lower ratio
+\begin{claim}[Ratio of the combined construction]
+\label{clm:opt:combined-ratio}
+For $m\in[0,1)$ and $t\in[1,e)$, apply
+\cref{lem:opt:harmonic-block} with $s=1-m$ and prepend a fraction $m$ of jobs
+with $p=u$.  The resulting guaranteed lower ratio is
 \begin{equation}
  \mathcal R_u(m,t)=1+
  \frac{m+\frac{(1-m)^2}{2}(1-t^{-2})}
@@ -834,12 +910,21 @@ lower ratio
   +m(1-m)(1+\ln t)+\frac u2m^2}.
  \label{eq:opt:two-parameter-ratio}
 \end{equation}
-\medskip
-\noindent\textbf{Claim 2 ($(c,m)$-parametrization).}
+\end{claim}
+
+\begin{proof}
+Substitute $s=1-m$, $L=(1-m)\ln t$, and the coefficients from
+\cref{eq:opt:harmonic-coefficients} into
+\cref{eq:opt:combined-A,eq:opt:combined-O}, and divide the online coefficient
+by the offline coefficient.  Collecting the excess over one gives exactly
+\cref{eq:opt:two-parameter-ratio}.
+\end{proof}
+
+\begin{claim}[$(c,m)$-parametrization of a stationary point]
+\label{clm:opt:cm-stationary-point}
 Suppose the ratio in \cref{eq:opt:two-parameter-ratio} has an interior stationary
-point with value $1+c$.  The equality of the ratio to $1+c$ is equivalent to
-$A-(1+c)\cdot O=0$.  Combining this equality with the two vanishing partial
-derivatives gives
+point with value $1+c$.  Combining this value equation with the two
+vanishing partial derivatives gives
 \begin{equation}
  \ln t=u-2-\frac1c,
  \qquad
@@ -849,17 +934,48 @@ derivatives gives
 Eliminating $t$ gives precisely
 \cref{eq:opt:cm-parametrization}.  Conversely, those equations make
 $\mathcal R_u(m,t)=1+c$.
+\end{claim}
 
-\medskip
-\noindent\textbf{Claim 3 (Feasibility and uniqueness).}
-As $c$ decreases from $1/\varphi$ to $r$, the parameters run from
+\begin{proof}
+Write \cref{eq:opt:two-parameter-ratio} as $1+N/D$.  At a stationary
+point of value $1+c$, the three equations are
+\[
+ N=cD,\qquad \partial_mN=c\,\partial_mD,\qquad
+ \partial_tN=c\,\partial_tD.
+\]
+The $t$-derivative equation is
+\[
+ (1-m)^2t^{-3}
+ =c\left[\frac{(1-m)^2}{2}(t^{-1}-t^{-3})
+          +\frac{m(1-m)}t\right],
+\]
+which rearranges to the second identity in
+\cref{eq:opt:cm-stationarity}.  Substituting it into the remaining two
+equations and simplifying gives the first identity.  Eliminating $t$ from
+these identities gives \cref{eq:opt:cm-parametrization}.  Reversing the
+substitutions verifies both the value and the two vanishing derivatives.
+\end{proof}
+
+\begin{claim}[Feasibility and uniqueness of the parameters]
+\label{clm:opt:cm-feasibility}
+For each $u\in[\uDet{4},\uDet{5}]$, the equations in
+\cref{eq:opt:cm-parametrization,eq:opt:cm-stationarity} determine a unique
+triple $(c,m,t)$.  As $c$ decreases from $1/\varphi$ to $r$, this triple runs
+continuously from
 \begin{equation}
  (u,m,t)=\left(\uDet{4},\frac1\varphi,1\right)
  \quad\text{to}\quad
  (u,m,t)=(\uDet{5},0,\sqrt{\uDet{5}}).
  \label{eq:opt:cm-endpoints}
 \end{equation}
-It satisfies $u\ge\uDet{4}$, $\ln t<1$, and $m\le1/\varphi$.  Therefore
+It satisfies the deferral condition
+\cref{eq:opt:cap-deferral-condition}; moreover, the finite harmonic block can
+be chosen with $1+p<u$ for every one of its jobs.
+\end{claim}
+
+\begin{proof}
+The parameter relations give $u\ge\uDet{4}$, $\ln t<1$, and
+$m\le1/\varphi$.  Therefore
 \begin{equation}
  (1-m)(u-1-\ln t)
  >(1-m)\varphi\ge\frac1\varphi\ge m,
@@ -884,9 +1000,21 @@ $(u,m,t)=(\uDet{4},1/\varphi,1)$, as recorded in
 \cref{eq:opt:cm-endpoints}.
 Consequently every
 $u\in[\uDet{4},\uDet{5}]$ has exactly one parameter pair.
+\end{proof}
 
-\medskip
-\noindent\textbf{Claim 4 (Fixed finite instances).}
+\begin{claim}[Approximation by fixed finite instances]
+\label{clm:opt:cm-finite-instances}
+Fix $\uDet{4}<u<\uDet{5}$ and the associated parameters $(c,m,t)$ from
+\cref{clm:opt:cm-feasibility}.  Against every deterministic revealing
+algorithm there is a sequence of fixed finite instances $I_H$ such that
+\begin{equation}
+ \liminf_{H\to\infty}
+ \frac{\ALG(I_H)-(1+c)\cdot\OPT(I_H)}{|I_H|^2}\ge0.
+ \label{eq:opt:cm-finite-excess}
+\end{equation}
+\end{claim}
+
+\begin{proof}
 To pass to fixed finite instances, first approximate $(m,t)$ rationally
 while retaining the strict inequalities $1+p<u$, then choose a sufficiently
 fine harmonic family, and finally multiply all rational block sizes by a
@@ -895,10 +1023,19 @@ fewer than one job at the quota crossing, the terms contributed by
 individual jobs, and rounding are $O_u(H)$, whereas the displayed pair costs
 are $\Theta(H^2)$.  Let $H\to\infty$ first, then increase the harmonic depth, and finally
 let the rational approximation converge to $(m,t)$.  Together with
-\cref{lem:opt:cap-quota}, this proves the proposition.
-The construction applies directly when
-$\uDet{4}<u<\uDet{5}$.  The lower bounds at $u=\uDet{4}$ and
-$u=\uDet{5}$ follow by taking limits from this open interval.
+\cref{lem:opt:cap-quota}, this proves
+\cref{eq:opt:cm-finite-excess}.
+\end{proof}
+
+We can now prove the proposition.
+
+\begin{proof}[Proof of \Cref{prop:opt:middle-lower}]
+For $\uDet{4}<u<\uDet{5}$,
+\cref{clm:opt:combined-ratio,clm:opt:cm-stationary-point} identify the target
+ratio as $1+c(u)$, \cref{clm:opt:cm-feasibility} verifies the hypotheses of
+the construction, and \cref{clm:opt:cm-finite-instances} supplies fixed
+instances approaching that ratio.  The bounds at $u=\uDet{4}$ and
+$u=\uDet{5}$ follow by taking limits from the open interval.
 \end{proof}
 
 \subsubsection{Transferring the lower bound when raw execution is no shorter}
