@@ -3,7 +3,8 @@
 
 The previous section identified the optimal leading online cost for every
 fixed input in the revealing-optimization model.  We now compare that cost with the
-clairvoyant optimum and maximize over all inputs.  The cap $u$ is fixed, but
+clairvoyant optimum and maximize over all inputs.  The raw-execution cap $u$
+is fixed, but
 the algorithm is not told the entries of the input vector.  This section proves
 \cref{thm:random-common-upper}, the rigorous randomized half of the informal
 curve theorem \cref{thm:intro-common-upper-curves}.  Its three transition
@@ -100,7 +101,8 @@ identity \cref{eq:unified-opt-symmetric}.  This gives
 for every empirical distribution $D[p]$.
 
 We next specialize the maximum-density module
-\cref{lem:maximum-density-module} to a form suited to the cap.  If its
+\cref{lem:maximum-density-module} to a form suited to the offline cap $u$.
+If its
 threshold prefix has mass $a$ and first moment $\ell$, put
 \begin{equation}
  \tau_D=\frac{1+\ell}{a}.
@@ -117,7 +119,7 @@ The common threshold equation and the layer-cake identity give
 The stationary algorithm tests all jobs in a uniform random order, processes a
 positive prefix outcome immediately after its test, and after the last test
 processes the residual jobs in SPT order.  The following formula is the
-stationary pair identity specialized to a finite cap.
+stationary pair identity specialized to the finite offline cap $u$.
 
 \begin{lemma}[Stationary survival formula]
 \label{lem:rcu-stationary-survival}
@@ -380,7 +382,7 @@ used above cannot be
 improved in the worst case by a more adaptive algorithm.  We first record an
 envelope for shuffled binary vectors.
 
-\begin{lemma}[Binary cap envelope]
+\begin{lemma}[Binary-input envelope at the offline cap $u$]
 \label{lem:rcu-binary-lower}
 Fix $u>1$, $x\in[0,1]$, and put $z=1-x$.  Let $p^{(n)}$ have $xn+O(1)$
 coordinates of value $u$ and $zn+O(1)$ zero coordinates.  For every
@@ -438,15 +440,16 @@ dominated, up to $o(1)$ vertical error, by the divisible items
 item & completion capacity & work per completion\\
 \midrule
 zero-test module & $zq$ & $1/z$\\
-tested cap processing & $xq$ & $u$\\
+processing of tested $p=u$ jobs & $xq$ & $u$\\
 raw jobs & $1-q$ & $u$\\
 \bottomrule
 \end{tabular}
 \end{center}
 When $z=0$, the zero-test module is simply omitted.
 Indeed, $t$ tests complete at most $zt+\Delta_n$ zeros and expose at most
-$xt+\Delta_n$ cap jobs; raw and known cap processing both use $u$ work per
-completion.  Ordering these three divisible blocks by work per completion,
+$xt+\Delta_n$ jobs with $p=u$; raw execution and processing of a known
+$p=u$ job both use $u$ work per completion.  Ordering these three divisible
+blocks by work per completion,
 as in \cref{lem:divisible-spt-area}, therefore upper-bounds completed mass at every
 work value.  Integrating the remaining mass gives a lower bound on total
 completion time.
@@ -501,8 +504,8 @@ Irrational masses are approximated by integer job counts divided by $n$; the
 rounding error and the one-job terms omitted from the leading pair
 coefficient are $O_u(n)$.
 
-For the last branch, the cap distribution is replaced by a fixed bounded
-one.
+For the last branch, the binary distribution supported on $\{0,u\}$ is
+replaced by the fixed bounded distribution supported on $\{0,2\}$.
 
 \begin{lemma}[Balanced zero--two lower bound]
 \label{lem:rcu-zero-two-lower}

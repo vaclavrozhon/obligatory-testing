@@ -1,16 +1,16 @@
-\section{Independent proof by moving capped jobs to a prefix}
+\section{Independent proof by moving jobs with $p=u$ to a prefix}
 \label{app:cap-bubbling}
 For completeness, we give a second proof of the pairwise estimate behind
 \cref{thm:opt:optional-middle-upper}.  This
-argument is also a useful audit of the capped type in the five-endpoint
-reduction \cref{eq:opt:five-endpoints}: it never
-inserts $p=u$ into the formula for a deferred noncapped type before the caps have
-actually been moved.
+argument is also a useful audit of the endpoint type $U$, which represents
+$p=u$, in the five-endpoint reduction \cref{eq:opt:five-endpoints}: it never
+inserts $p=u$ into the formula for a deferred type below $u$ before the
+$U$-endpoints have actually been moved.
 
 Recall the endpoint symbols from \cref{eq:opt:five-endpoints}: $Z$ is an
 actual zero, $E$ a positive value tending to zero, $M$ an immediate
-threshold value, $Q$ a deferred value just above the threshold, and $U$ a
-capped value $u$.  A word in these symbols records their reveal order.
+threshold value, $Q$ a deferred value just above the threshold, and $U$ the
+value $p=u$.  A word in these symbols records their reveal order.
 For neighboring symbols $X,U$, the expression $UX-XU$ denotes the change in
 the pair objective when $U$ is moved one position to the left.
 
@@ -29,7 +29,7 @@ Put
 \end{equation}
 Direct differentiation of the exact pair objective
 \eqref{eq:opt:pair-objective}, including the mutual pair and all future
-caps, gives the two nontrivial swap differences
+$U$-endpoints, gives the two nontrivial swap differences
 \begin{align}
  UM-MU
  &=1+\left(1+\eta-\frac{Rw}{x}\right)
@@ -53,11 +53,12 @@ $y=-1$, the threshold is flat.  Direct evaluation also gives
  \label{eq:opt:cap-zero-commutators}
 \end{equation}
 The terms involving the later $U$-mass $w$ are crucial: they make every
-neighboring swap valid even while other caps remain to the right.  Repeatedly
-moving a cap left in this way---the ``bubbling'' in the section title---puts
-all caps into one prefix.
+neighboring swap valid even while other $U$-endpoints remain to the right.
+Repeatedly moving $U$ left in this way---the ``bubbling'' in the section
+title---puts all $U$-endpoints into one prefix.
 
-After that prefix there is no future cap.  Let $e$ be the preceding $E$-mass,
+After that prefix there is no future $U$-endpoint.  Let $e$ be the preceding
+$E$-mass,
 $b$ the preceding mass of types $M,Q$, and $d$ the preceding deferred
 $Q$-mass, and define
 \[
@@ -66,7 +67,7 @@ $Q$-mass, and define
  \quad h=d-Rb,
  \quad k=x+d-Rb.
 \]
-The four swap differences involving only noncapped types are
+The four swap differences involving only the types $Z,E,M,Q$ are
 \begin{align}
  ME-EM&=a_c+a_c'(R-y)\frac{k}{x},
  &QE-EQ&=1-a_c'(R-y)(-y-Rv),
@@ -91,7 +92,7 @@ $a_c'=0$.  Hence $Z,E$ can be moved to the end, and a worst word has the form
  U^\mu\{M,Q\}^*\{Z,E\}^*.
  \label{eq:opt:canonical-word}
 \end{equation}
-Here $U^\mu$ denotes a block of capped mass $\mu$, and the star denotes an
+Here $U^\mu$ denotes a block of $U$-mass $\mu$, and the star denotes an
 arbitrary finite sequence of symbols from the set inside the braces.
 
 On the middle block use the simpler potential
@@ -106,10 +107,10 @@ The identity
  \label{eq:opt:ordinary-HJB}
 \end{equation}
 is a direct rewriting of \eqref{eq:opt:f-hjb-identities}; it bounds the
-entire continuation containing only the noncapped types.  If the cap prefix
-has mass $\mu$, then
+entire continuation containing only the types $Z,E,M,Q$.  If the prefix of
+$U$-endpoints has mass $\mu$, then
 after it $x=1-\mu$, $N=N_{\mathrm{def}}=\mu$, and
-$y=-c\mu/(1-\mu)$.  Its contribution from pairs of capped jobs plus its worst
+$y=-c\mu/(1-\mu)$.  Its contribution from pairs of $U$-endpoints plus its worst
 continuation is therefore
 \begin{equation}
  F_{c,u}(\mu)
@@ -149,14 +150,15 @@ To make this independent exchange proof finite, fix
 $\eps>0$ and first replace the last
 $\eps n+O(1)$ outcomes by genuine zeros.  Earlier states and
 actions are unchanged, and only $O(\eps n^2+n)$ pair terms are
-affected.  All capped and noncapped swaps among the retained jobs then
+affected.  All swaps between $U$ and non-$U$ endpoints among the retained
+jobs then
 occur with $x\ge\eps$; their displayed normalized swap differences have
 uniform Taylor remainders there.  More precisely, after assigning mass
 $1/n$ to every job, a normalized neighboring swap has remainder
 $O_{u,\eps}(n^{-3})$; there are at most $n^2$ exchanges.  At the
 boundary $y=-1$, split a swap at the boundary and use the two one-sided
 formulae, whose values agree.  The artificial zeros already form the
-last block, so no cap remaining later in the word invalidates
+last block, so no $U$-endpoint remaining later in the word invalidates
 \eqref{eq:opt:ordinary-commutators}.  The normalized one-job remainder in
 the continuation-potential calculation is
 $O_{u,\eps}(n^{-2})$.  For fixed $\eps$, first let

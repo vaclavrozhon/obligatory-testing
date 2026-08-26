@@ -92,7 +92,8 @@ exact real numbers.
 
 \subsection{Expansion of the lower and upper fields}
 
-For a cap and a candidate value \(R\),
+For either formal model parameter \texttt{Cap.finite u} or
+\texttt{Cap.infinite}, and a candidate value \(R\),
 \texttt{FixedSizeLowerBound} expands to the following statement.  For every
 size-indexed family of deterministic strategies \(\mathcal B_n\), every
 \(\eps>0\), and every \(N\), there exist \(n\ge N\), a genuine fixed
@@ -126,7 +127,8 @@ operational statements that characterize the optimal value in
 not introduce a separate real-valued infimum or \texttt{limsup} object.
 
 Before projecting to \texttt{SizeAsymptoticUpper}, the checked upper proof
-constructs a stronger \texttt{FixedUpperCertificate}: for the chosen cap it
+constructs a stronger \texttt{FixedUpperCertificate}: for the chosen formal
+\texttt{Cap} parameter it
 contains a constant \(C\ge0\) such that, for every \(n\) and every fixed
 input,
 \begin{equation}
@@ -134,13 +136,15 @@ input,
   \label{eq:lean-linear-certificate}
 \end{equation}
 Since every effective length is at least one in obligatory testing and at
-least $\min\{u,1\}$ in the capped models,
+least $\min\{u,1\}$ in the two optimization models with finite
+raw-execution cap $u$,
 \cref{eq:unified-opt-prefix} then implies
 \eqref{eq:lean-upper-expansion}.  For \(u\ge\uDet{5}\), the separately verified
 plateau certificate uses the same strategy and the same \(C\), independent
 of \(u\), including the obligatory limit.  This uniformity is stronger
 than the quantifier order displayed by \texttt{exact\_ratio\_main}, which
-only exposes one strategy after a cap has been fixed.
+only exposes one strategy after the formal \texttt{Cap} parameter has been
+fixed.
 
 \subsection{Correspondence with the two deterministic theorems}
 
@@ -177,6 +181,6 @@ The theorem recorded here is specifically the size-asymptotic result.  It
 does not assert the pointwise inequality \(\ALG\le R\cdot\OPT\) without a
 remainder.  Its checked remainder is the linear term in
 \eqref{eq:lean-linear-certificate}, and is therefore $o(n^2)$.  The
-machine-checked mixed-regime upper bound follows the cap-reserve potential
-proof; the bubbling argument in
+machine-checked mixed-regime upper bound follows the reserve potential for
+the endpoint $p=u$; the bubbling argument in
 \cref{app:cap-bubbling} remains an independent manuscript cross-check.

@@ -297,7 +297,8 @@ Here $u\ge2$, so the algorithm uses threshold one.  A prefix job is always
 immediate, a suffix job with $p\le1$ is immediate, and a suffix job with
 $p>1$ is deferred.  First keep this immediate/deferred pattern fixed and
 vary one processing time at a time in the leading excess
-$\ALG-R\cdot\OPT$.  On each interval between the threshold and the offline cap,
+$\ALG-R\cdot\OPT$.  On each interval between the threshold and the offline
+cap $u$,
 the pair formula \cref{eq:opt:pair-contribution} makes this excess convex in
 that coordinate.  Hence a maximum occurs at an interval endpoint.  This
 reduces
@@ -503,8 +504,8 @@ $d^2$.  Its maximum is attained at one of the two extreme compositions:
  1+\frac{2y}{1+s y^2}
  \quad(d=y).
 \end{equation}
-The first case has only value-$1^+$ positive jobs; the second has only capped
-positive jobs.
+The first case has only value-$1^+$ positive jobs; the second has only
+positive jobs with $p=u$.
 For $d=y$, the desired bound is equivalent to
 $(\sqrt{s}y-1)^2\ge0$.  For $d=0$, put $r=1/\sqrt{s}$.  The desired
 inequality is
@@ -601,7 +602,7 @@ size-asymptotic competitive ratio.
 
 \begin{proof}
 
-Fix a finite cap $u$ in the stated range.
+Fix the finite raw-execution cap $u$ in the stated range.
 
 Here is the structure of the argument.  We first rewrite
 $\ALG-R\cdot\OPT$ as a sum of contributions from ordered pairs of jobs plus
@@ -637,7 +638,8 @@ $c\ge r$, and hence
  \label{eq:opt:threshold-below-cap}
 \]
 The same inequality holds on the high interval, where we use $c=r$.
-Thus every outcome in the capped region $[u-1,u]$ is deferred.
+Thus every outcome in $[u-1,u]$, where its offline effective length has
+reached the offline cap $u$, is deferred.
 
 The state $y$ never increases.  Indeed, the numerator in
 \eqref{eq:opt:state-y} changes by $0$, $-R$, or $-c$ after a zero, a
@@ -703,9 +705,10 @@ Equations \eqref{eq:opt:alg-pair-decomposition}--
  \label{eq:opt:gap-decomposition}
 \end{equation}
 The final sum contains one term per job, rather than one per pair, and is
-nonpositive.  Below the cap its $i$-th summand is
-$-c(1+p_i)$; on the cap it is at most $1-cu\le0$.  Thus it is enough
-to control $\Gamma_n$.
+nonpositive.  If $p_i<u-1$, so that the offline cap $u$ is inactive, its
+$i$-th summand is $-c(1+p_i)$.  If $p_i\ge u-1$, its offline effective
+length is $u$ and the summand is at most $1-cu\le0$.  Thus it is enough to
+control $\Gamma_n$.
 
 Now fix only the sequence of immediate/deferred decisions made by the
 algorithm.  Varying a processing value inside an interval that preserves its
@@ -719,7 +722,7 @@ at a boundary.  The resulting five endpoint types are
  E&0^+&\text{immediate}\\
  M&a_c(y)&\text{immediate}\\
  Q&a_c(y)^+&\text{deferred}\\
- U&u&\text{deferred and capped}.
+ U&u&\text{deferred}.
 \end{array}
  \label{eq:opt:five-endpoints}
 \end{equation}
@@ -759,8 +762,8 @@ bounded by
  \ell_Q=N_{\mathrm{def}}+a(N_{\mathrm{def}}-RP).
  \label{eq:opt:noncapped-local-charges}
 \end{equation}
-For a current capped endpoint $U$, direct pair counting gives the exact
-charge
+For a current endpoint $U$, representing $p=u$, direct pair counting gives
+the exact charge
 \begin{align}
  \ell_U
  &=N_{\mathrm{def}}+A_D+uK-R\bigl(A_I+A_D+(u-1)K\bigr)
@@ -773,9 +776,11 @@ charge
 To verify these formulas, pair the current outcome once with each earlier
 endpoint type and use \cref{eq:opt:pair-objective}.  An earlier immediate
 outcome already received its online processing-delay term when it appeared,
-so a current cap contributes only $-Rp$ against such an outcome.  Against an
+so a current endpoint $U$, whose value is $u$, contributes only $-Rp$
+against such an outcome.  Against an
 earlier noncapped deferred value $p$ it contributes
-$p-Rp=-cp$, and against an earlier cap it contributes $h_U$.  Summing the
+$p-Rp=-cp$, and against an earlier endpoint $U$ it contributes $h_U$.
+Summing the
 corresponding cases gives
 \begin{equation}
  \Gamma_n\le\sum_i\ell_i;
@@ -785,7 +790,7 @@ the difference is exactly the sum of nonnegative processing-delay terms by
 which the displayed $M$ charges overestimate the true pair contributions.
 Formula
 \eqref{eq:opt:cap-local-charge}, rather than a substitution $p=u$ into
-$\ell_Q$, is essential before caps have been put into a prefix.
+$\ell_Q$, is essential before the $U$-endpoints have been put into a prefix.
 
 Threshold monotonicity gives $A_I\ge aI$ and $A_D\ge ad$.  Comparing
 \eqref{eq:opt:cap-local-charge} with the hypothetical $Q$-charge at the
@@ -803,7 +808,8 @@ same state gives the exact identity
 \noindent\textbf{Claim 3 (Base potential for noncapped outcomes).}
 There is a nonnegative potential $W_{\mathrm{base}}$ for which the
 infinitesimal one-step inequality holds for each of the four noncapped types
-$Z,E,M,Q$.  We now construct it explicitly.  The capped type $U$ will require
+$Z,E,M,Q$.  We now construct it explicitly.  The type $U$, representing
+$p=u$, will require
 one additional potential term in Claim~4.
 Define
 \begin{equation}
@@ -919,10 +925,10 @@ are immediate from $g_c=g_c'=0$.  Hence $J_T\le0$ for every noncapped
 endpoint type, as claimed.
 
 \medskip
-\noindent\textbf{Claim 4 (Additional potential for capped outcomes).}
-We can add a nonnegative term depending on the number $K$ of earlier capped
-outcomes so that the one-step inequality also holds for type $U$, without
-spoiling it for $Z,E,M,Q$.  We call this additional term the cap reserve.
+\noindent\textbf{Claim 4 (Additional potential for outcomes with $p=u$).}
+We can add a nonnegative term depending on the number $K$ of earlier
+$U$-outcomes so that the one-step inequality also holds for type $U$, without
+spoiling it for $Z,E,M,Q$.  We call this additional term the $U$-reserve.
 Define
 \begin{equation}
  Z(c)=2+\frac1c+\frac12\ln\!\left(1+\frac2c\right),
@@ -966,7 +972,7 @@ contributes, after division by $x$,
  L_0(q)=-2\mathcal H(q)+q\mathcal H'(q).
  \label{eq:opt:L0}
 \end{equation}
-A cap also increments $K$, and its contribution is
+An endpoint $U$ also increments $K$, and its contribution is
 $L_0+\mathcal H'$.  On the range $\mu\le m$, where $\mathcal V$ may be
 nonzero, differentiation of
 \eqref{eq:opt:reserve-H} gives
@@ -979,7 +985,8 @@ nonzero, differentiation of
 Thus the reserve can only decrease the left-hand side of every noncapped
 one-step inequality.
 
-For a cap, feasibility $N_{\mathrm{def}}\le P$ and $P\ge K$ gives
+For a current endpoint $U$, feasibility $N_{\mathrm{def}}\le P$ and
+$P\ge K$ gives
 \begin{equation}
  y=\frac{N_{\mathrm{def}}-R(P+E)}x\le-\frac{cK}{x}=-cq.
  \label{eq:opt:y-cap-bound}
@@ -1000,7 +1007,7 @@ The change of variables in \eqref{eq:opt:reserve-H} satisfies
  (1+q)\beta(\mu)=B(q).
  \label{eq:opt:B-beta}
 \end{equation}
-Consequently the extra positive charge of a capped outcome is cancelled
+Consequently the extra positive charge of a $U$-outcome is cancelled
 exactly by the change in the reserve:
 \begin{equation}
  L_0+\mathcal H'+B(q)=0
@@ -1014,7 +1021,7 @@ $a_c(-cq_*)$, is zero by
 \eqref{eq:opt:delta-atanh} and \eqref{eq:opt:B-beta}.  For $q\ge q_*$,
 \eqref{eq:opt:y-cap-bound} only decreases the threshold, so that bracket is
 nonpositive.  The one-step inequality for type $U$ therefore holds for every
-state and for arbitrary interleavings of capped and noncapped outcomes.
+state and for arbitrary interleavings of $U$ and non-$U$ outcomes.
 
 \medskip
 \noindent\textbf{Claim 5 (Initial calibration).}
@@ -1122,16 +1129,16 @@ Together with \eqref{eq:opt:gap-decomposition} and
 \end{align}
 
 At $u=\uDet{5}$, one has $c=r$, $m=0$, and
-$Z(r)=\uDet{5}$.  The cap reserve is identically zero, while
+$Z(r)=\uDet{5}$.  The $U$-reserve is identically zero, while
 \eqref{eq:opt:initial-calibration} remains valid.  If $u$ is increased
 above $\uDet{5}$, the only adverse fifth-endpoint bracket
-$1-r(u-1-a_r(y))$ decreases, and the capped one-job term in
+$1-r(u-1-a_r(y))$ decreases, and the one-job term for $U$ in
 \eqref{eq:opt:gap-decomposition} also decreases.
 
 Here is the promised uniform finite calculation.  The base potential and the
 set of states reachable by the algorithm contain no $u$, so there is one
-constant $C_{\rm step}$, depending
-only on $r$, for which every noncapped or capped transition with $u\ge \uDet{5}$
+constant $C_{\rm step}$, depending only on $r$, for which, whenever
+$u\ge \uDet{5}$, every transition, whether its endpoint is $U$ or not,
 satisfies
 \[
  \ell_i+W_{i+1}-W_i\le C_{\rm step}.
@@ -1141,9 +1148,10 @@ Because $W_0=rn^2/2$ and $W_n=0$, telescoping gives
  \sum_i\ell_i\le\frac r2n^2+C_{\rm step}n.
  \label{eq:opt:uniform-ell}
 \end{equation}
-In the one-job sum of \cref{eq:opt:gap-decomposition}, a value below the cap
-contributes $-r(1+p_i)$.  A capped value contributes at most
-$1-r u\le0$.  Hence the one-job sum is nonpositive uniformly on
+In the one-job sum of \cref{eq:opt:gap-decomposition}, every endpoint other
+than $U$ has $p_i<u-1$ and contributes $-r(1+p_i)$.  The endpoint $U$ has
+$p_i=u$ and contributes at most $1-r u\le0$.  Hence the one-job sum is
+nonpositive uniformly on
 $[\uDet{5},\infty)$.  Combining
 \cref{eq:opt:gap-decomposition,eq:opt:pair-allocation-dominates,eq:opt:uniform-ell}
 now yields

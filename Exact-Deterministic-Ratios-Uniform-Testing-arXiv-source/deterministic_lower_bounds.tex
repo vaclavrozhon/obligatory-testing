@@ -217,14 +217,15 @@ instances by the answer-freezing argument at the end of its proof.
 \end{proof}
 
 
-\subsubsection{The harmonic core below the raw cap}
+\subsubsection{The harmonic core below the raw-execution cap}
 \label{sec:lower}
 
 This subsection develops the harmonic construction used by the last two
 branches of the revealing curve.  Its largest processing time will be below
-two.  Consequently, whenever the construction is later used with a raw cap
-$u>3$, every job satisfies $1+p_j<u$ and the cap does not alter its offline
-effective length.  Its notation is local to this subsection.
+two.  Consequently, whenever the construction is later used with a
+raw-execution cap $u>3$, every job satisfies $1+p_j<u$, so the offline cap
+$u$ is inactive.
+Its notation is local to this subsection.
 We first record its extremal specialization and then extract the scaled form
 reused by the mixed branch.  The construction
 has many equally large groups of positive jobs, revealed from longest to
@@ -664,10 +665,10 @@ The cap-free construction needed below is exactly the scaled harmonic core
 from \cref{lem:opt:harmonic-block}; no second phase-accounting proof is
 needed here.  We now prepend capped jobs to that reusable core.
 
-\begin{lemma}[Cap deferral]
+\begin{lemma}[Deferring jobs with $p=u$]
 \label{lem:opt:cap-deferral}
-Prepend a fraction $m$ of capped jobs with value $p=u$ to a later cap-free
-block occupying the remaining fraction $s=1-m$ and having total normalized
+Prepend a fraction $m$ of capped jobs (that is, jobs with $p=u$) to a later
+cap-free block occupying the remaining fraction $s=1-m$ and having total normalized
 processing time $L$.  Suppose every later value satisfies
 $1+p\le u$ and
 \begin{equation}
@@ -679,17 +680,19 @@ decrease the leading online cost.
 \end{lemma}
 
 \begin{proof}
-A capped job completed after all caps have been tested but before a later job
-of value $p$ contributes $1+u$ to their pairwise online cost.  If we postpone
+A capped job completed after all jobs with $p=u$ have been tested but before
+a later job of value $p$ contributes $1+u$ to their pairwise online cost.  If we postpone
 the capped job until after the later job, the same pair contributes $2+p$.
 The postponement lowers the cost by $u-1-p\ge0$, so the postponed schedule is
 a valid lower bound on the algorithm's actual cost.
 
-It remains to cover capped jobs completed while the initial cap block is
-still being tested.  Let $q$ be their fraction of the full instance.  Their
+It remains to cover capped jobs completed while the initial block of
+$p=u$ jobs is still being tested.  Let $q$ be their fraction of the full
+instance.  Their
 pairs with all later jobs add
-$q[s(u-1)-L]$.  Their largest possible saving against not-yet-tested caps is
-$qm-q^2/2$.  Relative to leaving every cap pending, the change is therefore
+$q[s(u-1)-L]$.  Their largest possible saving against not-yet-tested jobs
+with $p=u$ is $qm-q^2/2$.  Relative to leaving every such job pending, the
+change is therefore
 at least
 \begin{equation}
  q[s(u-1)-L-m]+\frac{q^2}{2}\ge0.
@@ -713,7 +716,7 @@ In particular, $A^{\rm lb}-O=(A_0^{\rm lb}-O_0)+m$.
 \end{lemma}
 
 \begin{proof}
-A pair consisting of one initial cap and one later job of value $p$
+A pair consisting of one initial job with $p=u$ and one later job of value $p$
 contributes $2+p$ online and $1+p$ offline.  Summed over capped fraction $m$
 and later fraction $1-m$, these give the cross terms involving $m(1-m)$ and
 $mL$.
@@ -736,7 +739,8 @@ $R\le u$.
 
 \begin{proof}
 In the initial phase, a tested fresh job receives $p=u$, while a job run raw
-is assigned hidden value zero.  If $v$ raw jobs and $\ell$ tested caps have
+is assigned hidden value zero.  If $v$ raw jobs and $\ell$ tested jobs with
+$p=u$ have
 been touched, stop at the first crossing
 \begin{equation}
  \frac{\ell}{n-v}\ge m.
@@ -749,32 +753,35 @@ Thus every job was run raw and the all-zero hidden instance has ratio
 $u\ge R$.
 
 At a crossing, scale the prescribed later instance to the remaining
-$S-\ell$ first touches, absorbing the one-job cap overshoot and integer
+$S-\ell$ first touches, absorbing the one-job quota overshoot and integer
 rounding into its zero group.  Fix an order of the job types in this later
 block.  A test reveals the next value in that order; a raw action assigns the
 next value to the touched job but does not reveal it to the algorithm.
 
 Move every initial raw-zero completion to the start.  It has the same length
-$u$ as cap processing, and crossing a unit test only lowers completion cost.
+$u$ as processing a known job with $p=u$, and crossing a unit test only
+lowers completion cost.
 With
 \begin{equation}
  Z_v=vn-\frac{v(v-1)}2,
 \end{equation}
 this prefix contributes $uZ_v$ online and $Z_v$ offline.  Subtract these
 known contributions from the comparison.  The
-remaining $S$ labels consist, up to one-job rounding, of capped fraction $m$
-and the prescribed later cap-free block.
+remaining $S$ labels consist, up to one-job rounding, of a fraction $m$ of
+jobs with $p=u$ and the prescribed later block satisfying $1+p\le u$.
 
-To compare with the cap-free lower-bound construction, run a virtual copy of
+To compare with the harmonic lower-bound construction, run a virtual copy of
 the revealing algorithm.  If this virtual algorithm later runs a fresh job
-of assigned value $p$ raw, the cap-free simulation instead tests and
+of assigned value $p$ raw, the obligatory-testing simulation instead tests
+and
 immediately processes that job in time $1+p\le u$, hides the answer from the
 virtual copy, and idles until the virtual raw block of length $u$ ends.
-Inductively every simulated cap-free completion is no later than the
-corresponding virtual revealing completion.  Since the
-finite-cap and cap-free offline lengths are both $1+p$ on the later block,
-write $\ALG_{\rm hyb}$ and $\OPT_{\rm hyb}$ for the online and offline costs
-of this physical cap-free simulation.  Then
+Inductively every simulated obligatory completion is no later than the
+corresponding virtual revealing completion.  Since $1+p\le u$ on the later
+block, its offline lengths are $1+p$ in both the revealing and obligatory
+models.  Write $\ALG_{\rm hyb}$ and $\OPT_{\rm hyb}$ for the online and
+offline costs
+of this physical obligatory-testing simulation.  Then
 \begin{equation}
  \ALG_{\mathsf{RO}}-R\cdot\OPT_{\mathsf{RO}}
  \ge (u-R)Z_v+
@@ -867,7 +874,7 @@ $u\in[\uDet{4},\uDet{5}]$ has exactly one parameter pair.
 \medskip
 \noindent\textbf{Claim 4 (Fixed finite instances).}
 To pass to fixed finite instances, first approximate $(m,t)$ rationally
-while retaining the strict cap inequalities, then choose a sufficiently
+while retaining the strict inequalities $1+p<u$, then choose a sufficiently
 fine harmonic family, and finally multiply all rational block sizes by a
 common integer $H$.  For a fixed number of positive levels, quota overshoot,
 one-job
@@ -880,17 +887,18 @@ $u=\uDet{4}$ and $u=\uDet{5}$ the same statement follows by approaching from
 the interior, so the endpoints are included.
 \end{proof}
 
-\subsubsection{The plateau lower bound by cap-free transfer}
+\subsubsection{The plateau lower bound by a below-cap transfer}
 
-The harmonic construction contains no capped outcomes.  The next lemma
-shows that any revealing algorithm at cap $u$ induces an obligatory-testing
-algorithm on inputs with $p_j\le u-1$, so the cap-free lower bound transfers
-without changing either the transcript comparison or the offline optimum.
+The harmonic construction uses only values with $1+p_j\le u$, for which the
+offline cap $u$ is inactive.  The next lemma shows that any revealing
+algorithm with raw-execution cap $u$ induces an obligatory-testing algorithm
+on these inputs without changing either the transcript comparison or the
+offline optimum.
 
-\begin{lemma}[Bounded cap-free transfer]
+\begin{lemma}[Bounded below-cap transfer]
 \label{lem:opt:obligatory-transfer}
 Let $u\ge1$, and let $L_{\mathsf{OT}}(P)$ denote the deterministic
-size-asymptotic value in the cap-free limit, restricted to
+size-asymptotic value in obligatory testing, restricted to
 $0\le p_j\le P$.  Then
 \begin{equation}
  \RdetRO(u)\ge L_{\mathsf{OT}}(u-1).
@@ -906,16 +914,17 @@ In particular,
 \end{lemma}
 
 \begin{proof}
-Given a finite-cap algorithm, construct a cap-free algorithm on instances
-with $p_j\le u-1$ by running a virtual copy of the finite-cap algorithm.  Copy
+Given a revealing algorithm with raw-execution cap $u$, construct an
+obligatory-testing algorithm on instances with $p_j\le u-1$ by running a
+virtual copy of the revealing algorithm.  Copy
 each test and processing action.  When the virtual algorithm runs an
 untouched job raw for $u$ time, physically test and immediately process it in
 $1+p_j\le u$ time, hide the answer from the virtual copy, and wait for the
 virtual clock.  Every physical completion is no later than its virtual
-completion.  Moreover, $\min\{u,1+p_j\}=1+p_j$, so finite-cap and cap-free
-optima coincide.  Thus we obtain the following direct comparison.  For
-every finite-cap algorithm
-$\mathcal A$, the simulation produces a cap-free algorithm $\mathcal B$ and,
+completion.  Moreover, $\min\{u,1+p_j\}=1+p_j$, so the revealing and
+obligatory optima coincide.  Thus we obtain the following direct comparison.
+For every revealing algorithm $\mathcal A$ with raw-execution cap $u$, the
+simulation produces an obligatory-testing algorithm $\mathcal B$ and,
 pointwise on every instance with $p_j\le u-1$,
 \[
  \ALG_{\mathcal A}\ge\ALG_{\mathcal B},
@@ -927,7 +936,7 @@ $p_j\le u-1$, which is at least $L_{\mathsf{OT}}(u-1)$ by its definition.
 Taking the infimum over $\mathcal A$ proves
 \cref{eq:opt:obligatory-transfer}.
 
-The harmonic cap-free family attaining $\RdetOT$ has limiting largest
+The harmonic family attaining $\RdetOT$ has limiting largest
 processing time
 \begin{equation}
  1+\ln(1+y_*)

@@ -14,18 +14,21 @@ obligatory instance, choose any finite
 \[
  u>\max\{\uDet{5},1+\max_j p_j\}.
 \]
-Its execution is identical in the revealing model with cap $u$, and every
+Its execution is identical in the revealing model with raw-execution cap
+$u$, and every
 offline effective length is
 $\min\{u,1+p_j\}=1+p_j$.  Thus the revealing and obligatory optima coincide.
 The constant $B$ in \cref{eq:opt:uniform-high-upper} is independent of $u$,
 so the same inequality holds for the obligatory instance.
 
 For the lower bound, regard an arbitrary obligatory algorithm $\mathcal B$
-as a revealing algorithm at the fixed cap $u=\uDet{5}$ that simply never uses raw
-execution.  The plateau lower bound in \cref{thm:optional-curve} may be
-witnessed by cap-free instances with $p_j<\uDet{5}-1$.  On those instances the
+as a revealing algorithm with the fixed raw-execution cap $u=\uDet{5}$ that
+simply never uses raw execution.  The plateau lower bound in
+\cref{thm:optional-curve} may be
+witnessed by instances with $p_j<\uDet{5}-1$, so the offline cap
+$u=\uDet{5}$ is inactive.  On those instances the
 online transcript is unchanged and
 $\min\{\uDet{5},1+p_j\}=1+p_j$, so again the two offline optima coincide.  The
-finite-cap lower inequality therefore gives the claimed obligatory lower
-bound for arbitrarily large instances.
+revealing lower inequality at $u=\uDet{5}$ therefore gives the claimed
+obligatory lower bound for arbitrarily large instances.
 \end{proof}

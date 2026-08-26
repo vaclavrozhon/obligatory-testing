@@ -344,8 +344,12 @@ $\widehat\tau\le p<\widehat\mu$, shortest first.
 The two remaining models start from the same operation.  Every job takes a
 known raw time $u$, and one unit of optimization reduces its running time to
 $p_i\leq u$.  They differ only in whether optimization reveals $p_i$.  We
-start with the case in which it does not.  Before execution, all optimized
-jobs still look the same.
+call $u$ the \emph{raw-execution cap}, or simply the \emph{cap}.  A
+clairvoyant scheduler completes a job by the shorter of raw execution in
+time $u$ and optimization followed by processing in time $1+p_i$; thus $u$
+is also the \emph{offline cap} on the resulting job length.  We start with
+the case in which optimization does not reveal $p_i$.  Before execution,
+all optimized jobs still look the same.
 
 This is the simpler case.  Let us first describe the hardest inputs for both
 deterministic and randomized algorithms.  Roughly a $1/\sqrt u$ fraction of
@@ -686,8 +690,9 @@ The appendices document and independently audit the more delicate parts of
 the argument.  \Cref{sec:formalization} states precisely which results are
 machine checked and summarizes the corresponding Lean~4 development.
 \Cref{app:finite-checkpoint} evaluates a large but finite rational instance
-of the cap-free lower bound, while \cref{app:cap-bubbling} independently
-checks the deterministic upper bound by repeatedly moving capped outcomes
+of the lower bound whose jobs satisfy $1+p_i<u$, while
+\cref{app:cap-bubbling} independently checks the deterministic upper bound
+by repeatedly moving outcomes with $p_i=u$
 to the start of the reveal order.
 Finally, \cref{app:lean-formalization} records the exported Lean theorem and
 the detailed dictionary between its objects and the deterministic statements

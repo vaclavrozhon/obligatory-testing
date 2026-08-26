@@ -106,8 +106,9 @@ $\eps>0$, there are arbitrarily large fixed instances $I$ such that
  \ALG_{\mathcal A}(I)
  \ge\bigl(\RdetRO(u)-\eps\bigr)\cdot\OPT(I).
 \]
-For $u\ge \uDet{5}$, these lower-bound instances may be chosen cap-free:
-$p_j<u-1$ for every job.  Thus both witnesses on the plateau are uniform in
+For $u\ge \uDet{5}$, these lower-bound instances may be chosen with
+$p_j<u-1$ for every job, so the offline cap $u$ is inactive.  Thus both
+witnesses on the plateau are uniform in
 the sense needed to pass separately to the obligatory endpoint.
 \end{theorem}
 
@@ -180,7 +181,7 @@ complete guarantee on the relevant range of $u$.
 
 The lower bounds use three adversarial constructions.  A hidden binary
 stopping game gives the first four branches, a harmonic construction whose
-processing times stay below the raw cap gives the plateau, and prepending a
+jobs satisfy $1+p_j<u$ gives the plateau, and prepending a
 block of jobs with $p_j=u$ to a scaled harmonic construction gives the mixed
 branch.  The final transfer lemma applies the same below-cap construction to
 every sufficiently large finite $u$.

@@ -47,7 +47,11 @@ The notation $\mathsf{BE}$ has no model parameter: blind execution permits
 arbitrary finite nonnegative processing times.  For its bounded
 instance-optimal theorem we restrict the inputs to $[0,L]$ and make $L$
 public.  In the last two models, by contrast, $u$ is itself an available
-running time and hence part of every scheduling decision.  The number $n$
+running time and hence part of every scheduling decision.  We call it the
+\emph{raw-execution cap}, or simply the \emph{cap}.  Since the offline
+effective length in these models is $\min\{u,1+p_j\}$, we call it the
+\emph{offline cap $u$} when discussing the clairvoyant benchmark.  The
+number $n$
 and any theorem-specific bound $L$ or model parameter $u$ are known to the
 algorithm.
 

@@ -1,11 +1,13 @@
 \subsection{The randomized obligatory endpoint}
 \label{sec:random-obligatory}
 
-We now pass from the finite-cap randomized curve to the unbounded obligatory
-endpoint.  The adversary fixes a vector $p\in[0,\infty)^n$ before the algorithm
+We now pass from the randomized curve with a finite raw-execution cap $u$ to
+the unbounded obligatory endpoint.  The adversary fixes a vector
+$p\in[0,\infty)^n$ before the algorithm
 draws its random bits; the input convention then privately shuffles its
 coordinates.  The entries are not announced, and no upper bound on
-the processing times is assumed.  The finite-cap zero--two lower bound
+the processing times is assumed.  The zero--two lower bound at the finite
+raw-execution cap $u=\uRand{3}$
 transfers directly.  The upper bound needs one additional safeguard: the
 algorithm groups every sampled value above a threshold into one category and
 switches to a safe test-all schedule when the sample does not identify a
@@ -56,8 +58,9 @@ whose nonnegative terms prove the factor $4/3$.  The universal algorithm
 learns an approximately separated prefix from a sublinear sample; the
 threshold and the safe test-all schedule described below protect it from
 unbounded values missed by the sample.  The matching lower
-bound is inherited from the zero--two endpoint of the finite-cap curve.  We
-first prove the uniform upper bound and then give the short transfer.
+bound is inherited from the zero--two lower bound at the finite
+raw-execution cap $u=\uRand{3}$.  We first prove the uniform upper bound and
+then give the short transfer.
 
 \subsubsection{Normalization of the offline pair identity}
 
@@ -427,15 +430,17 @@ constant covering smaller $n$.  This proves
 
 \subsubsection{Transfer of the zero--two lower bound}
 
-Fix the finite cap $u=\uRand{3}$.  Any randomized obligatory algorithm can be
-viewed as a revealing-optimization algorithm at this cap that simply never
-uses raw execution.  Apply \cref{lem:rcu-zero-two-lower}.  Its fixed hard
+Fix the finite raw-execution cap $u=\uRand{3}$.  Any randomized obligatory
+algorithm can be viewed as a revealing-optimization algorithm at this value
+of $u$ that simply never uses raw execution.  Apply
+\cref{lem:rcu-zero-two-lower}.  Its fixed hard
 input has only values zero and two, so every revealing effective length is
 \[
  \min\{\uRand{3},1+p_j\}=1+p_j.
 \]
 The online transcript and the offline optimum are therefore exactly the
-same in the finite-cap and obligatory models.  For even $n$, the common
+same in the revealing model with raw-execution cap $u=\uRand{3}$ and in the
+obligatory model.  For even $n$, the common
 offline value is
 \[
  \OPT=\frac34n^2+n,
