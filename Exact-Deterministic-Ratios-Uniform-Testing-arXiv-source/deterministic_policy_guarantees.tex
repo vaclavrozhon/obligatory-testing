@@ -614,13 +614,15 @@ $\ALG-R\cdot\OPT$ as a sum of contributions from ordered pairs of jobs plus
 $O_u(n)$ one-job terms, reduce the processing times to five boundary values,
 and assign the resulting pair contributions to local charges $\ell_i$.
 The next three claims construct and calibrate a nonnegative potential $W$
-such that every reveal satisfies the continuous one-step
-inequality
+such that, for every endpoint type $T$ with state-update direction $v_T$,
 \[
- \ell_i+W_{i+1}-W_i\le0.
+ \ell_T+\nabla W\mathbin{\cdot}v_T\le0.
 \]
-The sixth claim converts these infinitesimal inequalities into the stated
-finite bounds and performs the final telescoping.
+Here $\nabla W\mathbin{\cdot}v_T$ is the first-order change obtained by
+differentiating $W$ in the direction of that state update.
+The sixth claim uses a Taylor estimate to compare this directional derivative
+with the actual potential change caused by one job, and then telescopes the
+resulting finite inequalities.
 
 \paragraph{Common setup.}
 Fix a finite raw-execution cap $u\ge\uDet{4}$ and put $R=1+c$.
@@ -830,7 +832,11 @@ same state gives the exact identity
 \begin{claim}[Base potential for types $Z,E,M,Q$]
 \label{clm:opt:adaptive-base-potential}
 There is a nonnegative potential $W_{\mathrm{base}}$ for which the
-infinitesimal one-step inequality holds for each of the types $Z,E,M,Q$.
+directional-derivative bound
+\[
+ \ell_T+\nabla W_{\mathrm{base}}\mathbin{\cdot}v_T\le0
+\]
+holds for every $T\in\{Z,E,M,Q\}$.
 The type $U$, representing $p=u$, is handled separately in
 \cref{clm:opt:adaptive-cap-potential}.
 \end{claim}
@@ -892,7 +898,7 @@ below:
 \end{equation}
 Let
 $J_T=\ell_T+\nabla W_{\mathrm{base}}\mathbin{\cdot}v_T$.  This is the
-local charge plus the infinitesimal change of the potential; we must show
+local charge plus the directional derivative of the potential; we must show
 $J_T\le0$.  For the moment $T\in\{Z,E,M,Q\}$.  In Region I, direct
 differentiation and
 the identities
@@ -951,11 +957,15 @@ are immediate from $g_c=g_c'=0$.  Hence $J_T\le0$ for
 $T\in\{Z,E,M,Q\}$, as claimed.
 \end{proof}
 
-\begin{claim}[Additional potential for jobs with $p=u$]
+\begin{claim}[Reserve potential for jobs with $p=u$]
 \label{clm:opt:adaptive-cap-potential}
-We can add a nonnegative term depending on the number $K$ of earlier
-$U$ endpoints so that the one-step inequality also holds for type $U$, without
-spoiling it for $Z,E,M,Q$.
+There is a nonnegative reserve term $W_{\mathrm{cap}}$, depending on the
+number $K$ of earlier $U$ endpoints, such that the full potential
+$W=W_{\mathrm{base}}+W_{\mathrm{cap}}$ satisfies
+\[
+ \ell_T+\nabla W\mathbin{\cdot}v_T\le0
+ \qquad(T\in\{Z,E,M,Q,U\}).
+\]
 \end{claim}
 
 \begin{proof}
@@ -994,10 +1004,11 @@ define the full potential
  W=xN_{\mathrm{def}}+x^2\bigl(G_c(y,b)+\mathcal H(q)\bigr).
  \label{eq:opt:full-potential}
 \end{equation}
-It is nonnegative.
+Thus $W_{\mathrm{cap}}=x^2\mathcal H(q)$.  Both terms in $W$ are
+nonnegative.
 
 For an endpoint of type $Z,E,M,$ or $Q$, the value of $K$ is fixed while
-$x$ decreases, so the additional potential contributes, after division by
+$x$ decreases, so the reserve term contributes, after division by
 $x$,
 \begin{equation}
  L_0(q)=-2\mathcal H(q)+q\mathcal H'(q).
@@ -1013,8 +1024,8 @@ nonzero, differentiation of
  L_0=-2(1+q)\mathcal V-q\beta(\mu)\le0.
  \label{eq:opt:reserve-derivatives}
 \end{equation}
-Thus the additional potential can only decrease the left-hand side of the
-one-step inequality for each of $Z,E,M,Q$.
+Thus the reserve term can only decrease the left-hand side of the
+directional-derivative bound for each of $Z,E,M,Q$.
 
 For a current endpoint $U$, feasibility $N_{\mathrm{def}}\le P$ and
 $P\ge K$ gives
@@ -1039,20 +1050,21 @@ The change of variables in \eqref{eq:opt:reserve-H} satisfies
  \label{eq:opt:B-beta}
 \end{equation}
 Consequently the extra positive charge of an endpoint of type $U$ is
-cancelled exactly by the change in the additional potential:
+cancelled exactly by the directional derivative of the reserve term:
 \begin{equation}
  L_0+\mathcal H'+B(q)=0
  \qquad(\mu\le m).
  \label{eq:opt:reserve-cancellation}
 \end{equation}
-When $\mu\ge m$, the additional potential vanishes.  At
+When $\mu\ge m$, the reserve term vanishes.  At
 $q_*=m/(1-m)$, the bracket in
 \eqref{eq:opt:cap-versus-q}, evaluated at the largest possible threshold
 $a_c(-cq_*)$, is zero by
 \eqref{eq:opt:delta-atanh} and \eqref{eq:opt:B-beta}.  For $q\ge q_*$,
 \eqref{eq:opt:y-cap-bound} only decreases the threshold, so that bracket is
-nonpositive.  The one-step inequality for type $U$ therefore holds for every
-state and for arbitrary interleavings of type $U$ with the other four types.
+nonpositive.  The directional-derivative bound for type $U$ therefore holds
+for every state and for arbitrary interleavings of type $U$ with the other
+four types.
 \end{proof}
 
 \begin{claim}[Initial calibration]
@@ -1090,9 +1102,16 @@ Thus $W_{\mathrm{initial}}=cn^2/2$.
 
 \begin{claim}[Finite transitions and telescoping]
 \label{clm:opt:adaptive-finite}
-For $\uDet{4}\le u\le\uDet{5}$, the transition caused by one actual job
-incurs only $O_u(1)$ error relative to the infinitesimal inequalities in
-\cref{clm:opt:adaptive-base-potential,clm:opt:adaptive-cap-potential}, and
+Let $z_i$ be the state before job $i$ is revealed, write $W_i=W(z_i)$, and
+let $T_i$ be its endpoint type.  For $\uDet{4}\le u\le\uDet{5}$, each actual
+transition satisfies
+\[
+ W_{i+1}-W_i
+ =\nabla W(z_i)\mathbin{\cdot}v_{T_i}+O_u(1).
+\]
+Together with
+\cref{clm:opt:adaptive-base-potential,clm:opt:adaptive-cap-potential}, this
+gives
 \begin{equation}
  \ALG\le(1+c)\cdot\OPT+O_u(n).
  \label{eq:opt:adaptive-finite-claim}
@@ -1162,7 +1181,7 @@ state trajectory is unchanged, and the exact finite pair objective, being
 a finite sum of affine and minimum terms, converges as
 $\eps\downarrow0$.  Equivalently, retain an
 $O(\eps n^2)$ error and take this limit for each fixed $n$.
-Therefore the one-step inequality for the formal type $E$ transfers to
+Therefore the directional-derivative bound for the formal type $E$ transfers to
 actual input vectors without an asymptotic loss.
 
 Summing \eqref{eq:opt:finite-taylor}, using $W\ge0$, and applying
@@ -1181,7 +1200,7 @@ Together with \eqref{eq:opt:gap-decomposition} and
 \end{align}
 
 At $u=\uDet{5}$, one has $c=r$, $m=0$, and
-$Z(r)=\uDet{5}$.  The additional potential for type $U$ is identically zero,
+$Z(r)=\uDet{5}$.  The reserve term for type $U$ is identically zero,
 while
 \eqref{eq:opt:initial-calibration} remains valid.  If $u$ is increased
 above $\uDet{5}$, the bracket controlling an endpoint of type $U$,
@@ -1233,7 +1252,7 @@ We can now prove the theorem.
 \Cref{clm:opt:adaptive-endpoint-reduction,clm:opt:adaptive-local-allocation}
 reduce the competitive excess to the local charges.  The potentials in
 \cref{clm:opt:adaptive-base-potential,clm:opt:adaptive-cap-potential} satisfy
-the required infinitesimal inequalities, and
+the required directional-derivative bounds, and
 \cref{clm:opt:adaptive-calibration} gives their initial value.
 \Cref{clm:opt:adaptive-finite} then yields both displayed finite bounds.
 
