@@ -658,8 +658,8 @@ vector.  This produces arbitrarily large fixed rational instances with the
 stated limit and liminf bounds.
 \end{proof}
 
-\subsubsection{The mixed lower bound}
-\label{sec:opt:mixed-lower}
+\subsubsection{Combining capped jobs with a harmonic block}
+\label{sec:opt:middle-lower}
 
 For $\uDet{4}<u<\uDet{5}$, neither the binary family nor the pure harmonic
 family is tight.  The adversary first reveals a prescribed fraction of jobs
@@ -707,7 +707,7 @@ The omitted one-job terms are lower order.
 \end{proof}
 
 \begin{lemma}[Accounting for the initial $p=u$ jobs]
-\label{lem:opt:mixed-accounting}
+\label{lem:opt:combined-accounting}
 Let $O_0$, $A_0^{\rm lb}$, and $L$ be the offline coefficient, guaranteed
 online coefficient, and total normalized positive processing time of the
 later block, where every job satisfies $1+p\le u$.  After postponing all
@@ -715,9 +715,9 @@ initial jobs with $p=u$, the corresponding
 coefficients $O$ and $A^{\rm lb}$ of the combined instance satisfy
 \begin{align}
  A^{\rm lb}={}&A_0^{\rm lb}+m(1-m)+m(1+L)+\frac u2m^2,
- \label{eq:opt:mixed-A}\\
+ \label{eq:opt:combined-A}\\
  O={}&O_0+m(1-m+L)+\frac u2m^2.
- \label{eq:opt:mixed-O}
+ \label{eq:opt:combined-O}
 \end{align}
 In particular, $A^{\rm lb}-O=(A_0^{\rm lb}-O_0)+m$.
 \end{lemma}
@@ -734,14 +734,14 @@ Subtracting the two identities gives the final assertion.
 \end{proof}
 
 \begin{lemma}[Quota adversary allowing raw execution]
-\label{lem:opt:mixed-quota}
+\label{lem:opt:cap-quota}
 Fix $m\in(0,1)$ and a later block satisfying the hypotheses of
 \cref{lem:opt:cap-deferral}, in particular $1+p\le u$ for each of its jobs.
 Against every deterministic revealing algorithm there are fixed instances
 whose asymptotic excess is at least the combined
 coefficient $A^{\rm lb}-R\cdot O$ obtained from the initial $p=u$ jobs and
 the later block in
-\cref{eq:opt:mixed-A,eq:opt:mixed-O} for every target
+\cref{eq:opt:combined-A,eq:opt:combined-O} for every target
 $R\le u$.
 \end{lemma}
 
@@ -752,11 +752,11 @@ $p=u$ have
 been touched, stop at the first crossing
 \begin{equation}
  \frac{\ell}{n-v}\ge m.
- \label{eq:opt:mixed-quota}
+ \label{eq:opt:cap-quota}
 \end{equation}
 With $S=n-v$, the overshoot is less than one, so $\ell=mS+O(1)$.  If no
 crossing occurs, no test can have occurred: after all first touches, any
-positive $\ell$ would make the ratio in \cref{eq:opt:mixed-quota} equal one.
+positive $\ell$ would make the ratio in \cref{eq:opt:cap-quota} equal one.
 Thus every job was run raw and the all-zero hidden instance has ratio
 $u\ge R$.
 
@@ -795,7 +795,7 @@ of this physical obligatory-testing simulation.  Then
  \ALG_{\mathsf{RO}}-R\cdot\OPT_{\mathsf{RO}}
  \ge (u-R)Z_v+
  \bigl(\ALG_{\rm hyb}-R\cdot\OPT_{\rm hyb}\bigr)-O_u(n).
- \label{eq:opt:mixed-raw-decomposition}
+ \label{eq:opt:cap-raw-decomposition}
 \end{equation}
 The first term is nonnegative.  Finally, record every assigned value on its
 job label.  Replaying this fixed vector produces the same transcript because
@@ -803,14 +803,14 @@ the values learned only by the physical simulation were hidden from the
 virtual algorithm.  This proves legality.
 \end{proof}
 
-\begin{proposition}[Lower bound on the mixed interval]
-\label{prop:opt:mixed-lower}
+\begin{proposition}[Lower bound for $\uDet{4}\le u\le\uDet{5}$]
+\label{prop:opt:middle-lower}
 For every $\uDet{4}\le u\le\uDet{5}$, every deterministic revealing
-algorithm has size-asymptotic competitive ratio at least $\Rmix(u)$.
+algorithm has size-asymptotic competitive ratio at least $1+c(u)$.
 Equivalently,
 \begin{equation}
- \RdetRO(u)\ge\Rmix(u).
- \label{eq:opt:mixed-lower-final}
+ \RdetRO(u)\ge1+c(u).
+ \label{eq:opt:middle-lower-final}
 \end{equation}
 \end{proposition}
 
@@ -825,18 +825,18 @@ feasible and can be approximated by fixed finite instances.
 \medskip
 \noindent\textbf{Claim 1 (Two-parameter lower ratio).}
 Apply \cref{lem:opt:harmonic-block} with $s=1-m$.  Substitution into
-\cref{eq:opt:mixed-A,eq:opt:mixed-O} gives the guaranteed two-parameter
+\cref{eq:opt:combined-A,eq:opt:combined-O} gives the guaranteed two-parameter
 lower ratio
 \begin{equation}
  \mathcal R_u(m,t)=1+
  \frac{m+\frac{(1-m)^2}{2}(1-t^{-2})}
  {\frac{(1-m)^2}{4}(1+t^{-2}+2\ln t)
   +m(1-m)(1+\ln t)+\frac u2m^2}.
- \label{eq:opt:mixed-ratio}
+ \label{eq:opt:two-parameter-ratio}
 \end{equation}
 \medskip
-\noindent\textbf{Claim 2 (Mixed parametrization).}
-Suppose the ratio in \cref{eq:opt:mixed-ratio} has an interior stationary
+\noindent\textbf{Claim 2 ($(c,m)$-parametrization).}
+Suppose the ratio in \cref{eq:opt:two-parameter-ratio} has an interior stationary
 point with value $1+c$.  The equality of the ratio to $1+c$ is equivalent to
 $A-(1+c)\cdot O=0$.  Combining this equality with the two vanishing partial
 derivatives gives
@@ -844,10 +844,10 @@ derivatives gives
  \ln t=u-2-\frac1c,
  \qquad
  t^2=\frac{1-m}{1+m}\left(1+\frac2c\right).
- \label{eq:opt:mixed-stationarity}
+ \label{eq:opt:cm-stationarity}
 \end{equation}
 Eliminating $t$ gives precisely
-\cref{eq:opt:mixed-parametrization}.  Conversely, those equations make
+\cref{eq:opt:cm-parametrization}.  Conversely, those equations make
 $\mathcal R_u(m,t)=1+c$.
 
 \medskip
@@ -857,7 +857,7 @@ As $c$ decreases from $1/\varphi$ to $r$, the parameters run from
  (u,m,t)=\left(\uDet{4},\frac1\varphi,1\right)
  \quad\text{to}\quad
  (u,m,t)=(\uDet{5},0,\sqrt{\uDet{5}}).
- \label{eq:opt:mixed-endpoints}
+ \label{eq:opt:cm-endpoints}
 \end{equation}
 It satisfies $u\ge\uDet{4}$, $\ln t<1$, and $m\le1/\varphi$.  Therefore
 \begin{equation}
@@ -867,7 +867,7 @@ It satisfies $u\ge\uDet{4}$, $\ln t<1$, and $m\le1/\varphi$.  Therefore
 so \cref{eq:opt:cap-deferral-condition} holds; also $1+p<3<u$ for every
 later positive value in a sufficiently fine finite construction.
 
-In the first equation of \cref{eq:opt:mixed-parametrization}, the left-hand
+In the first equation of \cref{eq:opt:cm-parametrization}, the left-hand
 side $\operatorname{artanh}m-m$ has derivative
 $m^2/(1-m^2)>0$, while the right-hand side has derivative
 $2/[c^2(c+2)]>0$.  Hence it determines a unique $m=m(c)$, which is strictly
@@ -877,11 +877,11 @@ increasing.  Consequently
 \end{equation}
 is strictly decreasing.  At $c=r$ both sides of the first equation vanish,
 so $m=0$; at $c=1/\varphi$, direct substitution gives $m=1/\varphi$.
-Together with $t$ from \cref{eq:opt:mixed-stationarity}, the boundary value
+Together with $t$ from \cref{eq:opt:cm-stationarity}, the boundary value
 $c=r$ gives $(u,m,t)=(\uDet{5},0,\sqrt{\uDet{5}})$, while
 $c=1/\varphi$ gives
 $(u,m,t)=(\uDet{4},1/\varphi,1)$, as recorded in
-\cref{eq:opt:mixed-endpoints}.
+\cref{eq:opt:cm-endpoints}.
 Consequently every
 $u\in[\uDet{4},\uDet{5}]$ has exactly one parameter pair.
 
@@ -895,7 +895,7 @@ fewer than one job at the quota crossing, the terms contributed by
 individual jobs, and rounding are $O_u(H)$, whereas the displayed pair costs
 are $\Theta(H^2)$.  Let $H\to\infty$ first, then increase the harmonic depth, and finally
 let the rational approximation converge to $(m,t)$.  Together with
-\cref{lem:opt:mixed-quota}, this proves the proposition.
+\cref{lem:opt:cap-quota}, this proves the proposition.
 The construction applies directly when
 $\uDet{4}<u<\uDet{5}$.  The lower bounds at $u=\uDet{4}$ and
 $u=\uDet{5}$ follow by taking limits from this open interval.

@@ -62,7 +62,8 @@ with one absolute constant `C` independent of `u`.
 The deterministic revealing-optimization theorem is per parameter: it gives the full
 six-branch function `R_det_RO(u)`, not only its worst value.  The three upper-bound
 algorithms are specified in numbered `algorithmic` environments.  Its
-mixed-regime upper bound is presented by a direct cap-reserve potential and
+upper bound for the interval from the fourth to the fifth transition point
+is presented by a direct cap-reserve potential and
 accompanied by an independent adjacent-exchange cross-check.
 
 The randomized results give the exact four-piece revealing-optimization

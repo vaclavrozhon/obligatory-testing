@@ -66,14 +66,14 @@ $\uDet{5}-3=\ln \uDet{5}$ and define
  \end{aligned}
 \label{eq:opt:obligatory-constant}
 \end{equation}
-For $\uDet{4}\le u\le \uDet{5}$, define $\Rmix(u)=1+c$ by the unique
-solution $(c,m)$ of
+For each $\uDet{4}\le u\le \uDet{5}$, let $c=c(u)$ and $m=m(u)$ be the
+unique solution of
 \begin{equation}
  \operatorname{artanh}m-m
  =1-\frac1c+\frac12\ln\!\left(1+\frac2c\right),
  \qquad
  u=1+\frac2c-m,
- \label{eq:opt:mixed-parametrization}
+ \label{eq:opt:cm-parametrization}
 \end{equation}
 with $r\le c\le1/\varphi$ and $0\le m\le1/\varphi$.
 
@@ -90,7 +90,7 @@ u, &\uDet{1}\le u\le \uDet{2},\\[1mm]
 \Rquad(u), &\uDet{2}\le u\le \uDet{3},\\[1mm]
 \displaystyle 1+\frac1{\sqrt{u-1}},
    &\uDet{3}\le u\le\uDet{4},\\[3mm]
-\Rmix(u), &\uDet{4}\le u\le \uDet{5},\\[1mm]
+1+c(u), &\uDet{4}\le u\le \uDet{5},\\[1mm]
 \RdetOT, &u\ge \uDet{5}.
 \end{cases}}
 \label{eq:opt:full-curve}
@@ -161,7 +161,7 @@ $\uDet{2}<u\le \uDet{3}$
 $\uDet{3}<u\le\uDet{4}$
  & \textsc{ForcedPrefixUTE} & $b=0$ \\
 $\uDet{4}<u<\uDet{5}$
- & \textsc{AdaptiveThreshold} & $c=c(u)$ from \eqref{eq:opt:mixed-parametrization} \\
+ & \textsc{AdaptiveThreshold} & $c=c(u)$ from \eqref{eq:opt:cm-parametrization} \\
 $\uDet{5}\le u<\infty$
  & \textsc{AdaptiveThreshold} & $c=r$ \\
 \bottomrule

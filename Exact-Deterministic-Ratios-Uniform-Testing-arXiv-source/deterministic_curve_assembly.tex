@@ -4,13 +4,14 @@ Before matching the bounds, we verify the shape of the six formulas in
 \cref{eq:opt:full-curve}.  The only nontransparent monotonicity is that of
 $\Rquad(u)$ on $[\uDet{2},\uDet{3}]$; the formulas on
 $[\uDet{3},\uDet{4}]$ and $[\uDet{4},\uDet{5}]$ follow directly from the
-reciprocal formula and the mixed parametrization.
+reciprocal formula and the $(c,m)$-parametrization in
+\cref{eq:opt:cm-parametrization}.
 
 \begin{lemma}[Monotonicity of the deterministic curve]
 \label{lem:opt:curve-monotonicity}
 The function $\Rquad(u)$ is strictly decreasing on
 $[\uDet{2},\uDet{3}]$.  The function $1+1/\sqrt{u-1}$ is strictly
-decreasing on $[\uDet{3},\uDet{4}]$, and $\Rmix(u)$ is strictly decreasing
+decreasing on $[\uDet{3},\uDet{4}]$, and $1+c(u)$ is strictly decreasing
 on $[\uDet{4},\uDet{5}]$.  Consequently $\RdetRO(u)$ from
 \cref{eq:opt:full-curve} attains its global maximum only at $u=\uDet{2}$.
 \end{lemma}
@@ -34,10 +35,10 @@ positive, while the fraction in parentheses is at most $5/3$ because
 $4s^3-4s^2+1>0$.  The explicit inequality
 \eqref{eq:opt:T-five-thirds} gives $R>5/3$, and hence
 $\Rquad'(u)<0$.  The function $1+1/\sqrt{u-1}$ is visibly decreasing.  In
-the parametrization of $\Rmix$ on $[\uDet{4},\uDet{5}]$, $m(c)$ is increasing and
+the $(c,m)$-parametrization on $[\uDet{4},\uDet{5}]$, $m(c)$ is increasing and
 $u(c)=1+2/c-m(c)$ is decreasing, so $1+c$ decreases with $u$.
 Thus the formula $\RdetRO(u)=u$ increases up to $u=\uDet{2}$; the formulas
-$\Rquad(u)$, $1+1/\sqrt{u-1}$, and $\Rmix(u)$ then decrease until
+$\Rquad(u)$, $1+1/\sqrt{u-1}$, and $1+c(u)$ then decrease until
 $u=\uDet{5}$; and $\RdetRO(u)=\RdetOT$ is constant for
 $u\ge\uDet{5}$.  This proves the global-maximum assertion.
 \end{proof}
@@ -60,9 +61,9 @@ $\uDet{1}=1$, and
               =1.682327803828019\ldots,
  \notag\\
  1+\frac1{\sqrt{\uDet{4}-1}}&=\varphi
-              =\Rmix(\uDet{4}),
+              =1+c(\uDet{4}),
  \notag\\
- \Rmix(\uDet{5})&=1+r=\RdetOT.
+ 1+c(\uDet{5})&=1+r=\RdetOT.
  \label{eq:opt:curve-joins}
 \end{align}
 \end{lemma}
@@ -74,9 +75,9 @@ two displayed identities; uniqueness of the positive root identifies the
 values with $\Rquad$.  Since
 $\uDet{4}-1=\varphi+1=\varphi^2$, the formula
 $1+1/\sqrt{u-1}$ equals $1+1/\varphi=\varphi$ at $u=\uDet{4}$.
-The identities $\Rmix(\uDet{4})=\varphi$ and
-$\Rmix(\uDet{5})=1+r$ follow from the parameter triples at
-$u=\uDet{4}$ and $u=\uDet{5}$ in \cref{eq:opt:mixed-endpoints}.
+The identities $1+c(\uDet{4})=\varphi$ and
+$1+c(\uDet{5})=1+r$ follow from the parameter triples at
+$u=\uDet{4}$ and $u=\uDet{5}$ in \cref{eq:opt:cm-endpoints}.
 \end{proof}
 
 \begin{proof}[Proof of \cref{thm:optional-curve}]
@@ -88,7 +89,7 @@ $\uDet{4}\le u\le\uDet{5}$ and $u\ge\uDet{5}$ follow from
 \cref{thm:opt:optional-middle-upper}.
 
 For the matching lower bounds, \cref{prop:opt:binary-lower} covers
-$0<u\le\uDet{4}$, \cref{prop:opt:mixed-lower} covers
+$0<u\le\uDet{4}$, \cref{prop:opt:middle-lower} covers
 $\uDet{4}\le u\le\uDet{5}$, and
 \cref{lem:opt:obligatory-transfer,thm:lower} cover $u\ge\uDet{5}$ with
 instances satisfying $1+p_j<u$, so the offline cap $u$ is inactive.  The
@@ -100,7 +101,7 @@ $O_u(n)$ remainders, while
 the plateau.  This proves every assertion of the theorem.
 \end{proof}
 
-\begin{remark}[Representative values on the mixed interval]
+\begin{remark}[Representative values for $\uDet{4}\le u\le\uDet{5}$]
 For orientation, some values for $u\in[\uDet{4},\uDet{5}]$ are
 \begin{center}
 \begin{tabular}{@{}rrrr@{}}

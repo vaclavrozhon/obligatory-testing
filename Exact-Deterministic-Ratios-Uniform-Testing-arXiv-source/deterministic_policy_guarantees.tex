@@ -527,11 +527,11 @@ value.
 \end{proof}
 
 
-\subsubsection{Adaptive thresholds in the mixed range and plateau}
+\subsubsection{Adaptive thresholds for $\uDet{4}\le u\le\uDet{5}$ and the plateau}
 \label{sec:optional-upper}
 
 The final algorithm changes its threshold as work accumulates.  We prove its
-mixed-range guarantee on $[\uDet{4},\uDet{5}]$ and its uniform plateau
+guarantee on $[\uDet{4},\uDet{5}]$ and its uniform plateau
 guarantee for $u\ge\uDet{5}$.  In the proof, a revealed value $p_i=u$ must
 be treated separately from a smaller value placed in the final queue,
 because the two have different pair contributions to the offline optimum.
@@ -574,8 +574,8 @@ execution, so its schedule does not depend on $u$.
 \end{algorithm}
 
 For $c\in[r,1/\varphi]$, let $m=m(c)\in[0,1/\varphi]$ and $u=u(c)$ be
-determined by the common parametrization
-\cref{eq:opt:mixed-parametrization}.
+determined by the $(c,m)$-parametrization in
+\cref{eq:opt:cm-parametrization}.
 The right-hand side of the first equation is strictly increasing in $c$,
 as is the left-hand side in $m$.  Consequently $m(c)$ is increasing and
 $u(c)$ is decreasing.  At the two boundary values of the parameter $c$, the
@@ -598,7 +598,7 @@ satisfies
  \begin{cases}
   (1+c)\cdot\OPT+O_u(n),
      & \uDet{4}\le u\le \uDet{5},
-       \quad c\text{ given by \eqref{eq:opt:mixed-parametrization}},\\[1mm]
+       \quad c\text{ given by \eqref{eq:opt:cm-parametrization}},\\[1mm]
   (1+r)\cdot\OPT+O(n),
      & u\ge \uDet{5}.
  \end{cases}
@@ -636,7 +636,7 @@ Thus
 \end{equation}
 and the threshold is given by \cref{eq:opt:threshold}.  When
 $\uDet{4}\le u\le\uDet{5}$, the parametrization
-\cref{eq:opt:mixed-parametrization} gives $c\ge r$, and hence
+\cref{eq:opt:cm-parametrization} gives $c\ge r$, and hence
 \begin{equation}
  a_c(y)\le a_c(0)\le a_r(0)=\frac1r<u-1.
  \label{eq:opt:threshold-below-cap}
@@ -960,7 +960,7 @@ Define
  \label{eq:opt:Z-delta}
 \end{equation}
 For $\uDet{4}\le u\le\uDet{5}$, with $(c,m)$ chosen by
-\cref{eq:opt:mixed-parametrization}, the definition of $\delta$ gives
+\cref{eq:opt:cm-parametrization}, the definition of $\delta$ gives
 \begin{equation}
  \delta=\operatorname{artanh}m.
  \label{eq:opt:delta-atanh}
@@ -1071,7 +1071,7 @@ Indeed,
  \int_0^m t\operatorname{artanh}t\,dt
  =\frac{(m^2-1)\operatorname{artanh}m+m}{2}.
 \]
-Using \eqref{eq:opt:mixed-parametrization} and
+Using \eqref{eq:opt:cm-parametrization} and
 \eqref{eq:opt:delta-atanh}, we obtain the exact calibration
 \begin{equation}
  f_c(0)+\mathcal H(0)
@@ -1170,7 +1170,7 @@ Together with \eqref{eq:opt:gap-decomposition} and
  \ALG-R\cdot\OPT
  &\le -c\binom n2+\frac c2n^2+O_u(n)
  =O_u(n).
- \label{eq:opt:mixed-upper-finite}
+ \label{eq:opt:adaptive-middle-upper}
 \end{align}
 
 At $u=\uDet{5}$, one has $c=r$, $m=0$, and
