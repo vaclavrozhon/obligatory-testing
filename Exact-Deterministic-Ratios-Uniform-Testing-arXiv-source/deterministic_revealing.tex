@@ -184,11 +184,12 @@ complete guarantee on the relevant range of $u$.
 \label{sec:det-branchwise-lower}
 
 The lower bounds use three adversarial constructions.  A hidden binary
-stopping game covers $0<u\le\uDet{4}$, a harmonic construction whose
-jobs satisfy $1+p_j<u$ covers $u\ge\uDet{5}$, and prepending a
-block of jobs with $p_j=u$ to a scaled harmonic construction covers
-$\uDet{4}\le u\le\uDet{5}$.  The final transfer lemma applies the same below-cap construction to
-every sufficiently large finite $u$.
+stopping game covers $0<u\le\uDet{4}$.  For
+$\uDet{4}\le u\le\uDet{5}$, we prepend a block of jobs with $p_j=u$ to a
+scaled harmonic construction.  Finally, for $u\ge\uDet{5}$, we use the
+obligatory-testing harmonic instances with $1+p_j<u$ for every job.  On
+these instances the offline cap $u$ is inactive, and the transfer lemma
+preserves the obligatory-testing lower bound.
 
 \input{deterministic_lower_bounds}
 
