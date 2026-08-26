@@ -83,8 +83,7 @@ Then
 \end{equation}
 \end{lemma}
 
-We prove the lemma in three steps.  The first claim verifies that the prefix
-parameter is admissible.  The next two claims prove the guarantee below and
+We prove the lemma in three steps.  The first claim verifies that our parameters are well-defined.  The next two claims prove the guarantee below and
 above $u=2$, using different endpoint reductions.  Throughout these claims,
 put $R=\Rquad(u)$ and $s=u-1$.  In this notation, the
 parameter from \cref{eq:opt:ute-parameters} is
@@ -94,11 +93,10 @@ parameter from \cref{eq:opt:ute-parameters} is
 
 \begin{claim}[Parameter admissibility]
 \label{clm:opt:ute-admissibility}
-One has $0\le b<1$, with $b=0$ only at $u=\uDet{3}$.  Moreover,
-$R>5/3$ and $s^2R>16/15$ throughout the interval.
+One has $0\le b<1$, with $b=0$ only at $u=\uDet{3}$.  Moreover, $R$ is well-defined with $R>5/3$ and $s^2R>16/15$ throughout the interval.
 \end{claim}
 
-\begin{proof}
+\begin{proof} [zmin ze R je welldefined v dukazu]
 Since
 $T_s$ is increasing on positive arguments,
 \begin{equation}
@@ -134,7 +132,7 @@ For every $\uDet{2}\le u\le2$,
 \end{claim}
 
 \begin{proof}
-We first consider a binary input, so every job is either zero
+We first consider a binary input in which every job is either zero
 ($p_i=0$) or long ($p_i=u$).  The first $bn$ positions are the forced
 prefix.  A long job in this prefix is processed immediately; a long job in
 the suffix is deferred; every zero job is processed immediately.
@@ -455,8 +453,7 @@ give \cref{eq:opt:ute-full-upper} with $R=\Rquad(u)$.
 \end{proof}
 
 At $u=\uDet{3}$, $b=0$.  The zero-prefix specialization supplies the next
-branch of the curve until $u=\uDet{4}$.  We prove only this range, where the
-algorithm is used.
+branch of the curve until $u=\uDet{4}$.  
 
 \begin{lemma}[Zero-prefix guarantee]
 \label{lem:opt:zero-prefix}
