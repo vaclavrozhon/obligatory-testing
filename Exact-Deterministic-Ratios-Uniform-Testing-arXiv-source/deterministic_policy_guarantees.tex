@@ -84,16 +84,23 @@ Then
 \end{equation}
 \end{lemma}
 
-\begin{proof}
-For the analysis, put $R=\Rquad(u)$ and $s=u-1$.  In this notation, the
+We prove the lemma in three steps.  The first claim verifies that the prefix
+parameter is admissible.  The next two claims prove the guarantee below and
+above $u=2$, using different endpoint reductions.  Throughout these claims,
+put $R=\Rquad(u)$ and $s=u-1$.  In this notation, the
 parameter from \cref{eq:opt:ute-parameters} is
 \[
  b=\frac{s^2+s+1-s^2R}{s^2+s+1+sR}.
 \]
 
-\medskip
-\noindent\textbf{Claim 1 (Parameter admissibility).}
-One has $0\le b<1$, with $b=0$ only at $u=\uDet{3}$.  Indeed, since
+\begin{claim}[Parameter admissibility]
+\label{clm:opt:ute-admissibility}
+One has $0\le b<1$, with $b=0$ only at $u=\uDet{3}$.  Moreover,
+$R>5/3$ and $s^2R>16/15$ throughout the interval.
+\end{claim}
+
+\begin{proof}
+Since
 $T_s$ is increasing on positive arguments,
 \begin{equation}
  T_s\!\left(\frac{s^2+s+1}{s^2}\right)
@@ -116,9 +123,18 @@ is smaller than its value $-95/36$ at $13/6$.  Here
 $s_0<13/6$ follows by substituting $13/6$ in
 $s^3-(s+1)^2$.  Thus $R>5/3$, while $s>4/5$, and
 $s^2R>16/15$.
+\end{proof}
 
-\medskip
-\noindent\textbf{Claim 2 (The range $\uDet{2}\le u\le2$).}
+\begin{claim}[The range $\uDet{2}\le u\le2$]
+\label{clm:opt:ute-low-range}
+For every $\uDet{2}\le u\le2$,
+\textnormal{\textsc{ForcedPrefixUTE}}$(J,u,b)$ satisfies
+\[
+ \ALG\le R\OPT+O_u(n).
+\]
+\end{claim}
+
+\begin{proof}
 Adjacent exchanges place as many
 long jobs as possible in the forced prefix and put all suffix-long jobs
 before suffix zeros.  If $x$ is the total long mass, then the prefix-long
@@ -190,14 +206,24 @@ respectively,
 \end{equation}
 and $u$ for a deferred value.  Since the minimum is jointly concave,
 $\EE\min(\lambda_i',\lambda_j')\le\min(\lambda_i,\lambda_j)$.  Thus some binary realization
-has competitive excess at least that of the original instance.
+has competitive excess at least that of the original instance, and the
+binary bound proves the claimed inequality.
+\end{proof}
 
-\medskip
-\noindent\textbf{Claim 3 (The range $2\le u\le\uDet{3}$).}
+\begin{claim}[The range $2\le u\le\uDet{3}$]
+\label{clm:opt:ute-high-range}
+For every $2\le u\le\uDet{3}$,
+\textnormal{\textsc{ForcedPrefixUTE}}$(J,u,b)$ satisfies
+\[
+ \ALG\le R\OPT+O_u(n).
+\]
+\end{claim}
+
+\begin{proof}
 Fix the symbolic prefix/immediate/deferred decisions.  Convexity in one
 coordinate reduces a prefix job to $p\in\{0,u\}$, a suffix-immediate job to
-$p\in\{0,1\}$, and a suffix-deferred job to $p\in\{1^+,u\}$.  For the last
-claim, on $1<p<u-1$ the deferred--deferred term has coefficient
+$p\in\{0,1\}$, and a suffix-deferred job to $p\in\{1^+,u\}$.  For the
+suffix-deferred reduction, on $1<p<u-1$ the deferred--deferred term has coefficient
 $1-R<0$ multiplying a concave minimum; on $[u-1,u]$, OPT is flat and ALG
 is nondecreasing.  Adjacent exchanges give the canonical endpoint order.
 
@@ -219,7 +245,11 @@ Pairwise accounting using \cref{eq:opt:pair-contribution} gives
  \label{eq:opt:ute-O}
 \end{align}
 Moving $m$ to $t$ does not change $O$ and increases $A$, so $m=0$.  Put
-$x=a+d$ and write $F(x)=A-R O$ after optimizing the other variables.
+$x=a+d$ and write $F(x)=A-R O$ after optimizing the other variables.  Retain
+the stationary point from the preceding claim,
+\[
+ \alpha=\frac{s^2+s+1}{s^2+s+1+sR}.
+\]
 The derivative of the gap in $t$ is $1-b-R(x+t)$.  Thus its maximizing
 value is $(\chi-x)_+$, where the critical mass is
 \[
@@ -312,6 +342,16 @@ $-1/2\le z\le0$, and for $z\ge0$ it is larger than
 $3/2-9/320$.  These inequalities prove that every endpoint gap is
 nonpositive.  Diagonals and prefix rounding contribute $O_u(n)$.
 \end{proof}
+
+We can now prove the lemma.
+
+\begin{proof}[Proof of \cref{lem:opt:ute-endpoint-game}]
+By \cref{clm:opt:ute-admissibility}, the displayed value of $b$ is a valid
+algorithm parameter throughout $[\uDet{2},\uDet{3}]$.  The guarantees in
+\cref{clm:opt:ute-low-range,clm:opt:ute-high-range} cover this interval and
+give \cref{eq:opt:ute-full-upper} with $R=\Rquad(u)$.
+\end{proof}
+
 At $u=\uDet{3}$, $b=0$.  The same zero-prefix algorithm remains exact through
 $u=\uDet{4}$ and continues with a $\varphi$ guarantee afterwards.  We state
 the continuation because it makes the three-algorithm lower envelope in
