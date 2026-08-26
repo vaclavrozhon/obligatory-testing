@@ -135,8 +135,9 @@ exactly $\RdetOT$.
 
 The proof of \cref{thm:optional-curve} combines two kinds of lower bounds.
 Binary hidden-stopping
-instances give the first four branches, while a continuous capped version
-of the harmonic construction gives the mixed branch and the plateau.  Three
+instances give the first four branches, while a continuous version of the
+harmonic construction with an initial block of jobs satisfying $p_j=u$
+gives the mixed branch and the plateau.  Three
 explicit algorithms match them: raw execution, a forced-prefix uniform
 threshold, and a history-dependent adaptive threshold.  They are introduced
 informally in \cref{sec:intro-revealing-optimization} and specified formally
@@ -163,25 +164,6 @@ $\uDet{5}\le u<\infty$
 \end{tabular}
 \end{center}
 
-\paragraph{Terminology used in the proofs.}
-When we divide the number of jobs in a class by the scale of the current
-construction---usually $n$, and $H$ in the harmonic construction---we call
-the result its \emph{mass}.  A prefix and suffix always refer to the fixed test
-order: for a prefix parameter $b$, the first $\lfloor bn\rfloor$ jobs form
-the prefix and all remaining jobs form the suffix.  A job is
-\emph{immediate} if it is processed directly after its test and
-\emph{deferred} if its processing is postponed to the final queue.  In a
-binary instance, a \emph{zero job} has $p_i=0$ and a \emph{long job} has
-$p_i=u$.  A \emph{capped} job also means $p_i=u$; a collection is
-\emph{cap-free} when $1+p_i\le u$ for all its jobs, so the raw cap never
-changes their offline effective lengths.  An \emph{endpoint reduction}
-means maximizing the competitive excess over one processing time and showing
-that a maximum occurs at a boundary value; every use below states the relevant
-interval and its boundary values.  Finally, \emph{replay} means recording all
-answers produced by an adaptive adversary on their job labels and rerunning
-the deterministic algorithm on that fixed vector; the rerun has the same
-transcript.
-
 \subsection{Upper bounds}
 \label{sec:det-algorithm-guarantees}
 
@@ -197,10 +179,11 @@ complete guarantee on the relevant range of $u$.
 \label{sec:det-branchwise-lower}
 
 The lower bounds use three adversarial constructions.  A hidden binary
-stopping game gives the first four branches, a harmonic cap-free core gives
-the plateau, and a capped block prepended to a scaled harmonic core gives the
-mixed branch.  The final transfer lemma converts the cap-free construction
-back to every sufficiently large finite $u$.
+stopping game gives the first four branches, a harmonic construction whose
+processing times stay below the raw cap gives the plateau, and prepending a
+block of jobs with $p_j=u$ to a scaled harmonic construction gives the mixed
+branch.  The final transfer lemma applies the same below-cap construction to
+every sufficiently large finite $u$.
 
 \input{deterministic_lower_bounds}
 

@@ -63,6 +63,11 @@ prefix, the algorithm uses the same threshold for every tested job.
 \end{algorithmic}
 \end{algorithm}
 
+In this subsubsection, the first $k=\lfloor bn\rfloor$ positions in the fixed
+test order are the \emph{prefix}, and the remaining positions are the
+\emph{suffix}.  We call a tested job \emph{immediate} if it is processed at
+once, and \emph{deferred} if it is placed in $Q$ for the final queue.
+
 Recall from the beginning of \cref{sec:optional} that $\Rquad(u)$ denotes
 the positive root specified by \cref{eq:opt:Rquad-equation}.
 
@@ -85,7 +90,8 @@ Then
 
 We prove the lemma in three steps.  The first claim verifies that the prefix
 parameter is admissible.  The next two claims prove the guarantee below and
-above $u=2$, using different endpoint reductions.  Throughout these claims,
+above $u=2$ by reducing the possible processing times to boundary values in
+two different ways.  Throughout these claims,
 put $R=\Rquad(u)$ and $s=u-1$.  In this notation, the
 parameter from \cref{eq:opt:ute-parameters} is
 \[
@@ -177,9 +183,10 @@ $q$ to $q+1$ and $D$ to $D-1$, and hence
 Consequently a worst input puts as many long jobs in the prefix as possible,
 then all remaining long jobs at the start of the suffix, and all zeros last.
 
-Normalize job counts by $n$, and let $x=L/n$ be the total long-job mass.  The
-long mass in the prefix is therefore $a=\min\{b,x\}$.  If $x>b$, the
-remaining mass $d=x-b$ consists of deferred long jobs; if $x\le b$, then
+Divide all job counts by $n$, and let $x=L/n$ be the fraction of long jobs.
+The fraction of long jobs in the prefix is therefore $a=\min\{b,x\}$.  If
+$x>b$, the remaining fraction $d=x-b$ consists of deferred long jobs; if
+$x\le b$, then
 $d=0$.  Ignore for the moment the $O_u(n)$ one-job and rounding terms, and
 write $A=\ALG/n^2$ and $O=\OPT/n^2$ for the leading coefficients.  Direct
 pair counting gives
@@ -301,7 +308,8 @@ Here $1^+$ means a value tending to one from above, so the job remains
 deferred.  For the last reduction, on $1<p<u-1$ the only nonlinear term is a
 concave minimum multiplied by $1-R<0$, hence it is convex; on $[u-1,u]$ the
 offline effective length is already the constant $u$, while the online cost
-is nondecreasing in $p$.
+is nondecreasing in $p$.  In the rest of this proof, we call a job with
+$p=u$ \emph{capped}.
 
 We next choose the worst test order for fixed numbers of these endpoint
 types.  OPT depends only on those numbers.  In ALG, swapping two neighboring
@@ -315,10 +323,10 @@ remaining difference is nonnegative.  The order among two deferred jobs is
 irrelevant because the last line of \cref{eq:opt:pair-contribution} is
 symmetric.
 
-Normalize each class size by $n$.  Let $a$ be the mass of prefix jobs with
-$p=u$, $d$ the mass of suffix jobs with $p=u$, $t$ the mass of deferred
-suffix jobs with $p=1^+$, and $m$ the mass of immediate suffix jobs with
-$p=1$.  All other jobs have value zero.  The constraints are
+Divide each class size by $n$.  Let $a$ be the resulting fraction of prefix
+jobs with $p=u$, $d$ the fraction of suffix jobs with $p=u$, $t$ the fraction
+of deferred suffix jobs with $p=1^+$, and $m$ the fraction of immediate
+suffix jobs with $p=1$.  All other jobs have value zero.  The constraints are
 \begin{equation}
  0\le a\le b,
  \qquad d,t,m\ge0,
@@ -340,13 +348,13 @@ unit baseline; all four nonzero classes have one additional unit of effective
 length; and the two capped classes $a,d$ have another $s-1=u-2$ units.
 Replacing an immediate value-one suffix job by a deferred value-$1^+$ job
 does not change $O$ in the limit and increases $A$.  Thus a worst reduced
-instance has $m=0$.  Put $x=a+d$, the total mass of capped jobs, and maximize
+instance has $m=0$.  Put $x=a+d$, the total fraction of capped jobs, and maximize
 $A-RO$ over the remaining split between $a,d,t$.  We retain the stationary
 point from the preceding claim,
 \[
  \alpha=\frac{s^2+s+1}{s^2+s+1+sR}.
 \]
-For fixed $x$, the derivative with respect to the deferred $p=1^+$ mass $t$
+For fixed $x$, the derivative with respect to the deferred $p=1^+$ fraction $t$
 is $1-b-R(x+t)$.  Thus the best choice is
 $t=(\chi-x)_+$, where
 \[
@@ -471,8 +479,9 @@ Fix $\uDet{3}\le u\le\uDet{4}$ and set $b=0$ in \cref{alg:ute}.  Then
 Here $b=0$, so there is no forced prefix, and the threshold is one.  The
 coordinatewise argument from \cref{clm:opt:ute-high-range} reduces every
 input to four types: deferred jobs with $p=u$, deferred jobs with $p=1^+$,
-immediate jobs with $p=1$, and zero jobs.  Let their first three normalized
-masses be $d,t,m$, respectively, and put $s=u-1$.  Thus
+immediate jobs with $p=1$, and zero jobs.  Divide their class sizes by $n$
+and denote the first three resulting fractions by $d,t,m$, respectively;
+put $s=u-1$.  Thus
 $d,t,m\ge0$ and $d+t+m\le1$.  The leading online and offline coefficients
 are
 \begin{equation}
@@ -482,7 +491,7 @@ are
 \end{equation}
 As before, replacing an immediate value-one job by a deferred value-$1^+$
 job preserves $O$ in the limit and increases $A$.  We may therefore take
-$m=0$ and write $y=d+t$ for the total positive mass.  For fixed $y$, both
+$m=0$ and write $y=d+t$ for the total positive fraction.  For fixed $y$, both
 $A$ and $O$ are affine functions of $d^2$, so their ratio is monotone in
 $d^2$.  Its maximum is attained at one of the two extreme compositions:
 \begin{equation}
@@ -513,8 +522,10 @@ value.
 
 The final algorithm changes its threshold as work accumulates.  We prove its
 mixed-range guarantee on $[\uDet{4},\uDet{5}]$ and its uniform plateau
-guarantee for $u\ge\uDet{5}$.  The proof also records explicitly why an
-outcome at the raw cap cannot be treated as a noncapped deferred outcome.
+guarantee for $u\ge\uDet{5}$.  We call an outcome with $p_i=u$
+\emph{capped}; every outcome with $p_i<u$ is \emph{noncapped}.  The proof
+also records explicitly why a capped outcome cannot be treated as an
+ordinary deferred outcome.
 Throughout this subsection, $R=1+c$, and we retain $\varphi$, $\uDet{5}$,
 and $r$ from
 \cref{eq:opt:u1-u2,eq:opt:obligatory-constant}.
