@@ -30,13 +30,13 @@ rigorous version of \cref{thm:intro-bo-curve} and maximizes that
 instance-specific value relative to the clairvoyant optimum.  Keeping the
 results together avoids repeating the same blind-block reduction.
 
-For a vector $p$, let $P\sim D[p]$ and put
+For a vector $p$, put
 \[
- \mu_p=\EE P=\frac1n\sum_{i=1}^n p_i
+ \mu_p=\frac1n\sum_{i=1}^n p_i
 \]
 and define
 \begin{equation}
- \PhiBO(D[p])=\frac12\min\{u,1+\mu_p\}.
+ \PhiBO(p)=\frac12\min\{u,1+\mu_p\}.
  \label{eq:bo-phi}
 \end{equation}
 The two terms have an immediate meaning.  Running every job raw uses $u$
@@ -367,14 +367,14 @@ $\mathcal A_{\mathsf{BO}}$, depending only on $n,u$, and a sequence
 $\eps_u(n)\to0$ such that every vector $p\in[0,u]^n$ satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A_{\mathsf{BO}}}(p)
- \le n^2\PhiBO(D[p])+\eps_u(n)n^2.
+ \le n^2\PhiBO(p)+\eps_u(n)n^2.
  \label{eq:bo-instance-upper}
 \end{equation}
 Conversely, every $p\in[0,u]^n$ and every randomized nonanticipating policy
 $\mathcal A$, even an announced one, satisfy
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
- \ge n^2\PhiBO(D[p])-\eps_u(n)n^2.
+ \ge n^2\PhiBO(p)-\eps_u(n)n^2.
  \label{eq:bo-instance-lower}
 \end{equation}
 Thus one policy is asymptotically optimal, at the $n^2$ scale, for every
@@ -394,7 +394,7 @@ worst-case optimization.
 
 By the input convention, the coordinates of $p$ are shuffled uniformly
 before the policy starts.  The lower half simply says that no announced
-policy beats $n^2\PhiBO(D[p])-o_u(n^2)$ in expectation.
+policy beats $n^2\PhiBO(p)-o_u(n^2)$ in expectation.
 
 By \cref{lem:bo-normal-form}, we may regard every optimized job as one
 indivisible block of hidden length $1+p_i$.  A raw block has the known length
@@ -484,7 +484,7 @@ from $[0,1]$ to $[0,u]$, gives
 \]
 Choosing the wrong mode can cost at most
 $O(n^2)|\widehat\mu-\mu_p|$, while choosing the correct mode has leading
-cost $n^2\PhiBO(D[p])$.  This proves
+cost $n^2\PhiBO(p)$.  This proves
 \eqref{eq:bo-instance-upper}.  In particular, the universal policy needs to
 learn only one number, not a histogram or a threshold.
 
@@ -493,8 +493,12 @@ learn only one number, not a histogram or a threshold.
 The clairvoyant scheduler knows $p_i$, uses the effective length
 $\min\{u,1+p_i\}$ from \cref{eq:model-effective-length}, and orders these
 blocks shortest first.  If $P,P'$ are independent draws from a distribution
-$D$ on $[0,u]$, its leading coefficient is $\Omega_{\mathsf{BO},u}(D)$ from
-\cref{eq:common-offline-coefficient}.
+$D$ on $[0,u]$, define its leading offline coefficient by
+\begin{equation}
+ \Omega_{\mathsf{BO},u}(D)
+ \defeq\frac12\EE\min\{u,1+P,1+P'\}.
+ \label{eq:bo-offline-coefficient}
+\end{equation}
 Consequently the instance-specific ratio from
 \cref{thm:bo-instance} is
 \begin{equation}
@@ -543,7 +547,7 @@ the unit optimization operation.  Assume $u>1$ and let
  S_D(t)=\Prob(P>t),\qquad 0\le t\le u.
 \]
 The layer-cake identity applied to
-\eqref{eq:common-offline-coefficient} gives
+\eqref{eq:bo-offline-coefficient} gives
 \begin{equation}
  2\Omega_{\mathsf{BO},u}(D)
  =1+\int_0^{u-1}S_D(t)^2\,dt.

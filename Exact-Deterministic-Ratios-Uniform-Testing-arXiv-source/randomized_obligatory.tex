@@ -59,9 +59,15 @@ first prove the uniform upper bound and then give the short transfer.
 
 \subsubsection{Normalization of the offline pair identity}
 
+For a distribution $D$ on $[0,\infty)$, let $P,P'$ be independent with law
+$D$ and define
+\begin{equation}
+ \Omega_{\mathsf{OT}}(D)
+ \defeq\frac12\EE\min\{1+P,1+P'\}.
+ \label{eq:rand-omega-ot}
+\end{equation}
 For a fixed vector $p$, use $D[p]$ and its minimum kernel $K(D[p])$ from
-\cref{eq:stationary-kernel-split}.  The specialization in
-\cref{eq:model-offline-coefficients} and the exact linear correction are
+\cref{eq:stationary-kernel-split}.  Then
 \begin{equation}
  \Omega_{\mathsf{OT}}(D[p])=\frac{1+K(D[p])}{2},
  \qquad
