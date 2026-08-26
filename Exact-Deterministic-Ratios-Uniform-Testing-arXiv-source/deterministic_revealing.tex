@@ -136,11 +136,13 @@ exactly $\RdetOT$.
 The proof of \cref{thm:optional-curve} combines two kinds of lower bounds.
 Binary hidden-stopping
 instances give the first four branches, while a continuous capped version
-of the harmonic construction gives the mixed branch and the plateau.  
-
-Three
-explicit algorithms are used -- they are briefly explained in sec1 and specified formally in
-\cref{alg:raw,alg:ute,alg:adaptive-threshold}. We use two different lower bounds, specified formall later in subsecXX. 
+of the harmonic construction gives the mixed branch and the plateau.  Three
+explicit algorithms match them: raw execution, a forced-prefix uniform
+threshold, and a history-dependent adaptive threshold.  They are introduced
+informally in \cref{sec:intro-revealing-optimization} and specified formally
+in \cref{alg:raw,alg:ute,alg:adaptive-threshold}.  The matching lower bounds
+are developed in \cref{sec:det-branchwise-lower}.  The following table maps
+each interval to its upper-bound witness.
 
 \begin{center}
 \begin{tabular}{@{}lll@{}}
@@ -166,7 +168,7 @@ $\uDet{5}\le u<\infty$
 
 We prove the six upper branches using three algorithms.  Raw execution
 covers the first two branches, a forced-prefix uniform threshold covers the
-next two, and an adaptive threshold gives the final two. 
+next two, and an adaptive threshold gives the final two.
 Each of the following subsubsections treats one algorithm and ends with its
 complete guarantee on the relevant range of $u$.
 

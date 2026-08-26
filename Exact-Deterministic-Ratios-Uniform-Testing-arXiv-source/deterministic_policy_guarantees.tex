@@ -11,8 +11,8 @@ the guarantee for all $u$, although we use it only on the first two branches.
 \label{alg:raw}
 \begin{algorithmic}
 \Statex \textbf{Input:} jobs $J$ and a finite common upper limit $u$.
-\State Fix an arbitrary order $j_1,\ldots,j_n$.
-\State \textbf{For} $i=1,\ldots,n$, execute $j_i$ untested for $u$ time.
+\State Fix the job order $1,\ldots,n$.
+\State \textbf{For} $i=1,\ldots,n$, execute job $i$ untested for $u$ time.
 \end{algorithmic}
 \end{algorithm}
 
@@ -41,36 +41,36 @@ $\OPT\ge n(n+1)/2$ and the ratio is at most $u$.
 The next algorithm tests every job.  It processes a forced prefix regardless
 of the observed values and thereafter processes only short outcomes
 immediately.  We prove its complete guarantee on
-$[\uDet{2},\uDet{3}]$ and then analyze the zero-prefix specialization (i.e., $b= 0$) that
-is optimal until $\uDet{4}$.
+$[\uDet{2},\uDet{3}]$ and then analyze the zero-prefix specialization,
+namely $b=0$, which is optimal up to $\uDet{4}$.
 
 \begin{algorithm}[H]
 \caption{\textsc{ForcedPrefixUTE}$(J,u,b)$}
 \label{alg:ute}
 \begin{algorithmic}
 \Statex \textbf{Input:} jobs $J$, finite $u>1$, and $b\in[0,1]$.
-\State Fix a test order $j_1,\ldots,j_n$; set
+\State Fix the test order $1,\ldots,n$; set
        $k\gets\lfloor bn\rfloor$, $\theta_u\gets\min\{1,u-1\}$,
        and $Q\gets\varnothing$.
 \State \textbf{For} $i=1,\ldots,n$ \textbf{do}:
-\State \quad Test $j_i$ for one unit and observe $p_{j_i}$.
-\State \quad \textbf{If} $i\le k$ or $p_{j_i}\le\theta_u$, process $j_i$
+\State \quad Test job $i$ for one unit and observe $p_i$.
+\State \quad \textbf{If} $i\le k$ or $p_i\le\theta_u$, process job $i$
        immediately.
-\State \quad \textbf{Otherwise}, add $j_i$ to $Q$.
+\State \quad \textbf{Otherwise}, add job $i$ to $Q$.
 \State Process the jobs of $Q$ in nondecreasing revealed processing time.
 \end{algorithmic}
 \end{algorithm}
 
+Recall from the beginning of \cref{sec:optional} that $\Rquad(u)$ denotes
+the positive root specified by \cref{eq:opt:Rquad-equation}.
+
 \begin{lemma}[Forced-prefix UTE guarantee]
 \label{lem:opt:ute-endpoint-game}
-For every $\uDet{2}\le u\le\uDet{3}$, let $R=\Rquad(u)$, $s=u-1$, and
-define
+For every $\uDet{2}\le u\le\uDet{3}$, define the algorithm parameter
 \begin{equation}
- K=s^2+s+1,
- \quad D=K+sR,
- \quad b=\frac{K-s^2R}{D},
- \quad \chi=\frac{1-b}{R},
- \quad \alpha=\frac KD.
+ b=b(u)\defeq
+ \frac{u^2-u+1-(u-1)^2\Rquad(u)}
+      {u^2-u+1+(u-1)\Rquad(u)}.
  \label{eq:opt:ute-parameters}
 \end{equation}
 Then
@@ -82,6 +82,16 @@ Then
 \end{lemma}
 
 \begin{proof}
+For the analysis, put $R=\Rquad(u)$ and $s=u-1$, and abbreviate
+\begin{equation}
+ K=s^2+s+1,
+ \quad D=K+sR,
+ \quad b=\frac{K-s^2R}{D},
+ \quad \chi=\frac{1-b}{R},
+ \quad \alpha=\frac KD.
+ \label{eq:opt:ute-proof-parameters}
+\end{equation}
+
 \medskip
 \noindent\textbf{Claim 1 (Parameter admissibility).}
 The defining equation for $R$ gives
@@ -145,7 +155,7 @@ G(x)=
 \end{equation}
 The second quadratic is strictly concave, has its stationary point at
 $x=\alpha$, and satisfies $G(\alpha)=0$; after substituting
-\cref{eq:opt:ute-parameters}, the latter identity is exactly
+\cref{eq:opt:ute-proof-parameters}, the latter identity is exactly
 \cref{eq:opt:Rquad-equation}.  Since $b<\alpha$, its right derivative at $b$
 is positive.  The left derivative satisfies
 $G'_-(b)=G'_+(b)+s(1-b)>0$, and the first quadratic is concave, so it is
@@ -271,7 +281,7 @@ The endpoint $\chi$ lies on the binary branch.  Finally,
  F(b)-F(\chi)
  =\frac{\chi-b}{2}\,[2sb-\gamma(b+\chi)],
 \end{equation}
-and direct use of \cref{eq:opt:ute-parameters} gives
+and direct use of \cref{eq:opt:ute-proof-parameters} gives
 \begin{equation}
  D[\gamma(b+\chi)-2sb]
  =-s+(1+s-s^3)R+s^2(s-1)R^2>0.
