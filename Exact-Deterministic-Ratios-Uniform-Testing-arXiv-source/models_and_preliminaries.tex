@@ -78,11 +78,10 @@ random seed.  Unless stated otherwise, the algorithm is not told the
 multiset of values.  An \emph{announced} policy additionally receives this
 multiset, but not its assignment to labels.  Announcing the multiset can
 only help, so it is a valid strengthening in lower bounds.
-All randomized expectations are over private algorithmic randomness.  
+All randomized expectations are over private algorithmic randomness.
 
-[neni potreba remark z tohohle udelej backslash-paragraph ktery vysvetli ze bud si budeme predstavovat ze input = multiset nebo technicky nedokazujeme i.o. ale o.o.i.o., v podstate jak je to ted]
-\begin{remark}[Order-oblivious convention]
-\label{rem:order-oblivious}
+\paragraph{Order-oblivious convention.}
+\label{par:order-oblivious}
 For a multiset $M$ of $n$ occurrences and a randomized policy $\mathcal A$,
 write
 \[
@@ -106,25 +105,19 @@ $\ALG_{\mathcal A}^{\mathrm{oo}}(M)$.  Hence randomized policies may be
 symmetrized without loss, after which only the multiset matters.  When the
 introduction compares costs ``on $M$,'' it uses this convention.  An
 announced policy knows $M$, but not its assignment to the public labels.
-\end{remark}
-
 
 \subsection{Offline optima and pair accounting}
 
 The offline optimum knows all values $p_j$.  It therefore chooses the shorter
 available way to complete each job and orders the resulting job blocks
-shortest first.  For later use, define
-\begin{equation}\label{eq:optional-effective-length}
- \lambda_u(p)\defeq\min\{u,1+p\}
- \qquad(0<u<\infty),
-\end{equation}
-and associate with job $j$ the model-dependent \emph{effective length}
+shortest first.  Associate with job $j$ the model-dependent
+\emph{effective length}
 \begin{equation}
  \lambda_j\defeq
  \begin{cases}
   1+p_j, & \mathsf{OT},\\
   p_j, & \mathsf{BE},\\
-  \lambda_u(p_j), & \mathsf{BO}(u)\text{ or }\mathsf{RO}(u).
+  \min\{u,1+p_j\}, & \mathsf{BO}(u)\text{ or }\mathsf{RO}(u).
  \end{cases}
  \label{eq:model-effective-length}
 \end{equation}
@@ -189,7 +182,7 @@ We use the model-specific abbreviations
  &\Omega_{\mathsf{BE}}(D)
   &\defeq\frac12\EE\min\{P,P'\},\notag\\
  \Omega_{\mathsf{BO},u}(D)=\Omega_{\mathsf{RO},u}(D)
-  &\defeq\frac12\EE\min\{\lambda_u(P),\lambda_u(P')\}.
+  &\defeq\frac12\EE\min\{u,1+P,1+P'\}.
  \label{eq:model-offline-coefficients}
 \end{align}
 The last coefficient is common to blind and revealing optimization; their
@@ -215,7 +208,7 @@ map of the chosen model, then
 In particular, in $\mathsf{BO}(u)$ or $\mathsf{RO}(u)$,
 \begin{equation}
  \OPT_u(M)=n^2\Omega_{\mathsf{RO},u}(D[M])
-       +\frac n2\EE\lambda_u(P).
+       +\frac n2\EE\min\{u,1+P\}.
  \label{eq:empirical-offline-u}
 \end{equation}
 \end{corollary}
@@ -224,7 +217,7 @@ In particular, in $\mathsf{BO}(u)$ or $\mathsf{RO}(u)$,
 Interpret the two sums in \cref{eq:unified-opt-symmetric} as expectations
 under independent uniform draws from the occurrences.  Substituting
 $\lambda_j=\ell(p_j)$ gives \cref{eq:empirical-offline-model}; the capped
-specialization uses $\ell=\lambda_u$.
+specialization uses $\ell(p)=\min\{u,1+p\}$.
 \end{proof}
 
 The revealing-optimization and blind-optimization models have the same offline

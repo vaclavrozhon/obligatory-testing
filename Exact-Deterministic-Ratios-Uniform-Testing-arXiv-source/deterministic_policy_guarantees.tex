@@ -14,8 +14,8 @@ The first policy is formalized in \cref{alg:raw}.
 \end{algorithm}
 
 For $u\le \uDet{2}$, use \textsc{Raw}.  It is optimal when $u\le\uDet{1}$;
-when $u>1$, every effective length $\lambda_u(p_j)$ from
-\cref{eq:optional-effective-length} is at least one, so the ratio is at most
+when $u>1$, every effective length $\min\{u,1+p_j\}$ from
+\cref{eq:model-effective-length} is at least one, so the ratio is at most
 $u$.
 
 For the next interval, let $R=\Rquad(u)$, $s=u-1$, and define
@@ -146,7 +146,7 @@ expected ALG does not decrease, up to its $O_u(n)$ diagonal terms.
 The expected effective lengths are,
 respectively,
 \begin{equation}
- 1+\frac{u-1}{u}p\le \lambda_u(p),
+ 1+\frac{u-1}{u}p\le \min\{u,1+p\},
  \qquad
  1+(u-1)p\le1+p,
 \end{equation}
@@ -428,7 +428,7 @@ Write
 \[
  \bar p_i=\min\{p_i,u-1\}.
 \]
-By \cref{eq:optional-effective-length,lem:offline}, the clairvoyant revealing
+By \cref{eq:model-effective-length,lem:offline}, the clairvoyant revealing
 optimum is SPT on jobs of effective lengths
 $1+\bar p_i=\min\{1+p_i,u\}$.  For two jobs tested in the order $i<j$, let
 \begin{equation}

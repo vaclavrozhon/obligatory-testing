@@ -299,8 +299,8 @@ identity \cref{cor:empirical-offline} give
       +\frac n2\EE a(P),
  \label{eq:bo-det-optall-online}\\
  \OPT
- &=\frac{n^2}{2}\EE\min\{\lambda_u(P),\lambda_u(P')\}
-      +\frac n2\EE \lambda_u(P).
+ &=\frac{n^2}{2}\EE\min\{u,1+P,1+P'\}
+      +\frac n2\EE\min\{u,1+P\}.
  \label{eq:bo-det-optall-offline}
 \end{align}
 Write $S_D(t)=\Prob(P>t)$ for $0\le t\le u$.  Layer cake yields
@@ -308,7 +308,7 @@ Write $S_D(t)=\Prob(P>t)$ for $0\le t\le u$.  Layer cake yields
  \EE\max\{a(P),a(P')\}
  &=1+\int_0^u(2S_D(t)-S_D(t)^2)\,dt,
  \label{eq:bo-det-optall-layer-online}\\
- \EE\min\{\lambda_u(P),\lambda_u(P')\}
+ \EE\min\{u,1+P,1+P'\}
  &=1+\int_0^{u-1}S_D(t)^2\,dt.
  \label{eq:bo-det-optall-layer-offline}
 \end{align}
@@ -327,7 +327,7 @@ therefore give
 \begin{align}
  \EE\max\{a(P),a(P')\}
  &\le1+2ub-ub^2,\\
- \EE\min\{\lambda_u(P),\lambda_u(P')\}
+ \EE\min\{u,1+P,1+P'\}
  &\ge1+(u-1)b^2.
 \end{align}
 Consequently their ratio is at most
@@ -493,7 +493,7 @@ learn only one number, not a histogram or a threshold.
 \subsection{The exact worst-case curve}
 
 The clairvoyant scheduler knows $p_i$, uses the effective length
-$\lambda_u(p_i)$ from \cref{eq:optional-effective-length}, and orders these
+$\min\{u,1+p_i\}$ from \cref{eq:model-effective-length}, and orders these
 blocks shortest first.  If $P,P'$ are independent draws from a distribution
 $D$ on $[0,u]$, its leading coefficient is $\Omega_{\mathsf{BO},u}(D)$ from
 \cref{eq:common-offline-coefficient}.
@@ -502,7 +502,7 @@ Consequently the instance-specific ratio from
 \begin{equation}
  \alpha_{\mathsf{BO},u}(D)
  =\frac{\min\{u,1+\EE P\}}
-        {\EE\min\{\lambda_u(P),\lambda_u(P')\}}.
+        {\EE\min\{u,1+P,1+P'\}}.
  \label{eq:bo-instance-ratio}
 \end{equation}
 
