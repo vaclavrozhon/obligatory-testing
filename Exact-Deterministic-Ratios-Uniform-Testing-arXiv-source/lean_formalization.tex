@@ -64,7 +64,7 @@ Lean object & Manuscript object & Meaning \\
   & processing times are nonnegative and raw execution is unavailable \\
 \texttt{exactCurve u}
   & \(\RdetRO(u)\)
-  & the six branches in \cref{eq:opt:full-curve}, including all five
+  & the six interval formulas in \cref{eq:opt:full-curve}, including all five
     verified joins \\
 \texttt{RStar}
   & \(\RdetOT\)
@@ -153,7 +153,7 @@ finite \(u>0\).  Substituting \(R=\texttt{exactCurve}\ u=\RdetRO(u)\), its lower
 field gives the fixed-instance lower direction of
 \cref{thm:optional-curve}, while its upper field supplies a completing
 strategy and the matching upper direction.  The definition of
-\texttt{exactCurve} is literally the six-way case split in
+\texttt{exactCurve} is literally the piecewise formula in
 \cref{eq:opt:full-curve}; the Lean development also proves its joins,
 continuity, plateau, and global maximum at \(\uDet{2}\).
 

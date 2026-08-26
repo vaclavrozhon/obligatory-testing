@@ -14,7 +14,8 @@ is $\min\{u,1+p_j\}$, and the offline optimum schedules these
 effective lengths in nondecreasing order.  We write $\RdetRO(u)$ for the optimal
 deterministic size-asymptotic ratio at this fixed common upper limit.
 
-The answer has six branches separated by five transition points.  Put
+The exact ratio is given by six formulas on six intervals separated by five
+transition points.  Put
 \begin{equation}
  \varphi=\frac{1+\sqrt5}{2},
  \qquad
@@ -94,7 +95,8 @@ u, &\uDet{1}\le u\le \uDet{2},\\[1mm]
 \end{cases}}
 \label{eq:opt:full-curve}
 \end{equation}
-For every branch there is an explicit deterministic algorithm satisfying
+On every interval in \cref{eq:opt:full-curve}, there is an explicit
+deterministic algorithm satisfying
 \[
  \ALG_{\mathcal A}(I)\le \RdetRO(u)\cdot\OPT(I)+O_u(n).
 \]
@@ -135,10 +137,11 @@ exactly $\RdetOT$.
 \end{theorem}
 
 The proof of \cref{thm:optional-curve} combines two kinds of lower bounds.
-Binary hidden-stopping
-instances give the first four branches, while a continuous version of the
-harmonic construction with an initial block of jobs satisfying $p_j=u$
-gives the mixed branch and the plateau.  Three
+Binary hidden-stopping instances give the formulas on
+$0<u\le\uDet{4}$, while a continuous version of the harmonic construction
+with an initial block of jobs satisfying $p_j=u$ gives the lower bound on
+$\uDet{4}\le u\le\uDet{5}$ and the constant value for
+$u\ge\uDet{5}$.  Three
 explicit algorithms match them: raw execution, a forced-prefix uniform
 threshold, and a history-dependent adaptive threshold.  They are introduced
 informally in \cref{sec:intro-revealing-optimization} and specified formally
@@ -168,9 +171,10 @@ $\uDet{5}\le u<\infty$
 \subsection{Upper bounds}
 \label{sec:det-algorithm-guarantees}
 
-We prove the six upper branches using three algorithms.  Raw execution
-covers the first two branches, a forced-prefix uniform threshold covers the
-next two, and an adaptive threshold gives the final two.
+We prove the six interval guarantees using three algorithms.  Raw execution
+covers $0<u\le\uDet{2}$, a forced-prefix uniform threshold covers
+$\uDet{2}\le u\le\uDet{4}$, and an adaptive threshold covers
+$u\ge\uDet{4}$.
 Each of the following subsubsections treats one algorithm and ends with its
 complete guarantee on the relevant range of $u$.
 
@@ -180,10 +184,10 @@ complete guarantee on the relevant range of $u$.
 \label{sec:det-branchwise-lower}
 
 The lower bounds use three adversarial constructions.  A hidden binary
-stopping game gives the first four branches, a harmonic construction whose
-jobs satisfy $1+p_j<u$ gives the plateau, and prepending a
-block of jobs with $p_j=u$ to a scaled harmonic construction gives the mixed
-branch.  The final transfer lemma applies the same below-cap construction to
+stopping game covers $0<u\le\uDet{4}$, a harmonic construction whose
+jobs satisfy $1+p_j<u$ covers $u\ge\uDet{5}$, and prepending a
+block of jobs with $p_j=u$ to a scaled harmonic construction covers
+$\uDet{4}\le u\le\uDet{5}$.  The final transfer lemma applies the same below-cap construction to
 every sufficiently large finite $u$.
 
 \input{deterministic_lower_bounds}
@@ -191,7 +195,8 @@ every sufficiently large finite $u$.
 \subsection{Assembly of the curve}
 \label{sec:det-curve-assembly}
 
-It remains to verify the shape and joins of the candidate branches and to
+It remains to verify the shape and joins of the six formulas in
+\cref{eq:opt:full-curve} and to
 pair each upper bound with its matching lower bound.  We do this explicitly
 before transferring the uniform plateau witnesses to obligatory testing.
 

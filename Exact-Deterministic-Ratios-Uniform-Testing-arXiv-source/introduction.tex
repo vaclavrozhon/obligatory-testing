@@ -463,7 +463,8 @@ points:
   \uDet{5}=4.50\ldots .
  \end{gathered}
 \]
-They delimit the six branches from left to right.
+They delimit the six parameter intervals in the piecewise definition of
+$\RdetRO(u)$.
 
 \begin{figure}[H]
 \centering
@@ -497,8 +498,8 @@ the forced prefix, the same threshold is applied to every tested job.
 The exact parameter $b(u)$ is defined in
 \cref{eq:opt:ute-parameters}; it is nonnegative on
 $[\uDet{2},\uDet{3}]$ and vanishes at $\uDet{3}$.
-The zero-prefix specialization then gives the next branch through
-$u=\uDet{4}$.
+For $\uDet{3}\le u\le\uDet{4}$, the zero-prefix specialization gives the
+formula $1+1/\sqrt{u-1}$.
 
 \begin{algorithm}[htbp]
 \caption{\textsc{ForcedPrefixUTE}$(J,u)$}
@@ -551,7 +552,8 @@ For the randomized curve, write
  \qquad \uRand{2}=5.048917\ldots,
  \qquad \uRand{3}=\frac{25}{4}=6.25.
 \]
-These three points delimit its four branches.  The exact formulas and
+These three points delimit the four parameter intervals in the piecewise
+definition of $\RrandRO(u)$.  The exact formulas and
 matching constructions are in \cref{sec:random-common-upper}.
 
 \begin{algorithm}[H]
@@ -658,7 +660,8 @@ asymptotic competitive-ratio convention.
 \Cref{sec:optional} then proves the exact deterministic
 revealing-optimization curve.  Its multilevel lower-bound instance, in which
 every job satisfies $1+p_i<u$ and raw execution is therefore never shorter,
-is reused on the last two branches, while a bookkeeping potential handles
+is reused both for $\uDet{4}\le u\le\uDet{5}$ and for
+$u\ge\uDet{5}$, while a bookkeeping potential handles
 jobs with $p_i=u$ in the matching upper bound.  Only after the finite curve is complete
 does \cref{sec:obligatory} derive the deterministic obligatory ratio using
 bounds whose constants do not depend on the raw time $u$.

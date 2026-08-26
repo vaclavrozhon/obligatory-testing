@@ -1,8 +1,8 @@
 \section{Randomized revealing optimization: the exact four-piece curve}
 \label{sec:random-common-upper}
 
-The previous section identified the optimal leading online cost for every
-fixed input in the revealing-optimization model.  We now compare that cost with the
+\Cref{thm:common-upper-instance} identified the optimal leading online cost
+for every fixed input in the revealing-optimization model.  We now compare that cost with the
 clairvoyant optimum and maximize over all inputs.  The raw-execution cap $u$
 is fixed, but
 the algorithm is not told the entries of the input vector.  This section proves
@@ -62,12 +62,13 @@ The curve is continuous and has global maximum
 attained at $u=(3+\sqrt3)/2$.
 \end{theorem}
 
-The preceding instance-optimal theorem identifies the best algorithm on each
-input.  Here we compare that value with the clairvoyant SPT cost and
+\Cref{thm:common-upper-instance} identifies the best asymptotic online cost
+on each input.  Here we compare that value with the clairvoyant SPT cost and
 maximize over all empirical distributions.  Replacing an initial part of the
 survival function by its average reduces this optimization to distributions
 supported on two values.  Two one-variable maximizations give the four
-branches above.  A sublinear sample removes advance knowledge of the input,
+formulas in \cref{eq:intro-random-common-upper-curve}.  A sublinear sample
+removes advance knowledge of the input,
 and shuffled binary vectors give matching lower bounds.
 
 \subsection{Offline and stationary fluid coefficients}
@@ -279,8 +280,9 @@ We have proved the reduction
  \label{eq:rcu-binary-reduction}
 \end{equation}
 where the first supremum is omitted for $u<2$.  In fact equality holds in
-\eqref{eq:rcu-binary-reduction}, because the rectangular survival functions
-described above attain both families.
+\eqref{eq:rcu-binary-reduction}, because the binary distributions on
+$\{0,\tau_D\}$ and $\{0,u\}$ identified before the reduction attain the
+$A$ and $B_u$ families, respectively.
 
 \subsection{The two scalar maximizations}
 
@@ -330,7 +332,8 @@ sign there exactly once; its unique root above one is $\uRand{2}$ from
  \label{eq:rcu-B-at-star}
 \end{align}
 
-There is no missing branch from $A$.  On $2\le u\le3$, clearing the positive
+It remains to compare the candidate $A$ with the values obtained from $B_u$.
+On $2\le u\le3$, clearing the positive
 denominators in $B_u(u)-A(u-1)$ and putting $v=u-2$ leaves
 \[
  v^4+3v^3+3v^2+3v+3>0.
@@ -350,8 +353,9 @@ for every finite distribution $D$.
 
 The junction statements now follow directly.  Equations
 \cref{eq:rcu-transition-cubic,eq:rcu-B-at-u,eq:rcu-B-at-star} give
-continuity at $\uRand{2}$, and the square-root branch equals $4/3$ at
-$u=\uRand{3}$.  Differentiating \eqref{eq:rcu-B-at-u} shows that its only
+continuity at $\uRand{2}$, and the formula
+$1+1/[2(\sqrt u-1)]$ equals $4/3$ at $u=\uRand{3}$.
+Differentiating \eqref{eq:rcu-B-at-u} shows that its only
 interior maximum above one occurs at $u=(3+\sqrt3)/2$; substitution gives
 \eqref{eq:intro-random-common-maximum}.
 
@@ -378,9 +382,8 @@ is exactly clairvoyantly optimal, so no learning is required.
 
 \subsection{Binary oblivious lower bounds}
 
-It remains to show that the two algorithms corresponding to $q=0$ and $q=1$
-used above cannot be
-improved in the worst case by a more adaptive algorithm.  We first record an
+It remains to show that no adaptive algorithm improves the resulting
+worst-case upper bound.  We first record an
 envelope for shuffled binary vectors.
 
 \begin{lemma}[Binary-input envelope at the offline cap $u$]
@@ -505,8 +508,9 @@ Irrational masses are approximated by integer job counts divided by $n$; the
 rounding error and the one-job terms omitted from the leading pair
 coefficient are $O_u(n)$.
 
-For the last branch, the binary distribution supported on $\{0,u\}$ is
-replaced by the fixed bounded distribution supported on $\{0,2\}$.
+For $u\ge\uRand{3}$, the lower bound $4/3$ uses a fixed bounded
+distribution supported on $\{0,2\}$ instead of the binary distribution on
+$\{0,u\}$ used for smaller $u$.
 
 \begin{lemma}[Balanced zero--two lower bound]
 \label{lem:rcu-zero-two-lower}
@@ -522,10 +526,11 @@ value two such that
 \end{lemma}
 
 \begin{proof}
-Expose values when their labels are first touched, apply the same sampling
-event simultaneously to every prefix of that order,
-and replace tests among the final $o(n)$ untouched jobs by raw execution,
-exactly as in \cref{lem:rcu-binary-lower}.  For a realized tested fraction
+Expose values when their labels are first touched, apply the
+predictable-permutation event \cref{eq:rcu-predictable-urn} simultaneously
+to every prefix of that order, and replace tests among the final $o(n)$
+untouched jobs by raw execution as in the proof of
+\cref{lem:rcu-binary-lower}.  For a realized tested fraction
 $q$, the three divisible blocks now have capacities and costs
 \begin{center}
 \begin{tabular}{@{}lcc@{}}
@@ -548,7 +553,9 @@ coefficient $3/4$.
 
 Equations \eqref{eq:rcu-lower-first-branch} and
 \eqref{eq:rcu-lower-second-branch}, together with
-\cref{lem:rcu-zero-two-lower}, match \eqref{eq:rcu-final-upper} in every
-range.  For $0<u\le1$, raw execution is both an online and a clairvoyant
+\cref{lem:rcu-zero-two-lower}, match \eqref{eq:rcu-final-upper} on
+$1<u\le\uRand{2}$, $\uRand{2}\le u\le\uRand{3}$, and
+$u\ge\uRand{3}$, respectively.  For $0<u\le1$, raw execution is both an
+online and a clairvoyant
 optimum.  This completes the proof of the exact curve in
 \cref{thm:random-common-upper}.

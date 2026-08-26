@@ -196,7 +196,6 @@ point in the schedule and
 normalize counts and work by $n$.  Let $t,b,z,c_j$ denote the tested
 fraction, the fraction run raw, the fraction of tests that complete zero
 jobs, and the processed fraction whose revealed value lies in the positive
-cell $C_j$, respectively, and put $\gamma_n=\Gamma_n/n$.  The sampling event gives the capacity
 cell $C_j$, respectively, and put $\gamma_n=\Gamma_n/n$.  The sampling event
 gives the capacity hypotheses of \cref{lem:cell-capacity-repair}; raw work is exactly $ub$, so
 its work hypothesis holds with $\alpha=0$.  Therefore
@@ -207,7 +206,7 @@ its work hypothesis holds with $\alpha=0$.  Therefore
 \end{equation}
 The completion curve reaches one by normalized work at most $H=1+u$, and
 $0\le\PhiRO(D)\le u/2$.  Thus \cref{thm:completion-curve-transfer}, with
-the preceding modification contributing
+the suffix edit in \cref{eq:cui-suffix-edit} contributing
 $\varepsilon=O_u(\delta+1/n)$ and
 $\beta=(K+1)\gamma_n$, gives
 \begin{equation}
@@ -234,7 +233,8 @@ $((j-1)h_n,jh_n]$ is rounded to $jh_n$.  For the finite repair, raising a
 processed value to this right endpoint adds at
 most $h_n$ to normalized prefix work, while
 \cref{lem:cell-capacity-repair} loses at most
-$(K_n+1)\gamma_n$ completed mass.  With the parameters above,
+$(K_n+1)\gamma_n$ completed mass.  With the parameters from
+\cref{eq:cui-grid-parameters},
 \begin{equation}
  (K_n+1)\frac{\Gamma_n}{n}
  =O\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right).
@@ -242,7 +242,7 @@ $(K_n+1)\gamma_n$ completed mass.  With the parameters above,
 \end{equation}
 Apply \cref{thm:completion-curve-transfer} directly to the rounded grid, with
 $\alpha=h_n$, $\beta=(K_n+1)\gamma_n$, $H=1+u$, and
-$B=u/2$.  Together with this modification and
+$B=u/2$.  Together with the upward rounding and
 \cref{eq:cui-rounding-stability,eq:cui-grid-error}, it proves that every
 announced algorithm has private-shuffle cost at least
 \begin{equation}
@@ -311,14 +311,16 @@ The sampling-without-replacement histogram estimate
 \end{equation}
 For a fixed template, the quantities $a,\ell,\ell_\nu$ in
 \cref{eq:cui-F} are bounded single integrals and $\SPT(\nu)$ is a bounded
-double integral.  In the latter, add and subtract the same double integral
+double integral.  For the $\SPT(\nu)$ term, add and subtract the same double
+integral
 with only one copy of the distribution replaced.  This gives
 \begin{equation}
  |F_{\mathsf{RO},u,D}(\pi)-F_{\mathsf{RO},u,E}(\pi)|
  \le4(u+1)\|D-E\|_1,
  \label{eq:cui-template-Lipschitz}
 \end{equation}
-uniformly over the grid and template.  The same bound holds for the minima.
+uniformly over the grid and template.  Minimizing over templates preserves
+this Lipschitz bound.
 The maximum-density and completion-envelope results
 \cref{lem:maximum-density-module,lem:cui-envelope} show that the minimum
 over this common template family is exactly $\PhiRO(D)$.

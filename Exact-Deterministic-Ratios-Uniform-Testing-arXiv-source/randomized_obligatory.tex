@@ -295,7 +295,8 @@ For large $n$, set
  \label{eq:rand-parameters}
 \end{equation}
 The algorithm draws a uniform permutation and first tests its first $k$ jobs,
-leaving positive sample jobs pending.  It computes $\widehat J$ as above.
+leaving positive sample jobs pending.  It computes $\widehat J$ according to
+\cref{eq:rand-threshold-closure}.
 If
 \begin{equation}
  \widehat\kappa<\frac1B,
@@ -426,15 +427,16 @@ constant covers smaller $n$ and proves the first inequality in
 multiplicative form.
 
 For completeness, the fixed-cutoff companion uses $B=32$ and the more
-conservative fallback criterion $\widehat\kappa<2/B$.  Repeating the same
-calculation with learned threshold at most $B/2$ gives
+conservative fallback criterion $\widehat\kappa<2/B$.  Substituting these
+fixed-cutoff choices into the error calculation gives
 \[
  \EE\ALG
  \le\frac43\cdot\OPT
  +n^2\!\left[9472\sqrt{\frac{d+2}{k}}+\frac{704}{d}\right]
  +17(nk/2+k^2).
 \]
-The preceding floor bounds give
+The estimates $k\le n^{3/4}$, $1/d\le2n^{-1/4}$, and
+$\sqrt{(d+2)/k}\le2n^{-1/4}$ give
 $\EE\ALG\le\frac43\cdot\OPT+20378n^{7/4}$, with the same deliberately loose
 constant covering smaller $n$.  This proves
 \cref{eq:rand-obligatory-fixed-upper}.

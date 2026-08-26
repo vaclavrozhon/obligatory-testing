@@ -34,7 +34,8 @@ Randomized obligatory testing, \cref{thm:rand-obligatory}
  & Lean proves the sharp worst-case value $4/3$ for the fixed-cutoff
    algorithm in \cref{eq:rand-obligatory-fixed-upper}, including its finite
    error and a fixed binary input for the lower bound.  The growing-cutoff
-   algorithm that learns from a sample is covered in the next row. \\
+   algorithm that learns from a sample is covered in the row for
+   \cref{thm:obligatory-instance}. \\
 Obligatory-testing impossibility,
 \cref{thm:ot-instance-impossibility}
  & \path{ObligatoryInstance.deterministic_balanced_cost_lower};
@@ -121,11 +122,13 @@ Revealing-optimization instance and randomized curve,
    \path{RevealingOptimization.InstanceOptimal.concreteRevealingComparisonError_tendsto_zero};
    \path{FluidToFinite.completion_transfer_uniform};
    \path{FluidToFinite.pilot_learning_transfer}
- & Lean checks the four scalar branches, their transition root and plateau,
+ & Lean checks the four formulas in
+   \cref{eq:intro-random-common-upper-curve}, their transition root and plateau,
    attainment by explicit inputs, and the global maximum.  Starting from a
    concrete nonempty input, it constructs the threshold that maximizes
    completion density, derives the exact empirical survival formulas, and
-   proves the required integral bounds in every threshold range.  The
+   proves the required integral bounds for every admissible threshold
+   $\tau_D$.  The
    announced algorithm then chooses between the stationary schedule and raw
    execution.  For every private seed it terminates, its action-by-action run
    has the analyzed pair cost, and the finite estimate retains the linear
@@ -141,8 +144,8 @@ Revealing-optimization instance and randomized curve,
    tree covers every adaptive choice among testing, raw execution, and
    processing, including the immediate completion of a tested zero.  The
    recursive cost equals the timed execution cost, and finite weighted Yao
-   selects one labeled input before the private seed.  The same action-level
-   analysis proves the instance-optimal theorem: every completing adaptive
+   selects one labeled input before the private seed.  This action-level
+   analysis also proves the instance-optimal theorem: every completing adaptive
    algorithm is bounded below by the integrated completion curve, while the
    algorithm learned from a sample meets that value.  With
    $m=\lfloor n^{1/16}\rfloor$, Lean obtains normalized error at most

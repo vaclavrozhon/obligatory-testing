@@ -1,8 +1,11 @@
 \subsubsection{The binary stopping game and its piecewise lower bound}
 \label{sec:optional-lower}
 
-The first four branches already occur on binary instances
-$p_j\in\{0,u\}$.  The stopping point must be hidden from the algorithm;
+Binary instances $p_j\in\{0,u\}$ give the lower bounds $1$ for
+$0<u\le\uDet{1}$, $u$ for $\uDet{1}\le u\le\uDet{2}$,
+$\Rquad(u)$ for $\uDet{2}\le u\le\uDet{3}$, and
+$1+1/\sqrt{u-1}$ for $\uDet{3}\le u\le\uDet{4}$.  The stopping point
+must be hidden from the algorithm;
 announcing it in advance gives a strictly weaker lower bound.
 In this subsubsection, a job with $p_j=0$ is a \emph{zero job}, and one with
 $p_j=u$ is a \emph{long job}.
@@ -147,7 +150,7 @@ $b$ is positive or zero.  We then locate their transition points and choose
 the stopping fraction $\alpha$ at which the relevant quadratic is largest.
 
 \medskip
-\noindent\textbf{Claim 1 (Two quadratic branches).}
+\noindent\textbf{Claim 1 (Two cases for the minimizing $b$).}
 For fixed revealed-long fraction $y$, minimizing
 \cref{eq:opt:stopping-f} over the completed-long fraction $b$ gives
 \begin{equation}
@@ -156,8 +159,8 @@ For fixed revealed-long fraction $y$, minimizing
 \end{equation}
 The upper constraint $b\le y$ never binds, because
 $uy-(u-1)\le y$ for $y\le1$.
-There are therefore two elementary quadratic branches.  On the positive
-branch, where $uy-(u-1)>0$, substitution gives
+There are therefore two quadratic formulas.  When $uy-(u-1)>0$,
+substitution gives
 \begin{equation}
  \min_b f_{u,R}(y,b)
  =1-R-(u-1)^2+2(u^2-u+1)y
@@ -176,7 +179,7 @@ that is,
  \label{eq:opt:stopping-tangency}
 \end{equation}
 Expanding \cref{eq:opt:stopping-tangency} gives
-\cref{eq:opt:Rquad-equation}.  On the other branch the minimizing choice is
+\cref{eq:opt:Rquad-equation}.  When $uy-(u-1)\le0$, the minimizing choice is
 $b=0$, and
 \begin{equation}
  \min_b f_{u,R}(y,b)
@@ -210,8 +213,8 @@ $\alpha=(u^2-u+1)/(u^2-u+1+(u-1)\Rquad(u))$; the zero-maximum identity makes the
 maximum zero.  The minimizing completed-long fraction $b$ is positive in the
 interior and becomes zero
 at $u=\uDet{3}$.  For $u\ge \uDet{3}$, use the zero-$b$ maximizing point from
-\cref{eq:opt:zero-b-tangency}.  The branch conditions are precisely the two
-inequalities checked above.  Finally, $\RdetRO(u)\ge1$ is trivial for $u\le1$.
+\cref{eq:opt:zero-b-tangency}.  Finally, $\RdetRO(u)\ge1$ is trivial for
+$u\le1$.
 In each nontrivial case \cref{lem:opt:hidden-stopping} supplies fixed binary
 instances: its proof records every adaptive answer on the corresponding job
 label and then reruns the deterministic algorithm on that fixed vector.
@@ -221,14 +224,15 @@ label and then reruns the deterministic algorithm on that fixed vector.
 \subsubsection{The harmonic core below the raw-execution cap}
 \label{sec:lower}
 
-This subsection develops the harmonic construction used by the last two
-branches of the revealing curve.  Its largest processing time will be below
-two.  Consequently, whenever the construction is later used with a
+This subsection develops the harmonic construction used for the lower bounds
+on $\uDet{4}\le u\le\uDet{5}$ and on $u\ge\uDet{5}$.  Its largest
+processing time will be below two.  Consequently, whenever the construction
+is later used with a
 raw-execution cap $u>3$, every job satisfies $1+p_j<u$, so the offline cap
 $u$ is inactive.
 Its notation is local to this subsection.
 We first record its extremal specialization and then extract the scaled form
-reused by the mixed branch.  The construction
+used when $\uDet{4}\le u\le\uDet{5}$.  The construction
 has many equally large groups of positive jobs, revealed from longest to
 shortest, followed by one large group of zero jobs.  The only design choice is
 the gap between two consecutive positive processing times.  Choosing these
@@ -575,8 +579,8 @@ and therefore
 \[
   R(\uDet{5})=1+\frac{2}{\uDet{5}-1}=\RdetOT.
 \]
-Moreover, $\sqrt{\uDet{5}}-1=1.12255\ldots<e-1$, so the maximizer lies in the
-range where \cref{eq:lower-span} holds.
+Moreover, $\sqrt{\uDet{5}}-1=1.12255\ldots<e-1$, so the condition
+$\alpha<e-1$ in \cref{eq:lower-span} holds at the maximizer.
 
 \medskip
 \noindent\textit{Final parameter choice.}
@@ -592,8 +596,9 @@ resulting fixed input produces the same transcript for the given
 deterministic algorithm.
 \end{proof}
 
-The mixed branch needs the same construction at an arbitrary total scale and
-at a prescribed point of its limiting curve.  The next lemma packages this
+The lower bound for $\uDet{4}\le u\le\uDet{5}$ needs the same construction
+at an arbitrary total scale and at a prescribed point of its limiting curve.
+The next lemma packages this
 rescaled form so that no phase accounting has to be repeated later.
 
 \begin{lemma}[Scaled harmonic core]
@@ -623,7 +628,8 @@ Freezing each revealed answer on its job label, as in Claim~1 of
 
 \begin{proof}
 The case $t=1$ is obtained by continuity from instances with vanishing
-positive mass, so suppose $1<t<e$.  In the construction above set
+positive mass, so suppose $1<t<e$.  In the construction from the proof of
+\cref{thm:lower}, set
 $\alpha=t-1=K/\xi$.  Before rescaling, the number of jobs divided by $H$ is
 $K+\xi=\xi t$.  Multiply every normalized group size by the common factor
 $s/(\xi t)$.
@@ -645,8 +651,8 @@ the same rescaling this gives the guaranteed lower benchmark
 Finally, summing the limiting processing-time curve
 $1+\ln(1+x)$ over the positive mass gives $L=s\ln t$, and
 \cref{eq:lower-harmonic} gives $p_0\to1+\ln t$.  Choose successively finer
-rational approximations, clear their denominators, and apply the
-same recording argument as in the theorem: assign each revealed answer to
+rational approximations, clear their denominators, and apply the recording
+argument from Claim~1 in the proof of \cref{thm:lower}: assign each revealed answer to
 its job label and rerun the deterministic algorithm on the resulting fixed
 vector.  This produces arbitrarily large fixed rational instances with the
 stated limit and liminf bounds.
@@ -657,8 +663,9 @@ stated limit and liminf bounds.
 
 For $\uDet{4}<u<\uDet{5}$, neither the binary family nor the pure harmonic
 family is tight.  The adversary first reveals a prescribed fraction of jobs
-with $p=u$.  It then reveals the scaled harmonic instance from the preceding
-subsection, chosen so that every later job satisfies $1+p\le u$.  Two lemmas
+with $p=u$.  It then reveals the scaled harmonic instance from
+\cref{lem:opt:harmonic-block}, chosen so that every later job satisfies
+$1+p\le u$.  Two lemmas
 show that neither raw execution nor processing one of the initial jobs early
 can avoid the resulting lower bound.  The later part is exactly the
 construction from \cref{lem:opt:harmonic-block}, so its accounting need not
@@ -796,7 +803,7 @@ the values learned only by the physical simulation were hidden from the
 virtual algorithm.  This proves legality.
 \end{proof}
 
-\begin{proposition}[Mixed lower branch]
+\begin{proposition}[Lower bound on the mixed interval]
 \label{prop:opt:mixed-lower}
 For every $\uDet{4}\le u\le\uDet{5}$, every deterministic revealing
 algorithm has size-asymptotic competitive ratio at least $\Rmix(u)$.
@@ -845,7 +852,7 @@ $\mathcal R_u(m,t)=1+c$.
 
 \medskip
 \noindent\textbf{Claim 3 (Feasibility and uniqueness).}
-The branch runs from
+As $c$ decreases from $1/\varphi$ to $r$, the parameters run from
 \begin{equation}
  (u,m,t)=\left(\uDet{4},\frac1\varphi,1\right)
  \quad\text{to}\quad
@@ -885,9 +892,9 @@ individual jobs, and rounding are $O_u(H)$, whereas the displayed pair costs
 are $\Theta(H^2)$.  Let $H\to\infty$ first, then increase the harmonic depth, and finally
 let the rational approximation converge to $(m,t)$.  Together with
 \cref{lem:opt:mixed-quota}, this proves the proposition.
-The construction above applies directly in the open interval.  At
-$u=\uDet{4}$ and $u=\uDet{5}$ the same statement follows by approaching from
-the interior, so the endpoints are included.
+The construction applies directly when
+$\uDet{4}<u<\uDet{5}$.  The lower bounds at $u=\uDet{4}$ and
+$u=\uDet{5}$ follow by taking limits from this open interval.
 \end{proof}
 
 \subsubsection{Transferring the lower bound when raw execution is no shorter}

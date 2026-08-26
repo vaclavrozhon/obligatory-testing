@@ -385,8 +385,8 @@ $\mathcal A$, even an announced one, satisfy
  \label{eq:bo-instance-lower}
 \end{equation}
 Thus one algorithm is asymptotically optimal, at the $n^2$ scale, for every
-input vector simultaneously.  Unlike the benchmarks in the preceding
-sections, $\PhiBO$ depends only on the empirical mean.
+input vector simultaneously.  Unlike $\PhiRO$ and $\PhiBE$, $\PhiBO$
+depends only on the empirical mean.
 \end{theorem}
 
 The proof is simpler than in the revealing models.  Because optimization
@@ -394,9 +394,9 @@ reveals nothing, it can be moved next to the processing of its job.  Every
 job is then completed either by raw execution of known length $u$ or by one
 contiguous optimization-and-processing operation whose average length is
 $1+\mu_p$.  A sampling bound that holds for every adaptive prefix rules out
-an adaptive advantage, while a sample estimates the one number $\mu_p$.  The
-first subsection makes this argument formal; the second performs the outer
-worst-case optimization.
+an adaptive advantage, while a sample estimates the one number $\mu_p$.
+We first prove this instance-optimal statement and then maximize its value
+relative to the clairvoyant optimum.
 
 \subsection{Proof of randomized instance optimality}
 
@@ -413,9 +413,9 @@ Fix the private seed of an algorithm and place the announced occurrences
 uniformly behind the labels.  We may assume that the algorithm completes every
 job.  Treat equal-valued jobs as distinct and reveal their values in the
 analysis in first-touch order.  By deferred decisions this order is a
-uniform permutation, and the decision whether to optimize the next job is
-made from the preceding observations.  Running a job raw does not reveal its
-value to the algorithm; exposing it
+uniform permutation, and the decision whether to optimize the next job uses
+only the values revealed by earlier optimized jobs.  Running a job raw does
+not reveal its value to the algorithm; exposing it
 afterwards only for the analysis does not affect the algorithm's decisions.
 
 Fix $\delta>0$ and ignore the last $\delta n$ first touches for the moment.
@@ -545,7 +545,9 @@ $\mathsf{BO}(u)$ against an oblivious adversary is
  \end{cases}
  \label{eq:bo-curve}
 \end{equation}
-The two branches agree at $u_{\mathsf{BO}}$.  Moreover,
+The formulas $u^3/[u^2+(u-1)^3]$ and
+$\frac12(1+\sqrt{(u^2+u-1)/(u-1)})$ agree at
+$u_{\mathsf{BO}}$.  Moreover,
 \begin{equation}
  \RrandBO(u)=\frac{\sqrt u}{2}+\frac12+o(1)
  \qquad (u\to\infty).

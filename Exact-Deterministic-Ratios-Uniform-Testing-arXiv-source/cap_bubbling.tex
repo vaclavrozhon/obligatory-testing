@@ -126,8 +126,9 @@ For $0<\mu<1/R$, differentiation gives
  =c\mu\,[Z(c)-u-\operatorname{artanh}\mu].
  \label{eq:opt:prefix-derivative}
 \end{equation}
-On the mixed curve the unique maximizer in this range is therefore
-$\mu=m$, and
+For parameters $(c,m,u)$ satisfying
+\cref{eq:opt:mixed-parametrization}, the unique maximizer on
+$0<\mu<1/R$ is therefore $\mu=m$, and
 \begin{equation}
  F_{c,u}(m)
  =f_c(0)+\frac c2(\operatorname{artanh}m-m)=\frac c2.
@@ -144,8 +145,9 @@ Its derivative at $1/R$ is
  \frac{c(1+m)-1}{R}\le0,
 \]
 and only decreases thereafter.  Thus $F_{c,u}(\mu)\le c/2$ on the whole
-unit interval.  At $c=r,m=0,u=\uDet{5}$, the same calculation is maximized at
-$\mu=0$, and increasing $u$ only lowers
+unit interval.  At $c=r,m=0,u=\uDet{5}$,
+\cref{eq:opt:prefix-derivative,eq:opt:prefix-flat} show that the maximum is
+at $\mu=0$, and increasing $u$ only lowers
 \eqref{eq:opt:prefix-objective}.
 
 To make this independent exchange proof finite, fix
@@ -169,5 +171,6 @@ $n\to\infty$, and then let $\eps\downarrow0$.  Equations
 \[
  \Gamma_n\le c\binom n2+o(n^2),
 \]
-which independently proves the required size-asymptotic inequality for the
-two upper bounds above.
+which independently proves the required size-asymptotic inequalities in
+\cref{thm:opt:optional-middle-upper}, both for
+$\uDet{4}\le u\le\uDet{5}$ and for $u\ge\uDet{5}$.

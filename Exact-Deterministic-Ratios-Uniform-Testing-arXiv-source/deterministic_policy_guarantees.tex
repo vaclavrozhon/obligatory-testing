@@ -210,7 +210,7 @@ amount $s=u-1$ is paid only by pairs of long jobs.  The two cases for $A(x)$
 distinguish whether all long jobs fit into the forced prefix.
 
 Put $G(x)=A(x)-R\cdot O(x)$.  We show that its maximum is zero.
-On $b\le x\le1$, substituting the second branch of $A(x)$ from
+On $b\le x\le1$, substituting the second formula for $A(x)$ from
 \cref{eq:opt:binary-upper-gap} makes $G(x)$ a strictly concave quadratic.
 Its stationary point is
 \[
@@ -465,9 +465,9 @@ algorithm parameter throughout $[\uDet{2},\uDet{3}]$.  The guarantees in
 give \cref{eq:opt:ute-full-upper} with $R=\Rquad(u)$.
 \end{proof}
 
-At $u=\uDet{3}$, $b=0$.  The zero-prefix specialization supplies the next
-branch of the curve until $u=\uDet{4}$.  We prove only this range, where the
-algorithm is used.
+At $u=\uDet{3}$, $b=0$.  For
+$\uDet{3}\le u\le\uDet{4}$, the zero-prefix specialization gives the
+formula $1+1/\sqrt{u-1}$.  We prove exactly this parameter interval.
 
 \begin{lemma}[Zero-prefix guarantee]
 \label{lem:opt:zero-prefix}
@@ -543,8 +543,9 @@ For every $c>0$ define the history-dependent threshold
  \end{cases}
  \label{eq:opt:threshold}
 \end{equation}
-The single algorithm used throughout the last two branches is the following.
-It does not use raw execution and therefore does not depend on $u$.
+The following single algorithm covers both parameter regimes
+$\uDet{4}\le u\le\uDet{5}$ and $u\ge\uDet{5}$.  It does not use raw
+execution, so its schedule does not depend on $u$.
 
 \begin{algorithm}[H]
 \caption{\textsc{AdaptiveThreshold}$(J,c)$}
@@ -601,7 +602,7 @@ size-asymptotic competitive ratio.
 
 \begin{proof}
 
-Fix the finite raw-execution cap $u$ in the stated range.
+Fix a finite raw-execution cap $u\ge\uDet{4}$.
 
 Here is the structure of the argument.  We first rewrite
 $\ALG-R\cdot\OPT$ as a sum of contributions from ordered pairs of jobs plus
@@ -624,7 +625,7 @@ $O_u(n)$ bound.  Claims 1--6 carry out these steps in this order.
 
 \paragraph{Setup.}
 Use \textsc{AdaptiveThreshold}$(J,c)$ from
-\cref{alg:adaptive-threshold}; on the high interval use $c=r$.
+\cref{alg:adaptive-threshold}.  When $u\ge\uDet{5}$, set $c=r$.
 For the analysis, immediately before a test let $x$ be the number of jobs not
 yet tested, $N$ the number of earlier tests that revealed a positive value,
 and $N_{\mathrm{def}}$ the number of those jobs placed in the final queue.
@@ -633,13 +634,15 @@ Thus
  y=\frac{N_{\mathrm{def}}-RN}{x}\le0
  \label{eq:opt:state-y}
 \end{equation}
-and the threshold is given by \cref{eq:opt:threshold}.  On the mixed interval
-$c\ge r$, and hence
+and the threshold is given by \cref{eq:opt:threshold}.  When
+$\uDet{4}\le u\le\uDet{5}$, the parametrization
+\cref{eq:opt:mixed-parametrization} gives $c\ge r$, and hence
 \[
  a_c(y)\le a_c(0)\le a_r(0)=\frac1r<u-1.
  \label{eq:opt:threshold-below-cap}
 \]
-The same inequality holds on the high interval, where we use $c=r$.
+When $u\ge\uDet{5}$, we set $c=r$, so
+\cref{eq:opt:threshold-below-cap} holds there as well.
 Thus every revealed value $p_i\in[u-1,u]$, for which the offline effective
 length has reached the offline cap $u$, is placed in the final queue.
 
@@ -732,9 +735,10 @@ at a boundary.  The resulting five endpoint types are
  \label{eq:opt:five-endpoints}
 \end{equation}
 Here $0^+$ means a positive value tending to zero, and $a_c(y)^+$ means a
-value tending to the current threshold from above.  They are kept distinct
-from $0$ and $a_c(y)$ because the former pairs lead to different state
-updates or actions.  For a job processed after its test, the positive
+value tending to the current threshold from above.  The types $E$ and $Q$
+are kept distinct from $Z$ and $M$, respectively, because approaching either
+boundary from the other side produces a different state update or action.
+For a job processed after its test, the positive
 interval has endpoints $0^+$ and $a_c(y)$.  If a value $p_i<u-1$ is placed
 in the final queue, its interval has endpoints $a_c(y)^+$ and $u-1$.  On
 $[u-1,u]$ the offline contribution is constant and the online contribution
@@ -787,8 +791,7 @@ when it appeared.  Hence a current endpoint $U$, whose value is $u$, contributes
 only $-Rp$ against such an earlier job.  Against an earlier endpoint $Q$ of
 value $p$ it contributes $p-Rp=-cp$, and against an earlier endpoint $U$ it
 contributes $h_U$.
-Summing the
-corresponding cases gives
+Summing over the five endpoint types gives
 \begin{equation}
  \Gamma_n\le\sum_i\ell_i;
  \label{eq:opt:pair-allocation-dominates}
@@ -916,7 +919,8 @@ The $Q$-bracket in \eqref{eq:opt:region-one-drifts} is therefore
 nonpositive; the $M$-bracket is the $Q$-bracket minus $h_c'$, and the
 $E$-bracket is the $M$-bracket minus $R(a_c-1)$.
 
-In Region II, the same calculation gives
+In Region II, substituting $W=x^2g_c(\eta)$ into the definitions of the four
+drifts gives
 \begin{align}
  J_Z/x=J_E/x&=-2g_c+\eta g_c',
  \notag\\
@@ -1082,8 +1086,9 @@ Region II the unnormalized base potential is simply
  xN_{\mathrm{def}}+\frac{(x+N_{\mathrm{def}}-RP)_+^2}{2R},
  \label{eq:opt:region-two-base-potential}
 \end{equation}
-which has bounded one-sided second derivatives.  The two pieces are $C^1$ at
-$y=-1$, as verified above, and the positive-part square is $C^1$ at
+which has bounded one-sided second derivatives.  The calculation following
+\cref{eq:opt:G-region-two} shows that the two pieces are $C^1$ at $y=-1$,
+and the positive-part square is $C^1$ at
 $\eta=-1$.
 
 For the additional term $\mathcal R(x,K)=x^2\mathcal H(K/x)$, whenever
@@ -1102,8 +1107,9 @@ bounded one-sided Hessians.  At $x=0$, set $\mathcal R=0$: for $K>0$ it is
 already locally zero, while
 $\mathcal R(\theta x,\theta K)=\theta^2\mathcal R(x,K)$ gives zero gradient
 at $(x,K)=(0,0)$.  Altogether $W$ is continuously differentiable with a Lipschitz
-gradient on all states that the algorithm can reach.  On the
-mixed interval its regularity constant may depend on the fixed value of $u$.
+gradient on all states that the algorithm can reach.  For
+$\uDet{4}\le u\le\uDet{5}$, its regularity constant may depend on the fixed
+value of $u$.
 When $c=r$ and $m=0$, however, the additional term is identically zero and the base
 potential depends only on the absolute constant $r$; its regularity constant is
 therefore uniform over all $u\ge \uDet{5}$.  This includes the last transition
@@ -1182,8 +1188,8 @@ Thus, with $B=C_{\rm step}+r/2$,
 \end{equation}
 and $B$ is independent of $u$.  The estimate is genuinely uniform rather
 than the result of sending a parameter-dependent remainder to infinity.  This proves
-\cref{thm:opt:optional-middle-upper}.  Finally, because $u>1$ on the
-present range, every effective offline length is at least one and
+\cref{thm:opt:optional-middle-upper}.  Finally, because
+$u\ge\uDet{4}>1$, every effective offline length is at least one and
 $\OPT\ge n(n+1)/2$.  The additive term in
 \eqref{eq:opt:mixed-upper-finite} vanishes in the size-asymptotic ratio.
 
