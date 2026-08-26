@@ -653,12 +653,17 @@ in the final queue, respectively, while $x$ decreases.  This monotonicity
 will allow us to allocate every pair cost when its relevant endpoint becomes
 known.
 
-\begin{claim}[Five-endpoint reduction]
+\begin{claim}[Reduction to five endpoint types]
 \label{clm:opt:adaptive-endpoint-reduction}
-After fixing, for every job, whether it is processed after its test or placed
-in the final queue, a worst value of the leading pairwise gap is attained by
-a sequence of the five endpoint types listed in
-\cref{eq:opt:five-endpoints}.
+Fix a decision transcript of \textnormal{\textsc{AdaptiveThreshold}}: for each tested job,
+fix whether its revealed value is zero or positive and whether the job is
+processed immediately or placed in the final queue.  This also fixes the
+state and threshold before every subsequent test.  Among all processing-time
+vectors consistent with this transcript, the supremum of the pairwise term
+$\Gamma_n$ from \cref{eq:opt:pair-objective} is unchanged if every job is
+restricted to one of the five endpoint types in
+\cref{eq:opt:five-endpoints}.  The symbols $0^+$ and $a_c(y)^+$ denote
+one-sided limits at which the fixed transcript is preserved.
 \end{claim}
 
 \begin{proof}
@@ -718,10 +723,12 @@ $i$-th summand is $-c(1+p_i)$.  If $p_i\ge u-1$, its offline effective
 length is $u$ and the summand is at most $1-cu\le0$.  Thus it is enough to
 control $\Gamma_n$.
 
-Now fix only, for each tested job, whether it is processed immediately or
-placed in the final queue.  Varying a processing value inside an interval
-that preserves this choice does not alter any later threshold state.  On
-each such interval,
+Now fix the decision transcript described in the claim.  It determines all
+later threshold states because these states depend only on whether each
+earlier value was zero or positive and whether it was processed immediately
+or placed in the final queue.  Varying a processing value inside an interval
+that preserves this transcript therefore does not change any later
+threshold.  On each such interval,
 \eqref{eq:opt:pair-objective} is convex in that value, so its maximum occurs
 at a boundary.  The resulting five endpoint types are
 \begin{equation}
