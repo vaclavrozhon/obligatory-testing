@@ -163,6 +163,25 @@ $\uDet{5}\le u<\infty$
 \end{tabular}
 \end{center}
 
+\paragraph{Terminology used in the proofs.}
+When we divide the number of jobs in a class by the scale of the current
+construction---usually $n$, and $H$ in the harmonic construction---we call
+the result its \emph{mass}.  A prefix and suffix always refer to the fixed test
+order: for a prefix parameter $b$, the first $\lfloor bn\rfloor$ jobs form
+the prefix and all remaining jobs form the suffix.  A job is
+\emph{immediate} if it is processed directly after its test and
+\emph{deferred} if its processing is postponed to the final queue.  In a
+binary instance, a \emph{zero job} has $p_i=0$ and a \emph{long job} has
+$p_i=u$.  A \emph{capped} job also means $p_i=u$; a collection is
+\emph{cap-free} when $1+p_i\le u$ for all its jobs, so the raw cap never
+changes their offline effective lengths.  An \emph{endpoint reduction}
+means maximizing the competitive excess over one processing time and showing
+that a maximum occurs at a boundary value; every use below states the relevant
+interval and its boundary values.  Finally, \emph{replay} means recording all
+answers produced by an adaptive adversary on their job labels and rerunning
+the deterministic algorithm on that fixed vector; the rerun has the same
+transcript.
+
 \subsection{Upper bounds}
 \label{sec:det-algorithm-guarantees}
 

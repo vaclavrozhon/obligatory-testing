@@ -135,28 +135,75 @@ For every $\uDet{2}\le u\le2$,
 \end{claim}
 
 \begin{proof}
-Adjacent exchanges place as many
-long jobs as possible in the forced prefix and put all suffix-long jobs
-before suffix zeros.  If $x$ is the total long mass, then the prefix-long
-mass is $a=\min\{b,x\}$ and the deferred-long mass is
-$d=(x-b)_+$.  After division by $n^2$, the leading excess
-$G(x)=A-R O$ is
+We first consider a binary input, so every job is either zero
+($p_i=0$) or long ($p_i=u$).  The first $bn$ positions are the forced
+prefix.  A long job in this prefix is processed immediately; a long job in
+the suffix is deferred; every zero job is processed immediately.
+
+Fix the total number $L$ of long jobs, and write $k=bn$ for the moment;
+integer rounding will be restored at the end.  Their positions do not affect
+OPT, which knows all values and sorts by effective length.  We determine the
+worst positions for ALG directly.
+
+Suppose exactly $A$ long jobs lie in the prefix and put $D=L-A$.  Within the
+prefix, moving a long job before a zero delays that zero and every later
+immediate completion by the long processing time $u$.  Within the suffix,
+moving a deferred long job before a zero delays the zero by one unit of test
+time and does not change the final queue.  Thus, for fixed $A$, the worst
+order is
+
+\[
+ \underbrace{u,\ldots,u}_{A}
+ \underbrace{0,\ldots,0}_{k-A}
+ \mathbin{|}
+ \underbrace{u,\ldots,u}_{D}
+ \underbrace{0,\ldots,0}_{n-k-D},
+\]
+where the vertical bar separates the forced prefix from the suffix.  The
+completion cost of this order is
 \begin{equation}
-G(x)=
-\begin{cases}
-\displaystyle
- \frac{1-R}{2}+u\left(x-\frac{x^2}{2}\right)
- -\frac{R s}{2}x^2,
- &0\le x\le b,\\[3mm]
-\displaystyle
- \frac{1-R}{2}
- +u\left(b-\frac{b^2}{2}\right)
- +(1-b)(x-b)+\frac{s}{2}(x-b)^2
- -\frac{R s}{2}x^2,
- &b\le x\le1.
-\end{cases}
-\label{eq:opt:binary-upper-gap}
+ C(A)=\frac{n(n+1)}2
+ +D\left(n-k-\frac{D+1}{2}\right)
+ +u\left(An-\frac{A(A-1)}2+\frac{D(D+1)}2\right).
+ \label{eq:opt:binary-order-cost}
 \end{equation}
+The first term is the unit-test baseline.  The second records the positions
+of the tests of the $D$ long jobs in the suffix, and the last records all
+delays caused by long processing.  Moving one long job from the suffix into
+the prefix changes
+$A$ to $A+1$ and $D$ to $D-1$, and hence
+\[
+ C(A+1)-C(A)=(u-1)(n-L)+k-A\ge0.
+\]
+Consequently a worst input puts as many long jobs in the prefix as possible,
+then all remaining long jobs at the start of the suffix, and all zeros last.
+
+Normalize job counts by $n$, and let $x=L/n$ be the total long-job mass.  The
+long mass in the prefix is therefore $a=\min\{b,x\}$.  If $x>b$, the
+remaining mass $d=x-b$ consists of deferred long jobs; if $x\le b$, then
+$d=0$.  Ignore for the moment the $O_u(n)$ one-job and rounding terms, and
+write $A=\ALG/n^2$ and $O=\OPT/n^2$ for the leading coefficients.  Direct
+pair counting gives
+\begin{align}
+ O(x)&=\frac12+\frac{s}{2}x^2,
+ \notag\\
+ A(x)&=
+ \begin{cases}
+ \displaystyle
+  \frac12+u\left(x-\frac{x^2}{2}\right),
+     &0\le x\le b,\\[3mm]
+ \displaystyle
+  \frac12+u\left(b-\frac{b^2}{2}\right)
+  +(1-b)(x-b)+\frac{s}{2}(x-b)^2,
+     &b\le x\le1.
+ \end{cases}
+ \label{eq:opt:binary-upper-gap}
+\end{align}
+The term $1/2$ is the common unit-time baseline.  In $O(x)$, the extra
+amount $s=u-1$ is paid only by pairs of long jobs.  The two cases for $A(x)$
+distinguish whether all long jobs fit into the forced prefix.
+
+Put $G(x)=A(x)-R O(x)$.  We show that its maximum is zero.
 The second quadratic is strictly concave.  Its stationary point is
 \[
  \alpha=\frac{s^2+s+1}{s^2+s+1+sR}.
@@ -168,19 +215,26 @@ cancelling the positive denominator, this is exactly
 is positive.  The left derivative satisfies
 $G'_-(b)=G'_+(b)+s(1-b)>0$, and the first quadratic is concave, so it is
 increasing on $[0,b]$.  Thus $G(x)\le0$ for every $x\in[0,1]$, including
-the limiting case $b=0$.  This proves the binary upper bound without a
-hidden local-versus-global step.
+the limiting case $b=0$: the two pieces agree at $b$, the first increases
+up to that common value, and the second never exceeds its zero maximum.
 
-For $\uDet{2}\le u\le2$, arbitrary values reduce to binary values by
-independent Bernoulli extremalization, in the following order.  First raise
-\emph{every} suffix-deferred value to $u$.  This cannot lower ALG, while its
-offline effective length was already $u$.  Only after this deterministic
-step, replace a prefix value $p$ by $u$ with probability $p/u$ and by zero
-otherwise, and replace a suffix-immediate value $p\le u-1$ by $u$ with
-probability $p$ and by zero otherwise.  Notice that the $u$ realization
-of a suffix-immediate job becomes deferred, so status is not preserved.
-Nevertheless the online check is pairwise.  For jobs $i$ before $j$, the
-leading pair contribution is
+We now reduce a general input to the binary case just analyzed.  In the
+present range the threshold is $u-1\le1$.  Thus a suffix job is immediate
+exactly when $p\le u-1$ and deferred otherwise.  First increase every
+deferred suffix value to $u$.  This cannot decrease ALG, and it leaves OPT
+unchanged because such a job already has effective length
+$\min\{u,1+p\}=u$.
+
+For the remaining coordinates, construct a random binary vector as follows,
+independently from job to job.  Replace a prefix value $p$ by $u$ with
+probability $p/u$ and by zero otherwise.  Replace an immediate suffix value
+$p\le u-1$ by $u$ with probability $p$ and by zero otherwise.  The latter
+probability is valid because $p\le u-1\le1$.  A suffix job rounded to $u$
+changes from immediate to deferred; the comparison below includes this
+change of action.
+
+To compare online costs, consider a pair of positions $i<j$ in the test
+order.  Its leading contribution to ALG is
 \begin{equation}
  g_{ij}=\begin{cases}
  1+p_i,&i\text{ is immediate},\\
@@ -189,25 +243,36 @@ leading pair contribution is
  \end{cases}
  \label{eq:opt:pair-contribution}
 \end{equation}
-A rounded prefix job stays immediate and preserves its expected value.  If
-$i$ is suffix-immediate, its rounded contribution is one when it becomes
-zero and at least two when it becomes $u$, hence its expectation is at least
-$1+p_i$.  If $i$ is deferred and $j$ is suffix-immediate, then $i$ has been
-raised to $u$ and the expected pair contribution is
-$2+up_j\ge2+p_j$; a deferred--deferred pair can only increase.  Thus
-expected ALG does not decrease, up to its $O_u(n)$ diagonal terms.
+A prefix job remains immediate, and its rounding preserves its expected
+processing value.  If $i$ is an immediate suffix job, then after rounding its
+pair contribution is one when it becomes zero and at least two when it
+becomes $u$; its expectation is therefore at least $1+p_i$.  If $i$ is
+deferred and $j$ is an immediate suffix job, then $i$ has already been raised
+to $u$, and rounding $j$ gives expected contribution
+$2+up_j\ge2+p_j$.  Finally, a pair of deferred jobs can only become more
+expensive.  These cases show that the expected leading online cost does not
+decrease.
 
-The expected effective lengths are,
-respectively,
+It remains to check that the same rounding does not increase OPT.  If
+$\lambda'$ denotes the effective length after rounding, then for a prefix job
+and an immediate suffix job, respectively,
 \begin{equation}
- 1+\frac{u-1}{u}p\le \min\{u,1+p\},
+ \EE\lambda'=1+\frac{u-1}{u}p\le \min\{u,1+p\},
  \qquad
- 1+(u-1)p\le1+p,
+ \EE\lambda'=1+(u-1)p\le1+p.
 \end{equation}
-and $u$ for a deferred value.  Since the minimum is jointly concave,
-$\EE\min(\lambda_i',\lambda_j')\le\min(\lambda_i,\lambda_j)$.  Thus some binary realization
-has competitive excess at least that of the original instance, and the
-binary bound proves the claimed inequality.
+A deferred suffix job has effective length $u$ both before and after the
+first step.  Since the minimum is jointly concave,
+\[
+ \EE\min\{\lambda_i',\lambda_j'\}
+ \le \min\{\EE\lambda_i',\EE\lambda_j'\}
+ \le \min\{\lambda_i,\lambda_j\}.
+\]
+The offline pair identity therefore shows that expected OPT does not
+increase.  Consequently the expected value of
+$\ALG-R\OPT$ for the binary vector is at least its value for the original
+input, up to $O_u(n)$ one-job terms.  Some binary realization is at least as
+bad as this expectation, and the binary bound proves the claim.
 \end{proof}
 
 \begin{claim}[The range $2\le u\le\uDet{3}$]
@@ -220,22 +285,46 @@ For every $2\le u\le\uDet{3}$,
 \end{claim}
 
 \begin{proof}
-Fix the symbolic prefix/immediate/deferred decisions.  Convexity in one
-coordinate reduces a prefix job to $p\in\{0,u\}$, a suffix-immediate job to
-$p\in\{0,1\}$, and a suffix-deferred job to $p\in\{1^+,u\}$.  For the
-suffix-deferred reduction, on $1<p<u-1$ the deferred--deferred term has coefficient
-$1-R<0$ multiplying a concave minimum; on $[u-1,u]$, OPT is flat and ALG
-is nondecreasing.  Adjacent exchanges give the canonical endpoint order.
+Here $u\ge2$, so the algorithm uses threshold one.  A prefix job is always
+immediate, a suffix job with $p\le1$ is immediate, and a suffix job with
+$p>1$ is deferred.  First keep this immediate/deferred pattern fixed and
+vary one processing time at a time in the leading excess
+$\ALG-R\OPT$.  On each interval between the threshold and the offline cap,
+the pair formula \cref{eq:opt:pair-contribution} makes this excess convex in
+that coordinate.  Hence a maximum occurs at an interval endpoint.  This
+reduces
+\begin{itemize}
+\item a prefix value to $0$ or $u$;
+\item an immediate suffix value to $0$ or $1$; and
+\item a deferred suffix value to $1^+$ or $u$.
+\end{itemize}
+Here $1^+$ means a value tending to one from above, so the job remains
+deferred.  For the last reduction, on $1<p<u-1$ the only nonlinear term is a
+concave minimum multiplied by $1-R<0$, hence it is convex; on $[u-1,u]$ the
+offline effective length is already the constant $u$, while the online cost
+is nondecreasing in $p$.
 
-Normalize counts by $n$.  Let $a$ be prefix-$u$ mass, $d$ suffix-$u$ mass,
-$t$ suffix-$1^+$ mass, and $m$ suffix-immediate-one mass.  Their constraints
-are
+We next choose the worst test order for fixed numbers of these endpoint
+types.  OPT depends only on those numbers.  In ALG, swapping two neighboring
+positions shows the following: capped jobs in the prefix may be moved before
+zero jobs in the prefix; deferred jobs in the suffix may be moved before
+immediate jobs in the suffix; and
+suffix jobs of value one may be moved before zero jobs in the suffix.  Each swap weakly
+increases ALG.  The order among two deferred jobs is irrelevant because the
+last line of \cref{eq:opt:pair-contribution} is symmetric.
+
+Normalize each class size by $n$.  Let $a$ be the mass of prefix jobs with
+$p=u$, $d$ the mass of suffix jobs with $p=u$, $t$ the mass of deferred
+suffix jobs with $p=1^+$, and $m$ the mass of immediate suffix jobs with
+$p=1$.  All other jobs have value zero.  The constraints are
 \begin{equation}
  0\le a\le b,
  \qquad d,t,m\ge0,
  \qquad d+t+m\le1-b.
 \end{equation}
-Pairwise accounting using \cref{eq:opt:pair-contribution} gives
+As in the preceding claim, let $A$ and $O$ denote the leading coefficients
+of $\ALG/n^2$ and $\OPT/n^2$.  Summing
+\cref{eq:opt:pair-contribution} over the ordered endpoint classes gives
 \begin{align}
  A={}&\frac12+(s+1)\left(a-\frac{a^2}{2}\right)
  +(1-b)(d+t+m)-\frac{m^2}{2}+\frac{s}{2}d^2,
@@ -244,14 +333,20 @@ Pairwise accounting using \cref{eq:opt:pair-contribution} gives
  +\frac{s-1}{2}(a+d)^2.
  \label{eq:opt:ute-O}
 \end{align}
-Moving $m$ to $t$ does not change $O$ and increases $A$, so $m=0$.  Put
-$x=a+d$ and write $F(x)=A-R O$ after optimizing the other variables.  Retain
-the stationary point from the preceding claim,
+The formula for $O$ is especially transparent: every job contributes the
+unit baseline; all four nonzero classes have one additional unit of effective
+length; and the two capped classes $a,d$ have another $s-1=u-2$ units.
+Replacing an immediate value-one suffix job by a deferred value-$1^+$ job
+does not change $O$ in the limit and increases $A$.  Thus a worst reduced
+instance has $m=0$.  Put $x=a+d$, the total mass of capped jobs, and maximize
+$A-RO$ over the remaining split between $a,d,t$.  We retain the stationary
+point from the preceding claim,
 \[
  \alpha=\frac{s^2+s+1}{s^2+s+1+sR}.
 \]
-The derivative of the gap in $t$ is $1-b-R(x+t)$.  Thus its maximizing
-value is $(\chi-x)_+$, where the critical mass is
+For fixed $x$, the derivative with respect to the deferred $p=1^+$ mass $t$
+is $1-b-R(x+t)$.  Thus the best choice is
+$t=(\chi-x)_+$, where
 \[
  \chi=\frac{1-b}{R}
       =\frac{s(s+1)}{s^2+s+1+sR}.
@@ -263,8 +358,9 @@ The identities
  \chi-b=\frac{s^2R-1}{s^2+s+1+sR}
 \]
 show that $b<\chi<\alpha$ on the present range.  At fixed
-$x,t$, moving mass from $d$ to $a$ leaves $O$ unchanged and changes $A$ at
-rate $s(1-x)+b-a\ge0$.  Hence
+$x,t$, replacing a capped suffix job by a capped prefix job leaves $O$
+unchanged and changes $A$ at rate $s(1-x)+b-a\ge0$.  We therefore fill the
+prefix with capped jobs as far as the constraints permit.  Altogether,
 \begin{equation}
  t=(\chi-x)_+,
  \qquad
@@ -273,9 +369,10 @@ rate $s(1-x)+b-a\ge0$.  Hence
  \label{eq:opt:ute-reduction}
 \end{equation}
 
-For $x\ge\chi$, the gap $A-R O$ is the binary concave quadratic already
-discussed; it is tangent to zero at $x=\alpha$.  For $x<\chi$, substitution
-gives
+It remains to optimize the single variable $x$.  If $x\ge\chi$, then $t=0$,
+so only values zero and $u$ remain.  This is exactly the binary calculation
+from \cref{clm:opt:ute-low-range}; its maximum gap is zero at
+$x=\alpha$.  If $x<\chi$, then $t=\chi-x>0$, and substitution gives
 \begin{equation}
  A-R O
  =-\frac{R-1}{2}+\frac{(1-b)^2}{2R}
@@ -305,7 +402,8 @@ positive denominator $s^2+s+1+sR$ is
 \end{equation}
 so the maximum is at $b$.  On $b\le x\le\chi$,
 \cref{eq:opt:ute-positive-t} is convex and its maximum is at $b$ or $\chi$.
-The endpoint $\chi$ lies on the binary branch.  Finally,
+At $x=\chi$ one has $t=0$, so this endpoint is already covered by the binary
+calculation.  It remains to compare the other endpoint $x=b$ with it:
 \begin{equation}
  F(b)-F(\chi)
  =\frac{\chi-b}{2}\,[2sb-(s-R(s-1))(b+\chi)],
@@ -316,8 +414,8 @@ and direct substitution of $b$ and $\chi$ gives
  =-s+(1+s-s^3)R+s^2(s-1)R^2>0.
  \label{eq:opt:ute-small-certificate}
 \end{equation}
-For a rational sign certificate, $T_s$ is increasing on positive arguments
-and
+To prove the remaining sign without numerical approximation, observe that
+$T_s$ is increasing on positive arguments and
 \begin{equation}
  9T_s(5/3)=6s^3-12s^2-2s-3<0,
 \end{equation}
@@ -339,8 +437,10 @@ $R\ge5/3$.  At $R=5/3$ its value satisfies
 For the last sign, write $s=3/2+z$; the expression becomes
 $3/2-3z/2+20z^2+10z^3$.  It is at least $3/2$ for
 $-1/2\le z\le0$, and for $z\ge0$ it is larger than
-$3/2-9/320$.  These inequalities prove that every endpoint gap is
-nonpositive.  Diagonals and prefix rounding contribute $O_u(n)$.
+$3/2-9/320$.  Hence both possible maxima on $[b,\chi]$ are nonpositive.
+Together with the binary case $x\ge\chi$, this proves $A-RO\le0$ for every
+reduced configuration.  Restoring the one-job terms and rounding
+$\lfloor bn\rfloor$ contributes only $O_u(n)$.
 \end{proof}
 
 We can now prove the lemma.
@@ -354,8 +454,8 @@ give \cref{eq:opt:ute-full-upper} with $R=\Rquad(u)$.
 
 At $u=\uDet{3}$, $b=0$.  The same zero-prefix algorithm remains exact through
 $u=\uDet{4}$ and continues with a $\varphi$ guarantee afterwards.  We state
-the continuation because it makes the three-algorithm lower envelope in
-\cref{fig:intro-curves-det} literal rather than schematic.
+the continuation so that the comparison among the three algorithm guarantees
+in \cref{fig:intro-curves-det} is literal rather than schematic.
 
 \begin{lemma}[Zero-prefix extension]
 \label{lem:opt:zero-prefix}
@@ -371,17 +471,23 @@ $[\uDet{4},\infty)$.
 \end{lemma}
 
 \begin{proof}
-The same coordinatewise reduction leaves capped-deferred mass $d$,
-boundary-deferred mass $t$, immediate-one mass $m$, and zeros.  With
-$s=u-1$, these masses satisfy $d,t,m\ge0$ and $d+t+m\le1$, and the leading
-costs are
+Here $b=0$, so there is no forced prefix, and the threshold is one.  The
+coordinatewise argument from \cref{clm:opt:ute-high-range} reduces every
+input to four types: deferred jobs with $p=u$, deferred jobs with $p=1^+$,
+immediate jobs with $p=1$, and zero jobs.  Let their first three normalized
+masses be $d,t,m$, respectively, and put $s=u-1$.  Thus
+$d,t,m\ge0$ and $d+t+m\le1$.  The leading online and offline coefficients
+are
 \begin{equation}
  A=\frac12+d+t+m-\frac{m^2}{2}+\frac{s d^2}{2},
  \qquad
  O=\frac12+\frac{(d+t+m)^2}{2}+\frac{(s-1)d^2}{2}.
 \end{equation}
-Move $m$ to $t$ and put $y=d+t$.  For fixed $y$, the ratio is
-fractional-linear in $d^2$, so its maximum is on one of two faces:
+As before, replacing an immediate value-one job by a deferred value-$1^+$
+job preserves $O$ in the limit and increases $A$.  We may therefore take
+$m=0$ and write $y=d+t$ for the total positive mass.  For fixed $y$, both
+$A$ and $O$ are affine functions of $d^2$, so their ratio is monotone in
+$d^2$.  Its maximum is attained at one of the two extreme compositions:
 \begin{equation}
  \frac{1+2y}{1+y^2}\le\varphi
  \quad(d=0),
@@ -389,6 +495,8 @@ fractional-linear in $d^2$, so its maximum is on one of two faces:
  1+\frac{2y}{1+s y^2}\le1+\frac1{\sqrt s}
  \quad(d=y).
 \end{equation}
+The first case has only value-$1^+$ positive jobs; the second has only capped
+positive jobs.
 The first one-variable function is maximized at $y=1/\varphi$ and the second
 at $y=1/\sqrt s$, which gives the two displayed constants.
 The second value dominates the first exactly when
@@ -402,7 +510,7 @@ $u\le\uDet{4}$.  Binary instances attain the second value.
 The final algorithm changes its threshold as work accumulates.  We prove its
 mixed-range guarantee on $[\uDet{4},\uDet{5}]$ and its uniform plateau
 guarantee for $u\ge\uDet{5}$.  The proof also records explicitly why an
-outcome at the raw cap cannot be treated as an ordinary deferred outcome.
+outcome at the raw cap cannot be treated as a noncapped deferred outcome.
 Throughout this subsection, $R=1+c$, and we retain $\varphi$, $\uDet{5}$,
 and $r$ from
 \cref{eq:opt:u1-u2,eq:opt:obligatory-constant}.
@@ -426,15 +534,15 @@ It does not use raw execution and therefore does not depend on $u$.
 \label{alg:adaptive-threshold}
 \begin{algorithmic}
 \Statex \textbf{Input:} jobs $J$ and parameter $c>0$.
-\State Fix an arbitrary test order $j_1,\ldots,j_n$.
+\State Fix the test order $1,\ldots,n$.
 \State Set $N\gets0$, $N_{\mathrm{def}}\gets0$, and $Q\gets\varnothing$.
 \State \textbf{For} $i=1,\ldots,n$ \textbf{do}:
 \State \quad Set $x\gets n-i+1$ and $y\gets(N_{\mathrm{def}}-(1+c)N)/x$.
 \State \quad Set $a\gets a_c(y)$ according to \cref{eq:opt:threshold}.
-\State \quad Test $j_i$ for one unit and observe $p_{j_i}$.
-\State \quad \textbf{If} $p_{j_i}\le a$, process $j_i$ immediately.
-\State \quad \textbf{Otherwise}, add $j_i$ to $Q$ and set $N_{\mathrm{def}}\gets N_{\mathrm{def}}+1$.
-\State \quad \textbf{If} $p_{j_i}>0$, set $N\gets N+1$.
+\State \quad Test job $i$ for one unit and observe $p_i$.
+\State \quad \textbf{If} $p_i\le a$, process job $i$ immediately.
+\State \quad \textbf{Otherwise}, add job $i$ to $Q$ and set $N_{\mathrm{def}}\gets N_{\mathrm{def}}+1$.
+\State \quad \textbf{If} $p_i>0$, set $N\gets N+1$.
 \State Process the jobs of $Q$ in nondecreasing order of their revealed
        processing times.
 \end{algorithmic}
@@ -478,6 +586,23 @@ size-asymptotic competitive ratio.
 
 Fix a finite cap $u$ in the stated range.
 
+Here is the structure of the argument.  We first rewrite
+$\ALG-R\OPT$ as a sum of contributions from ordered pairs of jobs plus
+$O_u(n)$ one-job terms.  We then reduce each processing value to one of five
+boundary values that preserve the algorithm's decision; these boundary
+representatives are called \emph{endpoint types}.  When an endpoint is
+revealed, we assign to it the pair contributions involving earlier jobs and
+call the resulting quantity its local charge $\ell_i$.  Finally we construct
+a nonnegative potential $W$ such that every reveal satisfies the one-step
+inequality
+\[
+ \ell_i+W_{i+1}-W_i\le0
+\]
+in the continuous calculation.  The base part of $W$ handles the four
+noncapped types, an additional term handles jobs with $p_i=u$, and a Taylor
+estimate converts these continuous inequalities into the stated finite
+$O_u(n)$ bound.  Claims 1--6 carry out these steps in this order.
+
 \paragraph{Setup.}
 Use \textsc{AdaptiveThreshold}$(J,c)$ from
 \cref{alg:adaptive-threshold}; on the high interval use $c=r$.
@@ -505,6 +630,11 @@ pair cost when its relevant endpoint becomes known.
 
 \medskip
 \noindent\textbf{Claim 1 (Five-endpoint reduction).}
+After fixing the sequence of immediate/deferred decisions, a worst value of
+the leading pairwise gap is attained by a sequence of the five endpoint types
+listed in \cref{eq:opt:five-endpoints} below.  We derive the pairwise gap
+first and then justify this reduction.
+
 Write
 \[
  \bar p_i=\min\{p_i,u-1\}.
@@ -555,13 +685,16 @@ Equations \eqref{eq:opt:alg-pair-decomposition}--
   +\sum_i\bigl[(1+p_i)-R(1+\bar p_i)\bigr].
  \label{eq:opt:gap-decomposition}
 \end{equation}
-The final sum is nonpositive.  Below the cap its $i$-th summand is
+The final sum contains one term per job, rather than one per pair, and is
+nonpositive.  Below the cap its $i$-th summand is
 $-c(1+p_i)$; on the cap it is at most $1-cu\le0$.  Thus it is enough
 to control $\Gamma_n$.
 
-Fix a symbolic immediate/deferred path.  Coordinatewise convexity in
-\eqref{eq:opt:pair-objective} reduces a worst outcome vector to the five
-formal endpoint types
+Now fix only the sequence of immediate/deferred decisions made by the
+algorithm.  Varying a processing value inside an interval that preserves its
+decision does not alter any later threshold state.  On each such interval,
+\eqref{eq:opt:pair-objective} is convex in that value, so its maximum occurs
+at a boundary.  The resulting five endpoint types are
 \begin{equation}
 \begin{array}{c|c|c}
  \text{type}&\text{outcome}&\text{action}\\ \hline
@@ -573,31 +706,34 @@ formal endpoint types
 \end{array}
  \label{eq:opt:five-endpoints}
 \end{equation}
-For an immediate coordinate the two positive endpoints are $0^+$ and
-the live threshold; the genuine zero is kept separate because it does not
-enter $N$.  A deferred coordinate below $u-1$ moves to the live
-threshold or to $u-1$.  On $[u-1,u]$, the offline contribution is flat
-and the algorithmic contribution is nondecreasing, so the latter endpoint
-moves to $u$.  The symbolic categories, and therefore all later
-threshold states, remain unchanged during each coordinate move.  This is
-the only endpoint reduction used below.
+Here $0^+$ means a positive value tending to zero, and $a_c(y)^+$ means a
+value tending to the current threshold from above.  They are kept distinct
+from $0$ and $a_c(y)$ because the former pairs lead to different state
+updates or actions.  For an immediate job the positive interval has
+endpoints $0^+$ and $a_c(y)$.  A deferred value below $u-1$ has endpoints
+$a_c(y)^+$ and $u-1$; on $[u-1,u]$ the offline contribution is constant and
+the online contribution is nondecreasing, so $u$ is worst.  Thus the
+intermediate value $u-1$ can be moved further to $u$.  This proves the
+claimed reduction without changing any later threshold decision.
 
 \medskip
 \noindent\textbf{Claim 2 (Local pair allocation).}
-Separate the earlier $E$-outcomes from the substantive outcomes
-$M,Q,U$.  Let
+Assign every term of $\Gamma_n$ for a pair $i<j$ to the later endpoint $j$.
+The resulting total charge is at most the sum of the local quantities
+$\ell_i$ defined below.  To express them, distinguish earlier $E$ outcomes
+from the positive endpoint types $M,Q,U$.  Let
 \[
  P=\#\{\text{earlier }M,Q,U\},\qquad
  E=\#\{\text{earlier }E\},\qquad
  N_{\mathrm{def}}=\#\{\text{earlier }Q,U\},
 \]
-and let $K$ be the number of earlier $U$-outcomes.  Among the ordinary
-substantive outcomes, let $I,d$ be the numbers of $M,Q$-outcomes and
+and let $K$ be the number of earlier $U$ outcomes.  Among the noncapped
+positive outcomes, let $I,d$ be the numbers of $M,Q$ outcomes and
 let $A_I,A_D$ be the sums of their processing values.  Thus
 $P=I+d+K$ and $N_{\mathrm{def}}=d+K$.
 
-At a current ordinary endpoint, with $a=a_c(y)$, allocate the relaxed
-local charges
+For a current noncapped endpoint, with $a=a_c(y)$, the allocated charges are
+bounded by
 \begin{equation}
  \ell_Z=\ell_E=N_{\mathrm{def}},
  \qquad
@@ -606,7 +742,8 @@ local charges
  \ell_Q=N_{\mathrm{def}}+a(N_{\mathrm{def}}-RP).
  \label{eq:opt:ordinary-local-charges}
 \end{equation}
-For a capped endpoint the exact charge is instead
+For a current capped endpoint $U$, direct pair counting gives the exact
+charge
 \begin{align}
  \ell_U
  &=N_{\mathrm{def}}+A_D+uK-R\bigl(A_I+A_D+(u-1)K\bigr)
@@ -616,18 +753,19 @@ For a capped endpoint the exact charge is instead
  h_U=1+u-R(u-1).
  \label{eq:opt:cap-local-charge}
 \end{align}
-These formulae follow by checking the finitely many ordered endpoint
-pairs.  In particular, an earlier immediate outcome already allocated its
-online processing delay when it appeared, so a current cap contributes
-only $-Rp$ against that outcome.  Against an earlier ordinary deferred
-outcome it contributes $p-Rp=-cp$, and against an earlier cap it
-contributes $h_U$.  The same check shows
+To verify these formulas, pair the current outcome once with each earlier
+endpoint type and use \cref{eq:opt:pair-objective}.  An earlier immediate
+outcome already received its online processing-delay term when it appeared,
+so a current cap contributes only $-Rp$ against such an outcome.  Against an
+earlier noncapped deferred value $p$ it contributes
+$p-Rp=-cp$, and against an earlier cap it contributes $h_U$.  Summing the
+corresponding cases gives
 \begin{equation}
  \Gamma_n\le\sum_i\ell_i;
  \label{eq:opt:pair-allocation-dominates}
 \end{equation}
-the difference is exactly the sum of the nonnegative own-processing terms
-allocated by the $M$-endpoints.  Formula
+the difference is exactly the sum of nonnegative processing-delay terms
+included in the relaxed $M$ charges.  Formula
 \eqref{eq:opt:cap-local-charge}, rather than a substitution $p=u$ into
 $\ell_Q$, is essential before caps have been put into a prefix.
 
@@ -644,12 +782,11 @@ same state gives the exact identity
 \end{align}
 
 \medskip
-\noindent\textbf{Claim 3 (The ordinary-endpoint bank).}
-The states $Z,E,M,Q$ are the four ordinary, noncap endpoints.  The potential
-below proves their inequalities simultaneously for every target parameter
-$c$ on the mixed interval.  The fifth endpoint $U$ is handled only through
-the extra reserve.  At $c=r$ that reserve vanishes, leaving a cap-free bank
-that will also support the obligatory endpoint without a second proof.
+\noindent\textbf{Claim 3 (Base potential for noncapped outcomes).}
+There is a nonnegative potential $W_{\mathrm{base}}$ for which the
+infinitesimal one-step inequality holds for each of the four noncapped types
+$Z,E,M,Q$.  We now construct it explicitly.  The capped type $U$ will require
+one additional potential term in Claim~4.
 Define
 \begin{equation}
  \eta=\frac{N_{\mathrm{def}}-RP}{x},
@@ -685,12 +822,14 @@ derivatives
 They are also nonnegative: $f_c(-1)=0$,
 $f_c'=a_c-1\ge0$, and $h_c,b,g_c\ge0$.
 
-Use the base potential
+Define the base potential
 \begin{equation}
  W_{\mathrm{base}}(x,P,E,N_{\mathrm{def}})=xN_{\mathrm{def}}+x^2G_c(y,b).
  \label{eq:opt:base-potential}
 \end{equation}
-In the raw state $(x,P,E,N_{\mathrm{def}},K)$, the endpoint directions are
+In the unnormalized state vector $(x,P,E,N_{\mathrm{def}},K)$, revealing one
+endpoint of type $T$ changes the coordinates in the direction $v_T$ shown
+below:
 \begin{equation}
 \begin{array}{c|ccccc}
  &x&P&E&N_{\mathrm{def}}&K\\ \hline
@@ -702,8 +841,11 @@ In the raw state $(x,P,E,N_{\mathrm{def}},K)$, the endpoint directions are
 \end{array}
  \label{eq:opt:state-directions}
 \end{equation}
-Let $J_T=\ell_T+\nabla W_{\mathrm{base}}\mathbin{\cdot}v_T$, where for
-the moment $T\in\{Z,E,M,Q\}$.  In Region I, direct differentiation and
+Let
+$J_T=\ell_T+\nabla W_{\mathrm{base}}\mathbin{\cdot}v_T$.  This is the
+local charge plus the infinitesimal change of the potential; we must show
+$J_T\le0$.  For the moment $T\in\{Z,E,M,Q\}$.  In Region I, direct
+differentiation and
 the identities
 \begin{align}
  -2f_c+(y-R)f_c'+a_c(1+y)&=0,
@@ -755,11 +897,14 @@ In Region II, the same calculation gives
 For $-1\le\eta\le0$, substitution of
 $g_c'=(1+\eta)/R$ makes these values $-(1+\eta)/R$,
 $-(1+\eta)/R$, and $0$, respectively.  For $\eta\le-1$ their signs
-are immediate from $g_c=g_c'=0$.  Hence the base bank pays every
-ordinary endpoint.
+are immediate from $g_c=g_c'=0$.  Hence $J_T\le0$ for every noncapped
+endpoint type, as claimed.
 
 \medskip
-\noindent\textbf{Claim 4 (The cap reserve).}
+\noindent\textbf{Claim 4 (Additional potential for capped outcomes).}
+We can add a nonnegative term depending on the number $K$ of earlier capped
+outcomes so that the one-step inequality also holds for type $U$, without
+spoiling it for $Z,E,M,Q$.  We call this additional term the cap reserve.
 Define
 \begin{equation}
  Z(c)=2+\frac1c+\frac12\ln\!\left(1+\frac2c\right),
@@ -797,8 +942,8 @@ define the full potential
 \end{equation}
 It is nonnegative.
 
-For an ordinary endpoint, $K$ is fixed while $x$ decreases, so the
-reserve contributes, after division by $x$,
+For a noncapped endpoint, $K$ is fixed while $x$ decreases, so the reserve
+contributes, after division by $x$,
 \begin{equation}
  L_0(q)=-2\mathcal H(q)+q\mathcal H'(q).
  \label{eq:opt:L0}
@@ -812,7 +957,8 @@ $L_0+\mathcal H'$.  On the active range $\mu\le m$, differentiation of
  L_0=-2(1+q)\mathcal V-q\beta(\mu)\le0.
  \label{eq:opt:reserve-derivatives}
 \end{equation}
-Thus the reserve can only improve every ordinary drift.
+Thus the reserve can only decrease the left-hand side of every noncapped
+one-step inequality.
 
 For a cap, feasibility $N_{\mathrm{def}}\le P$ and $P\ge K$ gives
 \begin{equation}
@@ -835,7 +981,8 @@ The change of variables in \eqref{eq:opt:reserve-H} satisfies
  (1+q)\beta(\mu)=B(q).
  \label{eq:opt:B-beta}
 \end{equation}
-Consequently the cap residual is cancelled exactly:
+Consequently the extra positive charge of a capped outcome is cancelled
+exactly by the change in the reserve:
 \begin{equation}
  L_0+\mathcal H'+B(q)=0
  \qquad(\mu\le m).
@@ -847,11 +994,13 @@ $q_*=m/(1-m)$, the bracket in
 $a_c(-cq_*)$, is zero by
 \eqref{eq:opt:delta-atanh} and \eqref{eq:opt:B-beta}.  For $q\ge q_*$,
 \eqref{eq:opt:y-cap-bound} only decreases the threshold, so that bracket is
-nonpositive.  The fifth Hamiltonian inequality therefore holds for every
-state and for arbitrary interleavings of capped and ordinary outcomes.
+nonpositive.  The one-step inequality for type $U$ therefore holds for every
+state and for arbitrary interleavings of capped and noncapped outcomes.
 
 \medskip
 \noindent\textbf{Claim 5 (Initial calibration).}
+The full potential starts with exactly the amount needed to cancel the
+constant pairwise term: $W_{\mathrm{initial}}=cn^2/2$.
 Initially $y=b=q=0$, and
 \begin{equation}
  f_c(0)=\frac12-\frac c4\ln\!\left(1+\frac2c\right).
@@ -879,26 +1028,29 @@ Thus $W_{\mathrm{initial}}=cn^2/2$.
 
 \medskip
 \noindent\textbf{Claim 6 (Finite jobs and a linear remainder).}
-We spell out the regularity needed to pass from the fluid Hamiltonian to
-unit job transitions.  It is important here to restrict attention to
-feasible states.  In Region I, $y\ge-1$ implies
+For an actual one-job transition, the infinitesimal inequalities from
+Claims~3--4 incur only $O_u(1)$ error.  Summed over all jobs, this gives the
+required $O_u(n)$ remainder; when $c=r$, the constant is independent of
+$u\ge\uDet{5}$.  We now verify the needed regularity on feasible states.
+In Region I, $y\ge-1$ implies
 \begin{equation}
  -xy=R(P+E)-N_{\mathrm{def}}=cP+(P-N_{\mathrm{def}})+RE\le x.
  \label{eq:opt:feasible-compactness}
 \end{equation}
 All terms in the middle expression are nonnegative.  Hence
-$P/x,N_{\mathrm{def}}/x,q\le1/c$ and $b\le1/R$, so every normalized derivative of
-the Region-I perspective in \eqref{eq:opt:base-potential} is bounded on
-the feasible cone.  In Region II the raw base bank is simply
+$P/x,N_{\mathrm{def}}/x,q\le1/c$ and $b\le1/R$.  The normalized arguments of
+$G_c$ in \eqref{eq:opt:base-potential} therefore stay in a bounded set, and
+all derivatives needed for a one-job Taylor estimate are bounded.  In
+Region II the unnormalized base potential is simply
 \begin{equation}
  xN_{\mathrm{def}}+\frac{(x+N_{\mathrm{def}}-RP)_+^2}{2R},
  \label{eq:opt:region-two-raw-bank}
 \end{equation}
-which has bounded one-sided Hessians.  The two pieces are $C^1$ at
+which has bounded one-sided second derivatives.  The two pieces are $C^1$ at
 $y=-1$, as verified above, and the positive-part square is $C^1$ at
 $\eta=-1$.
 
-For the reserve $\mathcal R(x,K)=x^2\mathcal H(K/x)$, on its active cone
+For the reserve $\mathcal R(x,K)=x^2\mathcal H(K/x)$, whenever
 $0\le q\le q_*$ one has bounded $\mathcal H''$, and
 \begin{equation}
  \mathcal R_{xx}=2\mathcal H-2q\mathcal H'+q^2\mathcal H'',
@@ -912,10 +1064,11 @@ For $q\ge q_*$, $\mathcal R=0$; moreover
 $\mathcal H(q_*)=\mathcal H'(q_*)=0$.  Thus the join is $C^1$ with
 bounded one-sided Hessians.  At $x=0$, set $\mathcal R=0$: for $K>0$ it is
 already locally zero, while at $(x,K)=(0,0)$ two-homogeneity gives zero
-gradient.  Altogether $W$ is $C^{1,1}$ on the feasible state cone.  On the
+gradient.  Altogether $W$ is continuously differentiable with a Lipschitz
+gradient on all states that the algorithm can reach.  On the
 mixed interval its regularity constant may depend on the fixed value of $u$.
 When $c=r$ and $m=0$, however, the reserve is identically zero and the base
-bank depends only on the absolute constant $r$; its regularity constant is
+potential depends only on the absolute constant $r$; its regularity constant is
 therefore uniform over all $u\ge \uDet{5}$.  This includes the last transition
 from $x=1$ to $x=0$.
 
@@ -924,14 +1077,14 @@ It follows that a unit transition has the Taylor remainder
  \ell_i+W_{i+1}-W_i\le O_u(1).
  \label{eq:opt:finite-taylor}
 \end{equation}
-The endpoint $E=0^+$ is interpreted one-sidedly.  For a fixed symbolic
-word, replace all $E$-coordinates by positive values $\eps$.  Its
+The endpoint $E=0^+$ is interpreted one-sidedly.  For a fixed sequence of
+endpoint types, replace all $E$ coordinates by positive values $\eps$.  Its
 state trajectory is unchanged, and the exact finite pair objective, being
 a finite sum of affine and minimum terms, converges as
 $\eps\downarrow0$.  Equivalently, retain an
 $O(\eps n^2)$ error and take this limit for each fixed $n$.
-Therefore the formal $E$-Hamiltonian transfers to genuine outcome
-vectors without an asymptotic loss.
+Therefore the one-step inequality for the formal type $E$ transfers to
+genuine outcome vectors without an asymptotic loss.
 
 Summing \eqref{eq:opt:finite-taylor}, using $W\ge0$, and applying
 \eqref{eq:opt:initial-calibration} gives
@@ -952,12 +1105,13 @@ At $u=\uDet{5}$, one has $c=r$, $m=0$, and
 $Z(r)=\uDet{5}$.  The cap reserve is identically zero, while
 \eqref{eq:opt:initial-calibration} remains valid.  If $u$ is increased
 above $\uDet{5}$, the only adverse fifth-endpoint bracket
-$1-r(u-1-a_r(y))$ decreases, and the capped diagonal term in
+$1-r(u-1-a_r(y))$ decreases, and the capped one-job term in
 \eqref{eq:opt:gap-decomposition} also decreases.
 
-Here is the promised uniform finite calculation.  The base bank and its
-feasible cone contain no $u$, so there is one constant $C_{\rm step}$, depending
-only on $r$, for which every ordinary or capped transition with $u\ge \uDet{5}$
+Here is the promised uniform finite calculation.  The base potential and the
+set of states reachable by the algorithm contain no $u$, so there is one
+constant $C_{\rm step}$, depending
+only on $r$, for which every noncapped or capped transition with $u\ge \uDet{5}$
 satisfies
 \[
  \ell_i+W_{i+1}-W_i\le C_{\rm step}.
@@ -967,9 +1121,9 @@ Because $W_0=rn^2/2$ and $W_n=0$, telescoping gives
  \sum_i\ell_i\le\frac r2n^2+C_{\rm step}n.
  \label{eq:opt:uniform-ell}
 \end{equation}
-In the diagonal term of \cref{eq:opt:gap-decomposition}, a value below the
-cap contributes $-r(1+p_i)$.  A capped value contributes at most
-$1-r u\le0$.  Hence the diagonal sum is nonpositive uniformly on
+In the one-job sum of \cref{eq:opt:gap-decomposition}, a value below the cap
+contributes $-r(1+p_i)$.  A capped value contributes at most
+$1-r u\le0$.  Hence the one-job sum is nonpositive uniformly on
 $[\uDet{5},\infty)$.  Combining
 \cref{eq:opt:gap-decomposition,eq:opt:pair-allocation-dominates,eq:opt:uniform-ell}
 now yields
