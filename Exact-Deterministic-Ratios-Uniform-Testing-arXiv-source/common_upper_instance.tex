@@ -168,11 +168,16 @@ equal-valued jobs as distinct jobs, and first fix the private random seed of an
 algorithm that eventually completes every job.  For the present
 finite-support distribution, let $C_0=\{0\}$ and
 $C_j=\{p_j\}$ for $1\le j\le K=s$, and put $d_j=D(C_j)$.
-Apply \cref{lem:uniform-first-touch-event} with failure probability $n^{-2}$,
-using its notation $X_k,A_k$, and let $\Gamma_n=\Gamma_{\rm cell}$.  With
-that probability, simultaneously for every cell $j$ and every prefix of
-length $m\le(1-\delta)n$ in the order in which the algorithm first touches
-the labels,
+Let $X_k$ be the value encountered at the $k$th first touch, and let $A_k$
+indicate that this touch tests the job.  By deferred decisions, the $X_k$
+form a uniform permutation, while $A_k$ is chosen before $X_k$ is exposed.
+Apply \cref{lem:predictable-permutation-sampling} to the vector
+$(\one_{X_k\in C_j})_{j=0}^K$ with failure probability $n^{-2}$, and put
+\[
+ \Gamma_n=(1+\delta^{-1})E_{n,K+1,1,n^{-2}}.
+\]
+With that probability, simultaneously for every cell $j$ and every prefix
+of length $m\le(1-\delta)n$ in the first-touch order,
 \begin{equation}
  \left|\sum_{k\le m}A_k\one_{X_k\in C_j}
        -d_j\sum_{k\le m}A_k\right|\le\Gamma_n.

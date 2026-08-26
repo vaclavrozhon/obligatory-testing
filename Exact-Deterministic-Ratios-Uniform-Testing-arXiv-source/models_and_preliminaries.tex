@@ -464,6 +464,80 @@ the other, and its area changes by at most $h$.  Taking the infimum over
 algorithms gives one inequality; exchanging $D,D'$ gives the other.
 \end{proof}
 
+\paragraph{Learning from a pilot sample.}
+For the instance-optimal upper bounds, a fluid algorithm is chosen from a
+small pilot sample and then run on the remaining jobs.  A \emph{template}
+means a fixed choice of its few fluid parameters, such as a threshold or a
+tested fraction.  We first record the deterministic comparison that turns
+an accurate estimate of the input distribution into an almost optimal
+template.
+
+\begin{lemma}[Lipschitz empirical minimization]
+\label{lem:empirical-minimization}
+Let $\Pi$ be a common family of templates and let $F_D(\pi)$ be their
+objectives for distributions $D$.  Suppose that, for some metric $d$,
+\begin{equation}
+ \sup_{\pi\in\Pi}|F_D(\pi)-F_E(\pi)|\le Ld(D,E).
+ \label{eq:empirical-objective-lipschitz}
+\end{equation}
+If $\Phi(D)=\min_{\pi\in\Pi}F_D(\pi)$, then
+\begin{equation}
+ |\Phi(D)-\Phi(E)|\le Ld(D,E).
+ \label{eq:empirical-value-lipschitz}
+\end{equation}
+Moreover, if $\pi_E$ minimizes $F_E$, then
+\begin{equation}
+ F_D(\pi_E)\le\Phi(D)+2Ld(D,E).
+ \label{eq:empirical-minimization-transfer}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Evaluating the $E$-objective at a minimizer for $D$, and conversely, proves
+\cref{eq:empirical-value-lipschitz}.  For the second claim, insert
+$F_E(\pi_E)=\Phi(E)$ between $F_D(\pi_E)$ and $\Phi(D)$ and apply
+\cref{eq:empirical-objective-lipschitz,eq:empirical-value-lipschitz}.
+\end{proof}
+
+Choosing a template from an estimate $\widehat D$ incurs the Lipschitz
+comparison twice---once for the chosen template and once for the optimal
+template.  A third term accounts for the difference between the original
+input and the jobs left after sampling.
+
+\begin{lemma}[Pilot-learning transfer]
+\label{lem:pilot-learning-transfer}
+Let $\Pi$ be a common template family, suppose
+$\Phi(D)=\inf_{\pi\in\Pi}F_D(\pi)$, and assume
+\begin{equation}
+ \sup_{\pi\in\Pi}|F_D(\pi)-F_E(\pi)|\le L_0d(D,E).
+ \label{eq:pilot-transfer-lipschitz}
+\end{equation}
+Let $\widehat D$ be a pilot estimate, let $D^{\rm rem}$ be the law of the
+remaining jobs, and let $\widehat\pi$ minimize $F_{\widehat D}$.  If the
+complete learned schedule, including its pilot, satisfies conditionally
+\begin{equation}
+ \EE[\ALG_{\mathcal A}\mid\widehat D,D^{\rm rem}]
+ \le n^2F_{D^{\rm rem}}(\widehat\pi)+\varepsilon n^2,
+ \label{eq:pilot-transfer-finite-cost}
+\end{equation}
+then
+\begin{equation}
+ \frac{\EE\ALG_{\mathcal A}}{n^2}
+ \le \Phi(D)+2L_0\EE d(\widehat D,D^{\rm rem})
+       +L_0\EE d(D^{\rm rem},D)+\varepsilon.
+ \label{eq:pilot-learning-transfer}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+By \cref{lem:empirical-minimization},
+$F_{D^{\rm rem}}(\widehat\pi)\le
+\Phi(D^{\rm rem})+2L_0d(\widehat D,D^{\rm rem})$.  The value part of the
+same lemma gives
+$\Phi(D^{\rm rem})\le\Phi(D)+L_0d(D^{\rm rem},D)$.  Substitute both estimates
+in \cref{eq:pilot-transfer-finite-cost} and average.
+\end{proof}
+
 \subsection{Competitive-ratio conventions}
 
 Every asymptotic statement in this paper allows a uniform additive
@@ -699,154 +773,4 @@ most $\eta/2$.  The accumulated difference between the remaining-population
 mean and the original mean is at most $E/\delta$, which proves
 \cref{eq:predictable-permutation-sampling}.  Conditioning and then averaging
 proves the final assertion.
-\end{proof}
-
-Once a sample approximates the input distribution, objective stability must
-transfer its chosen algorithmic parameters back to the true distribution.
-Here and below, a \emph{template} means a fixed choice of the few fluid
-parameters used by an algorithm, such as a threshold or tested fraction.
-The next deterministic lemma isolates this elementary step.
-
-\begin{lemma}[Lipschitz empirical minimization]
-\label{lem:empirical-minimization}
-Let $\Pi$ be a common family of templates and let $F_D(\pi)$ be their
-objectives for distributions $D$.  Suppose that, for some metric $d$,
-\begin{equation}
- \sup_{\pi\in\Pi}|F_D(\pi)-F_E(\pi)|\le Ld(D,E).
- \label{eq:empirical-objective-lipschitz}
-\end{equation}
-If $\Phi(D)=\min_{\pi\in\Pi}F_D(\pi)$, then
-\begin{equation}
- |\Phi(D)-\Phi(E)|\le Ld(D,E).
- \label{eq:empirical-value-lipschitz}
-\end{equation}
-Moreover, if $\pi_E$ minimizes $F_E$, then
-\begin{equation}
- F_D(\pi_E)\le\Phi(D)+2Ld(D,E).
- \label{eq:empirical-minimization-transfer}
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-Evaluating the $E$-objective at a minimizer for $D$, and conversely, proves
-\cref{eq:empirical-value-lipschitz}.  For the second claim, insert
-$F_E(\pi_E)=\Phi(E)$ between $F_D(\pi_E)$ and $\Phi(D)$ and apply
-\cref{eq:empirical-objective-lipschitz,eq:empirical-value-lipschitz}.
-\end{proof}
-
-Under the input convention, randomized lower bounds average directly over
-the private shuffle.  The following finite form of Yao's principle records
-the stronger conclusion that one may instead select a fixed oblivious input.
-
-\begin{lemma}[Finite Yao selection]
-\label{lem:finite-yao}
-Let $\nu$ be a finite-support distribution on inputs, and let $g(A,I)$ be a
-real payoff.  If
-\begin{equation}
- \EE_{I\sim\nu}g(A,I)\ge L
- \label{eq:finite-yao-hypothesis}
-\end{equation}
-for every deterministic strategy $A$, then for every randomized strategy
-$\mathcal A$ there is a fixed $I$ in the support of $\nu$ such that
-\begin{equation}
- \EE_{A\sim\mathcal A}g(A,I)\ge L.
- \label{eq:finite-yao-conclusion}
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-Condition on the random seed of $\mathcal A$ and apply
-\cref{eq:finite-yao-hypothesis}.  Averaging over the seed shows that the
-$\nu$-average of $\EE_{A\sim\mathcal A}g(A,I)$ is at least $L$, so at least
-one input in the finite support attains this average.  This is the one-sided
-finite form of Yao's principle~\cite{Yao1977} used in our lower bounds.
-\end{proof}
-
-The next lemma packages the two sampling estimates used later.  It says that
-every sufficiently early prefix contains approximately the expected number
-of selected jobs from each processing-time class, and that the total work of
-the unselected jobs is also close to its expectation.
-
-\begin{lemma}[Uniform first-touch sampling event]
-\label{lem:uniform-first-touch-event}
-Fix values $p_1,\ldots,p_n\in[0,L]$, partition $[0,L]$ into cells
-$C_0,\ldots,C_s$, and let
-$d_j=n^{-1}|\{i:p_i\in C_j\}|$ be the empirical mass of cell $C_j$.  Put
-$\mu=n^{-1}\sum_i p_i$.  Place these $n$ entries uniformly on the public labels,
-fix a deterministic algorithm, and let $X_k$ be the value encountered at first
-touch $k$.  If $A_k$ is the predictable indicator that this touch tests the
-job and reveals its value before processing, then for every
-$\delta,\eta\in(0,1)$, with probability at
-least $1-\eta$, simultaneously for every $m\le(1-\delta)n$,
-\begin{align}
- \left|\sum_{k\le m}A_k\one_{X_k\in C_j}
-       -d_j\sum_{k\le m}A_k\right|
- &\le \Gamma_{\rm cell} &&(0\le j\le s),
- \label{eq:first-touch-cell}\\
- \left|\sum_{k\le m}(1-A_k)X_k
-       -\mu\sum_{k\le m}(1-A_k)\right|
- &\le \Gamma_{\rm work},
- \label{eq:first-touch-work}
-\end{align}
-where
-\begin{align*}
- \Gamma_{\rm cell}
-  &=(1+\delta^{-1})E_{n,s+1,1,\eta/2},\\
- \Gamma_{\rm work}
-  &=(1+\delta^{-1})E_{n,1,L,\eta/2}.
-\end{align*}
-The statement remains true after conditioning on an independent algorithm seed.
-\end{lemma}
-
-\begin{proof}
-By deferred decisions, the first-touch values form a uniform permutation
-and $A_k$ is predictable.  Apply
-\cref{lem:predictable-permutation-sampling} to the cell-indicator vector with
-selector $A_k$ and to the scalar value with selector $1-A_k$, assigning
-failure probability $\eta/2$ to each application.
-\end{proof}
-
-\subsection{Learning a fluid algorithm from a pilot sample}
-
-For instance-optimal upper bounds, we use a small pilot sample to choose a
-good fluid template and then run that template on the remaining jobs.
-
-Suppose changing the input law by distance $d(D,E)$ changes the cost of every
-template by at most $L_0d(D,E)$.  Choosing a template using the estimate
-$\widehat D$ then incurs this comparison twice---once for the chosen template
-and once for the optimal template.  A third term accounts for the difference
-between the original input and the jobs left after sampling.
-
-\begin{lemma}[Pilot-learning transfer]
-\label{lem:pilot-learning-transfer}
-Let $\Pi$ be a common template family, suppose
-$\Phi(D)=\inf_{\pi\in\Pi}F_D(\pi)$, and assume
-\begin{equation}
- \sup_{\pi\in\Pi}|F_D(\pi)-F_E(\pi)|\le L_0d(D,E).
- \label{eq:pilot-transfer-lipschitz}
-\end{equation}
-Let $\widehat D$ be a pilot estimate, let $D^{\rm rem}$ be the law of the
-remaining jobs, and let $\widehat\pi$ minimize $F_{\widehat D}$.  If the
-complete learned schedule, including its pilot, satisfies conditionally
-\begin{equation}
- \EE[\ALG_{\mathcal A}\mid\widehat D,D^{\rm rem}]
- \le n^2F_{D^{\rm rem}}(\widehat\pi)+\varepsilon n^2,
- \label{eq:pilot-transfer-finite-cost}
-\end{equation}
-then
-\begin{equation}
- \frac{\EE\ALG_{\mathcal A}}{n^2}
- \le \Phi(D)+2L_0\EE d(\widehat D,D^{\rm rem})
-       +L_0\EE d(D^{\rm rem},D)+\varepsilon.
- \label{eq:pilot-learning-transfer}
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-By \cref{lem:empirical-minimization},
-$F_{D^{\rm rem}}(\widehat\pi)\le
-\Phi(D^{\rm rem})+2L_0d(\widehat D,D^{\rm rem})$.  The value part of the
-same lemma gives
-$\Phi(D^{\rm rem})\le\Phi(D)+L_0d(D^{\rm rem},D)$.  Substitute both estimates in
-\cref{eq:pilot-transfer-finite-cost} and average.
 \end{proof}
