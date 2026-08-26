@@ -603,30 +603,21 @@ In particular these are upper bounds on the deterministic
 size-asymptotic competitive ratio.
 \end{theorem}
 
-\begin{proof}
-
-Fix a finite raw-execution cap $u\ge\uDet{4}$.
-
-Here is the structure of the argument.  We first rewrite
+We prove the theorem through six claims.  The first two rewrite
 $\ALG-R\cdot\OPT$ as a sum of contributions from ordered pairs of jobs plus
-$O_u(n)$ terms contributed by individual jobs.  We then reduce each
-processing value to one of five
-boundary values that preserve the algorithm's decision; these boundary
-representatives are called \emph{endpoint types}.  When an endpoint is
-revealed, we assign to it the pair contributions involving earlier jobs and
-call the resulting quantity its local charge $\ell_i$.  Finally we construct
-a nonnegative potential $W$ such that every reveal satisfies the one-step
+$O_u(n)$ one-job terms, reduce the processing times to five boundary values,
+and assign the resulting pair contributions to local charges $\ell_i$.
+The next three claims construct and calibrate a nonnegative potential $W$
+such that every reveal satisfies the continuous one-step
 inequality
 \[
- \ell_i+W_{i+1}-W_i\le0
+ \ell_i+W_{i+1}-W_i\le0.
 \]
-in the continuous calculation.  The base part of $W$ handles the endpoint
-types $Z,E,M,Q$, an additional term handles type $U$ (that is, $p_i=u$), and
-a Taylor
-estimate converts these continuous inequalities into the stated finite
-$O_u(n)$ bound.  Claims 1--6 carry out these steps in this order.
+The sixth claim converts these infinitesimal inequalities into the stated
+finite bounds and performs the final telescoping.
 
-\paragraph{Setup.}
+\paragraph{Common setup.}
+Fix a finite raw-execution cap $u\ge\uDet{4}$ and put $R=1+c$.
 Use \textsc{AdaptiveThreshold}$(J,c)$ from
 \cref{alg:adaptive-threshold}.  When $u\ge\uDet{5}$, set $c=r$.
 For the analysis, immediately before a test let $x$ be the number of jobs not
@@ -640,10 +631,10 @@ Thus
 and the threshold is given by \cref{eq:opt:threshold}.  When
 $\uDet{4}\le u\le\uDet{5}$, the parametrization
 \cref{eq:opt:mixed-parametrization} gives $c\ge r$, and hence
-\[
+\begin{equation}
  a_c(y)\le a_c(0)\le a_r(0)=\frac1r<u-1.
  \label{eq:opt:threshold-below-cap}
-\]
+\end{equation}
 When $u\ge\uDet{5}$, we set $c=r$, so
 \cref{eq:opt:threshold-below-cap} holds there as well.
 Thus every revealed value $p_i\in[u-1,u]$, for which the offline effective
@@ -656,14 +647,15 @@ in the final queue, respectively, while $x$ decreases.  This monotonicity
 will allow us to allocate every pair cost when its relevant endpoint becomes
 known.
 
-\medskip
-\noindent\textbf{Claim 1 (Five-endpoint reduction).}
+\begin{claim}[Five-endpoint reduction]
+\label{clm:opt:adaptive-endpoint-reduction}
 After fixing, for every job, whether it is processed after its test or placed
 in the final queue, a worst value of the leading pairwise gap is attained by
 a sequence of the five endpoint types listed in
-\cref{eq:opt:five-endpoints} below.  We derive the pairwise gap first and then
-justify this reduction.
+\cref{eq:opt:five-endpoints}.
+\end{claim}
 
+\begin{proof}
 Write
 \[
  \bar p_i=\min\{p_i,u-1\}.
@@ -748,9 +740,10 @@ $[u-1,u]$ the offline contribution is constant and the online contribution
 is nondecreasing, so $u$ is worst.  Thus the intermediate value $u-1$ can
 be moved further to $u$.  This proves the claimed reduction without
 changing any later threshold decision.
+\end{proof}
 
-\medskip
-\noindent\textbf{Claim 2 (Local pair allocation).}
+\begin{claim}[Local pair allocation]
+\label{clm:opt:adaptive-local-allocation}
 Assign every term of $\Gamma_n$ for a pair $i<j$ to the later endpoint $j$.
 The resulting total charge is at most the sum of the local quantities
 $\ell_i$ defined below.  To express them, distinguish earlier endpoints of
@@ -787,6 +780,9 @@ the exact charge
  h_U=1+u-R(u-1).
  \label{eq:opt:cap-local-charge}
 \end{align}
+\end{claim}
+
+\begin{proof}
 To verify these formulas, pair the current job once with each earlier
 endpoint type and use \cref{eq:opt:pair-objective}.  An earlier job processed
 after its test was already charged for the delay that its processing causes
@@ -816,14 +812,17 @@ same state gives the exact identity
  &\le K\,[1-c(u-1-a)].
  \label{eq:opt:cap-versus-q}
 \end{align}
+\end{proof}
 
-\medskip
-\noindent\textbf{Claim 3 (Base potential for types $Z,E,M,Q$).}
+\begin{claim}[Base potential for types $Z,E,M,Q$]
+\label{clm:opt:adaptive-base-potential}
 There is a nonnegative potential $W_{\mathrm{base}}$ for which the
 infinitesimal one-step inequality holds for each of the types $Z,E,M,Q$.
-We now construct it explicitly.  The type $U$, representing
-$p=u$, will require
-one additional potential term in Claim~4.
+The type $U$, representing $p=u$, is handled separately in
+\cref{clm:opt:adaptive-cap-potential}.
+\end{claim}
+
+\begin{proof}
 Define
 \begin{equation}
  \eta=\frac{N_{\mathrm{def}}-RP}{x},
@@ -937,12 +936,16 @@ $g_c'=(1+\eta)/R$ makes these values $-(1+\eta)/R$,
 $-(1+\eta)/R$, and $0$, respectively.  For $\eta\le-1$ their signs
 are immediate from $g_c=g_c'=0$.  Hence $J_T\le0$ for
 $T\in\{Z,E,M,Q\}$, as claimed.
+\end{proof}
 
-\medskip
-\noindent\textbf{Claim 4 (Additional potential for jobs with $p=u$).}
+\begin{claim}[Additional potential for jobs with $p=u$]
+\label{clm:opt:adaptive-cap-potential}
 We can add a nonnegative term depending on the number $K$ of earlier
 $U$ endpoints so that the one-step inequality also holds for type $U$, without
 spoiling it for $Z,E,M,Q$.
+\end{claim}
+
+\begin{proof}
 Define
 \begin{equation}
  Z(c)=2+\frac1c+\frac12\ln\!\left(1+\frac2c\right),
@@ -950,8 +953,8 @@ Define
  \delta=Z(c)-u.
  \label{eq:opt:Z-delta}
 \end{equation}
-On the mixed curve, \eqref{eq:opt:mixed-parametrization} says precisely
-that
+For $\uDet{4}\le u\le\uDet{5}$, with $(c,m)$ chosen by
+\cref{eq:opt:mixed-parametrization}, the definition of $\delta$ gives
 \begin{equation}
  \delta=\operatorname{artanh}m.
  \label{eq:opt:delta-atanh}
@@ -1037,11 +1040,15 @@ $a_c(-cq_*)$, is zero by
 \eqref{eq:opt:y-cap-bound} only decreases the threshold, so that bracket is
 nonpositive.  The one-step inequality for type $U$ therefore holds for every
 state and for arbitrary interleavings of type $U$ with the other four types.
+\end{proof}
 
-\medskip
-\noindent\textbf{Claim 5 (Initial calibration).}
+\begin{claim}[Initial calibration]
+\label{clm:opt:adaptive-calibration}
 The full potential starts with exactly the amount needed to cancel the
 constant pairwise term: $W_{\mathrm{initial}}=cn^2/2$.
+\end{claim}
+
+\begin{proof}
 Initially $y=b=q=0$, and
 \begin{equation}
  f_c(0)=\frac12-\frac c4\ln\!\left(1+\frac2c\right).
@@ -1066,14 +1073,27 @@ Using \eqref{eq:opt:mixed-parametrization} and
  \label{eq:opt:initial-calibration}
 \end{equation}
 Thus $W_{\mathrm{initial}}=cn^2/2$.
+\end{proof}
 
-\medskip
-\noindent\textbf{Claim 6 (Finite jobs and a linear remainder).}
-For the transition caused by one actual job, the infinitesimal inequalities
-from Claims~3--4 incur only $O_u(1)$ error.  Summed over all jobs, this gives
-the
-required $O_u(n)$ remainder; when $c=r$, the constant is independent of
-$u\ge\uDet{5}$.  We now verify the needed regularity on feasible states.
+\begin{claim}[Finite transitions and telescoping]
+\label{clm:opt:adaptive-finite}
+For $\uDet{4}\le u\le\uDet{5}$, the transition caused by one actual job
+incurs only $O_u(1)$ error relative to the infinitesimal inequalities in
+\cref{clm:opt:adaptive-base-potential,clm:opt:adaptive-cap-potential}, and
+\begin{equation}
+ \ALG\le(1+c)\cdot\OPT+O_u(n).
+ \label{eq:opt:adaptive-finite-claim}
+\end{equation}
+For every finite $u\ge\uDet{5}$, there is an absolute constant $B$,
+independent of $u$, such that
+\begin{equation}
+ \ALG\le(1+r)\cdot\OPT+Bn.
+ \label{eq:opt:adaptive-uniform-claim}
+\end{equation}
+\end{claim}
+
+\begin{proof}
+We first verify the needed regularity on feasible states.
 In Region I, $y\ge-1$ implies
 \begin{equation}
  -xy=R(P+E)-N_{\mathrm{def}}=cP+(P-N_{\mathrm{def}})+RE\le x.
@@ -1190,10 +1210,21 @@ Thus, with $B=C_{\rm step}+r/2$,
  \label{eq:opt:uniform-high-upper}
 \end{equation}
 and $B$ is independent of $u$.  The estimate is genuinely uniform rather
-than the result of sending a parameter-dependent remainder to infinity.  This proves
-\cref{thm:opt:optional-middle-upper}.  Finally, because
-$u\ge\uDet{4}>1$, every effective offline length is at least one and
-$\OPT\ge n(n+1)/2$.  The additive term in
-\eqref{eq:opt:mixed-upper-finite} vanishes in the size-asymptotic ratio.
+than the result of sending a parameter-dependent remainder to infinity.
+This proves the claim.
+\end{proof}
 
+We can now prove the theorem.
+
+\begin{proof}[Proof of \cref{thm:opt:optional-middle-upper}]
+\Cref{clm:opt:adaptive-endpoint-reduction,clm:opt:adaptive-local-allocation}
+reduce the competitive excess to the local charges.  The potentials in
+\cref{clm:opt:adaptive-base-potential,clm:opt:adaptive-cap-potential} satisfy
+the required infinitesimal inequalities, and
+\cref{clm:opt:adaptive-calibration} gives their initial value.
+\Cref{clm:opt:adaptive-finite} then yields both displayed finite bounds.
+
+Finally, $u\ge\uDet{4}>1$, so every effective offline length is at least one
+and $\OPT\ge n(n+1)/2$.  Hence the additive terms vanish in the
+size-asymptotic ratios, proving the final assertion.
 \end{proof}
