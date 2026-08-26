@@ -250,7 +250,7 @@ one-variable smooth limit and optimizes it.
 
 \medskip
 \noindent\textbf{Claim 1 (Adversarial reveal order and replay).}
-Fix an integer $K$, a rational number $\xi>0$, and a rational slack
+Fix an integer $K$, a rational number $\xi>0$, and a rational parameter
 $\gamma\in(0,1)$; one may keep $\gamma=1/2$ throughout.  For a large scaling
 integer $H$, the instance will contain $H$ jobs of each of $K$ positive types
 $0,1,\ldots,K-1$ and $\xi H$ zero jobs.  We choose $H$ to clear all
@@ -618,9 +618,10 @@ $\alpha=t-1=K/\xi$.  Before rescaling, the total normalized mass is
 $K+\xi=\xi t$.  Give every unit of normalized mass the common factor
 $s/(\xi t)$.
 
-The phase accounting, harmonic cancellation, and completion of squares in
-\cref{eq:lower-accounting,eq:lower-telescope,eq:lower-QK} are homogeneous of
-degree two in the job masses.  The Riemann-sum limit
+If every job mass is multiplied by a common factor, the phase accounting,
+harmonic cancellation, and completion of squares in
+\cref{eq:lower-accounting,eq:lower-telescope,eq:lower-QK} are multiplied by
+the square of that factor.  The Riemann-sum limit
 \cref{eq:lower-I} substituted into \cref{eq:lower-DK} therefore gives
 \[
  O_0=\frac{s^2}{4}(1+t^{-2}+2\ln t).
@@ -760,6 +761,8 @@ virtual copy, and idles until the virtual raw block of length $u$ ends.
 Inductively every simulated cap-free completion is no later than the
 corresponding virtual revealing completion.  Since the
 finite-cap and cap-free offline lengths are both $1+p$ on the later block,
+write $\ALG_{\rm hyb}$ and $\OPT_{\rm hyb}$ for the online and offline costs
+of this physical cap-free simulation.  Then
 \begin{equation}
  \ALG_{\mathsf{RO}}-R\OPT_{\mathsf{RO}}
  \ge (u-R)Z_v+
@@ -854,7 +857,8 @@ $u\in[\uDet{4},\uDet{5}]$ has exactly one parameter pair.
 To pass to fixed finite instances, first approximate $(m,t)$ rationally
 while retaining the strict cap inequalities, then choose a sufficiently
 fine harmonic family, and finally multiply all rational block sizes by a
-common integer $H$.  For fixed harmonic depth, quota overshoot, one-job
+common integer $H$.  For a fixed number of positive levels, quota overshoot,
+one-job
 terms, and rounding are $O_u(H)$ whereas the displayed pair costs are
 $\Theta(H^2)$.  Let $H\to\infty$ first, then increase the harmonic depth, and finally
 let the rational approximation converge to $(m,t)$.  Together with
@@ -897,7 +901,7 @@ untouched job raw for $u$ time, physically test and immediately process it in
 $1+p_j\le u$ time, hide the answer from the virtual copy, and wait for the
 virtual clock.  Every physical completion is no later than its virtual
 completion.  Moreover, $\min\{u,1+p_j\}=1+p_j$, so finite-cap and cap-free
-optima coincide.  Thus we obtain the following game-value comparison.  For
+optima coincide.  Thus we obtain the following direct comparison.  For
 every finite-cap algorithm
 $\mathcal A$, the simulation produces a cap-free algorithm $\mathcal B$ and,
 pointwise on every instance with $p_j\le u-1$,
@@ -905,12 +909,9 @@ pointwise on every instance with $p_j\le u-1$,
  \ALG_{\mathcal A}\ge\ALG_{\mathcal B},
  \qquad \OPT_u=\OPT_\infty.
 \]
-Consequently
-\[
- \CR_\infty(\mathcal A)
- \ge \CR_\infty(\mathcal B; p\le u-1)
- \ge L_{\mathsf{OT}}(u-1).
-\]
+Consequently the size-asymptotic worst-case ratio of $\mathcal A$ is at
+least the corresponding ratio of $\mathcal B$ restricted to
+$p_j\le u-1$, which is at least $L_{\mathsf{OT}}(u-1)$ by its definition.
 Taking the infimum over $\mathcal A$ proves
 \cref{eq:opt:obligatory-transfer}.
 

@@ -47,9 +47,10 @@ where
 Again, the middle expression is the exact rational value used in the
 comparison.
 
-The discrete shortest-prefix calculation behind
-\cref{eq:lower-accounting} also retains favorable diagonal terms that vanish
-after division by \(H^2\).  Before dropping them it gives
+The phasewise shortest-first calculation behind
+\cref{eq:lower-accounting} also retains favorable contributions from
+individual jobs, which vanish after division by \(H^2\).  Before dropping
+them it gives
 \[
   \ALG_H\geq
   H^2Q_K+\frac H2
@@ -62,8 +63,8 @@ proof.  Exact rational arithmetic verifies
   2000H^2Q_K
   >3141\bigl(H^2D_K+HL_{\rm off}\bigr).
 \end{equation}
-Consequently, the fixed instance obtained by the replay argument in
-\cref{sec:lower} satisfies
+Consequently, after recording every adaptively revealed answer on its job
+label as in \cref{sec:lower}, the resulting fixed instance satisfies
 \[
   \frac{\ALG_H}{\OPT_H}
   \geq

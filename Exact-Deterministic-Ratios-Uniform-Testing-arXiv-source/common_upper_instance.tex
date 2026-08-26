@@ -38,14 +38,15 @@ One may take
 \end{equation}
 \end{theorem}
 
-The proof has three layers.  First, for a fixed final tested fraction $q$, a
-completion envelope reduces every fluid schedule to an ordinary fractional
-knapsack.  Second, an adaptive first-touch trace turns every deterministic
-algorithm under the private shuffle into predictable sampling without
-replacement.  One event then controls every touch prefix, so the realized
-stopping fraction can be substituted pathwise.  Finally, a growing grid and
-a sublinear sample make the result uniform over arbitrary bounded vectors
-without announcing the input.
+The proof has three steps.  First, for a fixed final tested fraction $q$, we
+represent the work completed by a large population of jobs as divisible
+blocks and order these blocks by work per completed job.  Second, we expose
+the hidden values in the order in which the algorithm first touches their
+labels.  A single sampling-without-replacement event controls every prefix of
+this sequence, including a prefix whose endpoint the algorithm chooses from
+its observations.  Finally, we discretize $[0,u]$ into increasingly many
+cells and use a sublinear initial sample to choose the schedule without being
+told the input vector.
 
 \subsection{The fixed-fraction fluid benchmark}
 \label{sec:cui-fluid}
@@ -79,7 +80,8 @@ independent mode is raw execution.
 
 \begin{lemma}[Fixed-$q$ completion envelope]
 \label{lem:cui-envelope}
-The envelope $\mathcal C_{\mathsf{RO},D,q}$ is the divisible-knapsack curve with items
+The envelope $\mathcal C_{\mathsf{RO},D,q}$ is the fractional completion
+curve obtained from the following divisible blocks:
 \begin{center}
 \begin{tabular}{@{}lcc@{}}
 \toprule
@@ -91,7 +93,7 @@ raw module & $1-q$ & $u$\\
 \bottomrule
 \end{tabular}
 \end{center}
-If $\tau_D<u$, the greedy order is the test module, the residual classes in
+If $\tau_D<u$, their optimal order is the test module, the residual classes in
 nondecreasing $p_i$, and the raw module.  If $\tau_D\ge u$, the all-raw curve
 pointwise dominates every choice with $q>0$.
 \end{lemma}
@@ -119,9 +121,10 @@ The common area identity \cref{eq:common-envelope-area}, specialized through
  +\frac{u(1-q)^2}{2}.
  \label{eq:cui-F}
 \end{equation}
-Indeed, the four terms are respectively the test-module area, residual work
-delaying the raw block, internal residual SPT pairs, and the homogeneous raw
-block.  Define
+Indeed, the four terms are respectively the test-module contribution, the
+work of positive tested jobs delaying raw jobs, the pair contribution within
+the positive tested jobs, and the contribution of the equal-length raw jobs.
+Define
 \begin{equation}
  \PhiRO(D)=
  \begin{cases}
@@ -151,24 +154,25 @@ Thus the minimizer is
  q^*=\min\{1,-A/(2B)\}\quad(B>0).
  \label{eq:cui-qstar}
 \end{equation}
-We have proved pathwise at the fluid level that an algorithm with realized final
-tested fraction $q$ has area at least
+Thus, for every divisible schedule whose final tested fraction is $q$, the
+area under its remaining-job curve is at least
 $F_{\mathsf{RO},u,D}(q)\ge\PhiRO(D)$.
 
 \subsection{Adaptive algorithms and the announced lower bound}
 \label{sec:cui-announced}
 
-We now transfer the fluid envelope to a finite algorithm which may choose labels
-and its stopping time adaptively.  Equal-valued jobs are first distinguished
-as occurrence tokens, and we fix the private seed of a completing algorithm.
-For the present finite-support law, take zero and the $K=s$ positive atoms as
-the cells, with masses $d_j$.
+We now transfer the divisible-job bound to a finite algorithm which may choose
+labels and decide when to stop testing from the values seen so far.  Treat
+equal-valued jobs as distinct jobs, and first fix the private random seed of an
+algorithm that eventually completes every job.  For the present
+finite-support distribution, let $C_0=\{0\}$ and
+$C_j=\{p_j\}$ for $1\le j\le K=s$, and put $d_j=D(C_j)$.
 Apply \cref{lem:uniform-first-touch-event} with failure probability $n^{-2}$,
 using its notation $X_k,A_k$, and let $\Gamma_n=\Gamma_{\rm cell}$.  With
 that probability, simultaneously
 for every cell $j$ and every touch prefix $m\le(1-\delta)n$,
 \begin{equation}
- \left|\sum_{k\le m}A_k\one_{X_k\in j}
+ \left|\sum_{k\le m}A_k\one_{X_k\in C_j}
        -d_j\sum_{k\le m}A_k\right|\le\Gamma_n.
  \label{eq:cui-urn-discrepancy}
 \end{equation}
@@ -185,10 +189,11 @@ Thus \cref{lem:bounded-suffix-edit}, with $W=u+1$, gives
 The edited schedule has a fixed final tested fraction $q$, but we do not
 condition on its value.
 
-On the single event \cref{eq:cui-urn-discrepancy}, consider any operation prefix and
+On the single sampling event \cref{eq:cui-urn-discrepancy}, consider any
+operation prefix and
 normalize counts and work by $n$.  Let $t,b,z,c_j$ denote tested mass, raw
 mass, tested-zero completions, and processed known mass from positive cell
-$j$, and put $\gamma_n=\Gamma_n/n$.  The urn event gives the capacity
+$C_j$, and put $\gamma_n=\Gamma_n/n$.  The sampling event gives the capacity
 hypotheses of \cref{lem:cell-capacity-repair}; raw work is exactly $ub$, so
 its work hypothesis holds with $\alpha=0$.  Therefore
 \begin{equation}
@@ -196,7 +201,7 @@ its work hypothesis holds with $\alpha=0$.  Therefore
  \le \mathcal C_{\mathsf{RO},D,q}(x)+(K+1)\gamma_n.
  \label{eq:cui-envelope-repair}
 \end{equation}
-The completion horizon is at most $H=1+u$, and
+The completion curve reaches one by normalized work at most $H=1+u$, and
 $0\le\PhiRO(D)\le u/2$.  Thus \cref{thm:completion-curve-transfer}, with
 the suffix edit as $\varepsilon=O_u(\delta+1/n)$ and
 $\beta=(K+1)\gamma_n$, gives
@@ -219,7 +224,9 @@ at most $h$, the transport lemma \cref{lem:zero-preserving-transport} gives
  |\PhiRO(D)-\PhiRO(D')|\le h.
  \label{eq:cui-rounding-stability}
 \end{equation}
-For the finite repair, raising a processed value to its bin endpoint adds at
+Thus the grid consists of $0,h_n,2h_n,\ldots,K_nh_n=u$, and a value in
+$((j-1)h_n,jh_n]$ is rounded to $jh_n$.  For the finite repair, raising a
+processed value to this right endpoint adds at
 most $h_n$ to normalized prefix work, while
 \cref{lem:cell-capacity-repair} loses at most
 $(K_n+1)\gamma_n$ completed mass.  With the parameters above,
@@ -245,22 +252,24 @@ convention.
 \subsection{Removing the announcement}
 \label{sec:cui-learning}
 
-It remains to attain the benchmark without an announcement.  We first record
-the finite cost of one canonical template: select $N_{\rm test}$ labels uniformly,
-test them in random order while immediately processing outcomes in a fixed
-low prefix, then process the tested residual stock in SPT order and finally
-run the other $n-N_{\rm test}$ jobs raw.  If $q=N_{\rm test}/n$, direct pair
-accounting gives,
-uniformly over the empirical grid histogram and the chosen prefix,
+It remains to attain the benchmark without first revealing the input vector
+to the algorithm.  Consider the following family of schedules.  Select
+$N_{\rm test}$ labels uniformly, test them in random order, and immediately
+process precisely the outcomes belonging to a fixed initial segment of the
+ordered grid values.  Next process the remaining positive tested jobs in SPT
+order and finally run the other $n-N_{\rm test}$ jobs raw.  Call the choice of
+the initial grid segment and $q=N_{\rm test}/n$ a template $\pi$.  Direct
+one-job and pair accounting gives, uniformly over the frequencies of the
+grid values and the chosen initial segment,
 \begin{equation}
  \EE C_n(\pi)=n^2F_{\mathsf{RO},u,D}(\pi)+O_u(n),
  \label{eq:cui-finite-kernel}
 \end{equation}
-where the template $\pi$ records the low prefix and $q$, and
+where
 $F_{\mathsf{RO},u,D}(\pi)$ is the right-hand side of \cref{eq:cui-F}.
-To verify this, expand the testing phase into one-job terms
-and relative-order kernels for pairs of tested jobs; expand the residual SPT
-block into its work against raw jobs and its internal SPT cost; and add the
+To verify this, expand the testing phase into the contribution of each job
+and each pair of tested jobs; expand the remaining positive tested block into
+its contribution against raw jobs and its internal SPT cost; and add the
 exact raw-block cost
 $u(n-N_{\rm test})(n-N_{\rm test}+1)/2$.  For distinct occurrences the finite
 coefficients
@@ -269,8 +278,9 @@ coefficients
  \frac{N_{\rm test}(n-N_{\rm test})}{n(n-1)},\qquad
  \frac{(n-N_{\rm test})(n-N_{\rm test}-1)}{n(n-1)}
 \]
-differ from $q^2,q(1-q),(1-q)^2$ by $O(1/n)$.  Every kernel is bounded in
-terms of $u$, so fewer than $n^2$ pair terms create only $O_u(n)$ error.
+differ from $q^2,q(1-q),(1-q)^2$ by $O(1/n)$.  Every pair contribution is
+bounded in terms of $u$, so fewer than $n^2$ such terms create only
+$O_u(n)$ error.
 
 Use the grid from \cref{eq:cui-grid-parameters} and take a private random
 permutation.  Test its first
@@ -295,8 +305,9 @@ The sampling-without-replacement histogram estimate
  \label{eq:cui-histogram}
 \end{equation}
 For a fixed template, the quantities $a,\ell,\ell_\nu$ in
-\cref{eq:cui-F} are bounded one-fold integrals and $\SPT(\nu)$ is a bounded
-double integral.  Inserting an intermediate product measure shows
+\cref{eq:cui-F} are bounded single integrals and $\SPT(\nu)$ is a bounded
+double integral.  In the latter, add and subtract the same double integral
+with only one copy of the distribution replaced.  This gives
 \begin{equation}
  |F_{\mathsf{RO},u,D}(\pi)-F_{\mathsf{RO},u,E}(\pi)|
  \le4(u+1)\|D-E\|_1,
@@ -311,8 +322,8 @@ Condition on the sample.  The learned template is fixed and the unused labels
 are uniformly ordered, so \cref{eq:cui-finite-kernel} applies.  Including the
 sample and its final tail, whose cost is $O_u(nk_n)$, gives the conditional
 hypothesis of \cref{lem:pilot-learning-transfer} with
-$\varepsilon=O_u(k_n/n+1/n)$.  Apply that lemma with total-variation distance,
-$L_0=4(u+1)$, and \cref{eq:cui-histogram}.  Finally use
+$\varepsilon=O_u(k_n/n+1/n)$.  Apply that lemma with
+$d(D,E)=\|D-E\|_1$, $L_0=4(u+1)$, and \cref{eq:cui-histogram}.  Finally use
 \cref{eq:cui-rounding-stability}.  Since
 \[
  h_n=O_u(n^{-1/6}),\qquad

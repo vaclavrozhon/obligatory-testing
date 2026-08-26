@@ -6,9 +6,10 @@ endpoint.  The adversary fixes a vector $p\in[0,\infty)^n$ before the algorithm
 draws its random bits; the input convention then privately shuffles its
 coordinates.  The entries are not announced, and no upper bound on
 the processing times is assumed.  The finite-cap zero--two lower bound
-transfers directly.  The upper bound needs one additional uniformization: a
-cutoff and fallback protect the finite-cap stationary algorithm from an
-arbitrarily large value missed by its sample.  Letting the cutoff grow slowly
+transfers directly.  The upper bound needs one additional safeguard: the
+algorithm groups every sampled value above a threshold into one category and
+switches to a safe test-all schedule when the sample does not identify a
+dense enough early group.  Letting this threshold grow slowly
 also makes the same algorithm instance-optimal on every bounded class.  This
 subsection proves
 \cref{thm:rand-obligatory},
@@ -48,12 +49,13 @@ Hence the exact randomized size-asymptotic competitive ratio against an
 oblivious adversary is $\RrandOT=4/3$.
 \end{theorem}
 
-For an announced multiset, the algorithmic core is the processing-time
-prefix with maximum completions per unit discovery work.  Testing jobs in a
-uniformly random order gives an exact pair identity and a $4/3$ algebraic
-certificate.  The universal algorithm learns an approximately separated
-prefix from a sublinear sample; a cutoff and a fallback schedule protect it
-from unbounded values missed by the sample.  The matching lower
+When the multiset of values is revealed in advance, the algorithmic core is
+the processing-time prefix with maximum completions per unit test-and-process
+work.  Testing jobs in a uniformly random order gives an exact pair identity
+whose nonnegative terms prove the factor $4/3$.  The universal algorithm
+learns an approximately separated prefix from a sublinear sample; the
+threshold and the safe test-all schedule described below protect it from
+unbounded values missed by the sample.  The matching lower
 bound is inherited from the zero--two endpoint of the finite-cap curve.  We
 first prove the uniform upper bound and then give the short transfer.
 
@@ -201,7 +203,8 @@ Equality in the quadratic coefficient of \cref{eq:rand-certificate} forces
 $\tau=2$, zero mass $1/2$, and all positive mass at two.  This predicts the
 lower-bound instance before any probabilistic argument is used.
 
-We also use the following tail-safe estimate.  Direct expansion gives
+We also need an estimate whose error is independent of the values outside
+the early set.  Direct expansion gives
 \begin{equation}
  F_{\mathsf{OT},D[p]}(E)-\Omega_{\mathsf{OT}}(D[p])
  =\frac12\left(
@@ -334,8 +337,9 @@ with
  \label{eq:rand-robust-s}
 \end{equation}
 
-The sample-first order is not exactly the fully stationary comparator, but
-the difference is only lower order.  Conditional on the unordered sample,
+The algorithm tests the sample before all other jobs, so its order is not
+exactly the stationary schedule in which all jobs share one uniform order.
+The difference is only lower order.  Conditional on the unordered sample,
 write $e_S,e_T$ for the sample and remaining early counts and
 \[
  W_S=k+\sum_{i\in E\cap S}p_i,\qquad
@@ -375,9 +379,11 @@ For every test order, test-all-then-SPT satisfies
  \ALG_{\rm fb}\le\OPT+\frac{n(n-1)}2.
  \label{eq:rand-fallback-crude}
 \end{equation}
-Indeed, if there are $z$ zeros, their total displacement from the first $z$
-SPT positions is at most $zn-z(z+1)/2$, while delaying the positive SPT tail
-adds $(n-z)(n-z-1)/2$; the sum is $n(n-1)/2$.  Combining
+Indeed, if there are $z$ zeros, moving their completions from the first $z$
+SPT positions to their test positions increases their sum of completion
+times by at most $zn-z(z+1)/2$.  Delaying the remaining $n-z$ positive jobs
+until all tests are finished adds at most $(n-z)(n-z-1)/2$; the two bounds
+sum to $n(n-1)/2$.  Combining
 \cref{eq:rand-fallback-opt-large,eq:rand-fallback-crude} gives
 $\ALG_{\rm fb}<4\OPT/3$.
 

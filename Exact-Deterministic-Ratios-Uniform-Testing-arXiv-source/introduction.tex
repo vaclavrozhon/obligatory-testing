@@ -123,7 +123,9 @@ and can use one fixed threshold.
 
 The choice of that threshold has a simple interpretation.  For a candidate
 $t$, a full round of tests together with the immediate processing of outcomes
-at most $t$ uses normalized work $1+m(t)$ and completes mass $a(t)$.  Thus
+at most $t$ uses work $1+m(t)$ per original job and completes a fraction
+$a(t)$ of the jobs.  We call this repeated test-and-process action the
+\emph{testing module} for $t$.  Thus
 \[
  \frac{1+m(t)}{a(t)}
 \]
@@ -187,12 +189,14 @@ strongest possible online benchmark explicit.
 
 Second, the existence of some instance-optimal algorithm is perhaps not
 surprising.  One could imagine a meta-algorithm that samples the input to
-estimate $D[p]$ and then runs an optimal algorithm for that estimate.  The
+estimate the empirical distribution of the entries of $p$ and then runs an
+optimal algorithm for that estimate.  The
 substantive part of the theorem is that no complicated meta-algorithm is
 needed.  The optimal leading-order algorithm for a known input is itself a simple
 threshold algorithm, so $\mathcal A^*$ has essentially the same form as
 \cref{alg:intro-obligatory-rand}: sample the input distribution, choose the
-maximum-density threshold, and use it for the rest of the schedule.
+threshold that completes the most job mass per unit of work, and use it for
+the rest of the schedule.
 
 
 \subsection{Generalizations of the model}
@@ -474,15 +478,17 @@ and executes every job untested for the public raw time $u$.  On its relevant
 range, its ratio is $1$ for $u\le\uDet{1}$ and $u$ for
 $\uDet{1}\le u\le\uDet{2}$; see \cref{fig:intro-curves-det}.
 
-The second algorithm, \textsc{ForcedPrefixUTE} in
-\cref{alg:intro-ro-ute}, tests every job and normally processes only
+The second algorithm is \textsc{ForcedPrefixUTE}, where UTE stands for
+\emph{uniform-threshold execution}.  As specified in
+\cref{alg:intro-ro-ute}, it tests every job and normally processes only
 outcomes below a fixed threshold.  It makes one deliberate exception: every
 outcome in an initial $b(u)$-fraction of the test order is processed
 immediately.  Intuitively, a deterministic adversary may reveal long jobs
 first and shorter jobs only later.  Deferring all early long jobs would
 create a tail that waits through most of the later tests.  The forced prefix
 limits this risk by testing and immediately processing a controlled initial
-fraction, at the cost of sometimes processing a long job too early.
+fraction, at the cost of sometimes processing a long job too early.  After
+the forced prefix, the same threshold is applied to every tested job.
 
 The exact parameter $b(u)$ is defined in
 \cref{eq:opt:ute-parameters}; it is nonnegative on
@@ -550,10 +556,10 @@ matching constructions are in \cref{sec:random-common-upper}.
 \begin{algorithmic}
 \State Shuffle the jobs, test $O(\sqrt n)$ of them, and use the
 observed lengths to estimate the input distribution.
-\State Choose a processing-time prefix $E$ of $\widehat D$ maximizing
+\State Choose a threshold $t$ maximizing
 $\widehat a/(1+\widehat\ell)$, where
-$\widehat a=\widehat D(E)$ and
-$\widehat\ell=\int_E p\,d\widehat D(p)$.
+$\widehat a=\widehat D([0,t])$ and
+$\widehat\ell=\int_{[0,t]}p\,d\widehat D(p)$.
 \State Put $\widehat\tau=(1+\widehat\ell)/\widehat a$.  If
 $\widehat\tau\ge u$, set $q=0$; otherwise choose $q$ minimizing
 $F_{\mathsf{RO},u,\widehat D}(q)$ from \cref{eq:cui-F}.
@@ -622,17 +628,19 @@ machines~\cite{GongChenHayashi2024}, or weights~\cite{BuldSchulz2026}.
 
 Dogeas, Erlebach, and Liang~\cite{DogeasErlebachLiang2024} introduced
 obligatory testing for total completion time.  For uniform tests they proved
-the SIDLE upper bound $1.58\ldots$ and the deterministic lower bound
+a deterministic upper bound of $1.58\ldots$ and the lower bound
 $\sqrt2$.  Liang and Liang~\cite{LiangLiang2026} later raised the lower bound
 to $3/2$.  Our matching value is $1.57\ldots$, and our randomized
-result gives the oblivious value $4/3$.  More strongly, its stationary
-threshold is asymptotically optimal separately for every bounded input.
+result gives the oblivious value $4/3$.  More strongly, the resulting
+fixed-threshold algorithm is asymptotically optimal separately for every
+bounded input.
 
 The processing-time oracle of Dufoss{\'e} et al.~\cite{DufosseEtAl2022} is
 close to blind execution, but allows only two possible hidden durations.  If
 no tests are available and processing times are revealed only at completion,
 one obtains the classical nonclairvoyant model of Motwani, Phillips, and
-Torng~\cite{MotwaniPhillipsTorng1994}.  These semantics differ from raw
+Torng~\cite{MotwaniPhillipsTorng1994}, in which the scheduler does not know a
+job's length before it completes.  These semantics differ from raw
 execution in revealing optimization, which always lasts the declared time
 $u$.
 
@@ -644,10 +652,12 @@ structures and adversaries, the corresponding offline optima, and our
 asymptotic competitive-ratio convention.
 
 \Cref{sec:optional} then proves the exact deterministic
-revealing-optimization curve.  Its cap-free harmonic core and parameterized
-endpoint bank are shared by the mixed branch and the plateau; only after the
-finite curve is complete does \cref{sec:obligatory} derive the deterministic
-obligatory ratio by a uniform endpoint transfer.
+revealing-optimization curve.  Its multilevel lower-bound instance, in which
+every job satisfies $1+p_i<u$ and raw execution is therefore never shorter,
+is reused on the last two branches, while a bookkeeping potential handles
+jobs with $p_i=u$ in the matching upper bound.  Only after the finite curve is complete
+does \cref{sec:obligatory} derive the deterministic obligatory ratio using
+bounds whose constants do not depend on the raw time $u$.
 
 \Cref{sec:common-upper-instance} identifies the optimal leading cost
 separately for every bounded revealing input and learns the associated
@@ -655,26 +665,30 @@ threshold algorithm from a sublinear sample.  \Cref{sec:random-common-upper}
 maximizes this benchmark against the clairvoyant optimum and proves the exact
 four-piece randomized curve.  Its final subsection,
 \cref{sec:random-obligatory}, transfers the lower bound to the unbounded
-obligatory endpoint and supplies the cutoff-and-fallback argument needed for
-a uniform $4/3$ upper bound.  \Cref{sec:obligatory-instance} then strengthens
+obligatory endpoint; for the upper bound it truncates very long observations
+and switches to a safe all-testing schedule when the sample is unreliable.
+\Cref{sec:obligatory-instance} then strengthens
 that endpoint algorithm to a single algorithm that is asymptotically optimal on
 every bounded obligatory input.
 
-\Cref{sec:blind} turns to blind execution.  It derives the announced-input
-benchmark, proves that arbitrary adaptive algorithms cannot beat it, and
-removes advance knowledge of the input by sampling; it also explains why no
-finite worst-case ratio is possible without a bound on job lengths.
+\Cref{sec:blind} turns to blind execution.  It first derives the benchmark
+when the multiset of job lengths is announced in advance, proves that
+arbitrary adaptive algorithms cannot beat it, and then removes that advance
+knowledge by sampling.  It also explains why no finite worst-case ratio is
+possible without a bound on job lengths.
 \Cref{sec:blind-optimization} studies speedup without revelation, proves the
-deterministic hidden-stopping lower bound and matching two-algorithm curve,
-proves the randomized instance-optimal theorem, and maximizes its mean-based
+deterministic lower bound using an adversary that hides when its first phase
+will stop, and obtains the matching two-algorithm curve.  It then proves the
+randomized instance-optimal theorem and maximizes its mean-based
 benchmark to obtain the exact randomized worst-case curve.
 
 The appendices document and independently audit the more delicate parts of
 the argument.  \Cref{sec:formalization} states precisely which results are
 machine checked and summarizes the corresponding Lean~4 development.
 \Cref{app:finite-checkpoint} evaluates a large but finite rational instance
-of the cap-free lower bound, while \cref{app:cap-bubbling} gives an
-independent cap-bubbling certificate for the deterministic upper bound.
+of the cap-free lower bound, while \cref{app:cap-bubbling} independently
+checks the deterministic upper bound by repeatedly moving capped outcomes
+to the start of the reveal order.
 Finally, \cref{app:lean-formalization} records the exported Lean theorem and
 the detailed dictionary between its objects and the deterministic statements
 in the paper.

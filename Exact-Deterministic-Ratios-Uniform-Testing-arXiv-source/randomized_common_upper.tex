@@ -63,11 +63,11 @@ attained at $u=(3+\sqrt3)/2$.
 
 The preceding instance-optimal theorem identifies the best algorithm on each
 input.  Here we compare that value with the clairvoyant SPT cost and
-maximize over all empirical distributions.  A survival-function flattening
-argument reduces the outer optimization to binary distributions.  Two
-scalar maximizations give the four branches above.  A sublinear sample removes
-advance knowledge of the input, and shuffled binary vectors give matching
-lower bounds.
+maximize over all empirical distributions.  Replacing an initial part of the
+survival function by its average reduces this optimization to distributions
+supported on two values.  Two one-variable maximizations give the four
+branches above.  A sublinear sample removes advance knowledge of the input,
+and shuffled binary vectors give matching lower bounds.
 
 \subsection{Offline and stationary fluid coefficients}
 
@@ -82,9 +82,10 @@ Let $D$ be a finite distribution on $[0,u]$ and use the survival function
  \qquad S_D(t)=0\quad(t>u).
  \label{eq:rcu-survival}
 \end{equation}
-The convention at atoms does not affect any integral below.  Since a
-clairvoyant job of length $p$ has effective length $1+\min\{s,p\}$, layer cake and the
-symmetric pair identity \cref{eq:unified-opt-symmetric} give
+The convention at point masses does not affect any integral below.  Since a
+clairvoyant job of length $p$ has effective length $1+\min\{s,p\}$, write a
+nonnegative value $x$ as $\int_0^\infty\one_{t<x}\,dt$ in the symmetric pair
+identity \cref{eq:unified-opt-symmetric}.  This gives
 \begin{align}
  \Omega_{\mathsf{RO},u}(D)
  &\defeq\frac12\iint
@@ -171,7 +172,7 @@ stationary maximum-density algorithm.  Hence
 and \cref{eq:rcu-announced-ratio} is an upper bound on the
 instance-specific ratio $\PhiRO(D)/\Omega_{\mathsf{RO},u}(D)$.  Interior values of $q$ can
 strictly improve individual inputs; the point of the next two subsections is
-that the two endpoint algorithms already give the sharp value after maximizing
+that the two choices $q=0$ and $q=1$ already give the sharp value after maximizing
 over all $D$.  The binary lower bounds at the end apply to every algorithm, not
 only to these endpoints.
 
@@ -374,7 +375,8 @@ is exactly clairvoyantly optimal, so no learning is required.
 
 \subsection{Binary oblivious lower bounds}
 
-It remains to show that the two endpoint algorithms used above cannot be
+It remains to show that the two algorithms corresponding to $q=0$ and $q=1$
+used above cannot be
 improved in the worst case by a more adaptive algorithm.  We first record an
 envelope for shuffled binary vectors.
 
@@ -401,10 +403,12 @@ Every labeling has
 
 \begin{proof}
 First fix a deterministic algorithm.  If it does not complete all jobs, the
-claim is immediate.  Otherwise place the occurrences uniformly on the
-public labels, distinguishing equal-valued occurrences as tokens.  By
-deferred decisions, the analytically exposed occurrence word is a uniform
-permutation, and the test/raw choice before its next entry is predictable.
+claim is immediate.  Otherwise place the individual jobs uniformly on the
+public labels, treating jobs of the same value as distinct.  Reveal a job's
+value in the analysis only when the algorithm first touches its label.
+Conditional on all earlier reveals, the unrevealed jobs remain uniformly
+permuted, and the algorithm has already made its test/raw choice before the
+next value is revealed.
 
 Take $\delta_n=n^{-1/4}$.  The predictable-permutation bound
 \cref{lem:predictable-permutation-sampling}, applied to the zero indicator
@@ -442,9 +446,10 @@ raw jobs & $1-q$ & $u$\\
 When $z=0$, the zero-test module is simply omitted.
 Indeed, $t$ tests complete at most $zt+\Delta_n$ zeros and expose at most
 $xt+\Delta_n$ cap jobs; raw and known cap processing both use $u$ work per
-completion.  The ordinary divisible-knapsack exchange therefore
-upper-bounds completed mass at every work value.  Integrating the remaining
-mass gives a lower bound on total completion time.
+completion.  Ordering these three divisible blocks by work per completion,
+as in \cref{lem:divisible-spt-area}, therefore upper-bounds completed mass at every
+work value.  Integrating the remaining mass gives a lower bound on total
+completion time.
 
 If $z\le1/u$, every displayed item costs at least $u$ per completion, so the
 normalized area is at least $u/2-o_u(1)$.  If $z\ge1/u$, the zero-test module
@@ -456,8 +461,9 @@ comes first.  For fixed $q$ its remaining-mass area is
  \label{eq:rcu-binary-F}
 \end{equation}
 It is minimized at $q=1$, giving
-$F_z(1)=(1+x+ux^2)/2$.  The suffix edit, vertical repair, and bad event all
-contribute $o_u(n^2)$.
+$F_z(1)=(1+x+ux^2)/2$.  Restoring the edited final $\delta_n n+O(1)$ jobs,
+the $o(1)$ error in completed mass, and the sampling event's failure
+probability together contribute only $o_u(n^2)$.
 
 The argument holds for each deterministic algorithm.  For a randomized algorithm,
 fix its seed and then average over the seed.  The private shuffle is already
@@ -491,8 +497,9 @@ $x\le(u-1)/u$.  Since $(u-1)x^2=1+2x$, the second line of
  1+\frac x2=1+\frac1{2(\sqrt u-1)}.
  \label{eq:rcu-lower-second-branch}
 \end{equation}
-Irrational masses are approximated by empirical rational frequencies; all
-rounding and diagonal terms are $O_u(n)$.
+Irrational masses are approximated by integer job counts divided by $n$; the
+rounding error and the one-job terms omitted from the leading pair
+coefficient are $O_u(n)$.
 
 For the last branch, the cap distribution is replaced by a fixed bounded
 one.
@@ -511,9 +518,10 @@ value two such that
 \end{lemma}
 
 \begin{proof}
-Use the same trace bijection, predictable-urn event, and suffix edit as in
-\cref{lem:rcu-binary-lower}.  For a realized tested fraction $q$, the three
-fluid items now have capacities and costs
+Expose values at first touch, apply the same uniform-prefix sampling event,
+and replace tests among the final $o(n)$ untouched jobs by raw execution,
+exactly as in \cref{lem:rcu-binary-lower}.  For a realized tested fraction
+$q$, the three divisible blocks now have capacities and costs
 \begin{center}
 \begin{tabular}{@{}lcc@{}}
 \toprule

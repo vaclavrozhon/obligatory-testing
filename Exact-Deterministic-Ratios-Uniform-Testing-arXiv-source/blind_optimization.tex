@@ -11,9 +11,10 @@ We call this the \emph{blind-optimization} model $\mathsf{BO}(u)$.
 We study deterministic worst-case algorithms, and randomized algorithms against
 an oblivious adversary.  The deterministic optimum has a particularly
 simple form: run everything raw up to $u=2$, and optimize everything after
-that point.  Proving that no adaptive mixture improves these two algorithms
-uses the same raw-safe hidden-stopping idea as the revealing-optimization
-lower bound.  Randomization is still essential for learning the input:
+that point.  To prove that no adaptive mixture improves these two algorithms,
+the adversary assigns value zero to a raw job and value $u$ to an optimized
+job, and stops after a prescribed fraction has been optimized.  Randomization
+is still essential for learning the input:
 a private random sample is representative after the initial shuffle,
 whereas an adversary can make a deterministic exploration history atypical.
 
@@ -164,7 +165,7 @@ In particular,
 We first prove the adaptive lower bound.  Its stopping rule is the direct
 blind-block analogue of \cref{lem:opt:hidden-stopping}.
 
-\begin{lemma}[Blind raw-safe hidden stopping]
+\begin{lemma}[Hidden binary stopping with blind blocks]
 \label{lem:bo-det-hidden-stopping}
 Fix $u>1$, a target $R\le u$, and $\alpha\in(0,1)$.  Against every
 deterministic algorithm there is a fixed binary input with $p_j\in\{0,u\}$ on
@@ -188,8 +189,9 @@ deterministic algorithm has size-asymptotic ratio at least $R$.
 
 \begin{proof}
 By \cref{lem:bo-normal-form}, it is enough to lower-bound an algorithm whose
-optimized jobs are contiguous blind blocks.  Start in a long phase.  Give
-value zero to every job completed raw and value $u$ to every optimized job.
+optimized jobs are contiguous blind blocks.  Until the stopping condition
+below is met, give value zero to every job completed raw and value $u$ to
+every optimized job.
 If $v$ raw jobs and $L$ optimized-long jobs have been completed, stop at the
 first completion for which $L>0$ and
 \begin{equation}
@@ -251,7 +253,8 @@ The quadratic $f^{\mathsf{BO}}_{u,R}$ is uniformly Lipschitz on $[0,1]$ for
 fixed $u$ and $R\le u$.  Hence
 $\sigma^2f^{\mathsf{BO}}_{u,R}(y)
 \ge\sigma^2f^{\mathsf{BO}}_{u,R}(\alpha)-O_u(1/n)$.
-The exact diagonal terms contribute another $O_u(n)$ before normalization.
+The exact terms contributed by individual jobs add another $O_u(n)$ before
+normalization.
 If $u-R$ and $f^{\mathsf{BO}}_{u,R}(\alpha)$ are nonnegative, this proves
 the claimed lower bound.
 \end{proof}
@@ -301,7 +304,8 @@ $a(p_i)$ in nonincreasing order.  Direct pair accounting gives
       +\frac12\sum_i\min\{u,1+p_i\}.
  \label{eq:bo-det-optall-offline}
 \end{align}
-Write $S_D(t)=D((t,u])$ for $0\le t\le u$.  Layer cake yields
+Write $S_D(t)=D((t,u])$ for $0\le t\le u$.  Expressing a nonnegative value
+$x$ as $\int_0^\infty\one_{t<x}\,dt$ yields
 \begin{align}
  \iint\max\{a(p),a(q)\}\,dD(p)dD(q)
  &=1+\int_0^u(2S_D(t)-S_D(t)^2)\,dt,
@@ -401,10 +405,11 @@ $u$.  Both blocks complete exactly one job.
 \paragraph{The announced lower bound.}
 Fix the private seed of an algorithm and place the announced occurrences
 uniformly behind the labels.  We may assume that the algorithm completes every
-job.  Give equal-valued occurrences distinct hidden
-tokens.  By deferred decisions, their analytically exposed order is a
-uniform permutation and the selector of optimized blocks is predictable.
-A raw block does not reveal its token's value to the algorithm; exposing it
+job.  Treat equal-valued jobs as distinct and reveal their values in the
+analysis in first-touch order.  By deferred decisions this order is a
+uniform permutation, and the decision whether to optimize the next job is
+made from the preceding observations.  A raw block does not reveal its
+job's value to the algorithm; exposing it
 afterwards only for the analysis does not affect the algorithm's decisions.
 
 Fix $\delta>0$ and ignore the last $\delta n$ first touches for the moment.
@@ -423,7 +428,7 @@ adaptively by the algorithm may be substituted only after the event has been
 fixed.  Editing the last $\delta n$ jobs to either mode changes total
 completion cost by $O_u(\delta n^2)$.
 
-This can be made uniform rather than diagonalized.  Take
+For one error bound that applies directly at every $n$, take
 $\delta_n=n^{-1/4}$.  The bounded selected-work estimate used in
 \cref{sec:blind-adaptive-urn} has deviation
 \[
@@ -435,7 +440,8 @@ After division by $n$, both this deviation and the edited suffix contribute
 $O_u(n^{-1/4}\sqrt{\ln(n+2)})$ to the normalized completion-area bound.
 
 Put $a=1+\mu_p$.  If the final optimized fraction is $q$, the best possible
-fluid ordering puts the cheaper of the two block types first.  When $a\le u$
+order of the two divisible block types puts the smaller work per completion
+first.  When $a\le u$
 its area is
 \begin{equation}
  F_{a,u}(q)
@@ -453,9 +459,9 @@ first and the area is
  =\frac u2+\frac{a-u}{2}q^2,
  \label{eq:bo-fluid-raw-first}
 \end{equation}
-which is minimized at $q=0$, with value $u/2$.  An adjacent exchange proves
-that no interleaving has smaller area: swapping two consecutive blocks puts
-the shorter cost per completion first.  Equations
+which is minimized at $q=0$, with value $u/2$.  The shortest-first argument
+of \cref{lem:divisible-spt-area} proves that no interleaving has smaller area.
+Equations
 \eqref{eq:bo-selected-work}--\eqref{eq:bo-fluid-raw-first}, with the uniform
 choice $\delta=\delta_n$, give
 \[
@@ -545,7 +551,7 @@ the unit optimization operation.  Assume $u>1$ and let
 \[
  S_D(t)=D((t,u]),\qquad 0\le t\le u.
 \]
-The layer-cake identity applied to
+Writing each nonnegative minimum as an integral of its level indicators in
 \eqref{eq:bo-offline-coefficient} gives
 \begin{equation}
  2\Omega_{\mathsf{BO},u}(D)

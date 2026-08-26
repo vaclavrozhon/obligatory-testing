@@ -1,14 +1,24 @@
-\section{Independent certificate by bubbling caps to a prefix}
+\section{Independent proof by moving capped jobs to a prefix}
 \label{app:cap-bubbling}
-For completeness, we give a second proof of the quadratic estimate.  This
-argument is also a useful audit of the fifth-endpoint calculation: it never
-inserts $p=u$ into an ordinary deferred formula before the caps have
+For completeness, we give a second proof of the pairwise estimate behind
+\cref{thm:opt:optional-middle-upper}.  This
+argument is also a useful audit of the capped type in the five-endpoint
+reduction \cref{eq:opt:five-endpoints}: it never
+inserts $p=u$ into the formula for a deferred noncapped type before the caps have
 actually been moved.
 
-Work first in normalized fluid mass.  Immediately before an adjacent pair
-$XU$, let $E_0$ be the preceding $E$-mass, $P$ the preceding
-substantive mass, $N_{\mathrm{def}}$ its deferred submass, $x$ the remaining mass, and
-$w$ the mass of $U$-endpoints strictly after the pair.  Put
+Recall the endpoint symbols from \cref{eq:opt:five-endpoints}: $Z$ is an
+actual zero, $E$ a positive value tending to zero, $M$ an immediate
+threshold value, $Q$ a deferred value just above the threshold, and $U$ a
+capped value $u$.  A word in these symbols records their reveal order.
+For neighboring symbols $X,U$, the expression $UX-XU$ denotes the change in
+the pair objective when $U$ is moved one position to the left.
+
+Work first in normalized fluid mass.  Immediately before neighboring symbols
+$XU$, let $E_0$ be the preceding $E$-mass, $P$ the preceding mass of types
+$M,Q,U$, $N_{\mathrm{def}}$ its deferred mass of types $Q,U$, $x$ the
+remaining mass, and $w$ the mass of $U$-endpoints strictly after the pair.
+Put
 \begin{equation}
  y=\frac{N_{\mathrm{def}}-R(P+E_0)}x,
  \qquad
@@ -17,7 +27,7 @@ $w$ the mass of $U$-endpoints strictly after the pair.  Put
 \end{equation}
 Direct differentiation of the exact pair objective
 \eqref{eq:opt:pair-objective}, including the mutual pair and all future
-caps, gives the two nontrivial commutators
+caps, gives the two nontrivial swap differences
 \begin{align}
  UM-MU
  &=1+\left(1+\eta-\frac{Rw}{x}\right)
@@ -28,8 +38,7 @@ caps, gives the two nontrivial commutators
        (y-c)a_c'(y).
  \label{eq:opt:cap-Q-commutator}
 \end{align}
-Here $UX-XU$ means ``new objective after moving $U$ left'' minus the
-old objective.  The second quantity is nonnegative.  For the first, if
+The second quantity is nonnegative.  For the first, if
 $B=1+\eta-Rw/x\le0$, its second term is nonnegative.  If $B>0$, then
 $B\le1$, and on $-1<y\le0$
 \[
@@ -41,19 +50,21 @@ $y=-1$, the threshold is flat.  Direct evaluation also gives
  UZ-ZU=UE-EU=1.
  \label{eq:opt:cap-zero-commutators}
 \end{equation}
-The suffix terms involving $w$ are crucial: they make every adjacent
-exchange valid even while other caps remain to the right.  Repeated swaps
-therefore put all caps into one prefix.
+The terms involving the later $U$-mass $w$ are crucial: they make every
+neighboring swap valid even while other caps remain to the right.  Repeatedly
+moving a cap left in this way---the ``bubbling'' in the section title---puts
+all caps into one prefix.
 
-After that prefix there is no future cap.  Let $e,b,d$ be the preceding
-$E$-mass, substantive mass, and deferred substantive mass, and define
+After that prefix there is no future cap.  Let $e$ be the preceding $E$-mass,
+$b$ the preceding mass of types $M,Q$, and $d$ the preceding deferred
+$Q$-mass, and define
 \[
  y=\frac{d-R(e+b)}x,
  \quad v=\frac ex,
  \quad h=d-Rb,
  \quad k=x+d-Rb.
 \]
-The four ordinary commutators are
+The four swap differences involving only noncapped types are
 \begin{align}
  ME-EM&=a_c+a_c'(R-y)\frac{k}{x},
  &QE-EQ&=1-a_c'(R-y)(-y-Rv),
@@ -62,7 +73,8 @@ The four ordinary commutators are
  &QZ-ZQ&=1-a_c'y\frac{h}{x}.
  \label{eq:opt:ordinary-commutators}
 \end{align}
-They are nonnegative.  Indeed, in the varying region
+They are nonnegative.  Indeed, in the varying-threshold region
+$-1\le y\le0$,
 $h/x=y+Rv\in[y,0]$ and $k/x\in[0,1]$.  With $t=-y\in[0,1]$,
 \begin{equation}
  a_c'(R-y)t=\frac{t(R+t)}{c+2t}\le1,
@@ -71,12 +83,14 @@ $h/x=y+Rv\in[y,0]$ and $k/x\in[0,1]$.  With $t=-y\in[0,1]$,
  \label{eq:opt:ordinary-commutator-signs}
 \end{equation}
 the first inequality is equivalent to
-$(t-1)(t+c)\le0$.  In the flat region $a_c'=0$.  Hence $Z,E$ can be
-moved to the tail, and a worst word has the form
+$(t-1)(t+c)\le0$.  In the constant-threshold region $y\le-1$, one has
+$a_c'=0$.  Hence $Z,E$ can be moved to the end, and a worst word has the form
 \begin{equation}
  U^\mu\{M,Q\}^*\{Z,E\}^*.
  \label{eq:opt:canonical-word}
 \end{equation}
+Here $U^\mu$ denotes a block of capped mass $\mu$, and the star denotes an
+arbitrary finite sequence of symbols from the set inside the braces.
 
 On the middle block use the simpler potential
 \[
@@ -89,10 +103,11 @@ The identity
               1-cf_c'+a_cy\}
  \label{eq:opt:ordinary-HJB}
 \end{equation}
-is a direct rewriting of \eqref{eq:opt:f-hjb-identities}; it pays the
-entire ordinary continuation.  If the cap prefix has mass $\mu$, then
+is a direct rewriting of \eqref{eq:opt:f-hjb-identities}; it bounds the
+entire continuation containing only the noncapped types.  If the cap prefix
+has mass $\mu$, then
 after it $x=1-\mu$, $N=N_{\mathrm{def}}=\mu$, and
-$y=-c\mu/(1-\mu)$.  Its internal cap-pair reward plus its worst
+$y=-c\mu/(1-\mu)$.  Its contribution from pairs of capped jobs plus its worst
 continuation is therefore
 \begin{equation}
  F_{c,u}(\mu)
@@ -132,14 +147,14 @@ To make this independent exchange proof finite, fix
 $\eps>0$ and first replace the last
 $\eps n+O(1)$ outcomes by genuine zeros.  Earlier states and
 actions are unchanged, and only $O(\eps n^2+n)$ pair terms are
-affected.  All cap and ordinary exchanges in the retained prefix then
-occur with $x\ge\eps$; their displayed fluid commutators have
+affected.  All capped and noncapped swaps among the retained jobs then
+occur with $x\ge\eps$; their displayed normalized swap differences have
 uniform Taylor remainders there.  More precisely, after assigning mass
-$1/n$ to every job, a normalized adjacent exchange has remainder
+$1/n$ to every job, a normalized neighboring swap has remainder
 $O_{u,\eps}(n^{-3})$; there are at most $n^2$ exchanges.  At the
-join $y=-1$, split an exchange at the join and use the two one-sided
+boundary $y=-1$, split a swap at the boundary and use the two one-sided
 formulae, whose values agree.  The artificial zeros already form the
-terminal block, so no unbubbled suffix cap invalidates
+last block, so no cap remaining later in the word invalidates
 \eqref{eq:opt:ordinary-commutators}.  The normalized one-job remainder in
 the continuation-potential calculation is
 $O_{u,\eps}(n^{-2})$.  For fixed $\eps$, first let
@@ -148,5 +163,5 @@ $n\to\infty$, and then let $\eps\downarrow0$.  Equations
 \[
  \Gamma_n\le c\binom n2+o(n^2),
 \]
-which is an independent size-asymptotic certificate for the two upper
-bounds above.
+which independently proves the required size-asymptotic inequality for the
+two upper bounds above.

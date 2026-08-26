@@ -86,14 +86,15 @@ and the long job last, so $\OPT(p)=H$.  With $H=n^2$,
 \cref{eq:blind-unbounded-impossible} for all sufficiently large $n$.
 \end{proof}
 
-The proof first replaces a round of tests and its immediate short outcomes
-by one divisible completion module.  For a fixed tested fraction $q$, a
-fractional-knapsack envelope then forces the four-block order from the
-introduction and gives its exact quadratic cost.  To handle an arbitrary
-adaptive algorithm, we show that its first-touch order is a bijective
-relabeling of the shuffled coordinate order; predictable sampling controls
-all touch prefixes at once.  A growing grid extends the bound to arbitrary
-bounded vectors, and a blind sample removes advance knowledge of the input.
+The proof first groups a round of tests and the short outcomes processed
+immediately after them into one divisible completion block.  For a fixed
+tested fraction $q$, ordering all available blocks by work per completion
+forces the four-block order from the introduction and gives its exact
+quadratic cost.  For an adaptive algorithm, values exposed at first touch
+still form a uniform permutation of the input, so one sampling event controls
+all prefixes at once.  Discretizing $[0,L]$ extends the bound to arbitrary
+bounded vectors, and an initial blind sample removes advance knowledge of the
+input.
 
 \subsection{The distributional benchmark}
 \label{sec:blind-benchmark}
@@ -112,7 +113,8 @@ test-module density and its reciprocal are
  \label{eq:blind-density}
 \end{equation}
 The selector processes all positive values below $\tau_D$ immediately after
-their tests, rejects all values above it, and may split a boundary atom.  With
+their tests, rejects all values above it, and may split probability mass
+located exactly at the boundary.  With
 that boundary convention, put
 \[
  a=a_D(g_*),\qquad
@@ -130,10 +132,11 @@ completion $\tau_D$.
 
 If $\tau_D\ge\mu$, blind work has at least the completion density of any test
 module, and pure blind execution is optimal at the fluid scale.  Suppose now
-that $\tau_D<\mu$.  After testing a fraction $q$, the canonical schedule is
+that $\tau_D<\mu$.  After testing a fraction $q$, the resulting four-block
+schedule is
 \begin{equation}
  \begin{aligned}
- \underbrace{\text{tests with immediate }p<\tau_D}_{\text{discovery}}
+\underbrace{\text{tests with immediate }p<\tau_D}_{\text{test module}}
  &\ \longrightarrow\
  \underbrace{\text{known }\tau_D<p<\mu\text{ in SPT}}_{\text{medium}}\\[-2pt]
  &\ \longrightarrow\
@@ -144,7 +147,8 @@ that $\tau_D<\mu$.  After testing a fraction $q$, the canonical schedule is
  \label{eq:blind-four-block-order}
 \end{equation}
 
-For the explicit cost, first assume no atom lies at $\tau_D$ or $\mu$, and put
+For the explicit cost, first assume no probability mass lies exactly at
+$\tau_D$ or $\mu$, and put
 \begin{align*}
  \mathcal L&=\{p<\tau_D\},&
  \mathcal M&=\{\tau_D<p<\mu\},&
@@ -155,6 +159,7 @@ For the explicit cost, first assume no atom lies at $\tau_D$ or $\mu$, and put
  d&=D(\mathcal H),&
  D_M&=D|_{\mathcal M},&D_H&=D|_{\mathcal H},
 \end{align*}
+where $D|_A$ denotes the restriction of $D$ to a set $A$.
 Put $\bar q=1-q$.  Remaining-mass
 accounting gives
 \begin{align}
@@ -165,9 +170,10 @@ accounting gives
     +q^2\SPT(D_H).
  \label{eq:blind-F}
 \end{align}
-Atoms at $\tau_D$ are split between the low module and residual stock; atoms at
-$\mu$ may be placed on either side of the blind block.  The same formula then
-holds for the resulting virtual classes.
+Probability mass at $\tau_D$ is split between the low module and the
+remaining tested jobs; mass at $\mu$ may be placed on either side of the
+blind block.  The same formula then holds after treating the two portions as
+separate classes.
 
 Each term in \cref{eq:blind-F} has a direct area interpretation.  During the
 test module, work $(1+\ell)dq$ reduces unfinished mass from $1$ to $1-aq$.
@@ -189,8 +195,9 @@ where
    +\mu\left(\frac12-d\right)+\SPT(D_H).
  \label{eq:blind-B}
 \end{align}
-The envelope proof below implies $B\ge0$.  In the short-test regime
-$\tau_D<\mu$, monotonicity in \cref{eq:common-threshold-equation} gives $A<0$, and
+The envelope proof below implies $B\ge0$.  When testing has lower work per
+completion than blind execution, namely $\tau_D<\mu$, monotonicity in
+\cref{eq:common-threshold-equation} gives $A<0$, and
 the optimal tested fraction is therefore
 \begin{equation}
  q^*=\begin{cases}
@@ -266,11 +273,12 @@ completion.  The $q=0$ envelope, one blind item of capacity one and cost
 $\mu$, therefore pointwise dominates every $q>0$ envelope and has area
 $\mu/2$.  Finally, feasibility in
 \cref{eq:blind-fluid-work,eq:blind-revelation-constraints} is affine in $q$,
-so $\mathcal C_{\mathsf{BE},D,q}(x)$ is concave in $q$ for each $x$.  In the short-test regime its
+so $\mathcal C_{\mathsf{BE},D,q}(x)$ is concave in $q$ for each $x$.  When
+$\tau_D<\mu$, its
 area complement $F_{\mathsf{BE},D}(q)$ is convex, proving $B\ge0$.
 \end{proof}
 
-\subsection{Adaptive first touches are a uniform urn}
+\subsection{First-touch sampling for adaptive algorithms}
 \label{sec:blind-adaptive-urn}
 
 The fluid proof fixed $q$, but an announced finite algorithm may choose whom to
@@ -282,9 +290,10 @@ For a size-$n$ vector whose coordinates lie among
 $0=p_0<p_1<\cdots<p_s\le L$, write $D_n$ for its empirical distribution,
 $D_{n,i}=D_n(\{p_i\})$, and $\mu_n=\sum_i p_iD_{n,i}$.
 
-Distinguish occurrences even when their processing times coincide and fix a
-deterministic proper algorithm, equivalently the private seed of a randomized
-algorithm.  Apply \cref{lem:uniform-first-touch-event} to the $s+1$ classes with
+Treat jobs as distinct even when their processing times coincide and fix a
+deterministic algorithm that completes every job, equivalently fix the
+private seed of a randomized algorithm.  Apply
+\cref{lem:uniform-first-touch-event} to the $s+1$ classes with
 failure probability $n^{-2}$, and put
 $\Gamma_n=\max\{\Gamma_{\rm cell},\Gamma_{\rm work}\}$.  On the resulting
 event, for every touch prefix leaving at least $\delta n$ labels untouched
@@ -341,7 +350,8 @@ $\alpha=(L+1)(\gamma_n+\delta)$, and it gives
       +(s+1)\gamma_n.
  \label{eq:blind-envelope-repair}
 \end{equation}
-The envelope horizon is at most $H=L+1$, and pure blind execution gives
+The envelope reaches completed mass one by normalized work at most $H=L+1$,
+and pure blind execution gives
 $0\le\PhiBE(D_n)\le L/2$.  Apply
 \cref{thm:completion-curve-transfer} with the suffix-edit error from
 \cref{eq:blind-suffix-edit},
@@ -353,7 +363,7 @@ $\alpha=(L+1)(\gamma_n+\delta)$, and $\beta=(s+1)\gamma_n$.  It gives
  \ge\PhiBE(D_n)-O_{L,s}(\gamma_n+\delta+1/n).
  \label{eq:blind-announced-finite-support}
 \end{equation}
-The long-test regime uses the $\mu_n/2$ dominance part of
+When $\tau_D\ge\mu_n$, the $\mu_n/2$ dominance part of
 \cref{lem:blind-fixed-q-envelope}; the same transfer applies.  The estimate
 is uniform in the fixed seed and therefore remains valid after averaging
 over a randomized announced algorithm.
@@ -396,7 +406,8 @@ After rounding, both are bounded by
 Consequently the rounded completion curve is bounded by
 $\mathcal C_{\mathsf{BE},D[p]^{\rm grid},q}(x+\zeta_n)+\zeta_n$.
 Apply \cref{thm:completion-curve-transfer} with $H=L+1$, $B=L/2$, the
-suffix-edit error, and the failure probability from the urn lemma.  Together
+suffix-edit error, and the failure probability from the first-touch sampling
+lemma.  Together
 with \cref{eq:blind-rounding-stability}, this yields the announced lower bound
 \begin{equation}
  \frac{\operatorname{VAL}_{\rm ann}(p)}{n^2}
@@ -404,18 +415,19 @@ with \cref{eq:blind-rounding-stability}, this yields the announced lower bound
  \label{eq:blind-announced-lower}
 \end{equation}
 
-For the matching upper bound, compute an optimal canonical template for the
-rounded empirical vector, choose $\lfloor q^*n\rfloor$ uniformly random
-labels to test, and execute the four blocks.  Pairwise delay accounting
-expresses its expectation as bounded one-occurrence and two-distinct-
-occurrence kernels.  The without-replacement pair coefficients differ from
-their product-law values by $O(1/n)$ uniformly in the tested count.  Hence
-if $\pi$ records the virtual classes and the tested fraction,
+For the matching upper bound, choose the optimal split of boundary classes
+and tested fraction for the rounded empirical vector; denote these choices
+by $\pi$.  Select $\lfloor q^*n\rfloor$ labels uniformly to test and execute
+the four blocks.  Expanding every delay into contributions of individual
+jobs and unordered pairs expresses its expectation as a sum of bounded
+terms.  For distinct jobs, the probability that zero, one, or two members of
+a pair are tested differs from the corresponding independent probability by
+$O(1/n)$, uniformly in the tested count.  Hence
 \begin{equation}
  \EE C_n(\pi)=n^2F_{\mathsf{BE},D[p]^{\rm grid}}(\pi)+O_L(n)
  \label{eq:blind-finite-kernel}
 \end{equation}
-uniformly over canonical templates $\pi$.  Together with
+uniformly over choices $\pi$.  Together with
 \cref{eq:blind-rounding-stability}, this proves
 \begin{equation}
  \left|\frac{\operatorname{VAL}_{\rm ann}(p)}{n^2}
@@ -433,7 +445,7 @@ executes
  \label{eq:blind-pilot-size}
 \end{equation}
 sample jobs.  Their observed durations give a grid histogram $\widehat D_n$.
-The algorithm minimizes the canonical quadratic over every grid threshold,
+The algorithm minimizes the quadratic \cref{eq:blind-quadratic} over every grid threshold,
 blind-block insertion position, and $q\in[0,1]$, then runs the selected
 four-block template on the remaining jobs in the unused random order.
 
@@ -448,9 +460,9 @@ Let $D_n$ and $D_n^{\rm rem}$ be the full and remaining grid histograms.  Applyi
  &\|D_n^{\rm rem}-D_n\|_1\le\frac{2k_n}{n-k_n}.
  \label{eq:blind-histogram-learning}
 \end{align}
-For a fixed canonical template, formula \cref{eq:blind-F} consists only of
-bounded one- and two-fold integrals.  Therefore, uniformly in the grid
-and template,
+For fixed scheduling choices $\pi$, formula \cref{eq:blind-F} consists only
+of bounded single and double integrals.  Therefore, uniformly in the grid
+and in $\pi$,
 \begin{equation}
  |F_{\mathsf{BE},D}(\pi)-F_{\mathsf{BE},E}(\pi)|
  \le C_L\|D-E\|_1,

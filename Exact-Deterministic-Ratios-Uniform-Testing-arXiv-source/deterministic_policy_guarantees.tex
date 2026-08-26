@@ -768,8 +768,9 @@ corresponding cases gives
  \Gamma_n\le\sum_i\ell_i;
  \label{eq:opt:pair-allocation-dominates}
 \end{equation}
-the difference is exactly the sum of nonnegative processing-delay terms
-included in the relaxed $M$ charges.  Formula
+the difference is exactly the sum of nonnegative processing-delay terms by
+which the displayed $M$ charges overestimate the true pair contributions.
+Formula
 \eqref{eq:opt:cap-local-charge}, rather than a substitution $p=u$ into
 $\ell_Q$, is essential before caps have been put into a prefix.
 
@@ -798,7 +799,7 @@ Define
  \qquad y=\eta-Rb.
  \label{eq:opt:eta-b}
 \end{equation}
-For $-1\le y\le0$, put
+Call $-1\le y\le0$ Region I, and in this region put
 \begin{align}
  f_c(y)
  &=\frac{c+2}{4}
@@ -810,7 +811,7 @@ For $-1\le y\le0$, put
  G_c(y,b)&=f_c(y)+b h_c(y)+\frac R2b^2.
  \label{eq:opt:G-region-one}
 \end{align}
-For $y\le-1$, set instead
+Call $y\le-1$ Region II, and in this region set instead
 \begin{equation}
  G_c(y,b)=g_c(\eta),
  \qquad
@@ -953,7 +954,8 @@ contributes, after division by $x$,
  \label{eq:opt:L0}
 \end{equation}
 A cap also increments $K$, and its contribution is
-$L_0+\mathcal H'$.  On the active range $\mu\le m$, differentiation of
+$L_0+\mathcal H'$.  On the range $\mu\le m$, where $\mathcal V$ may be
+nonzero, differentiation of
 \eqref{eq:opt:reserve-H} gives
 \begin{equation}
  \mathcal H'=2(1+q)\mathcal V-\beta(\mu),
@@ -1067,8 +1069,9 @@ $0\le q\le q_*$ one has bounded $\mathcal H''$, and
 For $q\ge q_*$, $\mathcal R=0$; moreover
 $\mathcal H(q_*)=\mathcal H'(q_*)=0$.  Thus the join is $C^1$ with
 bounded one-sided Hessians.  At $x=0$, set $\mathcal R=0$: for $K>0$ it is
-already locally zero, while at $(x,K)=(0,0)$ two-homogeneity gives zero
-gradient.  Altogether $W$ is continuously differentiable with a Lipschitz
+already locally zero, while
+$\mathcal R(\theta x,\theta K)=\theta^2\mathcal R(x,K)$ gives zero gradient
+at $(x,K)=(0,0)$.  Altogether $W$ is continuously differentiable with a Lipschitz
 gradient on all states that the algorithm can reach.  On the
 mixed interval its regularity constant may depend on the fixed value of $u$.
 When $c=r$ and $m=0$, however, the reserve is identically zero and the base

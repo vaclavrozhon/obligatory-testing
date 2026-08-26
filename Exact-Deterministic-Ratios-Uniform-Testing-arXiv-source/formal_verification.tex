@@ -8,6 +8,18 @@ imports every development listed below.  The following table states the proof bo
 \cref{app:lean-formalization} gives the detailed paper--Lean dictionary for
 the deterministic theorem.
 
+In the table, \emph{operational} or \emph{literal} means that Lean models the
+schedule action by action, while a \emph{transcript-only} strategy chooses
+each next action only from the public transcript.  \emph{End-to-end} means
+that the cited export starts from such a strategy or execution and reaches
+the stated cost bound, rather than checking only an intermediate algebraic
+identity.  A \emph{certificate} is a proved inequality used by that
+end-to-end argument.  A \emph{diagonal correction} is the linear contribution
+of the terms with the same job in both positions of a double sum; we call it
+a one-job correction in the prose below.  Finally, \emph{fuel} is a finite
+upper bound on the number of internal action-selection steps used to run the
+formal strategy.
+
 \begingroup
 \footnotesize
 \begin{longtable}{@{}L{0.27\textwidth}L{0.32\textwidth}L{0.33\textwidth}@{}}
@@ -65,7 +77,7 @@ Obligatory-testing instance optimality,
    finite input: Lean constructs the threshold, proves its global fractional
    density certificate and the complete finite fractional pointwise envelope,
    and identifies the exact uniform cost of the announced stationary
-   operation word, including its linear diagonal remainder.  The lower
+   action sequence, including its linear one-job remainder.  The lower
    transfer is operational: every completing adaptive test-only algorithm is
    reindexed by its first-touch permutation, every literal prefix is bounded
    by the rounded completion envelope, the envelope is integrated into the
@@ -74,12 +86,12 @@ Obligatory-testing instance optimality,
    benchmark is identified with the stationary maximum-density formula.
    The two model-independent transfer principles are also checked.  The
    growing-cutoff learner is now a literal completing transcript-only algorithm;
-   its variable-grid density certificate, bounded-input exclusion of fallback,
-   exact-once completion invariant, and the model-specific
+   Lean proves its variable-grid density inequality, bounded-input exclusion
+   of fallback, the fact that every job completes exactly once, and the model-specific
    $3(L+2)$ histogram stability estimate are checked.  Lean also constructs
-   the exact minimizer over the common finite Boolean-template family and
-   proves its uniform-pilot excess bound
-   $6(L+2)\sqrt{K/k}$.  The literal-run upper is identified exactly with the
+   the exact minimizer over the finite family of grid prefixes and
+   proves its excess bound for a uniform pilot sample,
+   $6(L+2)\sqrt{K/k}$.  The action-by-action upper bound is identified exactly with the
    aligned rounded benchmark used by the adaptive lower transfer, and finite
    Yao selects one fixed placement against every finite private-seed family.
    Both positive- and zero-mean inputs are covered.  Finally Lean supplies a
@@ -94,9 +106,10 @@ Blind-execution results,
  & End-to-end uniform $o_L(n^2)$ comparison with every complete announced
    algorithm; the checked rate is slower than the paper's rate.  The unbounded
    impossibility is also end-to-end: the all-zero first-touch order is
-   extracted from each literal transcript, lockstep causality preserves the
-   exceptional label's blind rank, suffix accounting charges its actual
-   one-long-job run, and finite-seed averaging fixes one oblivious label. \\
+   extracted from each literal transcript.  A second run with one exceptional
+   label is identical until that label is touched, so its blind rank is
+   preserved; completion-time accounting then charges the actual one-long-job
+   run, and finite-seed averaging fixes one oblivious label. \\
 Revealing-optimization instance and randomized curve,
 \cref{thm:common-upper-instance,thm:random-common-upper}
  & \path{RevealingOptimization.binaryFamilies_le_curve};
@@ -122,39 +135,41 @@ Revealing-optimization instance and randomized curve,
    attainment, and global maximum are checked.  The survival reduction now
    starts from a concrete nonempty finite input, constructs its
    maximum-density threshold, identifies the exact empirical survival and
-   offline minimum-pair formulas, derives the prefix-energy and adjacent-tail
-   inequalities, and reaches the exact curve
+   offline minimum-pair formulas, bounds the square integral on every initial
+   interval and compares the two adjacent tail intervals, and reaches the exact curve
    in all three threshold regimes.  The resulting announced endpoint is a
    literal uniformly permuted transcript-only stationary-or-raw strategy:
    every private seed terminates, its timed run has exactly the analysed pair
-   cost, and the finite bound retains an explicit linear diagonal remainder.
+   cost, and the finite bound retains an explicit linear one-job remainder.
    Its denominator is identified exactly
    with the empirical clairvoyant minimum-pair leading term, including the
-   nonnegative diagonal correction to the literal finite SPT optimum.  The common
+   nonnegative one-job correction to the literal finite SPT optimum.  The common
    completion-area and pilot-learning transfer is checked abstractly.  For the
    universal upper bound, the model-correct finite grid objective, its uniform
-   histogram stability, empirical minimization, the literal mixed
-   test/process/raw quota algorithm, completion-label permutation, and the finite
-   random-placement kernel replacement are also checked.  On
-   the lower side an exact finite Bellman induction now covers every
-   adaptive test--raw--process decision tree and both attaining binary
-   families.  The lower tree retains job labels, and a mechanical compiler
-   unfolds every completing literal transcript-only strategy into that tree,
-   including the silent administrative processing of tested zero jobs.  Its
+   histogram stability, empirical minimization, the literal algorithm that
+   chooses a tested fraction and then combines testing, processing, and raw
+   execution, and the fact that its completion labels form a permutation.
+   Lean also checks the replacement of without-replacement pair probabilities
+   by their leading product probabilities.  On
+   the lower side an exact induction over the finite decision tree covers
+   every adaptive test--raw--process choice and both attaining binary
+   families.  The lower tree retains job labels, and Lean recursively
+   translates every completing transcript-only strategy into that tree,
+   including the bookkeeping step that completes a tested zero job.  Its
    recursive cost is proved equal to the actual timed run.  The Bernoulli
    denominator is the literal finite clairvoyant optimum including its
-   diagonal, finite weighted Yao fixes one labelled input before every
+   one-job terms; finite weighted Yao fixes one labelled input before every
    private seed, and the exact finite ratios converge to the advertised
    curve.  The universal learned upper is also a literal public
    transcript-only strategy: its pilot and retained main transcript are
-   replayed exactly by the timed runtime with uniform fuel, and its expected
+   replayed exactly by the timed runtime with one common step bound, and its expected
    actual run cost satisfies the finite pilot-learning bound.  The bounded
    common-upper instance theorem is now assembled around one raw-block
    benchmark: revealing raw timings are accounted exactly, every completing
    adaptive observed algorithm satisfies the integrated completion-envelope
    lower bound, finite Yao fixes one placement before the competitor's seed,
    and the literal learned upper meets the same benchmark.  The all-zero
-   branch is discharged by an exact completion triangle.  With
+   branch uses the exact sum $1+2+\cdots+n$.  With
    $m=\lfloor n^{1/16}\rfloor$, the direct normalized comparison error is at
    most $1000(u+1)^2/m=o_u(1)$; this checked rate is slower than the rate in
    the main proof. \\
@@ -178,12 +193,12 @@ Blind-optimization results,
    transcript-only strategy whose run cost is identified with the analyzed
    schedule.  The distribution reduction, scalar maximum, attainment, both
    large-$u$ asymptotics, fully adaptive binary decision-tree lower bound,
-   exact finite diagonal limit, and finite weighted Yao selection (which
+   exact finite limit including one-job terms, and finite weighted Yao selection (which
    permits the exact, possibly irrational Bernoulli mass) are checked.  An
    arbitrary transcript-only strategy is mechanically unfolded into the
    corresponding labeled adaptive tree.  Its structural expectation is
    identified with the weighted average of literal operational runs, the
-   exact finite offline expectation (including its diagonal correction) is
+   exact finite offline expectation (including its one-job correction) is
    checked, and Yao selects one fixed labeled input against the entire
    private-seed family at a ratio converging to the advertised curve. \\
 \bottomrule

@@ -86,7 +86,8 @@ transcript to its next action.  A test publishes the revealed processing
 time; raw execution publishes no hidden value.  Thus the strategy has exactly
 the information available to an online algorithm in the manuscript.  The
 formal action type uses the standard no-idling normalization appropriate when
-all jobs are released at time zero.  Processing times and comparisons are
+all jobs are released at time zero: a strategy does not idle while a legal
+operation is available.  Processing times and comparisons are
 exact real numbers.
 
 \subsection{Expansion of the lower and upper fields}
@@ -95,7 +96,9 @@ For a cap and a candidate value \(R\),
 \texttt{FixedSizeLowerBound} expands to the following statement.  For every
 size-indexed family of deterministic strategies \(\mathcal B_n\), every
 \(\eps>0\), and every \(N\), there exist \(n\ge N\), a genuine fixed
-admissible \(n\)-job input \(I\), and a finite settled execution such that
+admissible \(n\)-job input \(I\), and a finite execution with no internal
+administrative transition left---called \emph{settled} in the Lean
+development---such that
 either the execution leaves a job incomplete or
 \begin{equation}
   (R-\eps)\OPT(I)\le \ALG_{\mathcal B_n}(I).
@@ -113,9 +116,10 @@ The predicate \texttt{SizeAsymptoticUpper} is the epsilon formulation
  \ALG_{\mathcal A_n}(I)\le (R+\eps)\OPT(I).
  \label{eq:lean-upper-expansion}
 \end{equation}
-The accompanying completion field proves that every job is done after the
-common analysis fuel \(2n+1\), rather than merely assigning a cost to a
-partial trace.  Consequently,
+The accompanying completion field proves that every job is done after at
+most \(2n+1\) internal action-selection steps (the ``analysis fuel'' in the
+Lean definition), rather than merely assigning a cost to a partial
+transcript.  Consequently,
 \cref{eq:lean-lower-expansion,eq:lean-upper-expansion} are the two matching
 operational statements that characterize the optimal value in
 \cref{eq:cr-infty}.  The Lean theorem packages these two directions; it does
@@ -155,13 +159,14 @@ obligatory model.  Its lower field gives the lower half of
 \eqref{eq:lean-linear-certificate} gives the upper half.  The common formal
 infrastructure also
 proves that the offline benchmark is the shortest-first schedule of
-effective lengths and that the transcript cost is exactly its
-suffix-weighted pair-accounting expression.
+effective lengths and that the transcript cost is exactly the sum of each
+operation length times the number of jobs unfinished during that operation.
 
 \subsection{Proof boundary}
 
 The root Lean module imports the complete lower- and upper-bound assemblies.
-The public theorem has no operational interface hypotheses, and the
+The public theorem does not assume any unproved property of the formal
+execution interface, and the
 development contains no \texttt{sorry}, \texttt{admit}, or project-defined
 \texttt{axiom}.  It does use mathlib's classical real analysis and
 noncomputable choices of exact real parameters.  Thus it certifies

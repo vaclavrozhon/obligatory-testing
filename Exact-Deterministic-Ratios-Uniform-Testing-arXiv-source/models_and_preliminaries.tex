@@ -9,7 +9,8 @@ the probabilistic and finite-size tools used throughout the paper.
 \subsection{Models}
 
 There are $n$ jobs, all available at time zero, and one machine.  Operations
-are nonpreemptive, and at most one operation can run at a time.  Job $j$ has
+are nonpreemptive: once an operation starts, it runs to completion.  At most
+one operation can run at a time.  Job $j$ has
 a hidden value $p_j\ge0$.  The four models differ in what can be done before
 this value is known.
 
@@ -68,12 +69,16 @@ We write $\ALG_{\mathcal A}(I)$ for the objective value of an online
 algorithm $\mathcal A$ on an instance $I$, and $\OPT(I)$ for the value of an
 offline optimum that knows all processing times.  We omit algorithm
 subscripts or instance arguments when they are clear.
+When a sequence of costs has the form $cn^2+o(n^2)$, we call $c$ its
+\emph{leading coefficient}; terms contributed by individual jobs rather
+than pairs are typically only $O(n)$.
 
 \subsection{Input, information and adversaries}
 \label{par:input-convention}
 
-The deterministic results use the usual adversarial inputs.  The
-randomized results use an \emph{oblivious} adversary: the processing-time
+For a deterministic algorithm, the adversary may choose the processing-time
+vector and its assignment to labels with full knowledge of the algorithm.
+The randomized results use an \emph{oblivious} adversary: the processing-time
 vector is fixed before the algorithm draws its private random seed.
 
 An input is a vector $p=(p_1,\ldots,p_n)$ of job lengths chosen by the
@@ -83,13 +88,19 @@ all further private randomness by $\EE\ALG_{\mathcal A}(p)$.  Thus randomized
 performance depends only on the entries of $p$, not on their displayed
 order.  An \emph{announced} algorithm is additionally given the multiset
 $\{p_1,\ldots,p_n\}$, but not its shuffled assignment to labels.
+Every algorithm is \emph{nonanticipating}: each action may depend on the
+public parameters, its private randomness, and everything revealed so far,
+but not on a hidden value that the model has not yet exposed.
+The \emph{transcript} of a run is the resulting ordered sequence of actions
+and observations.
 
 We write
 \begin{equation}
  D[p]\defeq\frac1n\sum_{i=1}^n\delta_{p_i}
  \label{eq:empirical-distributions}
 \end{equation}
-for the empirical distribution of the input.  It is unchanged by the
+for the empirical distribution of the input, where $\delta_x$ denotes one
+unit of probability concentrated at $x$.  It is unchanged by the
 shuffle.
 
 Our instance-optimality results compare against all algorithms receiving
@@ -118,7 +129,8 @@ shortest first.  Associate with job $j$ the model-dependent
 \label{lem:offline}\label{lem:optional-offline}
 Fix any one of the four models and let
 $\lambda_{(1)}\le\cdots\le\lambda_{(n)}$ be its effective lengths from
-\cref{eq:model-effective-length}.  A clairvoyant optimum completes the jobs
+\cref{eq:model-effective-length}.  A clairvoyant (fully informed) optimum
+completes the jobs
 in this order and has value
 \begin{align}
  \OPT
@@ -148,8 +160,8 @@ Choose the mode specified in the lemma, keep each resulting block contiguous,
 and execute the blocks in nondecreasing order of $\lambda_j$.  This schedule is
 feasible in the relevant model and attains equality for every $k$.  Summing
 over $k$ and then collecting the contribution of each unordered pair gives
-the first two formulas.  Splitting the double sum into its diagonal and the
-two orientations of every unordered pair gives the symmetric form.
+the first two formulas.  Separating the terms with $i=j$ from the two
+orientations of every pair with $i\ne j$ gives the symmetric form.
 \end{proof}
 
 \subsection{Stationary prefix algorithms}
@@ -184,6 +196,9 @@ Define its stationary leading coefficient by
    +\frac{\SPT(T)}{n^2}-\frac{\ell_T}{2n}.
  \label{eq:stationary-leading-coefficient}
 \end{equation}
+We call the algorithm below \emph{stationary} because the set $E$ and the
+immediate/deferred rule are fixed before the random test order is exposed;
+the rule does not change with the observed history.
 
 \begin{lemma}[Stationary prefix pair identity]
 \label{lem:stationary-prefix-cost}
@@ -199,7 +214,7 @@ SPT order.  The resulting stationary algorithm satisfies
 
 \begin{proof}
 Let $W=n+\sum_{i\in E}p_i$ and
-$W_E=e+\sum_{i\in E}p_i$.  The discovery phase has one block per job: an
+$W_E=e+\sum_{i\in E}p_i$.  The initial random test phase has one block per job: an
 $E$-block has length $1+p_i$ and completes its job, whereas a $T$-block is
 its unit test and completes no job.  For an $E$-job, every other block
 precedes it with probability $1/2$, so all $E$-jobs contribute
@@ -212,7 +227,7 @@ Every $T$-job sees the common offset $W$, and the final SPT phase contributes
  (n-e)W+\SPT(T).
  \label{eq:stationary-late-cost}
 \end{equation}
-Adding the two displays and collecting the diagonal terms gives
+Adding the two displays and collecting the one-job contributions gives
 \cref{eq:stationary-prefix-cost}.
 \end{proof}
 
@@ -260,7 +275,7 @@ work per completion.  At the optimum these two quantities agree: the cutoff
 $\tau_D$ is also the module's work per completion.  The following lemma
 makes this self-consistency precise.
 
-\begin{lemma}[Maximum-density discovery module]
+\begin{lemma}[Maximum-density test module]
 \label{lem:maximum-density-module}
 There is a unique $\tau_D\ge1$ satisfying
 \begin{equation}
@@ -294,7 +309,7 @@ For an arbitrary rule $g$,
    &\le\int_{[0,\infty)}(\tau_D-p)^+\,dD(p)=1.
  \end{aligned}
 \]
-This is the dual inequality in \cref{eq:common-density-dual}.  The threshold
+This is the second inequality in \cref{eq:common-density-dual}.  The threshold
 rule $g_*$ attains equality because it keeps exactly the terms with
 $\tau_D-p>0$; mass at $p=\tau_D$ does not affect the equality.  Hence
 $\tau_D a_*=w_*$ and $g_*$ has maximum density $1/\tau_D$.
@@ -344,7 +359,8 @@ $v_k$ per completed job.  A budget $x$ can be divided among these kinds of
 work.  As in shortest-processing-time scheduling, the cheapest work per
 completion should come first.
 
-For a completion curve $C$, write
+A \emph{completion curve} $C(x)$ records the largest job mass that can be
+finished using normalized work $x$.  Write
 \begin{equation}
  \Area(C)\defeq\int_0^\infty(1-C(x))\,dx
  \label{eq:completion-curve-area}
@@ -381,8 +397,10 @@ $v_k$, and its area is the divisible SPT cost:
 \end{lemma}
 
 \begin{proof}
-The ordering assertion is the usual exchange argument: moving a lower-$v_k$
-block before a higher-$v_k$ block cannot increase the area.  In a
+Consider two consecutive blocks with masses $c,c'$ and work per completion
+$v\le v'$.  Putting the $v$-block first changes the area, relative to the
+opposite order, by $cc'(v-v')\le0$.  Repeating this neighboring swap orders
+all blocks by nondecreasing work per completion.  In a
 block of completion mass $c_k$ and work per completion $v_k$, unfinished
 mass decreases linearly.  After sorting the blocks by $v_k$, its area
 contribution is
@@ -457,23 +475,25 @@ With $\lambda=y_L/a_*$, replace this part by $\lambda$ full test modules.
 The replacement preserves completed mass, weakly decreases work, and uses
 $0\le\lambda\le t\le q$.  Residual class $p$ has capacity at most
 $q\nu(\{p\})$, while the independent mode has capacity $1-q$.  Thus every
-feasible point maps to the divisible knapsack in
+feasible point maps to the fractional allocation problem in
 \cref{eq:common-envelope-items}.
 
-Conversely, order the knapsack items by work per completion, placing the test
+Conversely, order these fractional items by work per completion, placing the test
 module before residual items at a tie.  The independent item can be run
 whenever its position in this order requires.  A partial test-module item is
 realized by the corresponding fraction of tests and selected outcomes.  Once
 all $q$ test modules have run, every residual capacity is available; this is
-early enough because \cref{lem:maximum-density-module} gives
-$\operatorname{supp}\nu\subseteq[\tau_D,\infty)$.  Hence the greedy curve is
+early enough because \cref{lem:maximum-density-module} says that every
+length carrying positive residual mass is at least $\tau_D$.  Hence the curve
+obtained by processing the items in this order is
 feasible at every work budget, proving the curve identity.  The area
 formula follows from \cref{lem:divisible-spt-area}.
 \end{proof}
 
 \begin{lemma}[Zero-preserving transport]
 \label{lem:zero-preserving-transport}
-Suppose distributions $D,D'$ admit a coupling $(P,P')$ such that
+Suppose there are joint random variables $(P,P')$, with respective laws
+$D,D'$, such that
 $P=0$ if and only if $P'=0$ and $|P-P'|\le h$ almost surely.  Transporting
 the same fluid algorithm through this coupling preserves all completion events
 and changes accumulated processing work by at most $h$.  Consequently, each
@@ -485,9 +505,10 @@ model-specific fluid value $\Phi$ defined below satisfies
 \end{lemma}
 
 \begin{proof}
-Couple each infinitesimal job occurrence and transport decisions using its
-coupled mark, exposing that mark only when the model exposes the corresponding
-processing time.  Zero preservation makes test completions coincide.  At
+Pair each infinitesimal job occurrence under the stated joint distribution
+and make the same decision for the two paired values, exposing them only
+when the model exposes the corresponding processing time.  Zero preservation
+makes test completions coincide.  At
 every prefix, the total mass that has received processing is at most one, so
 replacing its processing times changes cumulative work by at most $h$.  One
 unfinished-mass curve is therefore contained in a horizontal $h$-shift of
@@ -508,6 +529,8 @@ $\eps(n)\to0$ such that every $n$-job instance satisfies
 \end{equation}
 For a deterministic algorithm the expectation is omitted.  The optimal ratio
 in a model is the infimum of such $R$ over all admissible algorithm families.
+We also call this the \emph{size-asymptotic} ratio to emphasize that the
+model parameters are fixed while the number of jobs $n$ tends to infinity.
 
 In obligatory testing every effective length is at least one, and in either
 optimization model it is at least $\min\{u,1\}$.  Hence
@@ -516,8 +539,9 @@ definition above is equivalent to the usual worst-case ratio after taking
 $n\to\infty$.  This equivalence fails for blind execution, where $\OPT$ can
 be $o(n^2)$ in the special case where most of the jobs have length zero.  Accordingly,
 \cref{thm:blind-instance} makes the absolute statement
-$\EE\ALG=n^2\PhiBE(D[p])+o_L(n^2)$ and does not claim a bounded ratio to the
-clairvoyant optimum on every sparse input.
+$\EE\ALG=n^2\PhiBE(D[p])+o_L(n^2)$, where the benchmark $\PhiBE$ is defined
+in \cref{sec:blind-benchmark}.  It does not claim a bounded ratio to the
+clairvoyant optimum when most jobs have length zero.
 
 \subsection{Probabilistic tools}
 \label{sec:probabilistic-tools}
@@ -538,8 +562,9 @@ permutation of the coordinates of $p$.  Equal values may be regarded as distinct
 copies when making this argument.
 
 The action chosen at a first touch is determined before the processing time
-behind that label is exposed.  It can therefore be used as a predictable
-selector in the sampling bounds below.  If the chosen action does not reveal
+behind that label is exposed.  We call any choice made from past observations
+but before the next value is seen \emph{predictable}.  Such an action can be
+used as a selector in the sampling bounds below.  If the chosen action does not reveal
 the processing time to the algorithm, we may still expose it afterwards for the
 analysis; this does not change the algorithm's decisions.
 
@@ -603,9 +628,10 @@ estimate for an empirical histogram.
 
 \begin{lemma}[Histogram error without replacement]
 \label{lem:without-replacement-histogram}
-Partition a population of $N$ occurrences into $d$ classes.  Let $p$ be its
-histogram and let $\widehat p$ be the histogram of the first $k$ occurrences
-in a uniformly random permutation.  Then
+Partition a population of $N$ occurrences into $d$ classes.  Let $p$ be the
+vector of class frequencies in the population and let $\widehat p$ be the
+corresponding frequency vector among the first $k$ occurrences in a uniformly
+random permutation.  Then
 \begin{equation}
  \EE\|\widehat p-p\|_1\le\sqrt{\frac d k}.
  \label{eq:without-replacement-histogram}
@@ -652,7 +678,9 @@ control.
 
 \begin{lemma}[Martingale maximal inequalities]
 \label{lem:martingale-maximal}
-Let $(M_k,\mathcal F_k)_{k=0}^N$ be a real martingale with $M_0=0$.
+Let $(M_k,\mathcal F_k)_{k=0}^N$ be a real martingale with $M_0=0$; that is,
+$\mathcal F_k$ records the information available by time $k$ and
+$\EE[M_k\mid\mathcal F_{k-1}]=M_{k-1}$.
 If $\EE|M_N|^2<\infty$, then Doob's inequality gives
 \begin{equation}
  \EE\max_{0\le k\le N}|M_k|^2\le4\EE|M_N|^2.
@@ -668,8 +696,8 @@ then maximal Azuma--Hoeffding gives, for every $t\ge0$,
 \end{lemma}
 
 We use the classical forms due to Doob~\cite{Doob1953} and
-Azuma~\cite{Azuma1967}; the maximal version of the latter follows by applying
-the exponential-supermartingale proof at the first crossing time.
+Azuma~\cite{Azuma1967}; the maximal version of the latter follows by stopping
+the usual exponential bound when the displayed threshold is first crossed.
 
 The next lemma models an adaptive algorithm reading a randomly permuted fixed
 input.  The vector $X_k$ records the statistics of the $k$th touched job,
@@ -677,8 +705,8 @@ while the predictable weight $A_k$ records whether the algorithm selects that
 job before seeing its value.  The lemma says that such adaptive selection
 cannot systematically bias the sample: every selected prefix remains close
 to the corresponding population average, simultaneously over all possible
-stopping times.  We stop before the final $\delta N$ jobs because depletion
-of the remaining urn becomes unstable near the very end.
+stopping times.  We stop before the final $\delta N$ jobs because averages in
+the remaining population become unstable near the very end.
 
 \begin{lemma}[Predictable sampling from a random permutation]
 \label{lem:predictable-permutation-sampling}
@@ -708,7 +736,7 @@ over coordinates and prefix lengths.  Except with probability at most
 $\eta/2$, every centered prefix sum has absolute value at most
 $E=E_{N,d,B,\eta}$.  Before draw $k\le(1-\delta)N$, the mean
 $\widetilde x_{k-1,\ell}$ of
-the remaining urn therefore satisfies
+the remaining population therefore satisfies
 \[
  |\widetilde x_{k-1,\ell}-\bar x_\ell|\le \frac{E}{\delta N}.
 \]
@@ -719,14 +747,17 @@ For each $\ell$,
 is a martingale with increments bounded by $B$.  The maximal
 Azuma--Hoeffding inequality \cref{eq:maximal-azuma}, followed by a union
 bound over $\ell$, puts all $|M_{m,\ell}|$ below $E$ except with probability at
-most $\eta/2$.  The predictable drift is at most $E/\delta$, which proves
+most $\eta/2$.  The accumulated difference between the remaining-population
+mean and the original mean is at most $E/\delta$, which proves
 \cref{eq:predictable-permutation-sampling}.  Conditioning and then averaging
 proves the final assertion.
 \end{proof}
 
 Once a sample approximates the input distribution, objective stability must
-transfer a sample-optimal template back to the true distribution.  The next
-deterministic lemma isolates this elementary step.
+transfer its chosen algorithmic parameters back to the true distribution.
+Here and below, a \emph{template} means a fixed choice of the few fluid
+parameters used by an algorithm, such as a threshold or tested fraction.
+The next deterministic lemma isolates this elementary step.
 
 \begin{lemma}[Lipschitz empirical minimization]
 \label{lem:empirical-minimization}
@@ -790,15 +821,17 @@ the unselected jobs is also close to its expectation.
 
 \begin{lemma}[Uniform first-touch sampling event]
 \label{lem:uniform-first-touch-event}
-Fix values $p_1,\ldots,p_n\in[0,L]$, partition their occurrence tokens into
-$s+1$ cells with empirical masses $d_0,\ldots,d_s$, and put
-$\mu=n^{-1}\sum_i p_i$.  Place the tokens uniformly on the public labels,
+Fix values $p_1,\ldots,p_n\in[0,L]$, partition $[0,L]$ into cells
+$C_0,\ldots,C_s$, and let
+$d_j=n^{-1}|\{i:p_i\in C_j\}|$ be the empirical mass of cell $C_j$.  Put
+$\mu=n^{-1}\sum_i p_i$.  Place these $n$ entries uniformly on the public labels,
 fix a deterministic algorithm, and let $X_k$ be the value encountered at first
-touch $k$.  If $A_k$ is the predictable indicator that this touch uses the
-revealing mode, then for every $\delta,\eta\in(0,1)$, with probability at
+touch $k$.  If $A_k$ is the predictable indicator that this touch tests the
+job and reveals its value before processing, then for every
+$\delta,\eta\in(0,1)$, with probability at
 least $1-\eta$, simultaneously for every $m\le(1-\delta)n$,
 \begin{align}
- \left|\sum_{k\le m}A_k\one_{X_k\in j}
+ \left|\sum_{k\le m}A_k\one_{X_k\in C_j}
        -d_j\sum_{k\le m}A_k\right|
  &\le \Gamma_{\rm cell} &&(0\le j\le s),
  \label{eq:first-touch-cell}\\
@@ -845,8 +878,8 @@ completed mass.
 
 For an input law $D$ and a family $\Pi$ of fluid algorithm templates, let
 $\mathcal C_{D,\pi}(x)$ be the largest mass that template $\pi$ can complete
-using work $x$.  A template records only the few fluid parameters chosen by
-the algorithm, such as the tested fraction $q$.  Define
+using work $x$.  Thus, for example, $\pi$ may record the tested fraction
+$q$.  Define
 \begin{equation}
  F_D(\pi)\defeq\Area(\mathcal C_{D,\pi}),
  \qquad
@@ -873,8 +906,9 @@ $O(hn)$.
 
 \begin{lemma}[Bounded suffix edit]
 \label{lem:bounded-suffix-edit}
-Consider two completing no-idling schedules on the same $n$ jobs, each of
-total work at most $Wn$.  Suppose one is obtained from the other by changing
+Consider two schedules on the same $n$ jobs that finish every job and never
+idle while an operation is available.  Suppose each has total work at most
+$Wn$ and one is obtained from the other by changing
 the operations of at most $h$ jobs, altering at most $ch$ operations of
 individual length at most $W$, while preserving the relative order and
 completion events of all unaffected jobs.  Then

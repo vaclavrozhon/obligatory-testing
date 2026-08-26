@@ -13,7 +13,7 @@ For a vector $p=(p_1,\ldots,p_n)$, we define below an explicit number
 $\PhiOT(D[p])$, using the common empirical notation
 \cref{eq:empirical-distributions}.  It is obtained by scanning the
 processing times in increasing order, choosing the prefix with the largest
-number of completions per unit of discovery work, and evaluating the
+number of completions per unit of test-and-process work, and evaluating the
 stationary algorithm for that prefix.
 
 \begin{theorem}[Obligatory-testing instance optimality]
@@ -75,7 +75,9 @@ As in the introduction, $\ALG_{\mathcal A}$ includes the expectation over
 the private randomness of $\mathcal A$.  For part~(i), write $n=2m$.
 Against the fixed deterministic algorithm, reveal
 length two on the first $m$ labels it tests and zero on the remaining $m$.
-As usual, replay freezes this interaction into one fixed oblivious labeling.
+After the interaction, record every answer on the label where it was given.
+Rerunning the deterministic algorithm on this fixed labeling reproduces the
+same actions and observations.
 If the algorithm does not finish, the claim is immediate.  Otherwise, let $h$
 be the number of length-two jobs completed before the first zero is tested.
 By that time all $m$ positive jobs have been tested, so at least $m+2h$ work
@@ -170,7 +172,8 @@ Define
 For $D=D[p]$ and a whole-occurrence maximizing prefix $E$, this is precisely
 $F_{\mathsf{OT},D[p]}(E)$ from \cref{eq:stationary-leading-coefficient}.  The next
 lemma proves both that the value is
-independent of choices at a tied atom and that it lower-bounds every fluid
+independent of how probability mass at the threshold is split and that it
+lower-bounds every fluid
 algorithm.
 
 \begin{lemma}[Pointwise completion envelope]
@@ -203,7 +206,7 @@ has zero capacity, so $v$ is immaterial.  By
 \[
                          a_*\delta_{\tau_D}+\nu.
 \]
-The greedy realization first repeats the full maximum-density module and
+The optimal realization first repeats the full maximum-density module and
 then processes $\nu$ in SPT order, proving the pointwise assertion.  Since
 $\nu$ has mass $1-a_*$ and is supported above $\tau_D$, the common area
 formula \cref{eq:common-envelope-area} expands to
@@ -215,7 +218,7 @@ formula \cref{eq:common-envelope-area} expands to
    +\SPT(\nu),
 \end{align*}
 because $w_*=a_*\tau_D$.  This is \cref{eq:ot-Phi} and is unaffected by
-how a boundary atom is split.
+how probability mass at the boundary is split.
 \end{proof}
 
 \subsection{The announced upper bound}
@@ -241,8 +244,8 @@ Uniformly shuffle the coordinates of $p$ and fix a
 deterministic nonanticipating algorithm.  We may assume that it completes every
 job, since otherwise the lower bound is immediate.  In the adaptive order in
 which it tests new labels, the revealed occurrences form a uniform random
-permutation $P_1,\ldots,P_n$ of the coordinates of $p$ by deferred decisions.  Equal-valued
-occurrences may be kept distinct as temporary tokens.
+permutation $P_1,\ldots,P_n$ of the coordinates of $p$ by deferred decisions.
+When values are equal, we still treat the corresponding jobs as distinct.
 Because every first touch is a test, no suffix edit is needed and we may use
 the sharper all-prefix sampling bound directly.
 
@@ -280,7 +283,7 @@ simultaneously at every prefix,
  \label{eq:ot-pointwise-completion}
 \end{equation}
 
-The completion horizon is at most $H=L+2$, and the immediate
+The completion curve reaches one by normalized work at most $H=L+2$, and the immediate
 test--process algorithm gives $0\le\PhiOT(D^+)\le(L+1)/2$.  Apply
 \cref{thm:completion-curve-transfer} with $\varepsilon=0$,
 $\alpha=h_n$, $\beta=(K_n+1)\gamma_n$, and $\eta=n^{-2}$.  Finally,
@@ -334,9 +337,10 @@ then
  \label{eq:ot-template-lipschitz}
 \end{equation}
 Indeed, early mass changes by at most the $\ell_1$ distance, early first
-moment by at most $(L+\eta)$ times that distance, and the residual pair
-kernel $\min\{p,q\}$ changes by at most twice this amount under the two
-product measures.  The displayed loose constant covers the three terms.
+moment by at most $(L+\eta)$ times that distance.  In the remaining double
+sum of $\min\{p,q\}$, change the first distribution and then the second; the
+total change is at most twice the same amount.  The displayed loose constant
+covers the three terms.
 
 By \cref{lem:ot-completion-envelope}, a maximum-density prefix minimizes
 $F_{\mathsf{OT},D}(J)$ over grid prefixes.  Let $\widehat J$ be the prefix
@@ -351,9 +355,9 @@ Rounding each processing time upward by at most $\eta$ preserves zeros, so
 Conditional on the unordered sample, compare the actual sample-first
 schedule with the fully stationary algorithm for $\widehat J$.  The calculation
 in \cref{sec:random-obligatory} bounds the extra cost by
-$O_L(nk+k^2)$.  The diagonal term in the exact stationary identity is
-$O_L(n)$, and using the rounded values can only increase the comparator's
-processing delays.  Therefore
+$O_L(nk+k^2)$.  The one-job contribution in the exact stationary identity is
+$O_L(n)$, and using the rounded values can only increase the processing
+delays in that stationary schedule.  Therefore
 \begin{equation}
  \EE[\ALG_{\mathcal A^*}(p)\mid S]
  \le n^2F_{\mathsf{OT},D^{\rm rem}}(\widehat J)+O_L(nk+k^2+n).
