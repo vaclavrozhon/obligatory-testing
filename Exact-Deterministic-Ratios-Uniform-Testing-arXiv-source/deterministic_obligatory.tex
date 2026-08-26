@@ -7,29 +7,7 @@ $u=\infty$: both the algorithm and the additive error must be uniform in
 $u$.  The finite curve has just established exactly those two properties,
 so the endpoint now follows by a short transfer.
 
-\begin{theorem}[Deterministic obligatory testing]
-\label{thm:det-obligatory}
-Let $\uDet{5}>1$ be the unique solution of
-$\uDet{5}-3=\ln \uDet{5}$, and set
-\[
- \RdetOT=1+\frac{2}{\uDet{5}-1}
- =1.570574096649395\ldots .
-\]
-For every deterministic online algorithm $\mathcal B$ and every $\eps>0$,
-there are arbitrarily large obligatory-testing instances $I$ such that
-\[
- \ALG_{\mathcal B}(I)\ge(\RdetOT-\eps)\OPT(I).
-\]
-Conversely, there are a deterministic algorithm $\mathcal A$ and an absolute
-constant $B$ such that every $n$-job obligatory instance satisfies
-\[
- \ALG_{\mathcal A}(I)\le\RdetOT\OPT(I)+Bn.
-\]
-Consequently the optimal deterministic size-asymptotic competitive ratio is
-exactly $\RdetOT$.
-\end{theorem}
-
-\begin{proof}
+\begin{proof}[Proof of \cref{thm:det-obligatory}]
 For the upper bound, use \textsc{AdaptiveThreshold} with $c=r$.  This
 algorithm never runs a job raw and is independent of $u$.  Given a finite
 obligatory instance, choose any finite

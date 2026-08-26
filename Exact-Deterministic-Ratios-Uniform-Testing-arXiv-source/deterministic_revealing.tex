@@ -1,10 +1,13 @@
 \section{Deterministic revealing optimization: the exact curve}
 \label{sec:optional}
 
-The goal of this section is to prove \cref{thm:optional-curve}, the rigorous
-deterministic part of the informal revealing-optimization curve theorem
-\cref{thm:intro-common-upper-curves}.  We now allow raw execution for a
-finite common time $u$.  All jobs have this same known upper limit, and a
+This section proves two exact deterministic results: the revealing-optimization
+curve in \cref{thm:optional-curve} and the obligatory-testing ratio in
+\cref{thm:det-obligatory}, obtained as its uniform unbounded endpoint.  These
+are the rigorous deterministic parts of the informal statements in
+\cref{thm:intro-common-upper-curves,thm:intro-obligatory}.  We begin with
+revealing optimization at a finite common raw-execution time $u$.  All jobs
+have this same known upper limit, and a
 test reveals $p_j\in[0,u]$.  By
 \cref{eq:model-effective-length,lem:offline}, the offline effective length
 is $\min\{u,1+p_j\}$, and the offline optimum schedules these
@@ -110,7 +113,30 @@ $p_j<u-1$ for every job.  Thus both witnesses on the plateau are uniform in
 the sense needed to pass separately to the obligatory endpoint.
 \end{theorem}
 
-The proof combines two kinds of lower bounds.  Binary hidden-stopping
+\begin{theorem}[Deterministic obligatory testing]
+\label{thm:det-obligatory}
+Let $\uDet{5}>1$ be the unique solution of
+$\uDet{5}-3=\ln \uDet{5}$, and set
+\[
+ \RdetOT=1+\frac{2}{\uDet{5}-1}
+ =1.570574096649395\ldots .
+\]
+For every deterministic online algorithm $\mathcal B$ and every $\eps>0$,
+there are arbitrarily large obligatory-testing instances $I$ such that
+\[
+ \ALG_{\mathcal B}(I)\ge(\RdetOT-\eps)\OPT(I).
+\]
+Conversely, there are a deterministic algorithm $\mathcal A$ and an absolute
+constant $B$ such that every $n$-job obligatory instance satisfies
+\[
+ \ALG_{\mathcal A}(I)\le\RdetOT\OPT(I)+Bn.
+\]
+Consequently the optimal deterministic size-asymptotic competitive ratio is
+exactly $\RdetOT$.
+\end{theorem}
+
+The proof of \cref{thm:optional-curve} combines two kinds of lower bounds.
+Binary hidden-stopping
 instances give the first four branches, while a continuous capped version
 of the harmonic construction gives the mixed branch and the plateau.  Three
 explicit algorithms match them: raw execution, a forced-prefix uniform
