@@ -98,6 +98,14 @@ but not on a hidden value that the model has not yet exposed.
 The \emph{transcript} of a run is the resulting ordered sequence of actions
 and observations.
 
+For some lower bounds it is convenient to describe a finite distribution
+over inputs before selecting one fixed input.  If every deterministic
+algorithm has average payoff at least $L$ under this distribution, then the
+same is true after conditioning on the private seed of a randomized
+algorithm.  Averaging over that seed shows that at least one fixed input in
+the support gives the randomized algorithm expected payoff at least $L$.
+This is the finite one-sided form of Yao's principle~\cite{Yao1977}.
+
 We write
 \begin{equation}
  D[p]\defeq\frac1n\sum_{i=1}^n\delta_{p_i}
