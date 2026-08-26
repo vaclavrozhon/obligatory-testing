@@ -291,8 +291,8 @@ Thus \cref{lem:bo-det-hidden-stopping} proves the lower bound $R$.
 It remains to analyze \textsc{OptimizeAll}.  Put $a(p)=1+p$.  For a fixed
 multiset, its worst label order has the
 $a(p_i)$ in nonincreasing order.  If $P,P'$ are independent draws from the
-empirical distribution, online pair accounting and the empirical offline
-identity \cref{cor:empirical-offline} give
+empirical distribution, rewriting the diagonal and ordered-pair sums as
+expectations gives
 \begin{align}
  \ALG_{\textsc{OptimizeAll}}
  &\le \frac{n^2}{2}\EE\max\{a(P),a(P')\}

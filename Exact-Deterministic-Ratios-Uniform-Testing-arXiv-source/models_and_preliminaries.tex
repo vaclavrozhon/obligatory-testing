@@ -170,37 +170,6 @@ The last coefficient is common to blind and revealing optimization; their
 online benchmarks differ because only a revealing test exposes $p_j$ before
 execution.
 
-\begin{corollary}[Empirical effective-length identity]
-\label{cor:empirical-offline}
-Let $\Lambda,\Lambda'$ be independent uniform draws from the multiset of
-effective lengths $\{\lambda_1,\ldots,\lambda_n\}$.  Then
-\begin{equation}
- \OPT=\frac{n^2}{2}\EE\min\{\Lambda,\Lambda'\}
-      +\frac n2\EE\Lambda.
- \label{eq:empirical-offline}
-\end{equation}
-For a vector $p$, let $P\sim D[p]$.  If $\ell$ is the effective-length
-map of the chosen model, then
-\begin{equation}
- \OPT(p)=n^2\Omega_\ell(D[p])
-       +\frac n2\EE\ell(P).
- \label{eq:empirical-offline-model}
-\end{equation}
-In particular, in $\mathsf{BO}(u)$ or $\mathsf{RO}(u)$,
-\begin{equation}
- \OPT_u(p)=n^2\Omega_{\mathsf{RO},u}(D[p])
-       +\frac n2\EE\min\{u,1+P\}.
- \label{eq:empirical-offline-u}
-\end{equation}
-\end{corollary}
-
-\begin{proof}
-Interpret the two sums in \cref{eq:unified-opt-symmetric} as expectations
-under independent uniform draws from the occurrences.  Substituting
-$\lambda_j=\ell(p_j)$ gives \cref{eq:empirical-offline-model}; the capped
-specialization uses $\ell(p)=\min\{u,1+p\}$.
-\end{proof}
-
 The revealing-optimization and blind-optimization models have the same offline
 effective lengths.  Their difference is entirely online: a test reveals
 $p_j$, whereas optimization does not.  Blind execution is different even
