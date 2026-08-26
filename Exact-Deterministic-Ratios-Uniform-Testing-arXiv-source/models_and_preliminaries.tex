@@ -75,19 +75,14 @@ The deterministic curve results use the usual adversarial inputs.  The
 randomized results use an \emph{oblivious} adversary: the processing-time
 vector is fixed before the algorithm draws its private random seed.
 
-\paragraph{Input convention.}
-\label{par:input-convention}
-An input is a vector $p=(p_1,\ldots,p_n)$, so that jobs can be indexed.  In a
-randomized statement, the vector is first relabeled by an independent
-uniform permutation $\Pi$: job $i$ receives value $p_{\Pi(i)}$.  Equivalently,
-the algorithm begins by privately shuffling the public job labels.  We
+An input is a vector $p=(p_1,\ldots,p_n)$ of job lengths. This vector is constructed by an adversary and for randomized algorithms, it is then shuffled by uniform permutation. We
 abbreviate the expectation over this shuffle and all further private
 randomness by $\EE\ALG_{\mathcal A}(p)$.  Thus randomized performance depends
 only on the entries of $p$, not on their displayed order.  An
 \emph{announced} policy is additionally given the multiset
-$\{p_1,\ldots,p_n\}$, but not its shuffled assignment to labels.  This is the
-standard order-oblivious convention for instance
-optimality~\cite{AfshaniBarbayChan2017,NarayananRozhonTetekThorup2024}.
+$\{p_1,\ldots,p_n\}$, but not its shuffled assignment to labels. 
+
+When we prove instance optimality, we are comparing ourselves to all algorithms that get a shuffled input. This is instance optimality if we think of the input as a multiset, and it also has the name of order-oblivious instance instance optimality if we think of the input as an ordered vector. See \cite{AfshaniBarbayChan2017,NarayananRozhonTetekThorup2024} for more.
 
 \subsection{Offline optima and pair accounting}
 
