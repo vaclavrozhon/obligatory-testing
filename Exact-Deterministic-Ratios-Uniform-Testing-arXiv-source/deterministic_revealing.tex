@@ -96,7 +96,7 @@ u, &\uDet{1}\le u\le \uDet{2},\\[1mm]
 \end{equation}
 For every branch there is an explicit deterministic algorithm satisfying
 \[
- \ALG_{\mathcal A}(I)\le \RdetRO(u)\OPT(I)+O_u(n).
+ \ALG_{\mathcal A}(I)\le \RdetRO(u)\cdot\OPT(I)+O_u(n).
 \]
 On $u\ge \uDet{5}$ the remainder is one absolute $O(n)$ term, uniform over all
 finite $u$.
@@ -104,7 +104,7 @@ Conversely, for every deterministic algorithm $\mathcal A$ and every
 $\eps>0$, there are arbitrarily large fixed instances $I$ such that
 \[
  \ALG_{\mathcal A}(I)
- \ge\bigl(\RdetRO(u)-\eps\bigr)\OPT(I).
+ \ge\bigl(\RdetRO(u)-\eps\bigr)\cdot\OPT(I).
 \]
 For $u\ge \uDet{5}$, these lower-bound instances may be chosen cap-free:
 $p_j<u-1$ for every job.  Thus both witnesses on the plateau are uniform in
@@ -122,12 +122,12 @@ $\uDet{5}-3=\ln \uDet{5}$, and set
 For every deterministic online algorithm $\mathcal B$ and every $\eps>0$,
 there are arbitrarily large obligatory-testing instances $I$ such that
 \[
- \ALG_{\mathcal B}(I)\ge(\RdetOT-\eps)\OPT(I).
+ \ALG_{\mathcal B}(I)\ge(\RdetOT-\eps)\cdot\OPT(I).
 \]
 Conversely, there are a deterministic algorithm $\mathcal A$ and an absolute
 constant $B$ such that every $n$-job obligatory instance satisfies
 \[
- \ALG_{\mathcal A}(I)\le\RdetOT\OPT(I)+Bn.
+ \ALG_{\mathcal A}(I)\le\RdetOT\cdot\OPT(I)+Bn.
 \]
 Consequently the optimal deterministic size-asymptotic competitive ratio is
 exactly $\RdetOT$.

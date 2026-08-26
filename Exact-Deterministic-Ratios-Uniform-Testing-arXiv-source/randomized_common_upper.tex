@@ -40,7 +40,7 @@ $\mathcal A_{n,u}$ and numbers $\eps_u(n)\to0$ such that every
 vector $p\in[0,u]^n$ satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A_{n,u}}(p)
- \le \RrandRO(u)\OPT_u(p)+\eps_u(n)n^2.
+ \le \RrandRO(u)\cdot\OPT_u(p)+\eps_u(n)n^2.
  \label{eq:intro-random-common-upper}
 \end{equation}
 Conversely, for every randomized online algorithm $\mathcal A$ and every
@@ -48,7 +48,7 @@ $\eps>0$, there
 are arbitrarily large $n$ and a fixed vector $p\in[0,u]^n$ for which
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
- \ge\bigl(\RrandRO(u)-\eps\bigr)\OPT_u(p).
+ \ge\bigl(\RrandRO(u)-\eps\bigr)\cdot\OPT_u(p).
  \label{eq:random-common-upper-lower}
 \end{equation}
 The curve is continuous and has global maximum
@@ -360,14 +360,14 @@ comparison \cref{eq:rcu-Phi-endpoint-upper} and the scalar bound
 \cref{eq:rcu-announced-upper} give
 \[
  \PhiRO(D[p])
- \le \RrandRO(u)\Omega_{\mathsf{RO},u}(D[p]).
+ \le \RrandRO(u)\cdot\Omega_{\mathsf{RO},u}(D[p]).
 \]
 The exact empirical identity \cref{eq:rcu-offline-finite} has a nonnegative
 linear correction.  Therefore the instance-optimal upper bound immediately
 yields
 \begin{equation}
  \EE\ALG_{\mathcal A_{n,u}}
- \le\RrandRO(u)\OPT_u+o_u(n^2),
+ \le\RrandRO(u)\cdot\OPT_u+o_u(n^2),
  \label{eq:rcu-final-upper}
 \end{equation}
 which is \eqref{eq:intro-random-common-upper}.  For $0<u\le1$, raw execution

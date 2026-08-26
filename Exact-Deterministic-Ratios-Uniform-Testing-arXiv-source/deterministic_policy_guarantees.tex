@@ -19,7 +19,7 @@ first nontrivial transition point $\uDet{2}$.
 \label{lem:opt:raw-upper}
 For every $0<u\le\uDet{2}$, \textnormal{\textsc{Raw}} satisfies
 \begin{equation}
- \ALG_{\textnormal{\textsc{Raw}}}(I)\le \max\{1,u\}\OPT(I).
+ \ALG_{\textnormal{\textsc{Raw}}}(I)\le \max\{1,u\}\cdot\OPT(I).
  \label{eq:opt:raw-upper}
 \end{equation}
 In particular, it is optimal for $0<u\le\uDet{1}$ and is $u$-competitive
@@ -83,7 +83,7 @@ For every $\uDet{2}\le u\le\uDet{3}$, define the algorithm parameter
 Then
 \textnormal{\textsc{ForcedPrefixUTE}}$(J,u,b)$ satisfies
 \begin{equation}
- \ALG\le\Rquad(u)\OPT+O_u(n).
+ \ALG\le\Rquad(u)\cdot\OPT+O_u(n).
  \label{eq:opt:ute-full-upper}
 \end{equation}
 \end{lemma}
@@ -135,7 +135,7 @@ $s^2R>16/15$.
 For every $\uDet{2}\le u\le2$,
 \textnormal{\textsc{ForcedPrefixUTE}}$(J,u,b)$ satisfies
 \[
- \ALG\le R\OPT+O_u(n).
+ \ALG\le R\cdot\OPT+O_u(n).
 \]
 \end{claim}
 
@@ -209,7 +209,7 @@ The term $1/2$ is the common unit-time baseline.  In $O(x)$, the extra
 amount $s=u-1$ is paid only by pairs of long jobs.  The two cases for $A(x)$
 distinguish whether all long jobs fit into the forced prefix.
 
-Put $G(x)=A(x)-R O(x)$.  We show that its maximum is zero.
+Put $G(x)=A(x)-R\cdot O(x)$.  We show that its maximum is zero.
 The second quadratic is strictly concave.  Its stationary point is
 \[
  \alpha=\frac{s^2+s+1}{s^2+s+1+sR}.
@@ -276,7 +276,7 @@ first step.  Since the minimum is jointly concave,
 \]
 The offline pair identity therefore shows that expected OPT does not
 increase.  Consequently the expected value of
-$\ALG-R\OPT$ for the binary vector is at least its value for the original
+$\ALG-R\cdot\OPT$ for the binary vector is at least its value for the original
 input, up to $O_u(n)$ one-job terms.  Some binary realization is at least as
 bad as this expectation, and the binary bound proves the claim.
 \end{proof}
@@ -286,7 +286,7 @@ bad as this expectation, and the binary bound proves the claim.
 For every $2\le u\le\uDet{3}$,
 \textnormal{\textsc{ForcedPrefixUTE}}$(J,u,b)$ satisfies
 \[
- \ALG\le R\OPT+O_u(n).
+ \ALG\le R\cdot\OPT+O_u(n).
 \]
 \end{claim}
 
@@ -295,7 +295,7 @@ Here $u\ge2$, so the algorithm uses threshold one.  A prefix job is always
 immediate, a suffix job with $p\le1$ is immediate, and a suffix job with
 $p>1$ is deferred.  First keep this immediate/deferred pattern fixed and
 vary one processing time at a time in the leading excess
-$\ALG-R\OPT$.  On each interval between the threshold and the offline cap,
+$\ALG-R\cdot\OPT$.  On each interval between the threshold and the offline cap,
 the pair formula \cref{eq:opt:pair-contribution} makes this excess convex in
 that coordinate.  Hence a maximum occurs at an interval endpoint.  This
 reduces
@@ -349,7 +349,7 @@ length; and the two capped classes $a,d$ have another $s-1=u-2$ units.
 Replacing an immediate value-one suffix job by a deferred value-$1^+$ job
 does not change $O$ in the limit and increases $A$.  Thus a worst reduced
 instance has $m=0$.  Put $x=a+d$, the total fraction of capped jobs, and maximize
-$A-RO$ over the remaining split between $a,d,t$.  We retain the stationary
+$A-R\cdot O$ over the remaining split between $a,d,t$.  We retain the stationary
 point from the preceding claim,
 \[
  \alpha=\frac{s^2+s+1}{s^2+s+1+sR}.
@@ -384,7 +384,7 @@ so only values zero and $u$ remain.  This is exactly the binary calculation
 from \cref{clm:opt:ute-low-range}; its maximum gap is zero at
 $x=\alpha$.  If $x<\chi$, then $t=\chi-x>0$, and substitution gives
 \begin{equation}
- A-R O
+ A-R\cdot O
  =-\frac{R-1}{2}+\frac{(1-b)^2}{2R}
   +a(s+b-sx)-\frac{a^2}{2}+\frac{s-R(s-1)}{2}x^2.
  \label{eq:opt:ute-positive-t}
@@ -401,7 +401,7 @@ Thus $R<7/4$ and $s-R(s-1)>7/4-3s/4>1/8$.
 
 On $0\le x\le b$, one has $a=x$, and
 \begin{equation}
- A-R O=-\frac{R-1}{2}+\frac{(1-b)^2}{2R}+(s+b)x
+ A-R\cdot O=-\frac{R-1}{2}+\frac{(1-b)^2}{2R}+(s+b)x
  -\frac{s+1+R(s-1)}2x^2.
  \label{eq:opt:ute-small-x}
 \end{equation}
@@ -448,7 +448,7 @@ For the last sign, write $s=3/2+z$; the expression becomes
 $3/2-3z/2+20z^2+10z^3$.  It is at least $3/2$ for
 $-1/2\le z\le0$, and for $z\ge0$ it is larger than
 $3/2-9/320$.  Hence both possible maxima on $[b,\chi]$ are nonpositive.
-Together with the binary case $x\ge\chi$, this proves $A-RO\le0$ for every
+Together with the binary case $x\ge\chi$, this proves $A-R\cdot O\le0$ for every
 reduced configuration.  Restoring the one-job terms and rounding
 $\lfloor bn\rfloor$ contributes only $O_u(n)$.
 \end{proof}
@@ -470,7 +470,7 @@ algorithm is used.
 \label{lem:opt:zero-prefix}
 Fix $\uDet{3}\le u\le\uDet{4}$ and set $b=0$ in \cref{alg:ute}.  Then
 \begin{equation}
- \ALG\le\left(1+\frac1{\sqrt{u-1}}\right)\OPT+O_u(n).
+ \ALG\le\left(1+\frac1{\sqrt{u-1}}\right)\cdot\OPT+O_u(n).
  \label{eq:opt:zero-prefix-guarantee}
 \end{equation}
 \end{lemma}
@@ -584,10 +584,10 @@ satisfies
 \[
  \ALG\le
  \begin{cases}
-  (1+c)\OPT+O_u(n),
+  (1+c)\cdot\OPT+O_u(n),
      & \uDet{4}\le u\le \uDet{5},
        \quad c\text{ given by \eqref{eq:opt:mixed-parametrization}},\\[1mm]
-  (1+r)\OPT+O(n),
+  (1+r)\cdot\OPT+O(n),
      & u\ge \uDet{5}.
  \end{cases}
 \]
@@ -602,7 +602,7 @@ size-asymptotic competitive ratio.
 Fix a finite cap $u$ in the stated range.
 
 Here is the structure of the argument.  We first rewrite
-$\ALG-R\OPT$ as a sum of contributions from ordered pairs of jobs plus
+$\ALG-R\cdot\OPT$ as a sum of contributions from ordered pairs of jobs plus
 $O_u(n)$ one-job terms.  We then reduce each processing value to one of five
 boundary values that preserve the algorithm's decision; these boundary
 representatives are called \emph{endpoint types}.  When an endpoint is
@@ -695,7 +695,7 @@ It is therefore natural to introduce
 Equations \eqref{eq:opt:alg-pair-decomposition}--
 \eqref{eq:opt:pair-objective} yield the exact identity
 \begin{equation}
- \ALG-R\OPT
+ \ALG-R\cdot\OPT
  =\Gamma_n-c\binom n2
   +\sum_i\bigl[(1+p_i)-R(1+\bar p_i)\bigr].
  \label{eq:opt:gap-decomposition}
@@ -1113,7 +1113,7 @@ Summing \eqref{eq:opt:finite-taylor}, using $W\ge0$, and applying
 Together with \eqref{eq:opt:gap-decomposition} and
 \eqref{eq:opt:pair-allocation-dominates}, this yields
 \begin{align}
- \ALG-R\OPT
+ \ALG-R\cdot\OPT
  &\le -c\binom n2+\frac c2n^2+O_u(n)
  =O_u(n).
  \label{eq:opt:mixed-upper-finite}
@@ -1146,14 +1146,14 @@ $[\uDet{5},\infty)$.  Combining
 \cref{eq:opt:gap-decomposition,eq:opt:pair-allocation-dominates,eq:opt:uniform-ell}
 now yields
 \begin{align}
- \ALG-(1+r)\OPT
+ \ALG-(1+r)\cdot\OPT
  &\le-r\binom n2+\frac r2n^2+C_{\rm step}n
    =\left(C_{\rm step}+\frac r2\right)n.
  \label{eq:opt:uniform-high-gap}
 \end{align}
 Thus, with $B=C_{\rm step}+r/2$,
 \begin{equation}
- \ALG\le(1+r)\OPT+B n
+ \ALG\le(1+r)\cdot\OPT+B n
  \qquad\text{for every finite }u\in[\uDet{5},\infty),
  \label{eq:opt:uniform-high-upper}
 \end{equation}

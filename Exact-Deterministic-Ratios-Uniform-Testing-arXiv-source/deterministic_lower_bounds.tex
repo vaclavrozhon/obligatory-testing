@@ -11,7 +11,7 @@ $p_j=u$ is a \emph{long job}.
 \label{lem:opt:hidden-stopping}
 Fix $u>1$, a target $R\le u$, and a stopping fraction $\alpha\in(0,1)$.
 Against a deterministic algorithm, there is a legal binary adversary whose
-leading normalized excess $2(\ALG-R\OPT)/n^2$ at its stopping time is,
+leading normalized excess $2(\ALG-R\cdot\OPT)/n^2$ at its stopping time is,
 up to $O_u(1/n)$,
 \begin{equation}
  (u-R)(1-\sigma^2)+\sigma^2 f_{u,R}(y,b),
@@ -239,7 +239,7 @@ For every deterministic online algorithm $\mathcal B$ and every $\eps>0$,
 there are arbitrarily large fixed instances $I$ with unit tests and rational
 processing times such that
 \[
-  \ALG_{\mathcal B}(I)\ge (\RdetOT-\eps)\OPT(I).
+  \ALG_{\mathcal B}(I)\ge (\RdetOT-\eps)\cdot\OPT(I).
 \]
 \end{theorem}
 
@@ -728,7 +728,7 @@ Subtracting the two identities gives the final assertion.
 Fix $m\in(0,1)$ and a later cap-free block satisfying the hypotheses of
 \cref{lem:opt:cap-deferral}.  Against every deterministic revealing algorithm
 there are fixed instances whose asymptotic excess is at least the combined
-coefficient $A^{\rm lb}-R\,O$ obtained from the capped prefix and
+coefficient $A^{\rm lb}-R\cdot O$ obtained from the capped prefix and
 the later block in
 \cref{eq:opt:mixed-A,eq:opt:mixed-O} for every target
 $R\le u$.
@@ -776,9 +776,9 @@ finite-cap and cap-free offline lengths are both $1+p$ on the later block,
 write $\ALG_{\rm hyb}$ and $\OPT_{\rm hyb}$ for the online and offline costs
 of this physical cap-free simulation.  Then
 \begin{equation}
- \ALG_{\mathsf{RO}}-R\OPT_{\mathsf{RO}}
+ \ALG_{\mathsf{RO}}-R\cdot\OPT_{\mathsf{RO}}
  \ge (u-R)Z_v+
- \bigl(\ALG_{\rm hyb}-R\OPT_{\rm hyb}\bigr)-O_u(n).
+ \bigl(\ALG_{\rm hyb}-R\cdot\OPT_{\rm hyb}\bigr)-O_u(n).
  \label{eq:opt:mixed-raw-decomposition}
 \end{equation}
 The first term is nonnegative.  Finally, record every assigned value on its
@@ -821,7 +821,7 @@ lower ratio
 \noindent\textbf{Claim 2 (Mixed parametrization).}
 Suppose the ratio in \cref{eq:opt:mixed-ratio} has an interior stationary
 point with value $1+c$.  The equality of the ratio to $1+c$ is equivalent to
-$A-(1+c)O=0$.  Combining this equality with the two vanishing partial
+$A-(1+c)\cdot O=0$.  Combining this equality with the two vanishing partial
 derivatives gives
 \begin{equation}
  \ln t=u-2-\frac1c,

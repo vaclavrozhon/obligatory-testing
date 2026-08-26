@@ -101,7 +101,7 @@ administrative transition left---called \emph{settled} in the Lean
 development---such that
 either the execution leaves a job incomplete or
 \begin{equation}
-  (R-\eps)\OPT(I)\le \ALG_{\mathcal B_n}(I).
+  (R-\eps)\cdot\OPT(I)\le \ALG_{\mathcal B_n}(I).
   \label{eq:lean-lower-expansion}
 \end{equation}
 An incomplete settled run represents infinite cost.  In particular, for
@@ -113,7 +113,7 @@ statement above already produces a fixed input.
 The predicate \texttt{SizeAsymptoticUpper} is the epsilon formulation
 \begin{equation}
  \forall\eps>0\ \exists N\ \forall n\ge N\ \forall I,\qquad
- \ALG_{\mathcal A_n}(I)\le (R+\eps)\OPT(I).
+ \ALG_{\mathcal A_n}(I)\le (R+\eps)\cdot\OPT(I).
  \label{eq:lean-upper-expansion}
 \end{equation}
 The accompanying completion field proves that every job is done after at
@@ -130,7 +130,7 @@ constructs a stronger \texttt{FixedUpperCertificate}: for the chosen cap it
 contains a constant \(C\ge0\) such that, for every \(n\) and every fixed
 input,
 \begin{equation}
-  \ALG_{\mathcal A_n}(I)\le R\OPT(I)+Cn.
+  \ALG_{\mathcal A_n}(I)\le R\cdot\OPT(I)+Cn.
   \label{eq:lean-linear-certificate}
 \end{equation}
 Since every effective length is at least one in obligatory testing and at
@@ -174,7 +174,7 @@ deterministic mathematical strategy terms, not an extracted floating-point
 implementation.
 
 The theorem recorded here is specifically the size-asymptotic result.  It
-does not assert the pointwise inequality \(\ALG\le R\OPT\) without a
+does not assert the pointwise inequality \(\ALG\le R\cdot\OPT\) without a
 remainder.  Its checked remainder is the linear term in
 \eqref{eq:lean-linear-certificate}, and is therefore $o(n^2)$.  The
 machine-checked mixed-regime upper bound follows the cap-reserve potential

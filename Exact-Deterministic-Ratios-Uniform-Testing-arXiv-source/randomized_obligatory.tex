@@ -23,8 +23,8 @@ algorithm $\mathcal A_n^*$, depending only on $n$, such that every fixed
 vector $p\in[0,\infty)^n$ satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A_n^*}(p)
- \le \frac43\OPT(p)+Cn^{19/10}
- \le\left(\frac43+2Cn^{-1/10}\right)\OPT(p).
+ \le \frac43\cdot\OPT(p)+Cn^{19/10}
+ \le\left(\frac43+2Cn^{-1/10}\right)\cdot\OPT(p).
  \label{eq:rand-obligatory-upper}
 \end{equation}
 A fixed-cutoff companion $\mathcal A_n^{(32)}$, using $B=32$ and the more
@@ -32,7 +32,7 @@ conservative fallback criterion $\widehat\kappa<2/B$, satisfies the sharper
 explicit estimate
 \begin{equation}
  \EE\ALG_{\mathcal A_n^{(32)}}(p)
- \le \frac43\OPT(p)+20378n^{7/4}.
+ \le \frac43\cdot\OPT(p)+20378n^{7/4}.
  \label{eq:rand-obligatory-fixed-upper}
 \end{equation}
 Conversely, for every randomized algorithm $\mathcal A$ and every $\eps>0$,
@@ -40,7 +40,7 @@ arbitrarily large even $n$ admit a vector with $n/2$ zero coordinates and
 $n/2$ coordinates of value two such that
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
- \ge\left(\frac43-\eps\right)\OPT(p),
+ \ge\left(\frac43-\eps\right)\cdot\OPT(p),
  \qquad
  \OPT(p)=\frac34n^2+n.
  \label{eq:rand-obligatory-lower}
@@ -193,7 +193,7 @@ statement useful below.
 If the multiset is announced, the stationary algorithm for a maximum-density
 prefix satisfies
 \[
- \EE\ALG_{\Stat}(p,E)\le\frac43\OPT(p).
+ \EE\ALG_{\Stat}(p,E)\le\frac43\cdot\OPT(p).
 \]
 \end{corollary}
 
@@ -356,7 +356,7 @@ most $k^2(1+B)$.  The late tail is identical because every zero is early.
 Therefore, on a good learned sample,
 \begin{equation}
  \EE[\ALG\mid S]
- \le\frac43\OPT
+ \le\frac43\cdot\OPT
  +n^2\!\left[\frac43B(B+1)\Delta+\frac23(B+2)\eta\right]
  +(1+B)(nk/2+k^2).
  \label{eq:rand-good-learned}
@@ -385,17 +385,17 @@ times by at most $zn-z(z+1)/2$.  Delaying the remaining $n-z$ positive jobs
 until all tests are finished adds at most $(n-z)(n-z-1)/2$; the two bounds
 sum to $n(n-1)/2$.  Combining
 \cref{eq:rand-fallback-opt-large,eq:rand-fallback-crude} gives
-$\ALG_{\rm fb}<4\OPT/3$.
+$\ALG_{\rm fb}<\frac43\cdot\OPT$.
 
 Because processing times are unbounded, a bad-event estimate must control
-excess over $4\OPT/3$, not raw cost.  In learned mode every early value is at
+excess over $\frac43\cdot\OPT$, not raw cost.  In learned mode every early value is at
 most $B$, so \cref{eq:rand-bounded-early} bounds the stationary excess by
 $(B/2)n^2$; in fallback mode \cref{eq:rand-fallback-crude} bounds it by
 $n^2/2$.  Averaging \cref{eq:rand-good-learned} and these bad-event bounds,
 and using \cref{eq:rand-bad-probability}, yields the uniform estimate
 \begin{equation}
  \EE\ALG
- \le\frac43\OPT
+ \le\frac43\cdot\OPT
  +n^2\!\left[
    \frac{B(B+1)(3B+8)}6\sqrt{\frac{d+2}{k}}
    +\frac{2B(B+2)}{3d}\right]
@@ -416,12 +416,12 @@ conservative fallback criterion $\widehat\kappa<2/B$.  Repeating the same
 calculation with learned threshold at most $B/2$ gives
 \[
  \EE\ALG
- \le\frac43\OPT
+ \le\frac43\cdot\OPT
  +n^2\!\left[9472\sqrt{\frac{d+2}{k}}+\frac{704}{d}\right]
  +17(nk/2+k^2).
 \]
 The preceding floor bounds give
-$\EE\ALG\le4\OPT/3+20378n^{7/4}$, with the same deliberately loose
+$\EE\ALG\le\frac43\cdot\OPT+20378n^{7/4}$, with the same deliberately loose
 constant covering smaller $n$.  This proves
 \cref{eq:rand-obligatory-fixed-upper}.
 

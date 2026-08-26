@@ -171,7 +171,7 @@ Fix $u>1$, a target $R\le u$, and $\alpha\in(0,1)$.  Against every
 deterministic algorithm there is a fixed binary input with $p_j\in\{0,u\}$ on
 which
 \begin{equation}
- \ALG-R\OPT
+ \ALG-R\cdot\OPT
  \ge \frac{n^2}{2}\left((u-R)(1-\sigma^2)
        +\sigma^2 f^{\mathsf{BO}}_{u,R}(y)\right)-O_u(n),
  \label{eq:bo-det-stopping-decomposition}
@@ -241,7 +241,7 @@ Twice the quadratic coefficients of
  \mathcal O
  &=(1-\sigma^2)+\sigma^2(1+(u-1)y^2).
 \end{align*}
-Subtracting $R\mathcal O$ from $\mathcal A$ gives exactly the bracket in
+Subtracting $R\cdot\mathcal O$ from $\mathcal A$ gives exactly the bracket in
 \eqref{eq:bo-det-stopping-decomposition}.  Immediately before the crossing,
 $L-\alpha(n-v)<0$.  An optimized completion increases this expression by
 one and a raw completion by $\alpha$, so
@@ -356,7 +356,7 @@ with a $b$-fraction of values $u$ and the remaining values zero, labeled so
 that the long optimized blocks occur first.
 Equations \eqref{eq:bo-det-optall-online}--
 \eqref{eq:bo-det-optall-envelope} prove
-$\ALG_{\textsc{OptimizeAll}}\le R\OPT+O_u(n)$.
+$\ALG_{\textsc{OptimizeAll}}\le R\cdot\OPT+O_u(n)$.
 This matches the lower bound and proves \eqref{eq:bo-det-curve}.
 The asymptotic formula \eqref{eq:bo-det-asymptotic} follows directly from
 \eqref{eq:bo-det-optall-ratio}.
