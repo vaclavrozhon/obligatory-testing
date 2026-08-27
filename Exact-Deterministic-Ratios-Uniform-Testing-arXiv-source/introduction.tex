@@ -590,6 +590,17 @@ useful options.
 
 The proofs repeatedly use similar ideas.  We summarize the main ones here.
 
+\paragraph{Remaining-job and pair accounting.}
+Every unit of machine work delays every job that is still unfinished.
+Total completion time can therefore be computed by tracking the number of
+unfinished jobs throughout the schedule.  Equivalently, each operation can
+be charged to the jobs that wait for it, giving the one-job and pairwise cost
+identities used throughout the paper.  For example, if an algorithm tests a
+fraction $q$ of the jobs, a pair may contain two tested jobs, one tested and
+one untested job, or two untested jobs.  The numbers of such pairs are
+proportional to $q^2$, $q(1-q)$, and $(1-q)^2$, respectively.  The leading
+cost is therefore often a quadratic function of $q$.
+
 \paragraph{Completion density.}
 Our algorithms can typically be viewed as a sequence of a few
 \emph{modules}.  A module repeatedly performs the same action;
@@ -690,14 +701,9 @@ will stop, and obtains the matching two-algorithm curve.  It then proves the
 randomized instance-optimal theorem and maximizes its mean-based
 benchmark to obtain the exact randomized worst-case curve.
 
-The appendices document and independently audit the more delicate parts of
-the argument.  \Cref{sec:formalization} states precisely which results are
-machine checked and summarizes the corresponding Lean~4 development.
-\Cref{app:finite-checkpoint} evaluates a large but finite rational instance
-of the lower bound whose jobs satisfy $1+p_i<u$, while
-\cref{app:cap-bubbling} independently checks the deterministic upper bound
-by repeatedly moving outcomes with $p_i=u$
-to the start of the reveal order.
-Finally, \cref{app:lean-formalization} records the exported Lean theorem and
-the detailed dictionary between its objects and the deterministic statements
-in the paper.
+The appendix provides a reader-facing audit of the Lean~4 development.
+For each main claim it first gives a self-contained English statement, then
+shows the decisive public Lean signature and explains how its quantified
+inputs, algorithms, completion premise, cost comparison, and error term map
+to the statement in the paper.  It also records the exact proof boundary
+where the current formalization covers only part of a paper theorem.

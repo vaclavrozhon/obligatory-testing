@@ -99,7 +99,7 @@ and technical tools live in `models_and_preliminaries.tex`.
 
 Section 3 is assembled by `deterministic_revealing.tex` from algorithm
 guarantees, branchwise lower bounds, curve assembly, and the obligatory
-endpoint.  The independent cap-bubbling certificate is the normal appendix
-source `cap_bubbling.tex`.  Superseded proofs, generated PDF plots, and their
-plotting scripts are retained under `old/`; the manuscript uses only the
-native TikZ sources listed above.
+endpoint.  The single appendix, `formal_verification.tex`, gives an
+English-to-Lean audit of the main theorem statements.  Superseded proofs,
+generated PDF plots, and their plotting scripts are retained under `old/`;
+the manuscript uses only the native TikZ sources listed above.
