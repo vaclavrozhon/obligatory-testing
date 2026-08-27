@@ -214,35 +214,63 @@ $\EE\ALG=n^2\PhiBE(D[p])+o_L(n^2)$, where the benchmark $\PhiBE$ is defined
 in \cref{sec:blind-benchmark}.  It does not claim a bounded ratio to the
 clairvoyant optimum when most jobs have length zero.
 
-\subsection{Fluid schedules: from test modules to completion curves}
+\subsection{A general fluid schedule and its analysis}
 \label{sec:common-fluid-envelopes}
 
-The instance-optimality proofs later in the paper repeatedly solve the same
-fluid scheduling problem.  We decide that a fraction $q$ of the jobs will be
-tested.  Some short outcomes are processed together with their tests, the
-remaining tested jobs are deferred, and the untested jobs are handled by the
-other mode available in the model.  The question is how these actions should
-be ordered.
+The instance-optimality proofs later in the paper repeatedly analyze the same
+schedule.  It is useful to describe that schedule in full before deriving
+its cost.  Let $D$ be the distribution of processing times, let $q$ be the
+fraction of jobs that we intend to test, and suppose that every untested job
+can instead be completed at a common fluid cost $v$.  In revealing
+optimization $v=u$, the raw execution time.  In blind execution $v$ is the
+mean processing time.
 
 At the fluid scale, the $n$ jobs are replaced by one unit of divisible job
-mass: a class containing $30\%$ of the jobs has mass $0.3$.  Work is divided
-by $n$ as well, so processing that class for time $p$ uses $0.3p$ units of
-work.  The leading $n^2$ term of total completion time becomes the area under
-the fraction of unfinished jobs.
+mass: a group containing $30\%$ of the jobs has mass $0.3$.  Work is divided
+by $n$ as well, so processing this group for time $p$ uses $0.3p$ units of
+work.
 
-The solution has two steps.  First, we combine tests with precisely those
-short outcomes whose immediate processing improves the number of completions
-per unit of work.  This gives one optimal \emph{test module}.  Second, we view
-this module, the deferred outcomes, and the other completion mode as
-divisible blocks and order them shortest first.  The purpose of this
-subsection is to justify these two steps and to record the resulting
-completion curve.
+\paragraph{General fluid schedule.}
+Given $D,q$, and $v$, perform the following steps.
 
-We begin with the first step.  Let $D$ be a distribution of job lengths with
-finite mean.  A test module tests one unit of job mass and immediately
-processes a chosen fraction of every positive length class.  If
-$g(p)\in[0,1]$ is the chosen fraction of class $p$, the module completes mass
-$a_D(g)$ using work $w_D(g)$, where
+\begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=*]
+ \item Reserve a $q$-fraction of every processing-time group for testing and
+       assign the remaining $1-q$ fraction to the other completion mode.  In
+       the finite online algorithm this split is produced by a private random
+       order; it does not use the hidden processing times.
+ \item Whenever a tested job reveals a sufficiently short processing time,
+       process it together with its test.  Defer the other positive tested
+       jobs.  The threshold for ``sufficiently short'' will be denoted by
+       $\tau_D$.
+ \item Regard the tests together with their short outcomes as one block.
+       For every $p$, the deferred jobs of processing time $p$ form a block
+       with work $p$ per completion.  The jobs assigned to the other mode
+       form one more block with work $v$ per completion.
+ \item Execute these blocks in increasing order of work per completed job.
+       Within the testing block, each selected short outcome is processed
+       directly after its test.
+\end{enumerate}
+
+The order in the last step can be stated concretely.  Every deferred job has
+processing time at least $\tau_D$.  If $v<\tau_D$, the schedule first uses
+the other mode, then runs the testing block, and finally processes all
+deferred jobs in SPT order.  If $v\ge\tau_D$, it runs the testing block first,
+then the deferred jobs with $p<v$, then the other mode, and finally the
+deferred jobs with $p\ge v$.  Ties may be resolved arbitrarily except that
+the testing block must precede a deferred block of the same length.
+
+There are two things to prove.  First, we must choose $\tau_D$ so that the
+testing block completes as many jobs per unit of work as possible.  Second,
+we must prove that, after ordering the blocks shortest first, no more
+complicated interleaving can complete jobs earlier.  Once this is known, the
+leading total completion time is obtained by integrating the mass of jobs
+that this schedule has not yet completed.
+
+\paragraph{Choosing the testing block.}
+Let $D$ have finite mean.  Imagine testing one unit of job mass.  If
+$g(p)\in[0,1]$ is the fraction of jobs with revealed processing time $p$ that
+we process immediately, the testing block completes mass $a_D(g)$ and uses
+work $w_D(g)$, where
 \begin{equation}
  a_D(g)\defeq D(\{0\})+\int_{(0,\infty)}g(p)\,dD(p),
  \qquad
@@ -251,7 +279,8 @@ $a_D(g)$ using work $w_D(g)$, where
 \end{equation}
 The term $1$ in $w_D(g)$ pays for the tests, and zero jobs are included in
 $a_D(g)$ because they finish at their tests.  Thus $a_D(g)/w_D(g)$ is the
-number of completions per unit of work.
+number of completions per unit of work.  We call this combination of tests
+and immediate processing a \emph{test module}.
 
 For example, suppose half the mass has length zero and half has length one.
 Tests alone complete mass $1/2$ using work $1$.  Processing the length-one
@@ -342,13 +371,13 @@ $1/\tau_{D[p]}$, so the fractional boundary rule may be replaced by any
 subset of the tied occurrences.
 \end{proof}
 
-\paragraph{From one module to a full schedule.}
-Choosing the best test module does not yet specify a schedule: we still have
-to place it relative to the jobs deferred after testing and to jobs completed
-by another mode.  At the fluid scale, each kind of work is described by its
-completion capacity $c_k$ and the work $v_k$ needed per completion.  For
-example, a block $c_k\delta_{v_k}$ can complete mass $c_k$, with each unit of
-that mass costing $v_k$ work.
+\paragraph{Ordering all blocks.}
+We now justify step~(iv) of the general schedule.  Besides the test module,
+we have the processing of the deferred tested jobs and the other completion
+mode.  At the fluid scale, we describe each such block by the mass $c_k$ of
+jobs that it can complete and the work $v_k$ required for each of them.  We
+write this block as $c_k\delta_{v_k}$.  For example,
+$0.3\delta_2$ represents mass $0.3$ that needs two units of work per job.
 
 For a collection
 $\mathcal M=\sum_k c_k\delta_{v_k}$ of total mass
@@ -409,25 +438,24 @@ Summing these terms and collecting each unordered pair gives
 \cref{eq:divisible-spt-area}.
 \end{proof}
 
-\paragraph{The completion curve for a fixed tested fraction.}
-We can now return to the scheduling problem from the beginning of the
-subsection.  Fix the final tested fraction $q$.  The remaining fraction
-$1-q$ is completed by a mode that costs $v$ work per job.  In revealing
-optimization this is raw execution and $v=u$; in blind execution the fluid
-cost of a blindly executed job is the mean processing time.
+\paragraph{Why the general schedule is optimal.}
+Fix the tested fraction $q$.  We prove a stronger statement than merely
+computing the cost of our schedule: after any amount of work, no schedule
+that tests mass $q$ can have completed more jobs.
 
 Assume for the moment that $D$ has finite support and put
-$d_p=D(\{p\})$.  After some initial part of a schedule, let
+$d_p=D(\{p\})$, the mass of jobs with processing time $p$.  Consider an
+arbitrary schedule after it has performed $x$ units of work.  Let
 $t$ be the mass already tested, $b$ the mass completed by the other mode,
-and $c_p$ the tested mass of positive class $p$ that has also been processed.
-Thus the completed mass is
+and $c_p$ the mass of tested jobs with processing time $p>0$ that has also
+been processed.  Thus this schedule has completed mass
 \[
  d_0t+b+\sum_{p>0}c_p,
 \]
 whereas the work used is $t+vb+\sum_{p>0}pc_p$.  We cannot test more than
 $q$ mass, use the other mode on more than $1-q$ mass, or process more than
-$d_pt$ mass of any revealed class.  Consequently, the largest mass that can
-be completed after work $x$ is
+$d_pt$ mass of jobs with processing time $p$.  Consequently, every such
+schedule has completed at most the following quantity:
 \begin{equation}
  \mathcal C^v_{D,q}(x)\defeq
  \max\left\{
@@ -439,9 +467,10 @@ be completed after work $x$ is
  \end{array}\right\}.
  \label{eq:common-fluid-envelope}
 \end{equation}
-At first sight, this linear program allows many interleavings of tests and
-processing.  The maximum-density lemma reduces all of them to three familiar
-blocks:
+The function $\mathcal C^v_{D,q}(x)$ is therefore an upper bound on how much
+mass any schedule can complete by work $x$.  We next show that the general
+schedule described at the start of the subsection attains this bound.  Its
+three blocks are
 \[
  \underbrace{qa_*\delta_{\tau_D}}_{\substack{\text{tests and selected}\\
                                               \text{short outcomes}}}
@@ -452,13 +481,16 @@ blocks:
 \]
 The first block has mass $qa_*$ and work $\tau_D$ per completion.  The
 second contains the residual processing times themselves.  The last block
-has the capacity and cost of the other mode.  The next lemma says that their
-shortest-first completion curve is exactly the envelope above, not merely a
-bound on it.
+has the capacity and cost of the other mode.  The next lemma says that
+ordering these blocks shortest first attains $\mathcal C^v_{D,q}(x)$
+simultaneously for every $x$.  In particular, the linear program is not
+choosing a different schedule for each value of $x$.
 
-\begin{lemma}[Test-module completion curve]
+\begin{lemma}[Optimality of the general fluid schedule]
 \label{lem:test-module-envelope}
-Let $a_*,\tau_D$, and the residual mass $\nu$ be defined above.  Then
+Let $\tau_D,g_*$, and $a_*$ be as in
+\cref{lem:maximum-density-module}, and let $\nu$ be the deferred mass from
+\cref{eq:common-module-data}.  Then
 \begin{equation}
  \mathcal C^v_{D,q}=K_{\mathcal M_{D,q,v}},
  \qquad
@@ -471,38 +503,45 @@ Consequently,
  \Area(\mathcal C^v_{D,q})=\SPT(\mathcal M_{D,q,v}),
  \label{eq:common-envelope-area}
 \end{equation}
+and the general fluid schedule minimizes total completion time among all
+schedules that test mass $q$.
 \end{lemma}
 
 \begin{proof}
-We prove the two inequalities in the curve identity separately.
+We first show that no feasible schedule can complete more mass than the three
+blocks, and then show that the general schedule realizes those blocks.
 
 \emph{Compressing an arbitrary schedule.}
-Split every positive support class virtually into its $g_*$-selected and
-residual parts.  For a feasible point in
-\cref{eq:common-fluid-envelope}, let $y_L,x_L$ be the completion and work
-contributed by the tests, tested zeros, and processed selected outcomes.
+For each processing time $p>0$, call a fraction $g_*(p)$ of its jobs
+\emph{selected} and the rest \emph{deferred}; this is only bookkeeping, and
+the arbitrary schedule need not respect this division.  For a feasible point
+in \cref{eq:common-fluid-envelope}, let $y_{\rm test}$ be the completed mass
+coming from tests, tested zeros, and processed selected outcomes, and let
+$x_{\rm test}$ be the work spent on them.
 Applying \cref{eq:common-density-dual} to the processed fractions within the
 first $t$ units of tests gives
 \[
-                         \tau_D y_L\le x_L,
- \qquad                  y_L\le a_*t.
+ \tau_D y_{\rm test}\le x_{\rm test},
+ \qquad y_{\rm test}\le a_*t.
 \]
-With $\lambda=y_L/a_*$, replace this part by $\lambda$ full test modules.
+With $\lambda=y_{\rm test}/a_*$, replace this part by $\lambda$ full test modules.
 The replacement preserves completed mass, weakly decreases work, and uses
-$0\le\lambda\le t\le q$.  Residual class $p$ has capacity at most
-$q\nu(\{p\})$, while the independent mode has capacity $1-q$.  Thus every
-feasible point maps to the fractional allocation problem in
-\cref{eq:common-envelope-items}.
+$0\le\lambda\le t\le q$.  Deferred jobs with processing time $p$ have total
+capacity at most $q\nu(\{p\})$, while the other completion mode has capacity
+$1-q$.  Thus every feasible point gives a feasible choice in the definition
+of $K_{\mathcal M_{D,q,v}}$ from
+\cref{eq:divisible-spt-envelope,eq:common-envelope-items}.
 
 \emph{Realizing the three blocks.}
-Conversely, order the three kinds of fractional items by work per completion,
-placing the test module before a residual item in case of a tie.  The
-independent item can be run whenever this order requires it.  A fraction of
-the test-module block is realized by the corresponding fraction of tests and
-selected outcomes.  Every residual length is at least $\tau_D$, so by the
-time a residual item is reached, all tests needed to expose it have already
-run.  This realizes the shortest-first curve at every work budget and proves
-the curve identity.  Its area is given by
+Order the three kinds of blocks by work per completion,
+placing the test module before a deferred block in case of a tie.  The
+other-mode block can be run whenever this order requires it.  A fraction of
+the test-module block is performed by running the corresponding fraction of
+tests and processing their selected short outcomes.  Every deferred
+processing time is at least $\tau_D$, so the test module precedes every
+deferred block.  Hence all deferred jobs have been exposed before the
+schedule processes them.  The schedule is feasible and realizes
+$K_{\mathcal M_{D,q,v}}(x)$ at every work budget $x$.  Its area is given by
 \cref{lem:divisible-spt-area}.
 \end{proof}
 
