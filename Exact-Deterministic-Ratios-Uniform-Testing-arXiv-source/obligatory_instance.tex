@@ -376,10 +376,21 @@ delays in that stationary schedule.  Therefore
  \le n^2F_{\mathsf{OT},D^{\rm rem}}(\widehat J)+O_L(nk+k^2+n).
  \label{eq:ot-sample-first-instance}
 \end{equation}
-This is the conditional hypothesis of
-\cref{lem:pilot-learning-transfer}.  Apply that lemma with metric
-$d(D,E)=\|D-E\|_1$, $L_0=3(L+2)$, and
-\cref{eq:ot-learning-histogram}; then use
+Put $L_0=3(L+2)$.  Applying \cref{eq:ot-template-lipschitz} first to
+$\widehat J$ and then to an optimal prefix for $D^{\rm rem}$ gives
+\[
+ F_{\mathsf{OT},D^{\rm rem}}(\widehat J)
+ \le \PhiOT(D^{\rm rem})
+      +2L_0\|\widehat D-D^{\rm rem}\|_1.
+\]
+Applying the same bound to an optimal prefix for $D^+$ gives
+$\PhiOT(D^{\rm rem})\le
+\PhiOT(D^+)+L_0\|D^{\rm rem}-D^+\|_1$.
+Moreover,
+$\|\widehat D-D^{\rm rem}\|_1\le
+\Delta+\|D^{\rm rem}-D^+\|_1$.
+Average \cref{eq:ot-sample-first-instance}, use
+\cref{eq:ot-learning-histogram}, and then use the rounding bound
 \cref{eq:ot-rounding-stability}.
 Since
 \[

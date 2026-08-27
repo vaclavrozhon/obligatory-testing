@@ -214,49 +214,52 @@ $\EE\ALG=n^2\PhiBE(D[p])+o_L(n^2)$, where the benchmark $\PhiBE$ is defined
 in \cref{sec:blind-benchmark}.  It does not claim a bounded ratio to the
 clairvoyant optimum when most jobs have length zero.
 
-\subsection{Maximum-density modules and fluid completion curves}
+\subsection{Fluid schedules: from test modules to completion curves}
 \label{sec:common-fluid-envelopes}
 
-Here \emph{fluid} simply means that we work with fractions of the input
-rather than individual jobs.  After dividing all job counts and all work by
-$n$, the $n$ jobs have total mass one.  Thus a class containing $30\%$ of
-the jobs has mass $0.3$, and processing that class for time $p$ uses
-$0.3p$ units of normalized work.  This scaling captures the leading
-$n^2$ term of total completion time; rounding individual jobs changes only
-lower-order terms.
+The instance-optimality proofs later in the paper repeatedly solve the same
+fluid scheduling problem.  We decide that a fraction $q$ of the jobs will be
+tested.  Some short outcomes are processed together with their tests, the
+remaining tested jobs are deferred, and the untested jobs are handled by the
+other mode available in the model.  The question is how these actions should
+be ordered.
 
-Consider a concrete example in which half the jobs have $p=0$ and half have
-$p=1$.  Testing the whole unit mass costs one unit of work and completes the
-zero half.  If we also process every revealed job of length one immediately, this uses
-another $1/2$ unit of work and completes the entire mass.  The combined
-operation therefore completes mass one using work $3/2$, for completion
-density $2/3$.  Testing alone would have density only $1/2$.  If the
-positive jobs were much longer, however, processing them immediately could
-decrease the density.  The first question is therefore which revealed
-lengths should be included.
+At the fluid scale, the $n$ jobs are replaced by one unit of divisible job
+mass: a class containing $30\%$ of the jobs has mass $0.3$.  Work is divided
+by $n$ as well, so processing that class for time $p$ uses $0.3p$ units of
+work.  The leading $n^2$ term of total completion time becomes the area under
+the fraction of unfinished jobs.
 
-Let $D$ be a distribution of job lengths with finite mean.  We call one such
-combined operation a \emph{test module}: test one unit mass
-of jobs and immediately process a chosen fraction of each positive length
-class.  Write $g(p)\in[0,1]$ for the fraction of the length-$p$ class processed
-immediately.  The module completes mass
-$a_D(g)$ and uses work $w_D(g)$, where
+The solution has two steps.  First, we combine tests with precisely those
+short outcomes whose immediate processing improves the number of completions
+per unit of work.  This gives one optimal \emph{test module}.  Second, we view
+this module, the deferred outcomes, and the other completion mode as
+divisible blocks and order them shortest first.  The purpose of this
+subsection is to justify these two steps and to record the resulting
+completion curve.
+
+We begin with the first step.  Let $D$ be a distribution of job lengths with
+finite mean.  A test module tests one unit of job mass and immediately
+processes a chosen fraction of every positive length class.  If
+$g(p)\in[0,1]$ is the chosen fraction of class $p$, the module completes mass
+$a_D(g)$ using work $w_D(g)$, where
 \begin{equation}
  a_D(g)\defeq D(\{0\})+\int_{(0,\infty)}g(p)\,dD(p),
  \qquad
  w_D(g)\defeq 1+\int_{(0,\infty)}p g(p)\,dD(p).
  \label{eq:common-module-aw}
 \end{equation}
-The initial $1$ in $w_D(g)$ is the work of testing the whole mass.  Zero
-jobs appear in $a_D(g)$ automatically because they finish with their tests.
-The ratio $a_D(g)/w_D(g)$ is the module's completion density, and its
-reciprocal is work per completion.
+The term $1$ in $w_D(g)$ pays for the tests, and zero jobs are included in
+$a_D(g)$ because they finish at their tests.  Thus $a_D(g)/w_D(g)$ is the
+number of completions per unit of work.
 
-The optimal rule is a threshold.  Intuitively, adding jobs of length $p$
-improves the current density exactly when $p$ is smaller than the current
-work per completion.  At the optimum these two quantities agree: the cutoff
-$\tau_D$ is also the module's work per completion.  The following lemma
-makes this self-consistency precise.
+For example, suppose half the mass has length zero and half has length one.
+Tests alone complete mass $1/2$ using work $1$.  Processing the length-one
+outcomes as well completes the full mass using work $3/2$, improving the
+completion density from $1/2$ to $2/3$.  The same choice would be harmful if
+the positive outcomes were very long.  In general, an outcome of length $p$
+should be included exactly when $p$ is below the current work per completion.
+At the optimum, this comparison gives a self-consistent threshold $\tau_D$.
 
 \begin{lemma}[Maximum-density test module]
 \label{lem:maximum-density-module}
@@ -283,7 +286,8 @@ $h(t)\ge t-\int p\,dD(p)$.  Once positive it
 is strictly increasing, so $h(t)=1$ has a unique solution; $h(t)\le t$ gives
 $\tau_D\ge1$.
 
-For an arbitrary rule $g$,
+It remains to show that this solution describes the best module.  For an
+arbitrary selection rule $g$,
 \[
  \begin{aligned}
   \tau_D a_D(g)-\int_{(0,\infty)}p g(p)\,dD(p)
@@ -298,16 +302,19 @@ $\tau_D-p>0$; mass at $p=\tau_D$ does not affect the equality.  Hence
 $\tau_D a_*=w_*$ and $g_*$ has maximum density $1/\tau_D$.
 \end{proof}
 
-The test module completes mass $a_*$.  We keep track of the positive jobs
-that it does not complete by writing
+The lemma gives both pieces of information needed later.  The best module
+completes mass $a_*$ at work $\tau_Da_*$, and no other combination of tests
+and immediate outcomes has smaller work per completion.  The positive jobs
+not completed by this module form the residual measure
 \begin{equation}
  d\nu(p)=(1-g_*(p))\one_{p>0}\,dD(p),
  \qquad \nu(\{0\})=0.
  \label{eq:common-module-data}
 \end{equation}
-The residual mass $\nu$ is not normalized: its total mass $1-a_*$ is exactly
-the fraction of jobs left for later.  Because $g_*$ accepts everything
-below $\tau_D$, these residual jobs all have length at least $\tau_D$.
+The measure $\nu$ is not normalized: its total mass $1-a_*$ is exactly the
+fraction left for later.  Its support lies in $[\tau_D,\infty)$ because the
+threshold rule accepts every shorter outcome.  This ordering fact will make
+it possible to execute the test module before all residual work.
 
 For an empirical input, this threshold rule has an elementary finite
 interpretation: sort the jobs by processing time and take a prefix.
@@ -320,7 +327,8 @@ For an empirical distribution $D[p]$ from
  \frac{|E|/n}{1+n^{-1}\sum_{i\in E}p_i}
  \label{eq:empirical-prefix-density}
 \end{equation}
-over processing-time prefixes $E$ containing all zero jobs is
+over sets $E\subseteq[n]$ containing all zero jobs and satisfying
+$p_i\le p_j$ whenever $i\in E$ and $j\notin E$ is
 $1/\tau_{D[p]}$.  It is attained by taking every occurrence below
 $\tau_{D[p]}$, no occurrence above it, and any subset of occurrences equal to
 $\tau_{D[p]}$.  Thus every selected value is at most $\tau_{D[p]}$ and every
@@ -334,42 +342,49 @@ $1/\tau_{D[p]}$, so the fractional boundary rule may be replaced by any
 subset of the tied occurrences.
 \end{proof}
 
-\paragraph{Ordering modules.}
-After identifying one test module, we must decide where it belongs relative
-to the work performed later.  At the fluid scale, every kind of work can be
-represented by two numbers: a completion capacity $c_k$ and work
-$v_k$ per completed job.  A budget $x$ can be divided among these kinds of
-work.  As in shortest-processing-time scheduling, the cheapest work per
-completion should come first.
+\paragraph{From one module to a full schedule.}
+Choosing the best test module does not yet specify a schedule: we still have
+to place it relative to the jobs deferred after testing and to jobs completed
+by another mode.  At the fluid scale, each kind of work is described by its
+completion capacity $c_k$ and the work $v_k$ needed per completion.  For
+example, a block $c_k\delta_{v_k}$ can complete mass $c_k$, with each unit of
+that mass costing $v_k$ work.
 
-A \emph{completion curve} $C(x)$ records the largest job mass that can be
-finished using normalized work $x$.  Write
-\begin{equation}
- \Area(C)\defeq\int_0^\infty(1-C(x))\,dx
- \label{eq:completion-curve-area}
-\end{equation}
-for the area below its unfinished-mass curve.  For any finite nonnegative
-measure $\xi$ of block lengths, define its divisible SPT cost by
-\begin{equation}
- \SPT(\xi)\defeq
- \frac12\iint\min\{v,w\}\,d\xi(v)d\xi(w).
- \label{eq:divisible-spt-cost}
-\end{equation}
-Formally, let $\mathcal M=\sum_k c_k\delta_{v_k}$ describe finitely many such
-blocks, where $c_k\ge0$ and $\sum_k c_k=1$.  Its completion curve is
+For a collection
+$\mathcal M=\sum_k c_k\delta_{v_k}$ of total mass
+$\sum_kc_k=1$, define
 \begin{equation}
  K_{\mathcal M}(x)\defeq
  \max\left\{\sum_k z_k:
        0\le z_k\le c_k,\ \sum_kv_kz_k\le x\right\}.
  \label{eq:divisible-spt-envelope}
 \end{equation}
-Thus $K_{\mathcal M}(x)$ is the largest job mass that can be completed with
-work budget $x$.  The variables $z_k$ allow a fraction of a block to be
-used, which is the second place where the fluid viewpoint simplifies the
-finite schedule.  Since $1-K_{\mathcal M}(x)$ is the unfinished mass after
-work $x$, its area is the normalized total completion cost.
+This is the largest mass that can be completed using work $x$.  The variables
+$z_k$ allow us to use only part of a block.  Thus
+$K_{\mathcal M}$ is the \emph{completion curve} of the blocks.
 
-\begin{lemma}[Divisible SPT area]
+If a finite schedule has completed $N(nx)$ jobs after $nx$ units of actual
+work, then its normalized cost is
+\[
+ \frac{\ALG}{n^2}=\int_0^\infty
+       \left(1-\frac{N(nx)}n\right)dx.
+\]
+The fluid analogue is therefore the area under the unfinished fraction.  For
+any completion curve $C$, write
+\begin{equation}
+ \Area(C)\defeq\int_0^\infty(1-C(x))\,dx
+ \label{eq:completion-curve-area}
+\end{equation}
+for this quantity.  We also write
+\begin{equation}
+ \SPT(\xi)\defeq
+ \frac12\iint\min\{v,w\}\,d\xi(v)d\xi(w).
+ \label{eq:divisible-spt-cost}
+\end{equation}
+The next lemma is simply the shortest-processing-time rule for these
+divisible blocks.
+
+\begin{lemma}[Shortest-first order for divisible blocks]
 \label{lem:divisible-spt-area}
 The curve $K_{\mathcal M}$ processes the items in nondecreasing order of
 $v_k$, and its area is the divisible SPT cost:
@@ -394,18 +409,25 @@ Summing these terms and collecting each unordered pair gives
 \cref{eq:divisible-spt-area}.
 \end{proof}
 
-\paragraph{Combining testing with another mode.}
-We now combine the test module with the other way of completing a job.  For
-revealing optimization this other mode is raw execution with cost $v=u$;
-in other applications $v$ may represent a different independent action.
-Suppose a total fraction $q$ of the jobs will be tested, so the remaining
-$1-q$ fraction is available to the other mode.
+\paragraph{The completion curve for a fixed tested fraction.}
+We can now return to the scheduling problem from the beginning of the
+subsection.  Fix the final tested fraction $q$.  The remaining fraction
+$1-q$ is completed by a mode that costs $v$ work per job.  In revealing
+optimization this is raw execution and $v=u$; in blind execution the fluid
+cost of a blindly executed job is the mean processing time.
 
-To write the completion curve explicitly, assume that $D$ has finite
-support and put $d_p=D(\{p\})$.  At an intermediate point, let $t$ be the
-mass tested so far, $b$ the mass completed by the other mode, and $c_p$ the
-tested mass of positive class $p$ that has also been processed.  The maximum
-mass completed with work budget $x$ is
+Assume for the moment that $D$ has finite support and put
+$d_p=D(\{p\})$.  After some initial part of a schedule, let
+$t$ be the mass already tested, $b$ the mass completed by the other mode,
+and $c_p$ the tested mass of positive class $p$ that has also been processed.
+Thus the completed mass is
+\[
+ d_0t+b+\sum_{p>0}c_p,
+\]
+whereas the work used is $t+vb+\sum_{p>0}pc_p$.  We cannot test more than
+$q$ mass, use the other mode on more than $1-q$ mass, or process more than
+$d_pt$ mass of any revealed class.  Consequently, the largest mass that can
+be completed after work $x$ is
 \begin{equation}
  \mathcal C^v_{D,q}(x)\defeq
  \max\left\{
@@ -417,14 +439,22 @@ mass completed with work budget $x$ is
  \end{array}\right\}.
  \label{eq:common-fluid-envelope}
 \end{equation}
-The objective counts tested zeros, jobs completed by the other mode, and
-processed positive outcomes.  The last constraint charges respectively for
-tests, the other mode, and processing after a test.
-
-The key simplification is that all tests together with their selected short
-outcomes can be replaced by copies of the single maximum-density module.
-What remains are just three kinds of blocks: the test module, the residual
-tested jobs, and the other completion mode.
+At first sight, this linear program allows many interleavings of tests and
+processing.  The maximum-density lemma reduces all of them to three familiar
+blocks:
+\[
+ \underbrace{qa_*\delta_{\tau_D}}_{\substack{\text{tests and selected}\\
+                                              \text{short outcomes}}}
+ \;+
+ \underbrace{q\nu}_{\text{deferred tested outcomes}}
+ \;+
+ \underbrace{(1-q)\delta_v}_{\text{other mode}}.
+\]
+The first block has mass $qa_*$ and work $\tau_D$ per completion.  The
+second contains the residual processing times themselves.  The last block
+has the capacity and cost of the other mode.  The next lemma says that their
+shortest-first completion curve is exactly the envelope above, not merely a
+bound on it.
 
 \begin{lemma}[Test-module completion curve]
 \label{lem:test-module-envelope}
@@ -444,6 +474,9 @@ Consequently,
 \end{lemma}
 
 \begin{proof}
+We prove the two inequalities in the curve identity separately.
+
+\emph{Compressing an arbitrary schedule.}
 Split every positive support class virtually into its $g_*$-selected and
 residual parts.  For a feasible point in
 \cref{eq:common-fluid-envelope}, let $y_L,x_L$ be the completion and work
@@ -461,19 +494,26 @@ $q\nu(\{p\})$, while the independent mode has capacity $1-q$.  Thus every
 feasible point maps to the fractional allocation problem in
 \cref{eq:common-envelope-items}.
 
-Conversely, order these fractional items by work per completion, placing the test
-module before residual items at a tie.  The independent item can be run
-whenever its position in this order requires.  A partial test-module item is
-realized by the corresponding fraction of tests and selected outcomes.  Once
-all $q$ test modules have run, every residual capacity is available; this is
-early enough because \cref{lem:maximum-density-module} says that every
-length carrying positive residual mass is at least $\tau_D$.  Hence the curve
-obtained by processing the items in this order is
-feasible at every work budget, proving the curve identity.  The area
-formula follows from \cref{lem:divisible-spt-area}.
+\emph{Realizing the three blocks.}
+Conversely, order the three kinds of fractional items by work per completion,
+placing the test module before a residual item in case of a tie.  The
+independent item can be run whenever this order requires it.  A fraction of
+the test-module block is realized by the corresponding fraction of tests and
+selected outcomes.  Every residual length is at least $\tau_D$, so by the
+time a residual item is reached, all tests needed to expose it have already
+run.  This realizes the shortest-first curve at every work budget and proves
+the curve identity.  Its area is given by
+\cref{lem:divisible-spt-area}.
 \end{proof}
 
-\begin{lemma}[Zero-preserving transport]
+\paragraph{Rounding processing times.}
+The later finite algorithms round processing times to a grid.  Moving every
+positive value by at most $h$ shifts any fluid completion curve horizontally
+by at most $h$, and hence changes its area by at most $h$.  The only caveat is
+zero: a tested zero completes without a processing operation, so rounding
+must preserve exactly which jobs have value zero.
+
+\begin{lemma}[Stability under zero-preserving rounding]
 \label{lem:zero-preserving-transport}
 Suppose there are joint random variables $(P,P')$, with respective laws
 $D,D'$, such that
@@ -500,78 +540,31 @@ algorithms gives one inequality; exchanging $D,D'$ gives the other.
 \end{proof}
 
 \paragraph{Learning from a pilot sample.}
-For the instance-optimal upper bounds, a fluid algorithm is chosen from a
-small pilot sample and then run on the remaining jobs.  A \emph{template}
-means a fixed choice of its few fluid parameters, such as a threshold or a
-tested fraction.  We first record the deterministic comparison that turns
-an accurate estimate of the input distribution into an almost optimal
-template.
+The instance-optimal algorithms do not know $D$.  They use a small pilot
+sample with empirical law $\widehat D$, choose the best fluid parameters for
+that estimate, and run the resulting schedule on the remaining jobs, whose
+empirical law we denote by $D^{\rm rem}$.  We call a fixed choice of these
+few parameters---for example, a threshold and a tested fraction---a
+\emph{template} $\pi$, and write $F_D(\pi)$ for its fluid cost on $D$.
 
-\begin{lemma}[Lipschitz empirical minimization]
-\label{lem:empirical-minimization}
-Let $\Pi$ be a common family of templates and let $F_D(\pi)$ be their
-objectives for distributions $D$.  Suppose that, for some metric $d$,
-\begin{equation}
- \sup_{\pi\in\Pi}|F_D(\pi)-F_E(\pi)|\le Ld(D,E).
- \label{eq:empirical-objective-lipschitz}
-\end{equation}
-If $\Phi(D)=\min_{\pi\in\Pi}F_D(\pi)$, then
-\begin{equation}
- |\Phi(D)-\Phi(E)|\le Ld(D,E).
- \label{eq:empirical-value-lipschitz}
-\end{equation}
-Moreover, if $\pi_E$ minimizes $F_E$, then
-\begin{equation}
- F_D(\pi_E)\le\Phi(D)+2Ld(D,E).
- \label{eq:empirical-minimization-transfer}
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-Evaluating the $E$-objective at a minimizer for $D$, and conversely, proves
-\cref{eq:empirical-value-lipschitz}.  For the second claim, insert
-$F_E(\pi_E)=\Phi(E)$ between $F_D(\pi_E)$ and $\Phi(D)$ and apply
-\cref{eq:empirical-objective-lipschitz,eq:empirical-value-lipschitz}.
-\end{proof}
-
-Choosing a template from an estimate $\widehat D$ incurs the Lipschitz
-comparison twice---once for the chosen template and once for the optimal
-template.  A third term accounts for the difference between the original
-input and the jobs left after sampling.
-
-\begin{lemma}[Pilot-learning transfer]
-\label{lem:pilot-learning-transfer}
-Let $\Pi$ be a common template family, suppose
-$\Phi(D)=\inf_{\pi\in\Pi}F_D(\pi)$, and assume
-\begin{equation}
- \sup_{\pi\in\Pi}|F_D(\pi)-F_E(\pi)|\le L_0d(D,E).
- \label{eq:pilot-transfer-lipschitz}
-\end{equation}
-Let $\widehat D$ be a pilot estimate, let $D^{\rm rem}$ be the law of the
-remaining jobs, and let $\widehat\pi$ minimize $F_{\widehat D}$.  If the
-complete learned schedule, including its pilot, satisfies conditionally
-\begin{equation}
- \EE[\ALG_{\mathcal A}\mid\widehat D,D^{\rm rem}]
- \le n^2F_{D^{\rm rem}}(\widehat\pi)+\varepsilon n^2,
- \label{eq:pilot-transfer-finite-cost}
-\end{equation}
-then
-\begin{equation}
- \frac{\EE\ALG_{\mathcal A}}{n^2}
- \le \Phi(D)+2L_0\EE d(\widehat D,D^{\rm rem})
-       +L_0\EE d(D^{\rm rem},D)+\varepsilon.
- \label{eq:pilot-learning-transfer}
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-By \cref{lem:empirical-minimization},
-$F_{D^{\rm rem}}(\widehat\pi)\le
-\Phi(D^{\rm rem})+2L_0d(\widehat D,D^{\rm rem})$.  The value part of the
-same lemma gives
-$\Phi(D^{\rm rem})\le\Phi(D)+L_0d(D^{\rm rem},D)$.  Substitute both estimates
-in \cref{eq:pilot-transfer-finite-cost} and average.
-\end{proof}
+The learning argument used later is elementary.  Suppose every template is
+$L_0$-Lipschitz in a distance $d$, and let $\widehat\pi$ minimize
+$F_{\widehat D}$.  Comparing the same template first on $D^{\rm rem}$ and
+$\widehat D$, then comparing their respective minimizers, gives
+\[
+ F_{D^{\rm rem}}(\widehat\pi)
+ \le \Phi(D^{\rm rem})
+      +2L_0d(\widehat D,D^{\rm rem}).
+\]
+Comparing the remaining input with the original one gives
+\[
+ \Phi(D^{\rm rem})
+ \le \Phi(D)+L_0d(D^{\rm rem},D).
+\]
+Thus pilot learning costs two copies of the estimation error and one copy of
+the change caused by removing the pilot.  In each application we combine
+these two inequalities directly with the model-specific finite-schedule
+error.
 
 \subsection{Probabilistic tools}
 \label{sec:probabilistic-tools}

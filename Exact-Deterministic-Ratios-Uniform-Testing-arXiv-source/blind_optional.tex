@@ -504,10 +504,18 @@ $Lnk_n=O_L(n^{3/2})$.  Hence
  \EE[\ALG_{\mathcal A^*}(p)\mid\widehat D_n,D_n^{\rm rem}]
  \le n^2F_{\mathsf{BE},D_n^{\rm rem}}(\widehat\pi)+O_L(nk_n+n).
 \]
-Apply \cref{lem:pilot-learning-transfer} with
-$d(D,E)=\|D-E\|_1$, $L_0=C_L$, and
-\cref{eq:blind-histogram-learning}; then use
-\cref{eq:blind-rounding-stability}.  This gives
+The template Lipschitz bound, applied first to $\widehat\pi$ and then to an
+optimal template for $D_n^{\rm rem}$, gives
+\[
+ F_{\mathsf{BE},D_n^{\rm rem}}(\widehat\pi)
+ \le \PhiBE(D_n^{\rm rem})
+      +2C_L\|\widehat D_n-D_n^{\rm rem}\|_1.
+\]
+Applying it once more to an optimal template for $D_n$ gives
+$\PhiBE(D_n^{\rm rem})\le
+\PhiBE(D_n)+C_L\|D_n^{\rm rem}-D_n\|_1$.
+Average, use \cref{eq:blind-histogram-learning}, and then use the rounding
+bound \cref{eq:blind-rounding-stability}.  This gives
 \begin{equation}
  \frac{\EE\ALG_{\mathcal A^*}(p)}{n^2}
  \le\PhiBE(D[p])
