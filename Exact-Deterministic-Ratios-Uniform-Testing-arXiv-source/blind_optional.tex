@@ -1,12 +1,11 @@
 \subsection{Blind-execution instance optimality}
 \label{sec:blind}
 
-We next specialize the common transfer to blind execution.  A direct first
-touch now runs the job for its actual processing time, so $r(p)=p$ and the
-direct work per unit mass is the mean processing time.  The fluid optimum has
-four blocks: a maximum-density testing block, tested medium jobs, jobs run
-blindly, and tested long jobs.  We first state instance optimality and then
-expand this four-block schedule into a one-variable quadratic.
+We finally consider blind execution.  A job that is not tested runs for its
+actual processing time, so $r(p)=p$ and the average direct work is the mean
+processing time.  The optimal fluid algorithm has four blocks: a
+maximum-density testing block, tested medium jobs, jobs run blindly, and
+tested long jobs.  We now compute its cost explicitly.
 
 \begin{theorem}[Blind-execution instance optimality]
 \label{thm:blind-instance}
@@ -31,7 +30,7 @@ The benchmark $\PhiBE$ is defined explicitly below, and one may take
 \]
 \end{theorem}
 
-\subsubsection{The explicit four-block benchmark}
+\subsubsection{The four-block benchmark}
 \label{sec:blind-benchmark}
 
 Let $D$ be a probability distribution on $[0,L]$ and put
@@ -146,13 +145,13 @@ We define
 \begin{proof}[Proof of \cref{thm:blind-instance}]
 Take $r(p)=p$ and $Q=[0,1]$ in
 \cref{thm:common-fluid-instance-transfer}.  Then $r$ is one-Lipschitz,
-$v_r(D)=\mu$, and \cref{eq:blind-fluid-blocks,eq:blind-Phi} show that the
-common value $\Phi_{r,Q}(D)$ equals $\PhiBE(D)$.  The two conclusions and
+$v_r(D)=\mu$, and \cref{eq:blind-fluid-blocks,eq:blind-Phi} show that
+$\Phi_{r,Q}(D)=\PhiBE(D)$.  The two conclusions and
 the stated rate now follow from
 \cref{eq:common-transfer-upper,eq:common-transfer-lower,eq:common-transfer-rate}.
 \end{proof}
 
-\subsubsection{Why all four blocks can be necessary}
+\subsubsection{An example requiring all four blocks}
 
 Let
 \[
@@ -173,10 +172,10 @@ positive constant times $n^2$ for large finite inputs.  In particular, the
 simpler order ``testing block, blind block, all tested residuals'' is not
 instance optimal.
 
-\subsubsection{Why bounded processing times are necessary}
+\subsubsection{Unbounded processing times}
 
-The common transfer assumes a fixed upper bound $L$.  For blind execution
-this is essential even for obtaining any finite worst-case ratio.
+The bound $L$ in \cref{thm:common-fluid-instance-transfer} is necessary.
+Without it, blind execution has no finite worst-case ratio.
 
 \begin{theorem}[No finite ratio for unbounded blind execution]
 \label{thm:blind-unbounded-impossible}

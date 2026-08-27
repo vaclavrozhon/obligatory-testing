@@ -1,12 +1,11 @@
 \subsection{Obligatory-testing instance optimality}
 \label{sec:obligatory-instance}
 
-In obligatory testing the tested fraction is fixed at $q=1$, so the common
-fluid optimum contains only the maximum-density testing block and its
-deferred SPT tail.  This specialization admits a stronger learner than the
-generic bounded transfer: a slowly growing cutoff yields one algorithm that
-does not know the bound $L$ and is nevertheless optimal on every fixed
-bounded class.
+In obligatory testing every job is tested, so $q=1$.  The optimal fluid
+algorithm consists only of the maximum-density testing block and its
+deferred SPT tail.  We will additionally show how to learn this algorithm
+without knowing any bound on the processing times: a slowly growing cutoff
+gives one algorithm that is optimal on every fixed bounded class.
 
 \begin{theorem}[Obligatory-testing instance optimality]
 \label{thm:obligatory-instance}
@@ -30,7 +29,7 @@ One may take $\eps_L(n)=O_L(n^{-1/5})$.  Thus the same algorithm is
 asymptotically instance optimal, uniformly on every bounded input class.
 \end{theorem}
 
-\subsubsection{The explicit obligatory benchmark}
+\subsubsection{The obligatory benchmark}
 
 Let $D$ be a finitely supported distribution on $[0,\infty)$.  Apply
 \cref{lem:maximum-density-module}, choose its threshold selector $g_*$, and
@@ -45,7 +44,7 @@ in \cref{eq:common-envelope-items} is
 \[
                        a_*\delta_{\tau_D}+\nu.
 \]
-The pointwise fluid optimality theorem therefore gives
+By \cref{lem:test-module-envelope}, the optimal fluid cost is therefore
 \begin{equation}
  \boxed{
  \PhiOT(D)
@@ -79,11 +78,12 @@ order.  Direct remaining-job accounting gives the exact identity
 Thus the fluid value is already attainable up to $O_L(n)$ when the multiset
 is announced.
 
-The common lower transfer also becomes sharper because every job is first
-touched by a test.  There is no predictable choice between two first-touch
-modes and no unobserved suffix that has to be edited.
+The general lower-bound proof can be made slightly sharper here.  Every job
+is first touched by a test, so the revealed values themselves form one
+uniform random permutation.  There is no choice between two first-touch
+modes and no unobserved suffix that has to be changed.
 
-\begin{claim}[Sharper obligatory lower transfer]
+\begin{claim}[Lower bound for obligatory testing]
 \label{clm:ot-announced-lower}
 For every $p\in[0,L]^n$ and every announced randomized obligatory-testing
 algorithm $\mathcal A$,
@@ -95,25 +95,30 @@ algorithm $\mathcal A$,
 \end{claim}
 
 \begin{proof}
-Follow the proof of \cref{clm:common-announced-lower}, but partition
-$(0,L]$ into $K_n=\lfloor n^{1/5}\rfloor$ cells and use the uniform-prefix
-estimate \cref{eq:uniform-prefix-hoeffding}.  With probability at least
-$1-n^{-2}$, every prefix of the test order has discrepancy
-$O(\sqrt{n\ln(n+2)})$ in every cell.  In the repair argument from
-\cref{clm:common-envelope-repair}, the removed completion mass is therefore
+We use the argument from \cref{clm:common-announced-lower} with a finer
+grid.  Partition $(0,L]$ into $K_n=\lfloor n^{1/5}\rfloor$ cells.  By
+\cref{eq:uniform-prefix-hoeffding}, with probability at least $1-n^{-2}$,
+the number of occurrences of every cell in every prefix differs from its
+expectation by at most $O(\sqrt{n\ln(n+2)})$.
+
+Consider the schedule after it has tested mass $t$.  For each cell, reduce
+the processed mass by the above discrepancy divided by $n$.  The remaining
+class masses are at most their fluid capacities, and the total mass removed
+in this way is
 \[
  O\!\left(K_n\sqrt{\frac{\ln(n+2)}n}\right)
  =o(n^{-1/5}),
 \]
-whereas the zero-preserving rounding mesh is $O_L(n^{-1/5})$.
-There is no direct-work discrepancy and no suffix edit.  Integrating the
-repaired completion curve and applying
+while the zero-preserving rounding mesh is $O_L(n^{-1/5})$.  There is no
+direct-work error and every job occurs in the test order, so there is no
+suffix to modify.  The resulting completion curve is below the fluid
+envelope, up to the two errors above.  Integrating it and applying
 \cref{lem:common-transfer-rounding-stability} proves the displayed bound.
 The argument is uniform after conditioning on the algorithm's private seed,
 so it also holds for randomized algorithms.
 \end{proof}
 
-\subsubsection{A learner that does not know the input bound}
+\subsubsection{Learning without knowing the input bound}
 
 We now specify the single algorithm promised in
 \cref{thm:obligatory-instance}.  It uses a cutoff that tends to infinity and
@@ -172,14 +177,14 @@ sampling-without-replacement estimate
  \label{eq:ot-learning-histogram}
 \end{equation}
 
-The selected category prefix is the optimal grid template for
+The selected category prefix is the optimal grid plan for
 $\widehat D$ by \cref{lem:maximum-density-module,lem:test-module-envelope}.
 Conditional on the sample, the remaining labels are uniformly permuted.
-The fixed-template implementation
+The fixed-plan implementation
 \cref{clm:common-finite-template-kernel} therefore evaluates their main
 schedule, while testing the pilot first and finishing its pending tail adds
-only $O_L(nk+k^2)$ to total completion time.  Uniform template stability
-\cref{clm:common-template-stability}, applied to the learned template and
+only $O_L(nk+k^2)$ to total completion time.  The stability bound
+\cref{clm:common-template-stability}, applied to the learned plan and
 then to an optimizer, yields
 \[
  \frac{\EE[\ALG_{\mathcal A^*}(p)\mid\widehat D]}{n^2}
@@ -211,7 +216,7 @@ competing algorithm.  Both use an $O_L(n^{-1/5})$ normalized error, and the
 algorithm in \cref{alg:ot-growing-cutoff-instance} depends only on $n$.
 \end{proof}
 
-\subsubsection{Limits of the theorem}
+\subsubsection{Why randomization and boundedness are necessary}
 
 Randomization and bounded inputs are both essential to the preceding
 statement.

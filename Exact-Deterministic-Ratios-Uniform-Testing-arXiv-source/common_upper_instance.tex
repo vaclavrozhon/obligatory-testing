@@ -1,10 +1,9 @@
 \subsection{Revealing-optimization instance optimality}
 \label{sec:common-upper-instance}
 
-We first specialize the common transfer to revealing optimization.  Here a
-direct first touch is raw execution: it always occupies the machine for the
-public time $u$, independently of the hidden value.  Thus $r(p)=u$, and the
-only model-specific work is to expand the fluid block area into an explicit
+We first consider revealing optimization.  A job that is not tested is run
+for the public time $u$, independently of its hidden processing time.  Thus,
+in the common model, $r(p)=u$.  It remains only to expand the fluid cost as a
 quadratic in the tested fraction.
 
 \begin{theorem}[Revealing-optimization instance optimality]
@@ -31,7 +30,7 @@ One may take
 \end{equation}
 \end{theorem}
 
-\subsubsection{The explicit revealing benchmark}
+\subsubsection{The revealing benchmark}
 \label{sec:cui-fluid}
 
 Let $D$ be a probability distribution on $[0,u]$.  Apply
@@ -113,8 +112,8 @@ Consequently a minimizing tested fraction is
 \begin{proof}[Proof of \cref{thm:common-upper-instance}]
 Take $r(p)=u$ and $Q=[0,1]$ in
 \cref{thm:common-fluid-instance-transfer}.  Then
-$v_r(D)=u$, and \cref{eq:cui-F,eq:cui-Phi} show that the common value
-$\Phi_{r,Q}(D)$ is exactly $\PhiRO(D)$.  The upper and lower conclusions are
+$v_r(D)=u$, and \cref{eq:cui-F,eq:cui-Phi} show that
+$\Phi_{r,Q}(D)=\PhiRO(D)$.  The upper and lower conclusions are
 \cref{eq:cui-upper,eq:cui-lower}, and
 \cref{eq:common-transfer-rate} gives \cref{eq:cui-rate}.
 \end{proof}

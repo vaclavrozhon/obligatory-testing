@@ -1,11 +1,13 @@
-\subsection{A common finite-to-fluid transfer}
+\subsection{From fluid schedules to finite inputs}
 \label{sec:common-finite-transfer}
 
-The fluid theorem deliberately fixed a known distribution and made
-proportional revelation exact.  We now show that learning and private
-shuffling reproduce both features up to $o(n^2)$ cost on bounded finite
-inputs.  Doing this once also exposes the precise common structure of
-obligatory testing, revealing optimization, and blind execution.
+We now prove that the fluid optimum gives the correct leading cost on finite
+inputs.  The lower bound turns an arbitrary adaptive run into a feasible
+fluid schedule.  For the upper bound, we learn the empirical distribution
+from a sublinear sample and run the corresponding fluid algorithm in finite
+batches.
+
+Both directions are easiest to state for the following common model.
 
 Fix $L<\infty$ and a known function
 \[
@@ -18,13 +20,14 @@ to the algorithm for free.  Alternatively, the job may be tested for one
 unit, after which its processing operation of length $p$ can be scheduled.
 
 Let $Q$ be either $[0,1]$, when both first-touch modes are available, or
-$\{1\}$, when every job must first be tested.  For a distribution $D$, put
+$\{1\}$, when every job must first be tested.  We call this the $(r,Q)$
+model.  For a distribution $D$, put
 \begin{equation}
  v_r(D)\defeq\int r(p)\,dD(p).
  \label{eq:common-direct-mean}
 \end{equation}
-Predictably chosen direct jobs have asymptotic mean work $v_r(D)$ per job.
-We therefore define the common fluid value
+Since the direct mode is chosen before seeing $p$, a well-mixed unit of jobs
+completed this way uses work $v_r(D)$.  We define
 \begin{equation}
  \Phi_{r,Q}(D)\defeq
  \min_{q\in Q}\Area\bigl(\mathcal C^{v_r(D)}_{D,q}\bigr).
@@ -43,11 +46,10 @@ The three specializations used later are
  \end{array}
  \label{eq:common-instance-specializations}
 \end{equation}
-Thus the distinction between the last two models is entirely in the direct
-work: it is fixed in revealing optimization and sampled from the input in
-blind execution.
+Thus revealing optimization and blind execution differ only in the amount
+of work used by the direct mode.
 
-\begin{theorem}[Common bounded instance-optimality transfer]
+\begin{theorem}[Finite-to-fluid transfer]
 \label{thm:common-fluid-instance-transfer}
 Fix $L$, $r$, and $Q$ as above.  There are randomized nonanticipating
 algorithms $\mathcal L_n$, depending only on $n,L,r,Q$, and a deterministic
@@ -64,9 +66,8 @@ such that every vector $p\in[0,L]^n$ satisfies
  \le n^2\Phi_{r,Q}(D[p])+\eps_L(n)n^2.
  \label{eq:common-transfer-upper}
 \end{equation}
-Conversely, every randomized nonanticipating algorithm $\mathcal A$ whose
-allowed first-touch modes are described by $Q$, even if it is told the
-multiset of entries of $p$, satisfies
+Conversely, every randomized nonanticipating algorithm $\mathcal A$ in the
+$(r,Q)$ model, even if it is told the multiset of entries of $p$, satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
  \ge n^2\Phi_{r,Q}(D[p])-\eps_L(n)n^2.
@@ -76,23 +77,19 @@ Both expectations include the private shuffle and the algorithms' remaining
 randomness.
 \end{theorem}
 
-The proof is split into a lower transfer and a learning upper transfer.  The
-first maps every finite adaptive run to the envelope from
-\cref{eq:common-fluid-envelope}.  The second estimates the empirical
-distribution and implements the finite block schedule
-$\textsc{FluidSPT}$.  The theorem then follows immediately by using the same
-fluid value between them.
+We prove the two inequalities separately.  The lower bound uses only the
+random order of first touches.  The upper bound additionally uses a short
+pilot sample to choose the parameters of $\textsc{FluidSPT}$.
 
-\subsection{From an adaptive run to the fluid envelope}
+\subsubsection{Lower bound: comparing a finite run with the fluid curve}
 \label{sec:common-lower-transfer}
 
-The central fact is that adaptivity cannot bias the hidden value at a first
-touch.  After fixing an algorithm's private seed, list jobs in the order in
-which their labels are first touched.  Their values form a uniform
-permutation $X_1,\ldots,X_n$ of the input.  The indicator $A_k$ that the
-$k$th job is tested is determined before $X_k$ is exposed.  Hence $A_k$ and
-$1-A_k$ are predictable selectors in
-\cref{lem:predictable-permutation-sampling}.
+Fix an algorithm and condition on its private seed.  List the jobs in the
+order in which their labels are first touched.  Their values form a uniform
+permutation $X_1,\ldots,X_n$ of the input, even though the algorithm may
+choose the labels adaptively.  Moreover, the indicator $A_k$ that the $k$th
+job is tested is chosen before $X_k$ is exposed.  We can therefore apply
+\cref{lem:predictable-permutation-sampling} to $A_k$ and $1-A_k$.
 
 Keep zero as a separate class, partition $(0,L]$ into
 \begin{equation}
@@ -123,11 +120,12 @@ for all cells and all such prefixes, where
 \end{equation}
 For $Q=\{1\}$ the second estimate is vacuous.
 
-Edit the last $\delta_n n+O(1)$ first touches to one fixed legal mode: test
-them when $Q=\{1\}$ and complete them directly when $Q=[0,1]$.  Delete any
-operations superseded by this edit.  At most $\delta_n n+O(1)$ jobs and a
-constant number of operations per job change.  Since every legal job uses at
-most $1+L$ work, operation-by-operation remaining-job accounting gives
+The concentration estimate stops before the last $\delta_n n+O(1)$ first
+touches.  We handle this suffix by changing all of its jobs to one fixed
+legal mode: we test them when $Q=\{1\}$ and complete them directly when
+$Q=[0,1]$.  We delete operations made redundant by this change.  This
+modifies only $\delta_n n+O(1)$ jobs.  Since each job uses at most $1+L$
+work, remaining-job accounting gives
 \begin{equation}
  C_{\rm original}\ge C_{\rm edited}
    -O_L(\delta_n n^2+n).
@@ -135,7 +133,7 @@ most $1+L$ work, operation-by-operation remaining-job accounting gives
 \end{equation}
 Let $q$ be the final tested fraction of the edited run; then $q\in Q$.
 
-\begin{claim}[Repairing a finite prefix]
+\begin{claim}[Comparison with the fluid completion curve]
 \label{clm:common-envelope-repair}
 On the event
 \cref{eq:common-transfer-cell-discrepancy,eq:common-transfer-work-discrepancy},
@@ -168,14 +166,17 @@ The work estimate replaces the actual direct work by
 $v_r(D[p])b$ with error at most $\Gamma_n/n$.  Upward rounding changes tested
 processing work by at most $h_n$ and, because $r$ is one-Lipschitz, changes
 the direct mean by at most $h_n$.  The edited suffix has mass
-$O(\delta_n)$.  After these horizontal repairs, the variables $t,b,c_j$
-satisfy every constraint in \cref{eq:common-fluid-envelope} with
-$v=v_r(D^+)$.  This proves the displayed inequality with
+$O(\delta_n)$.  Increase the normalized work coordinate by these errors and
+the completed mass by the discarded cell discrepancies.  The variables
+$t,b,c_j$ then satisfy every constraint in
+\cref{eq:common-fluid-envelope} with $v=v_r(D^+)$.  This proves the
+displayed inequality with
 \cref{eq:common-transfer-zeta}.
 \end{proof}
 
-We shall also use the following elementary stability observation.  It avoids
-any claim that the optimizing threshold itself changes continuously.
+We also need to compare the rounded and original distributions.  Instead of
+tracking how the optimal threshold changes, we run the same fluid algorithm
+on the two coupled distributions.
 
 \begin{lemma}[Zero-preserving rounding stability]
 \label{lem:common-transfer-rounding-stability}
@@ -196,9 +197,9 @@ completion curve lies within a horizontal $2h$ shift of the other.  Their
 areas differ by at most $2h$.  Exchange $D,D'$ and minimize over schedules.
 \end{proof}
 
-\begin{claim}[Common announced lower bound]
+\begin{claim}[Lower bound for announced inputs]
 \label{clm:common-announced-lower}
-Every announced randomized algorithm in the common finite model satisfies
+Every announced randomized algorithm in the $(r,Q)$ model satisfies
 \begin{equation}
  \frac{\EE\ALG_{\mathcal A}(p)}{n^2}
  \ge\Phi_{r,Q}(D[p])
@@ -221,25 +222,24 @@ uniform after fixing the algorithm seed, so averaging proves the randomized
 claim.
 \end{proof}
 
-\subsection{Learning and implementing the fluid optimum}
+\subsubsection{Upper bound: learning the fluid algorithm}
 \label{sec:common-learning-transfer}
 
-For the upper transfer, a \emph{grid template} records a tested fraction, a
-selector on the grid classes, and a feasible order of the resulting testing,
-deferred, and direct blocks.  For a grid distribution $D$ and template
-$\pi$, let $F_{r,D}(\pi)$ be its fluid completion cost.  Theorem
-\ref{lem:test-module-envelope} says that
+For a distribution supported on our grid, a \emph{grid plan} records a
+tested fraction, a selector on the processing-time classes, and the order of
+the resulting testing, deferred, and direct blocks.  For a grid distribution
+$D$ and plan $\pi$, let $F_{r,D}(\pi)$ be its fluid completion cost.
+\Cref{lem:test-module-envelope} says that
 \begin{equation}
  \min_\pi F_{r,D}(\pi)=\Phi_{r,Q}(D).
  \label{eq:common-template-optimum}
 \end{equation}
 
-Two finite facts make this template learnable.  We state them separately so
-that the model-specific corollaries can reuse them.
+We need two simple facts about these plans.
 
-\begin{claim}[Finite implementation of a fixed template]
+\begin{claim}[Implementing a fixed grid plan]
 \label{clm:common-finite-template-kernel}
-For every fixed grid template $\pi$, selecting the prescribed number of test
+For every fixed grid plan $\pi$, selecting the prescribed number of test
 labels uniformly and executing its blocks gives
 \begin{equation}
  \EE C_n(\pi)=n^2F_{r,D[p]}(\pi)+O_L(n),
@@ -257,24 +257,24 @@ Summing the diagonal terms and these finite-population corrections gives
 $O_L(n)$; the remaining terms are exactly the fluid block area.
 \end{proof}
 
-\begin{claim}[Uniform stability of fixed templates]
+\begin{claim}[Stability of a fixed grid plan]
 \label{clm:common-template-stability}
 There is $C_L<\infty$ such that any two distributions $D,E$ on the same
-grid and every common template $\pi$ satisfy
+grid and every plan $\pi$ defined for both distributions satisfy
 \begin{equation}
  |F_{r,D}(\pi)-F_{r,E}(\pi)|
  \le C_L\|D-E\|_1.
  \label{eq:common-template-stability}
 \end{equation}
-The same inequality holds after minimizing over templates.
+The same inequality holds after minimizing over grid plans.
 \end{claim}
 
 \begin{proof}
-For a fixed template, the block-area expansion is a finite sum of single and
-double integrals whose kernels are bounded by a constant depending only on
-$L$.  In a double integral, replace the first distribution and then the
-second.  This gives the displayed total-variation bound uniformly over the
-number of grid classes and over the template.  Applying the bound first to a
+For a fixed plan, expand the area into the contributions of individual
+blocks and pairs of blocks.  Every contribution is bounded by a constant
+depending only on $L$.  Replacing first one input of each pair and then the
+other gives the displayed total-variation bound, uniformly over the number
+of grid classes and over the plan.  Applying the bound first to a
 minimizer for $D$ and then to one for $E$ proves the assertion for minima.
 \end{proof}
 
@@ -286,7 +286,7 @@ the first
  \label{eq:common-transfer-pilot-size}
 \end{equation}
 jobs.  It keeps positive sample jobs pending and forms their rounded
-histogram $\widehat D_n$.  It chooses a template minimizing
+histogram $\widehat D_n$.  It chooses a plan minimizing
 $F_{r,\widehat D_n}$ and applies it to the unused labels, then finishes the
 positive sample jobs.
 
@@ -302,7 +302,7 @@ The sampling-without-replacement estimate
  \label{eq:common-transfer-histogram}
 \end{equation}
 
-\begin{claim}[Common learning upper bound]
+\begin{claim}[Learning from a pilot sample]
 \label{clm:common-learning-upper}
 The learner above satisfies
 \begin{equation}
@@ -315,19 +315,19 @@ uniformly over $p\in[0,L]^n$.
 
 \begin{proof}
 Condition on the pilot.  The unused labels remain uniformly permuted, so
-\cref{clm:common-finite-template-kernel} applies to the selected template.
+\cref{clm:common-finite-template-kernel} applies to the selected plan.
 The pilot and its final positive tail use $O_L(k_n)$ work and therefore add
 $O_L(nk_n)$ to total completion time.
 
-The fixed-template kernel is applied to the upward-rounded values.  Coupling
+The fixed-plan estimate is applied to the upward-rounded values.  Coupling
 the physical and rounded executions with the same decisions changes tested
 processing work by at most $h_n$ per unit mass and direct work by at most
 $h_n$ per unit mass, because $r$ is one-Lipschitz.  Remaining-job accounting
-therefore changes the normalized template cost by at most $O(h_n)$.
+therefore changes the normalized cost by at most $O(h_n)$.
 
-Apply \cref{clm:common-template-stability} first to the learned template,
-then to an optimal template for $D_n^{\rm rem}$, and finally to an optimal
-template for $D_n$.  This bounds the conditional fluid cost by
+Apply \cref{clm:common-template-stability} first to the learned plan, then to
+an optimal plan for $D_n^{\rm rem}$, and finally to an optimal plan for
+$D_n$.  This bounds the conditional fluid cost by
 \[
  \Phi_{r,Q}(D_n)
  +O_L\bigl(
