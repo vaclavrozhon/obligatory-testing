@@ -80,12 +80,18 @@ positive jobs processed immediately and $d_i$ the number deferred.
 \end{algorithm}
 
 \begin{algorithm}[H]
-\caption{Learned randomized threshold $\mathcal A_n^*$}
+\caption{Lean-audited learned randomized thresholds}
 \label{alg:intro-obligatory-rand}
 \begin{algorithmic}
-\State Set $B_n=O(n^{1/20})$ and test $O(n^{3/4})$ random jobs to estimate
-the empirical job-length distribution $\widehat D$.
-\State For each candidate threshold $0\le t\le B_n$, put
+\State For the $4/3$ guarantee, set $B=32$,
+$d=\lfloor n^{1/4}\rfloor$, $\eta=B/d$, and
+$k=\lfloor n^{3/4}\rfloor$.
+For bounded-input instance optimality, set
+$m=\lfloor n^{1/32}\rfloor$, $B=m-1$, $d=m^2-1$,
+$\eta=1/m$, and $k=\lfloor n/m^4\rfloor$.
+Test $k$ random jobs and form the rounded empirical distribution
+$\widehat D$ on the resulting $d$ positive bins (plus zero and overflow).
+\State For each candidate threshold $0\le t\le B$, put
 \[
  a(t)=\widehat D([0,t]),\qquad
  m(t)=\int_{[0,t]}p\,d\widehat D(p),
@@ -93,10 +99,10 @@ the empirical job-length distribution $\widehat D$.
 and define
 \[
  \widehat\tau
- =\min_{\substack{0\le t\le B_n\\a(t)>0}}
+ =\min_{\substack{0\le t\le B\\a(t)>0}}
    \frac{1+m(t)}{a(t)}.
 \]
-\State If $\widehat\tau>B_n$, test every remaining job and then finish all
+\State If $\widehat\tau>B$, test every remaining job and then finish all
 revealed jobs shortest first.
 \State Otherwise process the sampled jobs with $p\le\widehat\tau$.  Keep
 testing jobs, processing them immediately when $p\le\widehat\tau$ and
@@ -153,18 +159,20 @@ first is nearly optimal.  The worst-case guarantee of
 \cref{alg:intro-obligatory-rand} still tells us only that its cost is at most
 $1.33\ldots$ times the optimum.
 
-In fact, the same algorithm satisfies a much stronger per-input guarantee:
-it is \emph{instance-optimal} on every class with a fixed upper bound on job
-lengths.
+The growing-cutoff companion in the same pseudocode satisfies a much stronger
+per-input guarantee: it is \emph{instance-optimal} on every class with a
+fixed upper bound on job lengths.  It has the same sample--learn--fallback
+structure as the fixed-cutoff $4/3$ algorithm, but the two Lean exports use
+the distinct parameter sequences displayed above.
 
 \begin{theorem}[Obligatory-testing instance optimality, informal version of
 \protect\cref{thm:obligatory-instance}]
 \label{thm:intro-obligatory-instance}
-Fix $L<\infty$.  The algorithm $\mathcal A^*$ in
+Fix $L<\infty$.  The growing-cutoff algorithm in
 \cref{alg:intro-obligatory-rand} has the following property: for every
 vector $p\in[0,L]^n$ and every online algorithm $\mathcal A'$,
 \[
- \EE\ALG_{\mathcal A^*}\le \EE\ALG_{\mathcal A'}+o_L(n^2),
+ \EE\ALG_{\mathcal A^{\rm grow}}\le \EE\ALG_{\mathcal A'}+o_L(n^2),
 \]
 where both costs are measured on $p$ and include the private shuffle and the
 algorithms' remaining randomness.
@@ -193,7 +201,7 @@ estimate the empirical distribution of the entries of $p$ and then runs an
 optimal algorithm for that estimate.  The
 substantive part of the theorem is that no complicated meta-algorithm is
 needed.  The optimal leading-order algorithm for a known input is itself a simple
-threshold algorithm, so $\mathcal A^*$ has essentially the same form as
+threshold algorithm, so $\mathcal A^{\rm grow}$ has essentially the same form as
 \cref{alg:intro-obligatory-rand}: sample the input distribution, choose the
 threshold that completes the most job mass per unit of work, and use it for
 the rest of the schedule.
@@ -560,8 +568,9 @@ matching constructions are in \cref{sec:random-common-upper}.
 \caption{Instance-optimal revealing-optimization algorithm}
 \label{alg:intro-common-upper}
 \begin{algorithmic}
-\State Shuffle the jobs, test $O(\sqrt n)$ of them, and use the
-observed lengths to estimate the input distribution.
+\State Put $m=\lfloor n^{1/16}\rfloor$.  Shuffle the jobs, test
+$k=\lfloor n/m^2\rfloor=\Theta(n^{7/8})$ of them, and use the observed
+lengths to estimate the input distribution.
 \State Choose a threshold $t$ maximizing
 $\widehat a/(1+\widehat\ell)$, where
 $\widehat a=\widehat D([0,t])$ and
@@ -590,6 +599,20 @@ useful options.
 
 The proofs repeatedly use similar ideas.  We summarize the main ones here.
 
+\paragraph{Modules and completion density.}
+At the leading $n^2$ scale, lower-order rounding effects are negligible, so
+we can replace numbers of jobs by fractions of the input.  The private
+shuffle keeps the normalized distribution of untouched jobs close to the
+input distribution throughout all but a negligible final part of the
+schedule.  In the resulting fluid model, testing any amount of job mass
+therefore reveals the corresponding multiple of one fixed, finitely
+supported distribution.  A schedule becomes a finite sequence of divisible
+blocks, or \emph{modules}.  Each module spends some work and completes some
+mass; its \emph{completion density} is the completed mass per unit of work.
+The finite fluid problem and its exact shortest-first optimum are developed
+in \cref{sec:common-fluid-envelopes}.  The actual algorithms approximate
+these blocks with finite batches.
+
 \paragraph{Remaining-job and pair accounting.}
 Every unit of machine work delays every job that is still unfinished.
 Total completion time can therefore be computed by tracking the number of
@@ -601,23 +624,31 @@ one untested job, or two untested jobs.  The numbers of such pairs are
 proportional to $q^2$, $q(1-q)$, and $(1-q)^2$, respectively.  The leading
 cost is therefore often a quadratic function of $q$.
 
-\paragraph{Completion density.}
-Our algorithms can typically be viewed as a sequence of a few
-\emph{modules}.  A module repeatedly performs the same action;
-for example, it may test a random job, process it below a threshold, and
-defer it otherwise.  Each module spends some work and completes some mass of
-jobs.  Its \emph{completion density} is the completed mass per unit of work.
-Higher-density modules should come first.  This viewpoint leads to our
-algorithms by identifying the relevant modules and ordering them by
-completion density.
+\paragraph{From announcement to sampling.}
+Our randomized instance-optimality proofs first study an announced problem:
+the multiset of processing times is known, but its assignment to the shuffled
+labels remains hidden.  We identify an optimal leading-order template that
+depends on only a few parameters, such as a threshold and a tested fraction.
+To remove the announcement, the actual algorithm uses a sublinear prefix of
+a private random shuffle as a pilot sample and applies the best template for
+its empirical distribution to the remaining jobs.  Concentration and
+stability show that this changes the total cost by only $o(n^2)$.  The same
+shuffle is useful in lower bounds.  Even if an algorithm adaptively chooses
+the next untouched label, the value attached to it is uniform among the
+remaining values, so one concentration event can control all relevant
+prefixes and stopping times.
 
-\paragraph{A private shuffle.}
-The randomized algorithms start by shuffling the labels and inspecting a
-small prefix.  Its sublinear cost is negligible at the $n^2$ scale, while
-concentration makes it a reliable estimate of the input distribution.
-Because the labels were shuffled privately, the distribution of the
-remaining jobs stays close to this estimate throughout most of the schedule.
-This stability makes the randomized setting substantially simpler.
+\paragraph{Extremal reductions.}
+After identifying an instance-specific benchmark, we still have to determine
+which input maximizes its ratio to the clairvoyant optimum.  After a suitable
+reformulation, pairwise formulas frequently make this extremal problem convex
+in each processing time, so its maximum is attained at boundary values.  In
+our distributional arguments, flattening and Cauchy--Schwarz play the same
+role.  These reductions often leave a binary input and only a few scalar
+parameters, such as the fraction of long jobs.  Different constraints and
+boundary configurations become active for different values of $u$, however,
+so several cases must still be analyzed.  Their switching points produce the
+piecewise exact-ratio curves in this paper.
 
 \subsection{Related work}
 \label{sec:related}
@@ -667,6 +698,14 @@ $u$.
 \Cref{sec:model} formally defines the four models, their information
 structures and adversaries, the corresponding offline optima, and our
 asymptotic competitive-ratio convention.
+
+\Cref{sec:common-fluid-envelopes} then isolates the deterministic
+leading-order problem shared by the randomized instance-optimality proofs.
+For a known finite processing-time distribution, it defines fluid schedules
+as finite sequences of divisible blocks and proves that one explicit
+maximum-density, shortest-first schedule maximizes completed mass after every
+amount of work.  The later model-specific sections separately justify the
+transfer between this benchmark and shuffled finite inputs.
 
 \Cref{sec:optional} then proves the exact deterministic
 revealing-optimization curve.  Its multilevel lower-bound instance, in which

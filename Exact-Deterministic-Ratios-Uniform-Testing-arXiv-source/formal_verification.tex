@@ -102,10 +102,15 @@ theorem oblivious_iid_binary_lower_online_actualOPT
           Online.runCompletionCost .infinite ...
 \end{lstlisting}
 
-The upper theorem uses the literal sample--learn--fallback algorithm.  With
-the checked parameter choice, $R^7=o(n^2)$.  In the lower theorem the selected
-$\{0,2\}$ input is outside the seed average, and
-$4n/(3n+5)\to4/3$.
+The upper theorem uses the literal fixed-cutoff sample--learn--fallback
+algorithm $\mathcal A_n^{(32)}$ from
+\cref{thm:rand-obligatory}, with $d=\lfloor n^{1/4}\rfloor$,
+$k=\lfloor n^{3/4}\rfloor$, and cutoff $32$.  With this checked parameter
+choice, $R^7=o(n^2)$.  Thus Lean verifies the exact competitive ratio.  This
+is the fixed-cutoff branch now displayed explicitly in
+\cref{alg:intro-obligatory-rand}, not its growing-cutoff companion.  In the
+lower theorem the selected
+$\{0,2\}$ input is outside the seed average, and $4n/(3n+5)\to4/3$.
 
 \subsection{Obligatory-testing instance optimality}
 
@@ -153,6 +158,50 @@ competitor's seed, while the learned algorithm averages over its own private
 sample and order.  The second theorem turns the displayed normalized error
 into $o_L(1)$.
 
+The checked universal growing-cutoff family is structurally the same
+sample--learn--fallback algorithm but uses a deliberately slower convenient
+parameter sequence: if $m=\lfloor n^{1/32}\rfloor$, it has cutoff $m-1$,
+$m^2-1$ positive grid intervals, mesh $1/m$, and pilot size of order
+$n^{7/8}$.  The development does not currently identify this literal family
+with the fixed-cutoff family used above or prove the uniform unbounded
+$4/3$ estimate for this growing family.  The manuscript separately proves its
+sharper $n^{3/4}$-pilot, $32+n^{1/20}$-cutoff version.  Hence the exact ratio
+and the bounded instance comparison are both checked, but their realization
+by one definitionally identical Lean strategy is not part of the audit.
+
+\subsection{Why the obligatory instance assumptions are necessary}
+
+Lean also checks both limitations stated after
+\cref{thm:intro-obligatory-instance}.  Every completing deterministic policy
+has a fixed balanced zero--two input on which its literal cost is at least
+$9n^2/8$.  Without a fixed input bound, every finite-seed randomized policy
+has a fixed input in $[0,n^2]^n$ on which it loses at least $n^2/8$ against
+the corresponding announced comparison schedule.
+
+\begin{lstlisting}[style=lean]
+theorem deterministic_balanced_cost_lower
+    (m : Nat) (strategy : Strategy (2 * m)) (fuel : Nat)
+    (hcomplete : forall processing, ... -> CompletesAll processing strategy fuel) :
+    exists processing,
+      (forall job, processing job = 0 \/ processing job = 2) /\
+      (Finset.univ.filter fun job => processing job = 2).card = m /\
+      9 * ((2 * m : Nat) : Real) ^ 2 / 8 <=
+        runCompletionCost .infinite processing ...
+
+theorem finiteSeed_exists_operational_quadratic_gap
+    {n : Nat} (hn : 7 <= n)
+    (strategy : Seeds -> Strategy n) (fuel : Nat)
+    (hdoneHigh : ...) (hdoneZero : ...) :
+    n ^ 2 / 8 <= averageCostOnAllHigh - announcedAllHighCost \/
+      exists label,
+        n ^ 2 / 8 < averageCostWithOneZero label - announcedOneZeroUpper
+\end{lstlisting}
+
+The first input is frozen after the deterministic strategy is fixed.  In the
+second theorem the exceptional zero label, when that branch is selected, is
+outside the private-seed average.  These are the two operational quantifier
+orders required by \cref{thm:ot-instance-impossibility}.
+
 \subsection{Blind execution}
 
 \begin{theorem}[Lean-audited blind-execution statements]
@@ -184,9 +233,10 @@ theorem boundedUniform_blindPilot_concrete_rate
 
 The left side is the learned four-block algorithm; the right side is the
 private-shuffle cost of an arbitrary announced competitor.  The checked
-parameter tends to infinity, so the last term tends to zero.  Since the
-bound is uniform in the deterministic competitor, one may condition on each
-finite private seed and average.
+parameter tends to infinity, so the last term tends to zero.  The finite-seed
+corollary
+\path{boundedUniform_blindPilot_finiteSeed_concrete_rate}
+performs the pointwise conditioning and averaging in Lean itself.
 
 For the unbounded part, Lean states the contradiction entirely in terms of
 literal completion costs.
@@ -305,13 +355,17 @@ for every $p\in[0,u]^n$,
  \le \frac{n(n+1)}2\min\{u,1+\mu_p\}+o_u(n^2),
  \qquad \mu_p=\frac1n\sum_i p_i.
 \]
-The paper additionally proves that no announced algorithm has a smaller
-leading value, yielding the instance-optimal comparison in
-\cref{thm:intro-bo-instance}.
+Conversely, every completing algorithm with a finite private seed has
+expected cost at least
+\[
+ \frac{n^2}{2}\min\{u,1+\mu_p\}-nu\sqrt{2n}.
+\]
+Hence both sides have the same leading value and Lean verifies the full
+instance-optimal comparison in \cref{thm:intro-bo-instance}.
 \end{theorem}
 
-Lean checks the operational sample-then-commit construction and its upper
-benchmark:
+Lean checks both the operational sample-then-commit construction and the
+arbitrary-policy lower benchmark:
 
 \begin{lstlisting}[style=lean]
 theorem conditionalExpectedPilotRunCost_eq ... :
@@ -323,15 +377,31 @@ theorem pilotPolicy_expectedCost_le ... :
       n * (n + 1) / 2 * min u (1 + populationMean processing) +
       (1 + u) * pilotSize * n +
       n * (n + 1) / 2 * (u / sqrt pilotSize)
+
+theorem finiteSeed_expectedCost_ge_instanceBenchmark_nsq
+    {Seeds : Type*} [Fintype Seeds] [Nonempty Seeds]
+    ... (p : Fin n -> Real)
+    (hp : forall job, p job in Set.Icc 0 u)
+    (strategy : Seeds -> Online.Strategy n)
+    (hcompletes : forall seed placement,
+      Online.Completes (placedProcessing p placement) (strategy seed)) :
+    n ^ 2 / 2 * min u (1 + populationMean p) -
+        n * u * sqrt (2 * n) <=
+      uniformAverage fun seed =>
+        uniformAverage fun placement =>
+          Online.runCost u (placedProcessing p placement)
+            (strategy seed) n
+
+theorem instanceBenchmark_normalizedError_tendsto_zero (u : Real) :
+  Tendsto (fun n : Nat => u * sqrt (2 / (n : Real))) atTop (nhds 0)
 \end{lstlisting}
 
-This excerpt certifies the constructive upper half and its $o_u(n^2)$ error.
-At present the development does \emph{not} export a theorem lower-bounding
-every announced algorithm on an arbitrary fixed vector by the same
-$\min\{u,1+\mu_p\}$ benchmark.  Consequently the Lean development audits the
-upper construction and both worst-case curves, but not yet the full lower
-half of \cref{thm:intro-bo-instance}.  This distinction is intentionally
-stated here rather than hidden in a coverage table.
+The upper errors are $o_u(n^2)$ for any growing sublinear pilot.  The lower
+error is explicit; the third export proves that after division by $n^2$ it is
+$u\sqrt{2/n}=o_u(1)$.  Its proof compiles a literal completing online
+strategy into a causal first-touch trace, applies a uniform-permutation
+first-moment bound at every position, and averages directly over the
+algorithm's private seed.  Thus no conditioning step is left to prose.
 
 \subsection{Revealing optimization: exact competitive-ratio curves}
 
@@ -402,8 +472,14 @@ theorem binaryFamilies_attain_curve (hu : 1 < u) :
 The operational Yao theorem
 \path{exists_operational_binary_family_ratio_tendsto_curve} then
 selects one fixed labeled binary input outside every finite seed average.
-The unannounced upper algorithm is supplied by the instance comparison in
-the next item.
+The theorem \path{randomizedRevealingCurveExact} is one public package
+containing this lower theorem, the announced operational upper theorem, the
+checked announced-to-unannounced transfer, and vanishing of the transfer
+error.  The transfer itself is exported as
+\path{compiledExpectedNormalizedCost_le_curve_of_competitor}: given a
+finite-seed announced policy satisfying the curve bound on every placement,
+it returns the corresponding direct bound for the literal unannounced pilot
+learner.
 
 \subsection{Revealing-optimization instance optimality}
 
@@ -447,6 +523,40 @@ tests, processing, and raw execution and is given the input multiset.  The
 placement is chosen before its seed is averaged, and the second theorem
 supplies the required $o_u(1)$ normalized error.
 
+The concrete checked pilot has size
+$\lfloor n/m^2\rfloor=\Theta(n^{7/8})$, where
+$m=\lfloor n^{1/16}\rfloor$.  This is now the parameter choice displayed in
+the introductory pseudocode as well.
+
+\subsection{Certified numerical summaries}
+
+The curve definitions remain exact, but the short decimal summaries in
+Section~1 are no longer justified only by external calculation.  The file
+\path{SchedulingPaper/NumericalBounds.lean} exports, among others,
+
+\begin{lstlisting}[style=lean]
+theorem RStar_decimal_bounds :
+  (15705 : Real) / 10000 < RStar /\ RStar < 15706 / 10000
+
+theorem uDiamond_decimal_bounds :
+  (1866 : Real) / 1000 < uDiamond /\ uDiamond < 1867 / 1000
+
+theorem uZero_decimal_bounds :
+  (3147 : Real) / 1000 < uZero /\ uZero < 3148 / 1000
+
+theorem RevealingOptimization.transition_decimal_bounds :
+  (5048917 : Real) / 1000000 < transition /\
+    transition < 5048918 / 1000000
+
+theorem RevealingOptimization.globalMaximum_decimal_bounds :
+  (1625 : Real) / 1000 < globalMaximum /\
+    globalMaximum < 1626 / 1000
+\end{lstlisting}
+
+The algebraic intervals are discharged by exact polynomial arithmetic.  For
+$R_*$, Lean brackets $\log q$ by a finite, rational atanh series, proves
+$4.5051<z_*<4.5056$, and then derives the displayed interval for $R_*$.
+
 \subsection{Proof boundary and reproduction}
 
 The root module \path{SchedulingPaper.lean} imports the developments used by
@@ -455,9 +565,15 @@ all exports above.  The checked project contains no \texttt{sorry},
 classical real analysis and noncomputable choices of exact real parameters;
 it proves mathematical properties of the algorithms but does not extract a
 floating-point implementation.  The randomized lower statements shown here
-quantify over nonempty finite seed types.  The one substantive coverage gap
-relative to the Section~1 statements is the arbitrary-input lower half of
-blind-optimization instance optimality, identified explicitly above.
+quantify over nonempty finite seed types.
+
+All mathematical directions of the Section~1 headline theorems now have
+Lean exports.  The checked obligatory $4/3$ and
+bounded instance-optimal upper bounds currently use different concrete
+parameter families, as recorded above.  Lean verifies the exact symbolic
+constants, branch transition equations, and the rational decimal brackets
+listed above.  Longer printed digit strings remain readability aids unless a
+correspondingly narrow interval is explicitly exported.
 
 From the repository root, the complete development is checked with
 \begin{center}

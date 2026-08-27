@@ -72,9 +72,9 @@ leading values for bounded obligatory testing, blind execution, revealing
 optimization, and blind optimization.  In obligatory testing, the worst-case
 algorithm uses the fixed cutoff `32`; the bounded-bag instance-optimal algorithm
 is its variant with a slowly growing cutoff.
-The full revealing-optimization instance-optimal proof is Section 4 of the
+The full revealing-optimization instance-optimal proof is Section 5 of the
 manuscript; its outer worst-case optimization is the separate four-piece
-curve in Section 5.  Lean now checks this instance theorem end to end for a
+curve in Section 6.  Lean now checks this instance theorem end to end for a
 literal pilot-learned transcript-only strategy against every finite
 randomization of completing adaptive observed algorithms, including the
 fixed-placement Yao lower bound, the zero-mean branch, and a concrete
@@ -97,7 +97,9 @@ The main file is intentionally short: `paper.tex` contains the build switch,
 preamble, front matter, and chapter order, while the shared model definitions
 and technical tools live in `models_and_preliminaries.tex`.
 
-Section 3 is assembled by `deterministic_revealing.tex` from algorithm
+The finite-dimensional fluid model and its common pointwise optimality
+theorem form Section 3 in `fluid_benchmark.tex`.  Section 4 is assembled by
+`deterministic_revealing.tex` from algorithm
 guarantees, branchwise lower bounds, curve assembly, and the obligatory
 endpoint.  The single appendix, `formal_verification.tex`, gives an
 English-to-Lean audit of the main theorem statements.  Superseded proofs,

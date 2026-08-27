@@ -813,6 +813,60 @@ theorem boundedUniform_blindPilot_concrete_rate
     (boundedUniform_blindPilot_all_means_parameter_rate
       (m := m) hm hn hL p hp0 hpL policy)
 
+/-- Finite-private-seed version of
+`boundedUniform_blindPilot_concrete_rate`.  The learned policy is independent
+of the announced competitor seed, and the deterministic comparison holds
+pointwise in that seed; this theorem performs the finite averaging inside
+Lean. -/
+theorem boundedUniform_blindPilot_finiteSeed_concrete_rate
+    {Seeds : Type*} [Fintype Seeds] [Nonempty Seeds]
+    {n : ℕ} (hroot : 2 ≤ sixteenthRoot n)
+    {L : ℝ} (hL : 0 < L)
+    (p : Fin n → ℝ) (hp0 : ∀ job, 0 ≤ p job)
+    (hpL : ∀ job, p job ≤ L)
+    (policy : Seeds → ObservedTrace.CompletePolicy p) :
+    let m := concreteUnknownParameter n
+    let k := inverseSquareSize n m
+    let hscales := concreteUnknownParameter_bounds n hroot
+    let pilot := inverseSquarePilotPositions n m
+      (parameter_scales hscales.1 hscales.2).2.1
+    let G := boundedUniformRoundedGrid (show 0 < m by omega) hL p hp0 hpL
+    uniformAverage (fun pilotOrder : Equiv.Perm (Fin n) =>
+      uniformAverage (blindPilotLearnedCost G pilot pilotOrder)) /
+        (n : ℝ) ^ 2 ≤
+      uniformAverage (fun seed : Seeds =>
+        uniformAverage (normalizedCost p (policy seed))) +
+        7830 * (L + 1) ^ 2 / m := by
+  dsimp only
+  let m := concreteUnknownParameter n
+  let k := inverseSquareSize n m
+  let hscales := concreteUnknownParameter_bounds n hroot
+  let pilot := inverseSquarePilotPositions n m
+    (parameter_scales hscales.1 hscales.2).2.1
+  let G := boundedUniformRoundedGrid
+    (show 0 < m by
+      exact lt_of_lt_of_le (by omega : 0 < 2)
+        (concreteUnknownParameter_bounds n hroot).1)
+    hL p hp0 hpL
+  let learned :=
+    uniformAverage (fun pilotOrder : Equiv.Perm (Fin n) =>
+      uniformAverage (blindPilotLearnedCost G pilot pilotOrder)) /
+        (n : ℝ) ^ 2
+  let error := 7830 * (L + 1) ^ 2 / m
+  have hpoint : ∀ seed : Seeds,
+      learned ≤ uniformAverage (normalizedCost p (policy seed)) + error := by
+    intro seed
+    simpa [learned, error, m, k, hscales, pilot, G] using
+      (boundedUniform_blindPilot_concrete_rate
+        hroot hL p hp0 hpL (policy seed))
+  have havg := uniformAverage_mono
+    (f := fun _seed : Seeds => learned)
+    (g := fun seed : Seeds =>
+      uniformAverage (normalizedCost p (policy seed)) + error)
+    hpoint
+  simpa [learned, error, m, k, hscales, pilot, G,
+    uniformAverage_add, uniformAverage_const] using havg
+
 end
 
 end RandomizedOptional

@@ -1,0 +1,434 @@
+\section{The finite fluid benchmark}
+\label{sec:common-fluid-envelopes}
+
+The randomized instance-optimality results all have the same leading-order
+explanation.  Fix an input vector and privately shuffle its values among the
+public job labels.  Uniformly over predictable prefixes, the cumulative
+number of encountered jobs of each type differs by only $o(n)$ from the
+prefix length times its full-input proportion.  Thus, if a fraction $t$ of
+the jobs has been tested, the revealed mass of type $p_i$ is approximately
+$tD[p](\{p_i\})$.  As long as a nonnegligible fraction remains, the normalized
+composition of the untouched jobs is consequently still close to $D[p]$.
+
+The fluid model makes this approximation exact.  It replaces $n$ jobs by one
+unit of divisible job mass and divides machine work by $n$.  Testing mass
+$0.01$, for example, reveals exactly a $0.01$ copy of the input distribution.
+This removes the random fluctuations and the rounding of job counts, leaving
+a deterministic scheduling problem for the leading $n^2$ term of total
+completion time.
+
+Despite the name, a fluid schedule will not be a policy that makes a new
+decision at every real time.  The distribution below has finitely many job
+types, and a schedule is a finite sequence of divisible blocks.  Within one
+block, work and completions accrue proportionally.  This linear traversal is
+the limit of dividing the block into many finite batches; the later
+instance-optimality sections justify the corresponding approximation for
+actual jobs.  The present section contains no sampling or limiting argument:
+it solves the finite-dimensional fluid problem exactly when the distribution
+is known.
+
+The same problem covers three models.  We prescribe a total tested fraction
+$q$ and let $v$ be the work per job in a completion mode that does not reveal
+the processing time in advance.  Obligatory testing has $q=1$, revealing
+optimization has $v=u$, and blind execution has
+$v=\int p\,dD(p)$.  Blind optimization is different because its preliminary
+operation does not reveal the processing time, so it is not represented by
+the testing blocks below.
+
+\subsection{Fluid blocks and schedules}
+\label{sec:fluid-schedules}
+
+We first define the fluid problem operationally.  This makes clear both what
+an arbitrary fluid schedule may do and why its state remains finite.  Let
+\begin{equation}
+ D=\sum_{i=0}^m d_i\delta_{p_i},
+ \qquad 0=p_0<p_1<\cdots<p_m,
+ \qquad \sum_{i=0}^m d_i=1,
+ \label{eq:fluid-finite-distribution}
+\end{equation}
+where $d_0$ may be zero.  Fix $q\in[0,1]$ and $v\ge0$.
+
+A fluid schedule is a finite sequence of the following operations.
+
+\begin{description}[leftmargin=*,style=nextline]
+ \item[Testing block of mass $z$ with selector $g$.]
+ The vector $g=(g_1,\ldots,g_m)\in[0,1]^m$ specifies which fraction of each
+ positive type is processed directly after being revealed.  The block tests
+ mass $z$, completes all revealed zero jobs and the selected positive jobs,
+ and places the remaining revealed positive jobs in deferred queues.  It
+ uses work
+ \[
+   z\left(1+\sum_{i=1}^m p_i d_i g_i\right)
+ \]
+ and completes mass
+ \[
+   z\left(d_0+\sum_{i=1}^m d_i g_i\right).
+ \]
+ It adds $zd_i(1-g_i)$ to the deferred queue of type $i$.  The total mass of
+ all testing blocks may not exceed $q$.
+
+ \item[Deferred-processing block of type $i$.]
+ Processing mass $z$ from the currently available deferred queue of type
+ $i$ uses work $p_i z$ and completes mass $z$.
+
+ \item[Alternative-completion block.]
+ Completing mass $z$ in the other mode uses work $vz$ and completes mass
+ $z$.  The total mass of these blocks may not exceed $1-q$.
+\end{description}
+
+The schedule is complete if it tests total mass $q$, uses the other mode on
+mass $1-q$, and eventually empties every deferred queue.  A positive-work
+block is traversed linearly; a zero-work block completes its mass at once.
+Consequently every finite fluid schedule has a piecewise-linear completion
+curve $C(x)$, the mass completed after $x$ units of work.
+
+The area under the unfinished mass is its total completion cost:
+\begin{equation}
+ \Area(C)\defeq\int_0^\infty(1-C(x))\,dx.
+ \label{eq:completion-curve-area}
+\end{equation}
+Indeed, if a mass element $z$ completes after work $T(z)$, the elementary
+layer-cake identity gives
+\[
+ \int T(z)\,dz
+ =\int_0^\infty \operatorname{mass}\{z:T(z)>x\}\,dx
+ =\Area(C).
+\]
+Thus continuous work is only a convenient coordinate for drawing the
+completion curve; the schedule itself makes finitely many block decisions.
+
+\subsection{The best testing block}
+\label{sec:fluid-testing-block}
+
+We next determine which revealed positive types should be completed inside a
+testing block.  For the finite fluid model, all integrals below are finite
+sums under \cref{eq:fluid-finite-distribution}.  The density lemma is no more
+difficult for an arbitrary finite-mean distribution, so we state it in that
+form for later use.
+
+For a selector $g$, let
+\begin{equation}
+ a_D(g)\defeq D(\{0\})+\int_{(0,\infty)}g(p)\,dD(p),
+ \qquad
+ w_D(g)\defeq 1+\int_{(0,\infty)}p g(p)\,dD(p).
+ \label{eq:common-module-aw}
+\end{equation}
+These are the completed mass and work when one unit of mass is tested.
+Their ratio $a_D(g)/w_D(g)$ is the block's \emph{completion density}.
+
+For example, suppose half the mass has length zero and half has length one.
+Tests alone complete mass $1/2$ using work $1$.  Processing the length-one
+outcomes as well completes the full mass using work $3/2$, improving the
+completion density from $1/2$ to $2/3$.  For longer positive outcomes the
+same decision can reduce the density.  At the optimum, a positive type is
+included precisely when its length is below the work per completion of the
+resulting block.
+
+\begin{lemma}[Maximum-density testing block]
+\label{lem:maximum-density-module}
+Let $D$ be a probability distribution on $[0,\infty)$ with finite mean.
+There is a unique $\tau_D\ge1$ satisfying
+\begin{equation}
+ \int_{[0,\infty)}(\tau_D-p)^+\,dD(p)=1.
+ \label{eq:common-threshold-equation}
+\end{equation}
+Choose $g_*$ to select every positive $p<\tau_D$, reject every
+$p>\tau_D$, and select any fraction of the mass at $p=\tau_D$.  Write
+$a_*=a_D(g_*)$ and $w_*=w_D(g_*)$.  Then
+\begin{equation}
+ \frac{a_*}{w_*}=\max_g\frac{a_D(g)}{w_D(g)}=\frac1{\tau_D},
+ \qquad
+ \tau_D a_D(g)\le w_D(g)\quad\text{for every }g.
+ \label{eq:common-density-dual}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+The function
+$h(t)=\int(t-p)^+\,dD(p)$ is continuous and nondecreasing, satisfies
+$h(0)=0$, and tends to infinity because
+$h(t)\ge t-\int p\,dD(p)$.  Once positive it is strictly increasing, so
+$h(t)=1$ has a unique solution.  The inequality $h(t)\le t$ gives
+$\tau_D\ge1$.
+
+For an arbitrary selector $g$,
+\[
+ \begin{aligned}
+  \tau_D a_D(g)-\int_{(0,\infty)}p g(p)\,dD(p)
+   &=\tau_D D(\{0\})
+     +\int_{(0,\infty)}(\tau_D-p)g(p)\,dD(p)\\
+   &\le\int_{[0,\infty)}(\tau_D-p)^+\,dD(p)=1.
+ \end{aligned}
+\]
+This is the second inequality in \cref{eq:common-density-dual}.  The
+threshold selector $g_*$ attains equality because it keeps exactly the
+positive terms; selecting mass at $p=\tau_D$ changes both sides equally.
+Hence $w_*=\tau_Da_*$ and $g_*$ has maximum density $1/\tau_D$.
+\end{proof}
+
+For the rest of this section, return to the finite distribution in
+\cref{eq:fluid-finite-distribution}.
+The positive mass not completed in the maximum-density testing block forms
+the finite residual measure
+\begin{equation}
+ d\nu(p)=(1-g_*(p))\one_{p>0}\,dD(p),
+ \qquad \nu(\{0\})=0.
+ \label{eq:common-module-data}
+\end{equation}
+It has total mass $1-a_*$ and support in $[\tau_D,\infty)$.  Thus every
+deferred type has at least as much work per completion as the testing block.
+
+\subsection{Completion curves of finite block collections}
+\label{sec:fluid-block-order}
+
+Once testing activity has been compressed into one block, only an ordering
+problem remains.  The next elementary lemma is the divisible version of the
+shortest-processing-time rule.
+
+Represent a finite block of completion mass $c_k$ and work $v_k$ per
+completion by $c_k\delta_{v_k}$.  For a collection
+$\mathcal M=\sum_kc_k\delta_{v_k}$ of total mass one, define
+\begin{equation}
+ K_{\mathcal M}(x)\defeq
+ \max\left\{\sum_kz_k:
+       0\le z_k\le c_k,\ \sum_kv_kz_k\le x\right\}.
+ \label{eq:divisible-spt-envelope}
+\end{equation}
+This finite fractional-knapsack problem asks for the largest mass that the
+blocks can complete using work $x$.  Its value as a function of $x$ is their
+completion curve.  We also write
+\begin{equation}
+ \SPT(\xi)\defeq
+ \frac12\iint\min\{v,w\}\,d\xi(v)d\xi(w).
+ \label{eq:divisible-spt-cost}
+\end{equation}
+
+\begin{lemma}[Shortest-first order for divisible blocks]
+\label{lem:divisible-spt-area}
+The curve $K_{\mathcal M}$ is realized by processing the blocks in
+nondecreasing order of $v_k$, and
+\begin{equation}
+ \Area(K_{\mathcal M})=\SPT(\mathcal M).
+ \label{eq:divisible-spt-area}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Consider two consecutive blocks with masses $c,c'$ and work per completion
+$v\le v'$.  Putting the $v$-block first changes the area, relative to the
+opposite order, by $cc'(v-v')\le0$.  Repeated neighboring exchanges sort all
+blocks by nondecreasing work per completion.
+
+In a block of mass $c_k$ and work per completion $v_k$, unfinished mass
+decreases linearly.  Once the blocks are sorted, its area contribution is
+\[
+ v_kc_k\left(1-\sum_{h<k}c_h-\frac{c_k}{2}\right).
+\]
+Summing these terms and collecting each unordered pair gives
+\cref{eq:divisible-spt-area}.
+\end{proof}
+
+\subsection{The optimal schedule at a fixed tested fraction}
+\label{sec:fluid-fixed-q}
+
+We can now state the common optimality theorem.  The proof compares complete
+curves, not merely their final areas: after every possible amount of work,
+one explicit schedule has completed at least as much mass as any competitor.
+
+First describe the accounting state of an arbitrary schedule after it has
+used work $x$.  Let $t$ be its tested mass, $b$ its mass completed in the
+other mode, and
+\[
+ c=(c_1,\ldots,c_m)
+\]
+the vector of tested positive mass already processed in each class.  The
+postponed vector is not missing from this state: its $i$th coordinate is
+$d_it-c_i$.  An algorithm may retain a much richer internal history, but its
+aggregate state necessarily satisfies
+\[
+ 0\le t\le q,\qquad 0\le b\le1-q,\qquad 0\le c_i\le d_it.
+\]
+It has completed mass $d_0t+b+\sum_i c_i$ and used work
+$t+vb+\sum_i p_ic_i$.  Therefore define the finite-dimensional envelope
+\begin{equation}
+ \mathcal C^v_{D,q}(x)\defeq
+ \max\left\{
+ d_0t+b+\sum_{i=1}^m c_i:
+ \begin{array}{l}
+ 0\le t\le q,\quad 0\le b\le1-q,\\
+ 0\le c_i\le d_it\quad(1\le i\le m),\\
+ t+vb+\sum_{i=1}^m p_ic_i\le x
+ \end{array}
+ \right\}.
+ \label{eq:common-fluid-envelope}
+\end{equation}
+
+The candidate schedule is completely explicit.
+
+\begin{algorithm}[H]
+\caption{Shortest-first fluid schedule
+$\textsc{FluidSPT}(D,q,v)$}
+\label{alg:fluid-spt}
+\begin{algorithmic}
+\State Compute the maximum-density selector $g_*$, its completed mass $a_*$,
+and its work per completion $\tau_D$.
+\State Create a testing block of completion mass $qa_*$ and work per
+completion $\tau_D$; running it tests mass $q$ and uses selector $g_*$.
+\State For every $p_i>0$, create a deferred block of mass
+$qd_i(1-g_*(p_i))$ and work per completion $p_i$.
+\State Create an alternative-completion block of mass $1-q$ and work per
+completion $v$.
+\State Order all nonempty blocks by nondecreasing work per completion,
+placing the testing block before a deferred block in case of a tie, and
+execute them in that order.
+\end{algorithmic}
+\end{algorithm}
+
+Equivalently, the collection of blocks created by the algorithm is
+\begin{equation}
+ \mathcal M_{D,q,v}\defeq
+ qa_*\delta_{\tau_D}+q\nu+(1-q)\delta_v.
+ \label{eq:common-envelope-items}
+\end{equation}
+
+\begin{theorem}[Pointwise optimality of the finite fluid schedule]
+\label{lem:test-module-envelope}
+For every complete fluid schedule $S$ that tests mass $q$,
+\begin{equation}
+ C_S(x)\le \mathcal C^v_{D,q}(x)
+ =K_{\mathcal M_{D,q,v}}(x)
+ \qquad\text{for every }x\ge0.
+ \label{eq:fluid-pointwise-optimality}
+\end{equation}
+The schedule $\textnormal{\textsc{FluidSPT}}(D,q,v)$ attains equality for
+every $x$.  Consequently it minimizes fluid total completion time and
+\begin{equation}
+ \Area(\mathcal C^v_{D,q})=\SPT(\mathcal M_{D,q,v}).
+ \label{eq:common-envelope-area}
+\end{equation}
+\end{theorem}
+
+The proof has three short parts.  First, the envelope contains the aggregate
+state of every schedule.  Second, the density inequality compresses every
+feasible envelope state into the blocks of
+\cref{eq:common-envelope-items}.  Finally, the support property of $\nu$
+makes the shortest-first block order operationally feasible.
+
+\begin{claim}[Every schedule obeys the envelope]
+\label{clm:fluid-envelope-upper}
+For every complete fluid schedule $S$ and every $x\ge0$,
+$C_S(x)\le\mathcal C^v_{D,q}(x)$.
+\end{claim}
+
+\begin{proof}
+At work $x$, let $t,b,c_1,\ldots,c_m$ be the aggregate state described
+above.  Every tested mass has type distribution $D$, so at most $d_it$ mass
+of positive type $i$ has been revealed and hence $c_i\le d_it$.  The test,
+alternative, and positive-processing work is respectively
+$t$, $vb$, and $\sum_i p_ic_i$.  Thus the aggregate state is feasible in
+\cref{eq:common-fluid-envelope}, whose objective is exactly its completed
+mass.
+\end{proof}
+
+\begin{claim}[Testing activity compresses into the canonical blocks]
+\label{clm:fluid-compression}
+For every $x\ge0$,
+$\mathcal C^v_{D,q}(x)\le K_{\mathcal M_{D,q,v}}(x)$.
+\end{claim}
+
+\begin{proof}
+Fix a feasible point $(t,b,c_1,\ldots,c_m)$ in
+\cref{eq:common-fluid-envelope}.  For each positive type, put
+\[
+ s_i=\min\{c_i,d_itg_*(p_i)\},
+ \qquad r_i=c_i-s_i.
+\]
+The tests, tested zeros, and masses $s_i$ complete
+\[
+ y_{\rm test}=d_0t+\sum_i s_i
+\]
+using work
+\[
+ x_{\rm test}=t+\sum_i p_is_i.
+\]
+If $t>0$, apply \cref{eq:common-density-dual} to the selector
+$s_i/(d_it)$, taking it to be zero when $d_i=0$.  This gives
+\[
+ \tau_Dy_{\rm test}\le x_{\rm test},
+ \qquad y_{\rm test}\le a_*t\le a_*q.
+\]
+The same inequalities are trivial for $t=0$.  Hence the completed mass
+$y_{\rm test}$ fits inside the canonical testing block and requires no more
+work there.
+
+Moreover,
+\[
+ 0\le r_i\le d_it(1-g_*(p_i))
+        \le qd_i(1-g_*(p_i)),
+\]
+so the remaining processed mass fits inside the deferred block of type $i$.
+The mass $b$ fits inside the alternative block.  We have represented the
+same total completed mass by items from $\mathcal M_{D,q,v}$ using no more
+than the original work $x$.  The definition of
+$K_{\mathcal M_{D,q,v}}$ proves the claim.
+\end{proof}
+
+\begin{claim}[The shortest-first curve is feasible]
+\label{clm:fluid-realization}
+The schedule $\textnormal{\textsc{FluidSPT}}(D,q,v)$ is a complete fluid
+schedule and has completion curve $K_{\mathcal M_{D,q,v}}$.
+\end{claim}
+
+\begin{proof}
+The alternative block can be executed wherever its value $v$ places it in
+the shortest-first order.  Running any fraction of the testing block means
+testing the corresponding fraction of its mass and using $g_*$ on the
+revealed types.  By \cref{eq:common-module-data}, every nonempty deferred
+block has processing time at least $\tau_D$.  The prescribed tie rule
+therefore places the testing block before all deferred work, so each deferred
+queue has been exposed before the schedule uses it.  All block capacities
+are respected, and their total completion mass is
+\[
+ qa_*+q(1-a_*)+(1-q)=1.
+\]
+Thus the schedule is complete.  By
+\cref{lem:divisible-spt-area}, its shortest-first execution realizes
+$K_{\mathcal M_{D,q,v}}$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{lem:test-module-envelope}]
+The first inequality in \cref{eq:fluid-pointwise-optimality} is
+\cref{clm:fluid-envelope-upper}.  Claims
+\ref{clm:fluid-compression} and~\ref{clm:fluid-realization} give the equality
+and show that one schedule realizes it simultaneously for every work budget.
+Integrating the pointwise inequality and applying
+\cref{lem:divisible-spt-area} proves
+\cref{eq:common-envelope-area} and optimality.
+\end{proof}
+
+\subsection{How the three models use the benchmark}
+\label{sec:fluid-specializations}
+
+The theorem deliberately fixes $D$, $q$, and $v$.  Later sections perform
+only model-specific algebra and the transfer to actual shuffled jobs.
+
+In obligatory testing every job must be tested, so $q=1$ and the alternative
+block is absent.  In revealing optimization with raw time $u$, set $v=u$
+and minimize the area in \cref{eq:common-envelope-area} over
+$q\in[0,1]$.  In blind execution, predictably chosen untouched jobs retain
+distribution $D$, so blind execution of unit mass uses mean work
+\[
+ \mu_D=\int p\,dD(p);
+\]
+there we set $v=\mu_D$ and again minimize over $q$.  The resulting
+model-specific values are denoted by $\PhiOT(D)$, $\PhiRO(D)$, and
+$\PhiBE(D)$ in their respective sections.
+
+For an actual vector $p$, its empirical distribution $D[p]$ is already
+finitely supported.  Gridding merely reduces the number of coordinates so
+that one concentration event controls them simultaneously.  The later
+instance-optimality proofs show separately that every discrete competitor
+induces a fluid state obeying \cref{eq:common-fluid-envelope}, up to
+$o(1)$ normalized error, and that a sampled finite algorithm implements
+$\textnormal{\textsc{FluidSPT}}$ with the same accuracy.  Those transfer
+arguments are not assumptions of the fluid theorem above.
