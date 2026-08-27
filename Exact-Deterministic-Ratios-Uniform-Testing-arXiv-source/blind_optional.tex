@@ -1,41 +1,182 @@
-\section{Blind execution: instance-optimal four-block algorithms}
+\subsection{Blind-execution instance optimality}
 \label{sec:blind}
 
-We now turn to $\mathsf{BE}$.  Running an untouched job blindly consumes
-its actual processing time and completes it; testing consumes one unit,
-reveals the value, and permits the processing operation to be delayed.  The
-adversary fixes a vector $p\in[0,L]^n$ before the private seed is drawn; the
-private shuffle from the input convention then assigns its entries to labels.
-The goal of this section is to prove
-\cref{thm:blind-instance}, the rigorous version of the informal
-blind-execution theorem \cref{thm:intro-blind-instance}.
+We next specialize the common transfer to blind execution.  A direct first
+touch now runs the job for its actual processing time, so $r(p)=p$ and the
+direct work per unit mass is the mean processing time.  The fluid optimum has
+four blocks: a maximum-density testing block, tested medium jobs, jobs run
+blindly, and tested long jobs.  We first state instance optimality and then
+expand this four-block schedule into a one-variable quadratic.
 
 \begin{theorem}[Blind-execution instance optimality]
 \label{thm:blind-instance}
-Fix $L<\infty$.  There exist a randomized nonanticipating algorithm $\mathcal A^*$,
-which knows $n,L$ but not the entries of the input vector, and a deterministic
-sequence $\eps_L(n)\to0$ with the following properties.  Every
-$p\in[0,L]^n$ satisfies
+Fix $L<\infty$.  There exist randomized nonanticipating algorithms
+$\mathcal A^*_{n,L}$, depending only on $n,L$, and a deterministic sequence
+$\eps_L(n)\to0$ such that every vector $p\in[0,L]^n$ satisfies
 \begin{equation}
- \EE\ALG_{\mathcal A^*}(p)
+ \EE\ALG_{\mathcal A^*_{n,L}}(p)
  \le n^2\PhiBE(D[p])+\eps_L(n)n^2.
  \label{eq:intro-blind-upper}
 \end{equation}
-Every $p\in[0,L]^n$ and every randomized algorithm $\mathcal A$, even an
-announced algorithm, satisfy
+Conversely, every randomized nonanticipating algorithm $\mathcal A$, even if
+it is told the multiset of entries of $p$, satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
  \ge n^2\PhiBE(D[p])-\eps_L(n)n^2.
  \label{eq:intro-blind-lower}
 \end{equation}
-The benchmark $\PhiBE$ is defined explicitly in
-\cref{sec:blind-benchmark}; it is the minimum of a one-variable quadratic.
-One may take
-$\eps_L(n)=O_L(n^{-1/6}\sqrt{\ln(n+2)})$.
+The benchmark $\PhiBE$ is defined explicitly below, and one may take
+\[
+ \eps_L(n)=O_L\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right).
+\]
 \end{theorem}
 
-The boundedness assumption in \cref{thm:blind-instance} cannot be removed.
-In fact, without it even the much weaker worst-case guarantee is impossible.
+\subsubsection{The explicit four-block benchmark}
+\label{sec:blind-benchmark}
+
+Let $D$ be a probability distribution on $[0,L]$ and put
+\begin{equation}
+ \mu=\int p\,dD(p).
+ \label{eq:blind-mean}
+\end{equation}
+Thus blindly executing one unit of well-mixed job mass uses work $\mu$.
+Apply \cref{lem:maximum-density-module}, choose its threshold selector $g_*$,
+and let $\nu$ be the residual measure from
+\cref{eq:common-module-data}.  Write
+\[
+ a=a_D(g_*),\qquad
+ \ell=\int_{(0,L]}p g_*(p)\,dD(p).
+\]
+The maximum-density identity is
+\begin{equation}
+ a\tau_D-\ell=1,
+ \qquad \tau_D=\frac{1+\ell}{a}.
+ \label{eq:blind-test-module}
+\end{equation}
+Hence a full unit of tests together with the selected short outcomes is a
+divisible block of completion mass $a$, work $1+\ell$, and work per
+completion $\tau_D$.
+
+For a fixed tested fraction $q$, blind execution is the common fluid model
+with alternative work $v=\mu$.  By \cref{lem:test-module-envelope}, its
+optimal block collection is
+\begin{equation}
+ qa\delta_{\tau_D}+q\nu+(1-q)\delta_\mu.
+ \label{eq:blind-fluid-blocks}
+\end{equation}
+If $\tau_D\ge\mu$, the direct block is no slower per completion than any
+testing block, so the optimum is pure blind execution and has cost $\mu/2$.
+Suppose now that $\tau_D<\mu$.  Sorting the blocks in
+\cref{eq:blind-fluid-blocks} by work per completion gives, in order,
+\begin{equation}
+ \begin{aligned}
+ \underbrace{\text{tests and selected }p<\tau_D}_{\text{testing block}}
+ &\ \longrightarrow\
+ \underbrace{\text{tested }\tau_D<p<\mu}_{\text{SPT order}}\\[-2pt]
+ &\ \longrightarrow\
+ \underbrace{\text{blindly executed jobs}}_{\text{work }\mu}
+ \ \longrightarrow\
+ \underbrace{\text{tested }p>\mu}_{\text{SPT order}}.
+ \end{aligned}
+ \label{eq:blind-four-block-order}
+\end{equation}
+
+We next write the area of this completion curve explicitly.  To avoid
+inessential boundary notation, first suppose that $D$ has no mass at
+$\tau_D$ or $\mu$, and set
+\begin{align*}
+ \mathcal L&=\{p<\tau_D\},&
+ \mathcal M&=\{\tau_D<p<\mu\},&
+ \mathcal H&=\{p>\mu\},\\
+ a&=D(\mathcal L),&
+ \ell&=\int_{\mathcal L}p\,dD(p),&
+ \ell_M&=\int_{\mathcal M}p\,dD(p),\\
+ d&=D(\mathcal H),&
+ D_M&=D|_{\mathcal M},&D_H&=D|_{\mathcal H}.
+\end{align*}
+For $\bar q=1-q$, remaining-mass accounting gives
+\begin{align}
+ F_{\mathsf{BE},D}(q)
+ &= (1+\ell)\left(q-\frac{aq^2}{2}\right)
+    +q\ell_M(\bar q+qd)+q^2\SPT(D_M)\notag\\
+ &\quad+\mu\left(\bar q qd+\frac{\bar q^2}{2}\right)
+    +q^2\SPT(D_H).
+ \label{eq:blind-F}
+\end{align}
+The five terms describe, respectively, the testing block, the external and
+internal costs of the tested medium jobs, the blind block, and the internal
+cost of the tested long jobs.  If $D$ has mass at either boundary, split that
+mass between the adjacent blocks; the value is unchanged.
+
+Expansion yields
+\begin{equation}
+ F_{\mathsf{BE},D}(q)=\frac\mu2+Aq+Bq^2,
+ \label{eq:blind-quadratic}
+\end{equation}
+where
+\begin{align}
+ A&=1+\ell+\ell_M+\mu(d-1)
+   =1-\int(\mu-p)^+\,dD(p),
+ \label{eq:blind-A}\\
+ B&=-\frac{a(1+\ell)}2+\ell_M(d-1)+\SPT(D_M)
+   +\mu\left(\frac12-d\right)+\SPT(D_H).
+ \label{eq:blind-B}
+\end{align}
+The feasible set in \cref{eq:common-fluid-envelope} is affine in $q$.
+Consequently its completion envelope is concave in $q$, its unfinished-mass
+area is convex, and $B\ge0$.  Moreover, when $\tau_D<\mu$,
+\cref{eq:common-threshold-equation} gives $A<0$.  A minimizing tested
+fraction is therefore
+\begin{equation}
+ q^*=1\quad(B=0),
+ \qquad
+ q^*=\min\{1,-A/(2B)\}\quad(B>0).
+ \label{eq:blind-qstar}
+\end{equation}
+We define
+\begin{equation}
+ \PhiBE(D)=
+ \begin{cases}
+  \displaystyle\min_{0\le q\le1}F_{\mathsf{BE},D}(q),&\tau_D<\mu,\\[3pt]
+  \mu/2,&\tau_D\ge\mu.
+ \end{cases}
+ \label{eq:blind-Phi}
+\end{equation}
+
+\begin{proof}[Proof of \cref{thm:blind-instance}]
+Take $r(p)=p$ and $Q=[0,1]$ in
+\cref{thm:common-fluid-instance-transfer}.  Then $r$ is one-Lipschitz,
+$v_r(D)=\mu$, and \cref{eq:blind-fluid-blocks,eq:blind-Phi} show that the
+common value $\Phi_{r,Q}(D)$ equals $\PhiBE(D)$.  The two conclusions and
+the stated rate now follow from
+\cref{eq:common-transfer-upper,eq:common-transfer-lower,eq:common-transfer-rate}.
+\end{proof}
+
+\subsubsection{Why all four blocks can be necessary}
+
+Let
+\[
+ D(\{0\})=\frac15,\qquad
+ D(\{9\})=\frac15,\qquad
+ D(\{16\})=\frac35.
+\]
+Then $\mu=57/5$ and $\tau_D=5$.  Thus tested zeros complete during their
+tests, tested jobs of length nine precede the jobs run blindly, and tested
+jobs of length sixteen follow them.  Formula \cref{eq:blind-F} becomes
+\[
+ F_{\mathsf{BE},D}(q)=\frac{57}{10}-\frac{44}{25}q+\frac{11}{10}q^2.
+\]
+Its minimizer is $q^*=4/5$ and its value is $4.996$.  If all tested nonzero
+jobs are instead deferred until after the blind block, the best value is
+$5.04$.  The gap is a positive constant at the fluid scale and therefore a
+positive constant times $n^2$ for large finite inputs.  In particular, the
+simpler order ``testing block, blind block, all tested residuals'' is not
+instance optimal.
+
+\subsubsection{Why bounded processing times are necessary}
+
+The common transfer assumes a fixed upper bound $L$.  For blind execution
+this is essential even for obtaining any finite worst-case ratio.
 
 \begin{theorem}[No finite ratio for unbounded blind execution]
 \label{thm:blind-unbounded-impossible}
@@ -51,15 +192,14 @@ $p\in[0,\infty)^n$ satisfies
 
 \begin{proof}
 Suppose that such a guarantee exists, and run $\mathcal A_n$ on the all-zero
-instance.  Its offline cost is zero, so if $Z_n$ denotes the expected online
-cost, then $Z_n\le\eta(n)n^2=o(n^2)$.  We may assume that the algorithm finishes
-every job, since otherwise its cost is infinite.
+input.  Its offline cost is zero, so if $Z_n$ denotes the expected online
+cost, then $Z_n\le\eta(n)n^2=o(n^2)$.  We may assume that the algorithm
+finishes every job.
 
-Fix its private seed and order the labels by their first touch on this zero
-instance.  Every first touch completes its job: a blind zero takes no time,
-while a tested zero completes with its unit test.  If the job at rank $h$ is
-tested, that test is performed while $n-h+1$ jobs are unfinished and hence
-contributes $n-h+1$ to the objective.  Consequently
+Fix its private seed and order the labels by their first touch.  Every first
+touch completes its zero job.  If the job at rank $h$ is tested, that test is
+performed while $n-h+1$ jobs are unfinished and contributes $n-h+1$ to the
+objective.  Consequently
 \begin{equation}
  Z_n\ge\EE\sum_{h:\,\text{rank }h\text{ is tested}}(n-h+1).
  \label{eq:blind-zero-test-area}
@@ -67,10 +207,9 @@ contributes $n-h+1$ to the objective.  Consequently
 
 Now choose one label uniformly and change only its length from zero to
 $H=n^2$.  Until this exceptional label is first touched, the algorithm sees
-exactly the zero-instance history.  If its rank $h$ is touched blindly, its
-nonpreemptive execution occupies the machine for $H$ time units while
-$n-h+1$ jobs are unfinished.  Averaging over the exceptional label and the
-private seed therefore gives
+the zero-input history.  If its rank $h$ is touched blindly, its execution
+occupies the machine for $H$ time units while $n-h+1$ jobs are unfinished.
+Averaging over the exceptional label and the private seed gives
 \begin{align}
  \EE\ALG_{\mathcal A_n}(p)
  &\ge \frac Hn\,\EE
@@ -80,478 +219,7 @@ private seed therefore gives
  \label{eq:blind-one-long-average}
 \end{align}
 Some fixed choice of the exceptional label has at least this expected cost.
-For every such labeling, the clairvoyant schedule runs all zero jobs first
-and the long job last, so $\OPT(p)=H$.  With $H=n^2$,
-\cref{eq:blind-one-long-average} contradicts
+Its offline optimum runs all zero jobs first and the long job last, and hence
+$\OPT(p)=H$.  With $H=n^2$, \cref{eq:blind-one-long-average} contradicts
 \cref{eq:blind-unbounded-impossible} for all sufficiently large $n$.
 \end{proof}
-
-The proof first groups a round of tests and the short outcomes processed
-immediately after them into one divisible completion block.  For a fixed
-tested fraction $q$, ordering all available blocks by work per completion
-forces the four-block order from the introduction and gives its exact
-quadratic cost.  For an adaptive algorithm, values exposed at first touch
-still form a uniform permutation of the input, so one sampling event controls
-all prefixes at once.  Discretizing $[0,L]$ extends the bound to arbitrary
-bounded vectors, and an initial blind sample removes advance knowledge of the
-input.
-
-\subsection{The distributional benchmark}
-\label{sec:blind-benchmark}
-
-Let $D$ be a probability distribution on $[0,L]$.  Write
-\begin{equation}
- \mu=\int p\,dD(p).
- \label{eq:blind-mean}
-\end{equation}
-Blind execution completes one unit of job mass using work $\mu$.
-Apply \cref{lem:maximum-density-module} to $D$, choose its threshold selector
-$g_*$, and let $\nu$ be the resulting residual measure.  The best possible
-test-module density and its reciprocal are
-\begin{equation}
- \kappa_D\defeq\max_g\frac{a_D(g)}{w_D(g)}=\frac1{\tau_D}.
- \label{eq:blind-density}
-\end{equation}
-The selector processes all positive values below $\tau_D$ immediately after
-their tests, rejects all values above it, and may split probability mass
-located exactly at the boundary.  With
-that boundary convention, put
-\[
- a=a_D(g_*),\qquad
- \ell=\int_{(0,L]}p g_*(p)\,dD(p).
-\]
-The identities in \cref{lem:maximum-density-module} give
-\begin{equation}
- a\tau_D-\ell=1,
- \qquad \tau_D=\frac{1+\ell}{a}.
- \label{eq:blind-test-module}
-\end{equation}
-Thus a full unit of tests together with all selected low outcomes is a
-divisible module of completion mass $a$, work $1+\ell$, and work per
-completion $\tau_D$.
-
-If $\tau_D\ge\mu$, blind work has at least the completion density of any test
-module, and pure blind execution is optimal at the fluid scale.  Suppose now
-that $\tau_D<\mu$.  After testing a fraction $q$, the resulting four-block
-schedule is
-\begin{equation}
- \begin{aligned}
-\underbrace{\text{tests with immediate }p<\tau_D}_{\text{test module}}
- &\ \longrightarrow\
- \underbrace{\text{known }\tau_D<p<\mu\text{ in SPT}}_{\text{medium}}\\[-2pt]
- &\ \longrightarrow\
- \underbrace{\text{untouched jobs blind}}_{\text{blind block}}
- \ \longrightarrow\
- \underbrace{\text{known }p>\mu\text{ in SPT}}_{\text{high tail}}.
- \end{aligned}
- \label{eq:blind-four-block-order}
-\end{equation}
-
-For the explicit cost, first assume no probability mass lies exactly at
-$\tau_D$ or $\mu$, and put
-\begin{align*}
- \mathcal L&=\{p<\tau_D\},&
- \mathcal M&=\{\tau_D<p<\mu\},&
- \mathcal H&=\{p>\mu\},\\
- a&=D(\mathcal L),&
- \ell&=\int_{\mathcal L}p\,dD(p),&
- \ell_M&=\int_{\mathcal M}p\,dD(p),\\
- d&=D(\mathcal H),&
- D_M&=D|_{\mathcal M},&D_H&=D|_{\mathcal H},
-\end{align*}
-where $D|_A$ denotes the restriction of $D$ to a set $A$.
-Put $\bar q=1-q$.  Remaining-mass
-accounting gives
-\begin{align}
- F_{\mathsf{BE},D}(q)
- &= (1+\ell)\left(q-\frac{aq^2}{2}\right)
-    +q\ell_M(\bar q+qd)+q^2\SPT(D_M)\notag\\
- &\quad+\mu\left(\bar q qd+\frac{\bar q^2}{2}\right)
-    +q^2\SPT(D_H).
- \label{eq:blind-F}
-\end{align}
-Probability mass at $\tau_D$ is split between outcomes processed immediately
-after their tests and the remaining tested jobs; mass at $\mu$ may be placed
-on either side of the jobs run blindly.  The same formula then holds after
-treating the two portions as separate classes.
-
-Each term in \cref{eq:blind-F} has a direct area interpretation.  During the
-test module, work $(1+\ell)dq$ reduces unfinished mass from $1$ to $1-aq$.
-The medium work $q\ell_M$ delays the untouched mass $\bar q$ and high mass
-$qd$, while $\SPT(D_M)$ is its internal divisible SPT cost.  The blind block
-delays all high jobs and itself loses mass linearly.  Finally
-$\SPT(D_H)$ is the high-tail SPT cost.
-Expansion gives the quadratic
-\begin{equation}
- F_{\mathsf{BE},D}(q)=\frac\mu2+Aq+Bq^2,
- \label{eq:blind-quadratic}
-\end{equation}
-where
-\begin{align}
- A&=1+\ell+\ell_M+\mu(d-1)
-   =1-\int(\mu-p)^+\,dD(p),
- \label{eq:blind-A}\\
- B&=-\frac{a(1+\ell)}2+\ell_M(d-1)+\SPT(D_M)
-   +\mu\left(\frac12-d\right)+\SPT(D_H).
- \label{eq:blind-B}
-\end{align}
-The envelope proof below implies $B\ge0$.  When testing has lower work per
-completion than blind execution, namely $\tau_D<\mu$, monotonicity in
-\cref{eq:common-threshold-equation} gives $A<0$, and
-the optimal tested fraction is therefore
-\begin{equation}
- q^*=\begin{cases}
-  1,&B=0,\\
-  \min\{1,-A/(2B)\},&B>0.
- \end{cases}
- \label{eq:blind-qstar}
-\end{equation}
-We define
-\begin{equation}
- \PhiBE(D)=\min_{0\le q\le1}F_{\mathsf{BE},D}(q),
- \label{eq:blind-Phi}
-\end{equation}
-with $\PhiBE(D)=\mu/2$ in the regime $\tau_D\ge\mu$.
-
-\subsection{The fixed-fraction completion envelope}
-
-We first prove that \cref{eq:blind-four-block-order} is globally optimal in a
-fluid relaxation.  Let $D$ have finite support
-$0=p_0<p_1<\cdots<p_s\le L$, with masses $d_i$.  Fix a final tested fraction
-$q$.  At an arbitrary schedule prefix, let
-\begin{align*}
- t&=\text{tested mass},& b&=\text{blindly completed mass},\\
- c_i&=\text{processed tested mass of class }i>0.&&
-\end{align*}
-The completed mass and idealized work are
-\begin{equation}
- y=d_0t+b+\sum_{i>0}c_i,\qquad
- x=t+\mu b+\sum_{i>0}p_ic_i,
- \label{eq:blind-fluid-work}
-\end{equation}
-subject to
-\begin{equation}
- 0\le t\le q,\qquad 0\le b\le1-q,\qquad
- 0\le c_i\le d_it.
- \label{eq:blind-revelation-constraints}
-\end{equation}
-Define the model envelope
-\begin{equation}
- \mathcal C_{\mathsf{BE},D,q}\defeq\mathcal C^\mu_{D,q},
- \label{eq:blind-model-envelope}
-\end{equation}
-using the common envelope \cref{eq:common-fluid-envelope}.  Every fluid schedule that ultimately tests
-mass $q$ obeys this envelope, hence
-\begin{equation}
- \ALG\ge\Area(\mathcal C_{\mathsf{BE},D,q}).
- \label{eq:blind-envelope-lower}
-\end{equation}
-
-\begin{lemma}[Fixed-$q$ envelope]
-\label{lem:blind-fixed-q-envelope}
-If $\tau_D<\mu$, then for every $q\in[0,1]$ the right side of
-\cref{eq:blind-envelope-lower} equals $F_{\mathsf{BE},D}(q)$ and is attained by the
-four-block fluid algorithm.  If $\tau_D\ge\mu$, that right side is at least
-$\mu/2$ for every $q$, with equality at $q=0$.
-\end{lemma}
-
-\begin{proof}
-Apply \cref{lem:test-module-envelope} with work $v=\mu$ for jobs run blindly.
-The resulting item measure is
-\[
-                 qa\delta_{\tau_D}+q\nu+(1-q)\delta_\mu.
-\]
-When $\tau_D<\mu$, sorting these items by work per completion gives exactly
-the tests followed by selected low values, the remaining tested values below
-$\mu$, the jobs run blindly, and the tested values above $\mu$.  This is the
-four-block order
-\cref{eq:blind-four-block-order}.  Expanding the common area formula
-\cref{eq:common-envelope-area} across these four blocks gives
-\cref{eq:blind-F}.
-
-When $\tau_D\ge\mu$, every test and residual item costs at least $\mu$ per
-completion.  The $q=0$ envelope, one blind item of capacity one and cost
-$\mu$, therefore pointwise dominates every $q>0$ envelope and has area
-$\mu/2$.  Finally, feasibility in
-\cref{eq:blind-fluid-work,eq:blind-revelation-constraints} is affine in $q$,
-so $\mathcal C_{\mathsf{BE},D,q}(x)$ is concave in $q$ for each $x$.  When
-$\tau_D<\mu$, its
-area complement $F_{\mathsf{BE},D}(q)$ is convex, proving $B\ge0$.
-\end{proof}
-
-\subsection{Sampling in the order jobs are first touched}
-\label{sec:blind-adaptive-urn}
-
-The fluid proof fixed $q$, but an announced finite algorithm may choose whom to
-touch next and when to stop testing as arbitrary functions of its history.
-The next argument uses the fact that, conditional on the history, the values
-on untouched labels remain uniformly permuted.
-
-For a size-$n$ vector whose coordinates lie among
-$0=p_0<p_1<\cdots<p_s\le L$, write $D_n$ for its empirical distribution,
-$D_{n,i}=D_n(\{p_i\})$, and $\mu_n=\sum_i p_iD_{n,i}$.
-
-Treat jobs as distinct even when their processing times coincide and fix a
-deterministic algorithm that completes every job, equivalently fix the
-private seed of a randomized algorithm.  Let $X_k$ be the value encountered
-at first touch $k$, and let $A_k$ indicate that the algorithm tests that job.
-Deferred decisions make the $X_k$ a uniform permutation, and $A_k$ is
-chosen before $X_k$ is exposed.  Apply
-\cref{lem:predictable-permutation-sampling} first to the vector of class
-indicators with selector $A_k$, and then to the scalar $X_k$ with selector
-$1-A_k$, assigning failure probability $1/(2n^2)$ to each application.  Put
-\begin{align*}
- \Gamma_{\rm cell}
-  &=(1+\delta^{-1})E_{n,s+1,1,1/(2n^2)},\\
- \Gamma_{\rm work}
-  &=(1+\delta^{-1})E_{n,1,L,1/(2n^2)},\\
- \Gamma_n&=\max\{\Gamma_{\rm cell},\Gamma_{\rm work}\}.
-\end{align*}
-On the common event, which has probability at least $1-n^{-2}$, every
-prefix of the first-touch order that leaves at least $\delta n$ labels
-untouched satisfies, for every class $i$,
-\begin{align}
- |\#\text{tested class }i-D_{n,i}\#\text{tests}|
- &\le\Gamma_n,
- \label{eq:blind-tested-discrepancy}\\
- |\text{blind work}-\mu_n\#\text{blind jobs}|
- &\le\Gamma_n.
- \label{eq:blind-work-discrepancy}
-\end{align}
-Importantly, the common event does not condition on the eventual tested
-fraction.
-
-\subsection{The announced lower bound}
-\label{sec:blind-announced}
-
-Fix an algorithm seed.  Stop after $\lfloor(1-\delta)n\rfloor$ first touches and
-let $Q_{n,\delta}$ be the number of tests completed by then, divided by $n$.
-Edit the suffix: every still-untouched job that would later be tested is
-instead executed blindly at its first original operation, and its later
-processing record is deleted.  At most $\delta n+O(1)$ jobs and three
-operations per affected job change.  Write completion cost as operation
-length times the number of unfinished jobs.  The changed operations affect
-the cost by $O((L+1)(\delta n^2+n))$; during every unchanged operation the
-two unfinished-job counts differ by at most $\delta n+O(1)$, and the total
-work is at most $(L+1)n$.  Thus
-\begin{equation}
- \ALG_{\rm original}\ge
- \ALG_{\rm edited}-O((L+1)(\delta n^2+n)).
- \label{eq:blind-suffix-edit}
-\end{equation}
-The edited schedule performs exactly $Q_{n,\delta}n$ tests.
-
-Work on the single event
-\cref{eq:blind-tested-discrepancy,eq:blind-work-discrepancy} and only now set
-$q=Q_{n,\delta}$.  Normalize mass and work by $n$, and let
-$\gamma_n=\Gamma_n/n$.  At any operation boundary, let $t,b,z,c_i$ denote
-tested mass, blindly completed mass, zero mass completed by tests, and
-the processed mass of jobs whose revealed positive value belongs to class
-$i$, respectively.  The event gives
-\[
- z\le D_{n,0}t+\gamma_n,\qquad
- c_i\le D_{n,i}t+\gamma_n.
-\]
-If $x$ is the normalized work performed so far, the bound
-\cref{eq:blind-work-discrepancy} and the modification of the final
-$\delta n+O(1)$ jobs give
-\begin{equation}
- t+\mu_nb+\sum_i p_i(c_i-\gamma_n)^+
- \le x+(L+1)(\gamma_n+\delta).
- \label{eq:blind-work-repair}
-\end{equation}
-Set $c_i'=(c_i-\gamma_n)^+$.  We also have $t\le q$ and $b\le1-q$, so
-$t,b,c_i'$ satisfy the constraints defining
-$\mathcal C_{\mathsf{BE},D_n,q}$ at work
-$x+(L+1)(\gamma_n+\delta)$.  Replacing $z,c_i$ by
-$D_{n,0}t,c_i'$ removes at most $(s+1)\gamma_n$ completed mass.  Therefore
-\begin{equation}
- \text{completed fraction by }x
- \le \mathcal C_{\mathsf{BE},D_n,q}(x+(L+1)(\gamma_n+\delta))
-      +(s+1)\gamma_n.
- \label{eq:blind-envelope-repair}
-\end{equation}
-The envelope reaches completed mass one by normalized work at most $H=L+1$,
-so integrating \cref{eq:blind-envelope-repair} loses at most
-$(L+1)(\gamma_n+\delta)+H(s+1)\gamma_n$ from its fluid area.  By
-\cref{lem:blind-fixed-q-envelope}, this area is
-$F_{\mathsf{BE},D_n}(q)$ when $\tau_{D_n}<\mu_n$ and is at least
-$\mu_n/2$ otherwise; in either case it is at least $\PhiBE(D_n)$.  The
-sampling event fails with probability at most $n^{-2}$, and pure blind
-execution gives $0\le\PhiBE(D_n)\le L/2$.  Averaging and using
-\cref{eq:blind-suffix-edit} now gives
-\begin{equation}
- \frac{\EE\ALG_{\mathcal A}(p)}{n^2}
- \ge\PhiBE(D_n)-O_{L,s}(\gamma_n+\delta+1/n).
- \label{eq:blind-announced-finite-support}
-\end{equation}
-The estimate
-is uniform in the fixed seed and therefore remains valid after averaging
-over a randomized announced algorithm.
-
-Write $\operatorname{VAL}_{\rm ann}(p)$ for the minimum expected cost of an
-announced algorithm under the private-shuffle convention.
-
-\subsection{A growing grid and arbitrary bounded vectors}
-
-The number of distinct values may grow with $n$.  Keep zero as a separate
-cell, partition $(0,L]$ into
-\begin{equation}
- K_n=\lfloor n^{1/6}\rfloor
- \label{eq:blind-grid-size}
-\end{equation}
-bins, and round every positive value upward; let $h_n=L/K_n$ be the mesh.
-Zero preservation matters because a tested zero completes at its test.
-Write $D[p]^{\rm grid}$ for the rounded empirical distribution and
-$\mu_p^{\rm grid}=\int p\,dD[p]^{\rm grid}(p)$.
-
-Couple each value with its rounded copy and use the same fluid decisions for
-the two copies.  Zeros remain zeros and hence complete at the same tests.  At
-every prefix, at most one unit of job mass has received processing, so
-rounding changes accumulated work by at most $h_n$.  Thus either
-unfinished-mass curve is contained in a horizontal $h_n$-shift of the other;
-integrating gives
-\begin{equation}
- |\PhiBE(D)-\PhiBE(D^{\rm grid})|\le h_n.
- \label{eq:blind-rounding-stability}
-\end{equation}
-This avoids any assumption that the numerical optimizer or threshold is
-stable under rounding.
-
-Take $\delta_n=n^{-1/6}$ and repeat the two predictable-sampling applications
-above for the $K_n+1$ grid cells, defining $\Gamma_n$ as the larger of their
-two bounds.  At any prefix of the edited schedule, subtracting
-$\Gamma_n/n$ from the completed mass in each positive class makes all class
-capacities exact.  The blind-work discrepancy, the edited suffix, and upward
-rounding shift normalized work by at most the same order.  Hence both the
-horizontal work error and the total removed completion mass are bounded by
-\begin{equation}
- \zeta_n=O_L\!\left(
-  \frac{(K_n+1)\Gamma_n}{n}+h_n+\delta_n\right)
- =O_L(n^{-1/6}\sqrt{\ln(n+2)}).
- \label{eq:blind-zeta}
-\end{equation}
-Consequently the rounded completion curve is bounded by
-$\mathcal C_{\mathsf{BE},D[p]^{\rm grid},q}(x+\zeta_n)+\zeta_n$.
-Integrating this inequality up to normalized work $H=L+1$ loses at most
-$(H+1)\zeta_n$ from the rounded fluid area.  The first-touch event fails with
-probability $n^{-2}$, whose contribution is at most
-$n^{-2}L/2$, and the suffix edit has the cost established in
-\cref{eq:blind-suffix-edit}.  Together with
-\cref{eq:blind-rounding-stability}, this yields the announced lower bound
-\begin{equation}
- \frac{\operatorname{VAL}_{\rm ann}(p)}{n^2}
- \ge\PhiBE(D[p])-O_L(n^{-1/6}\sqrt{\ln(n+2)}).
- \label{eq:blind-announced-lower}
-\end{equation}
-
-For the matching upper bound, choose the optimal split of boundary classes
-and tested fraction for the rounded empirical vector; denote these choices
-by $\pi$.  Select $\lfloor q^*n\rfloor$ labels uniformly to test and execute
-the four blocks.  Expanding every delay into contributions of individual
-jobs and unordered pairs expresses its expectation as a sum of bounded
-terms.  For distinct jobs, the probability that zero, one, or two members of
-a pair are tested differs from the corresponding independent probability by
-$O(1/n)$, uniformly in the tested count.  Hence
-\begin{equation}
- \EE C_n(\pi)=n^2F_{\mathsf{BE},D[p]^{\rm grid}}(\pi)+O_L(n)
- \label{eq:blind-finite-kernel}
-\end{equation}
-uniformly over choices $\pi$.  Together with
-\cref{eq:blind-rounding-stability}, this proves
-\begin{equation}
- \left|\frac{\operatorname{VAL}_{\rm ann}(p)}{n^2}
-       -\PhiBE(D[p])\right|
- \le O_L(n^{-1/6}\sqrt{\ln(n+2)}).
- \label{eq:blind-announced-sandwich}
-\end{equation}
-
-\subsection{Removing the announcement}
-
-The universal algorithm first draws a uniform random permutation and blindly
-executes
-\begin{equation}
- k_n=\lceil n^{1/2}\rceil
- \label{eq:blind-pilot-size}
-\end{equation}
-sample jobs.  Their observed durations give a grid histogram $\widehat D_n$.
-The algorithm minimizes the quadratic \cref{eq:blind-quadratic} over every grid threshold,
-position at which the jobs run blindly are inserted, and $q\in[0,1]$, then runs the selected
-four-block template on the remaining jobs in the unused random order.
-
-Let $D_n$ and $D_n^{\rm rem}$ be the full and remaining grid histograms.  Applying
-\cref{eq:without-replacement-histogram} to the grid classes gives
-\begin{align}
- \EE\|\widehat D_n-D_n\|_1
- \le\sqrt{\frac{K_n+1}{k_n}},
- &\qquad
- \EE\|\widehat D_n-D_n^{\rm rem}\|_1
- \le\frac{n}{n-k_n}\sqrt{\frac{K_n+1}{k_n}},\notag\\
- &\|D_n^{\rm rem}-D_n\|_1\le\frac{2k_n}{n-k_n}.
- \label{eq:blind-histogram-learning}
-\end{align}
-For fixed scheduling choices $\pi$, formula \cref{eq:blind-F} consists only
-of bounded single and double integrals.  Therefore, uniformly in the grid
-and in $\pi$,
-\begin{equation}
- |F_{\mathsf{BE},D}(\pi)-F_{\mathsf{BE},E}(\pi)|
- \le C_L\|D-E\|_1,
- \label{eq:blind-template-Lipschitz}
-\end{equation}
-for example with $C_L=20(L+1)$.  Let $\widehat\pi$ minimize the sampled
-objective.
-Conditional on the sample, the remaining order is uniform and the learned
-template is fixed, so \cref{eq:blind-finite-kernel} applies.  The sample itself
-has work at most $Lk_n$ and delays at most $n$ jobs, adding at most
-$Lnk_n=O_L(n^{3/2})$.  Hence
-\[
- \EE[\ALG_{\mathcal A^*}(p)\mid\widehat D_n,D_n^{\rm rem}]
- \le n^2F_{\mathsf{BE},D_n^{\rm rem}}(\widehat\pi)+O_L(nk_n+n).
-\]
-The template Lipschitz bound, applied first to $\widehat\pi$ and then to an
-optimal template for $D_n^{\rm rem}$, gives
-\[
- F_{\mathsf{BE},D_n^{\rm rem}}(\widehat\pi)
- \le \PhiBE(D_n^{\rm rem})
-      +2C_L\|\widehat D_n-D_n^{\rm rem}\|_1.
-\]
-Applying it once more to an optimal template for $D_n$ gives
-$\PhiBE(D_n^{\rm rem})\le
-\PhiBE(D_n)+C_L\|D_n^{\rm rem}-D_n\|_1$.
-Average, use \cref{eq:blind-histogram-learning}, and then use the rounding
-bound \cref{eq:blind-rounding-stability}.  This gives
-\begin{equation}
- \frac{\EE\ALG_{\mathcal A^*}(p)}{n^2}
- \le\PhiBE(D[p])
- +O_L\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right)
- \label{eq:blind-unannounced-upper}
-\end{equation}
-uniformly over every vector $p\in[0,L]^n$.
-
-For the converse, reveal the entries of $p$ to an arbitrary algorithm for free.
-The announced lower bound \cref{eq:blind-announced-lower} applies seedwise
-and, after averaging over the seed, proves
-\cref{eq:intro-blind-lower}.  This completes the proof of
-\cref{thm:blind-instance}.
-
-\subsection{Why some tested jobs must come before blind execution}
-
-Let
-\[
- D(\{0\})=\frac15,\qquad
- D(\{9\})=\frac15,\qquad
- D(\{16\})=\frac35.
-\]
-Then $\mu=57/5$ and $\tau_D=5$.  Thus tested zeros complete during their
-tests, tested jobs with $p=9$ precede the jobs run blindly, and tested jobs
-with $p=16$ follow them.  Formula
-\cref{eq:blind-F} becomes
-\[
- F_{\mathsf{BE},D}(q)=\frac{57}{10}-\frac{44}{25}q+\frac{11}{10}q^2.
-\]
-Its minimizer is $q^*=4/5$ and its value is $4.996$.  If all tested nonzero
-jobs are instead deferred until after the blind block, the best value is
-$5.04$.  The gap is a positive constant times $n^2$: processing the tested
-jobs with $\tau_D<p<\mu$ before the jobs run blindly is necessary.  An
-algorithm of the simpler form ``threshold, then blind, then all tested
-residuals'' is not instance optimal.

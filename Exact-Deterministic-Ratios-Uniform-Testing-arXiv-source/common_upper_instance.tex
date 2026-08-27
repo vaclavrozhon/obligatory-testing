@@ -1,31 +1,24 @@
-\section{Revealing-optimization instance optimality}
+\subsection{Revealing-optimization instance optimality}
 \label{sec:common-upper-instance}
 
-Fix $u<\infty$.  An untouched job may be run raw for the public time $u$, or
-tested for one unit; a test reveals $p_i\in[0,u]$, after which the processing
-operation of length $p_i$ may be delayed.  The goal of this section is to
-prove \cref{thm:common-upper-instance}, the rigorous version of the informal
-revealing-optimization theorem \cref{thm:intro-common-upper-instance}.
-
-For a distribution $D$ on $[0,u]$, we define an explicit value
-$\PhiRO(D)$ in \cref{eq:cui-Phi}.  It is obtained by choosing one threshold
-and minimizing a quadratic over the tested fraction $q$.  For an input
-vector $p$, use the empirical distribution $D[p]$ from
-\cref{eq:empirical-distributions}.
+We first specialize the common transfer to revealing optimization.  Here a
+direct first touch is raw execution: it always occupies the machine for the
+public time $u$, independently of the hidden value.  Thus $r(p)=u$, and the
+only model-specific work is to expand the fluid block area into an explicit
+quadratic in the tested fraction.
 
 \begin{theorem}[Revealing-optimization instance optimality]
 \label{thm:common-upper-instance}
 For every fixed $u>0$ there exist randomized nonanticipating algorithms
 $\mathcal A^*_{n,u}$, depending only on $n,u$, and a deterministic sequence
-$\eps_u(n)\to0$ such that every vector $p\in[0,u]^n$ has the following
-properties.
+$\eps_u(n)\to0$ such that every vector $p\in[0,u]^n$ satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A^*_{n,u}}(p)
  \le n^2\PhiRO(D[p])+\eps_u(n)n^2.
  \label{eq:cui-upper}
 \end{equation}
-Conversely, every $p\in[0,u]^n$ and every randomized nonanticipating algorithm
-$\mathcal A$, even an announced algorithm, satisfy
+Conversely, every randomized nonanticipating algorithm $\mathcal A$, even an
+announced one, satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
  \ge n^2\PhiRO(D[p])-\eps_u(n)n^2.
@@ -38,82 +31,36 @@ One may take
 \end{equation}
 \end{theorem}
 
-The proof has three steps.  First, for a fixed final tested fraction $q$, we
-represent the work completed by a large population of jobs as divisible
-blocks and order these blocks by work per completed job.  Second, we expose
-the hidden values in the order in which the algorithm first touches their
-labels.  A single sampling-without-replacement event controls every prefix of
-this sequence, including a prefix whose endpoint the algorithm chooses from
-its observations.  Finally, we discretize $[0,u]$ into increasingly many
-cells and use a sublinear initial sample to choose the schedule without being
-told the input vector.
-
-\subsection{The fixed-fraction fluid benchmark}
+\subsubsection{The explicit revealing benchmark}
 \label{sec:cui-fluid}
 
-Let $D$ initially have finite support and put
-$\mu=\int p\,dD(p)$.
-A test automatically completes a job when it reveals $p_i=0$.  Apply
-\cref{lem:maximum-density-module} and choose its threshold selector $g_*$.
-Write
+Let $D$ be a probability distribution on $[0,u]$.  Apply
+\cref{lem:maximum-density-module}, choose its threshold selector $g_*$, and
+write
 \begin{equation}
  a=a_D(g_*),\qquad
  \ell=\int_{(0,u]}p g_*(p)\,dD(p),
  \qquad \tau_D=\frac{1+\ell}{a}.
  \label{eq:cui-tau}
 \end{equation}
-Write the positive support as $p_1,\ldots,p_s$, and let
-$\nu_i=\nu(\{p_i\})$ be the residual masses from
-\cref{lem:maximum-density-module}.  Thus
+Let $\nu$ be the residual measure from
+\cref{eq:common-module-data}.  It has mass $1-a$, first moment
 \begin{equation}
- \sum_i\nu_i=1-a,\qquad p_i\ge\tau_D\text{ whenever }\nu_i>0.
- \label{eq:cui-residual}
-\end{equation}
-For a fixed final tested fraction $q\in[0,1]$, define the model envelope
-\begin{equation}
- \mathcal C_{\mathsf{RO},D,q}\defeq\mathcal C^u_{D,q},
- \label{eq:cui-model-envelope}
-\end{equation}
-where the right-hand side is the common envelope
-\cref{eq:common-fluid-envelope}, with $v=u$ representing raw execution.
-
-\begin{lemma}[Fixed-$q$ completion envelope]
-\label{lem:cui-envelope}
-The envelope $\mathcal C_{\mathsf{RO},D,q}$ is the fractional completion
-curve obtained from the following divisible blocks:
-\begin{center}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-item & completion capacity & work per completion\\
-\midrule
-tests and selected outcomes & $aq$ & $\tau_D$\\
-tested jobs of residual value $p_i$ & $q\nu_i$ & $p_i$\\
-jobs run raw & $1-q$ & $u$\\
-\bottomrule
-\end{tabular}
-\end{center}
-If $\tau_D<u$, first perform the tests and process the selected outcomes,
-then process the residual classes in nondecreasing order of $p_i$, and
-finally run the remaining jobs raw.  If $\tau_D\ge u$, the all-raw curve
-pointwise dominates every choice with $q>0$.
-\end{lemma}
-
-\begin{proof}
-Apply \cref{lem:test-module-envelope} with $v=u$.  It gives exactly the three
-displayed kinds of items.  If $\tau_D<u$, their work-per-completion values obey
-$\tau_D\le p_i\le u$.  If $\tau_D\ge u$, every test and residual item costs at
-least $u$ per completion, while the $q=0$ envelope consists of one raw item
-of capacity one and cost $u$.
-\end{proof}
-
-Put
-\begin{equation}
- \ell_\nu=\sum_i p_i\nu_i=\mu-\ell,\qquad
- \SPT(\nu)=\frac12\sum_{i,j}\min\{p_i,p_j\}\nu_i\nu_j.
+ \ell_\nu=\int p\,d\nu(p)=\int p\,dD(p)-\ell,
+ \qquad
+ \SPT(\nu)=\frac12\iint\min\{p,p'\}\,d\nu(p)d\nu(p'),
  \label{eq:cui-residual-moments}
 \end{equation}
-The common area identity \cref{eq:common-envelope-area}, specialized through
-\cref{lem:cui-envelope}, gives
+and support in $[\tau_D,u]$.
+
+For a fixed tested fraction $q$, revealing optimization is the common fluid
+model with $v=u$.  Hence \cref{lem:test-module-envelope} gives the blocks
+\[
+ qa\delta_{\tau_D}+q\nu+(1-q)\delta_u.
+\]
+When $\tau_D<u$, shortest-first order runs the testing block, the residual
+types in SPT order, and finally the raw block.  Expanding
+\cref{eq:common-envelope-area} gives
 \begin{equation}
  F_{\mathsf{RO},u,D}(q)
  =(1+\ell)\left(q-\frac{aq^2}{2}\right)
@@ -121,11 +68,12 @@ The common area identity \cref{eq:common-envelope-area}, specialized through
  +\frac{u(1-q)^2}{2}.
  \label{eq:cui-F}
 \end{equation}
-Indeed, the four terms are respectively the contribution of the tests and
-the selected outcomes processed after them, the work of positive tested jobs
-delaying raw jobs, the pair contribution among the positive tested jobs, and
-the contribution of the equal-length raw jobs.
-Define
+The four terms are, respectively, the testing block, the residual work
+delaying raw jobs, the internal residual SPT cost, and the raw block.
+
+If $\tau_D\ge u$, every testing or residual block has work per completion at
+least $u$, so pure raw execution pointwise dominates every positive tested
+fraction.  We therefore define
 \begin{equation}
  \PhiRO(D)=
  \begin{cases}
@@ -134,267 +82,39 @@ Define
  \end{cases}
  \label{eq:cui-Phi}
 \end{equation}
-This is an explicit one-dimensional optimization.  In fact
+
+The minimization is explicit.  Expanding gives
 \begin{equation}
- F_{\mathsf{RO},u,D}(q)=\frac u2+Aq+Bq^2,\qquad
- A=1+\mu-u,\qquad
+ F_{\mathsf{RO},u,D}(q)=\frac u2+Aq+Bq^2,
+ \quad
+ A=1+\int p\,dD(p)-u,
+ \quad
  B=-\frac{a(1+\ell)}2-\ell_\nu+\SPT(\nu)+\frac u2.
  \label{eq:cui-quadratic}
 \end{equation}
-For each work budget, convexly combining feasible points for $q_1,q_2$
-gives a feasible point for the corresponding convex combination of the two
-fractions.  Hence $\mathcal C_{\mathsf{RO},D,q}(x)$ is concave in $q$, its remaining-mass area is
-convex, and $B\ge0$.  Moreover,
+For each work budget, convexly combining feasible states for two tested
+fractions gives a feasible state for their convex combination.  Thus the
+completion envelope is concave in $q$, its unfinished-mass area is convex,
+and $B\ge0$.  Moreover,
 \[
- \tau_D<u\quad\Longleftrightarrow\quad\int(u-p)\,dD(p)>1
+ \tau_D<u
+ \quad\Longleftrightarrow\quad
+ \int(u-p)\,dD(p)>1
  \quad\Longleftrightarrow\quad A<0.
 \]
-Thus the minimizer is
+Consequently a minimizing tested fraction is
 \begin{equation}
- q^*=1\quad(B=0),\qquad
+ q^*=1\quad(B=0),
+ \qquad
  q^*=\min\{1,-A/(2B)\}\quad(B>0).
  \label{eq:cui-qstar}
 \end{equation}
-Thus, for every divisible schedule whose final tested fraction is $q$, the
-area under its remaining-job curve is at least
-$F_{\mathsf{RO},u,D}(q)\ge\PhiRO(D)$.
 
-\subsection{Adaptive algorithms and the announced lower bound}
-\label{sec:cui-announced}
-
-We now transfer the divisible-job bound to a finite algorithm which may choose
-labels and decide when to stop testing from the values seen so far.  Treat
-equal-valued jobs as distinct jobs, and first fix the private random seed of an
-algorithm that eventually completes every job.  For the present
-finite-support distribution, let $C_0=\{0\}$ and
-$C_j=\{p_j\}$ for $1\le j\le K=s$, and put $d_j=D(C_j)$.
-Let $X_k$ be the value encountered at the $k$th first touch, and let $A_k$
-indicate that this touch tests the job.  By deferred decisions, the $X_k$
-form a uniform permutation, while $A_k$ is chosen before $X_k$ is exposed.
-Apply \cref{lem:predictable-permutation-sampling} to the vector
-$(\one_{X_k\in C_j})_{j=0}^K$ with failure probability $n^{-2}$, and put
-\[
- \Gamma_n=(1+\delta^{-1})E_{n,K+1,1,n^{-2}}.
-\]
-With that probability, simultaneously for every cell $j$ and every prefix
-of length $m\le(1-\delta)n$ in the first-touch order,
-\begin{equation}
- \left|\sum_{k\le m}A_k\one_{X_k\in C_j}
-       -d_j\sum_{k\le m}A_k\right|\le\Gamma_n.
- \label{eq:cui-urn-discrepancy}
-\end{equation}
-
-Stop after the algorithm has first touched all but $\delta n+O(1)$ labels.
-For each remaining untouched job, replace any future test by raw execution
-at its first scheduled operation and delete its later known processing.
-At most $\delta n+O(1)$ jobs and three operations per affected job change.
-Write completion cost as the sum, over all operations, of the operation
-length times the number of unfinished jobs.  Changed operations contribute
-$O_u(\delta n^2+n)$, and during every unchanged operation the two
-unfinished-job counts differ by at most $\delta n+O(1)$.  Since either
-schedule performs at most $(u+1)n$ work, we obtain
-\begin{equation}
- C_{\rm original}\ge C_{\rm edited}-O_u(\delta n^2+n).
- \label{eq:cui-suffix-edit}
-\end{equation}
-The edited schedule has a fixed final tested fraction $q$, but we do not
-condition on its value.
-
-On the single sampling event \cref{eq:cui-urn-discrepancy}, consider any
-point in the schedule and
-normalize counts and work by $n$.  Let $t,b,z,c_j$ denote the tested
-fraction, the fraction run raw, the fraction of tests that complete zero
-jobs, and the processed fraction whose revealed value lies in the positive
-cell $C_j$, respectively, and put $\gamma_n=\Gamma_n/n$.  The sampling event
-gives
-\[
- t\le q,\quad b\le1-q,\quad
- z\le d_0t+\gamma_n,\quad c_j\le d_jt+\gamma_n.
-\]
-Set $c_j'=(c_j-\gamma_n)^+$.  Raw work is exactly $ub$, so the variables
-$t,b,c_j'$ satisfy every constraint in
-\cref{eq:common-fluid-envelope} at the work $x$ already performed.  Passing
-from $z,c_j$ to $d_0t,c_j'$ removes at most $(K+1)\gamma_n$ completed mass.
-Therefore, simultaneously throughout the edited schedule,
-\begin{equation}
- \text{completed fraction at work }x
- \le \mathcal C_{\mathsf{RO},D,q}(x)+(K+1)\gamma_n.
- \label{eq:cui-envelope-repair}
-\end{equation}
-The normalized completion cost is the area under the unfinished fraction.
-The curve in \cref{eq:cui-envelope-repair} reaches one by normalized work
-$H=1+u$, so integrating that equation loses at most
-$H(K+1)\gamma_n$ relative to
-$F_{\mathsf{RO},u,D}(q)\ge\PhiRO(D)$.  The sampling event fails with
-probability at most $n^{-2}$, and $0\le\PhiRO(D)\le u/2$; hence averaging
-over the shuffle and using \cref{eq:cui-suffix-edit} gives
-\begin{equation}
- \frac{\EE C_{\rm original}}{n^2}
- \ge\PhiRO(D)-O_{u,K}(\gamma_n+\delta+1/n).
- \label{eq:cui-fixed-grid-lower}
-\end{equation}
-
-For an arbitrary input vector, take
-\begin{equation}
- K_n=\lfloor n^{1/6}\rfloor,\qquad
- h_n=u/K_n,\qquad \delta_n=n^{-1/6},
- \label{eq:cui-grid-parameters}
-\end{equation}
-keep zero separate, and round every positive value upward; write
-$D[p]^{\rm grid}$ for the resulting empirical distribution.  If two
-distributions admit a zero-preserving coupling with pointwise displacement
-at most $h$, couple each unit of job mass with its displaced copy and use the
-same fluid decisions on both copies.  Tested zeros still complete at exactly
-the same time.  At every prefix, at most one unit of mass has received
-processing, so its accumulated work changes by at most $h$.  The two
-unfinished-mass curves are therefore contained in horizontal $h$-shifts of
-one another.  Integrating them, and then exchanging the two distributions,
-gives
-\begin{equation}
- |\PhiRO(D)-\PhiRO(D')|\le h.
- \label{eq:cui-rounding-stability}
-\end{equation}
-Thus the grid consists of $0,h_n,2h_n,\ldots,K_nh_n=u$, and a value in
-$((j-1)h_n,jh_n]$ is rounded to $jh_n$.  Apply the same first-touch sampling
-bound to these $K_n+1$ classes and again put $\gamma_n=\Gamma_n/n$.  At any
-schedule prefix, subtracting $\gamma_n$ from the completed mass in each
-positive class makes the class capacities exact, at a loss of at most
-$(K_n+1)\gamma_n$ completed mass.  Raising processing times to their right
-endpoints adds at most $h_n$ to normalized prefix work.  Consequently the
-completed fraction is at most
-\[
- \mathcal C_{\mathsf{RO},D[p]^{\rm grid},q}(x+h_n)
- +(K_n+1)\gamma_n.
-\]
-With the parameters from
-\cref{eq:cui-grid-parameters},
-\begin{equation}
- (K_n+1)\frac{\Gamma_n}{n}
- =O\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right).
- \label{eq:cui-grid-error}
-\end{equation}
-Integrating this inequality up to $H=1+u$ loses at most
-$h_n+H(K_n+1)\gamma_n$ from the rounded fluid area.  The suffix edit costs
-$O_u(\delta_n n^2+n)$, the sampling event fails with probability $n^{-2}$,
-and the corresponding lost fluid value is at most $u/2$.  Together with
-\cref{eq:cui-rounding-stability,eq:cui-grid-error}, this proves that every
-announced algorithm has private-shuffle cost at least
-\begin{equation}
- n^2\PhiRO(D[p])
- -O_u\!\left(n^{11/6}\sqrt{\ln(n+2)}\right).
- \label{eq:cui-announced-lower}
-\end{equation}
-The argument was uniform in the fixed algorithm seed.  Averaging over that
-seed proves \cref{eq:cui-lower} under the input convention.
-
-\subsection{Removing the announcement}
-\label{sec:cui-learning}
-
-It remains to attain the benchmark without first revealing the input vector
-to the algorithm.  Consider the following family of schedules.  Select
-$N_{\rm test}$ labels uniformly, test them in random order, and immediately
-process precisely the outcomes belonging to a fixed initial segment of the
-ordered grid values.  Next process the remaining positive tested jobs in SPT
-order and finally run the other $n-N_{\rm test}$ jobs raw.  Call the choice of
-the initial grid segment and $q=N_{\rm test}/n$ a template $\pi$.  Direct
-one-job and pair accounting gives, uniformly over the frequencies of the
-grid values and the chosen initial segment,
-\begin{equation}
- \EE C_n(\pi)=n^2F_{\mathsf{RO},u,D}(\pi)+O_u(n),
- \label{eq:cui-finite-kernel}
-\end{equation}
-where
-$F_{\mathsf{RO},u,D}(\pi)$ is the right-hand side of \cref{eq:cui-F}.
-To verify this, expand the testing phase into the contribution of each job
-and each pair of tested jobs; expand the remaining tested positive jobs into
-their contribution against raw jobs and their internal SPT cost; and add the
-exact cost of running all untested jobs raw,
-$u(n-N_{\rm test})(n-N_{\rm test}+1)/2$.  For distinct occurrences the finite
-coefficients
-\[
- \frac{N_{\rm test}(N_{\rm test}-1)}{n(n-1)},\qquad
- \frac{N_{\rm test}(n-N_{\rm test})}{n(n-1)},\qquad
- \frac{(n-N_{\rm test})(n-N_{\rm test}-1)}{n(n-1)}
-\]
-differ from $q^2,q(1-q),(1-q)^2$ by $O(1/n)$.  Every pair contribution is
-bounded in terms of $u$, so fewer than $n^2$ such terms create only
-$O_u(n)$ error.
-
-Use the grid from \cref{eq:cui-grid-parameters} and take a private random
-permutation.  Test its first
-\begin{equation}
- k_n=\lceil n^{1/2}\rceil
- \label{eq:cui-pilot-size}
-\end{equation}
-labels, keep positive sample jobs pending, and form their rounded histogram
-$\widehat D_n$.  Among all grid prefixes containing zero and all
-$q\in[0,1]$, minimize the quadratic \cref{eq:cui-F}; denote the selected
-template by $\widehat\pi$.  Apply it to the remaining labels in their unused
-random order, then finish the positive sample jobs.
-
-Let $D_n$ and $D_n^{\rm rem}$ be the full and remaining rounded histograms.
-The sampling-without-replacement histogram estimate
-\cref{eq:without-replacement-histogram} gives
-\begin{equation}
- \EE\|\widehat D_n-D_n\|_1
- \le\sqrt{\frac{K_n+1}{k_n}},
- \qquad
- \|D_n^{\rm rem}-D_n\|_1\le\frac{2k_n}{n-k_n}.
- \label{eq:cui-histogram}
-\end{equation}
-For a fixed template, the quantities $a,\ell,\ell_\nu$ in
-\cref{eq:cui-F} are bounded single integrals and $\SPT(\nu)$ is a bounded
-double integral.  For the $\SPT(\nu)$ term, add and subtract the same double
-integral
-with only one copy of the distribution replaced.  This gives
-\begin{equation}
- |F_{\mathsf{RO},u,D}(\pi)-F_{\mathsf{RO},u,E}(\pi)|
- \le4(u+1)\|D-E\|_1,
- \label{eq:cui-template-Lipschitz}
-\end{equation}
-uniformly over the grid and template.  Minimizing over templates preserves
-this Lipschitz bound.
-The maximum-density and completion-envelope results
-\cref{lem:maximum-density-module,lem:cui-envelope} show that the minimum
-over this common template family is exactly $\PhiRO(D)$.
-
-Condition on the sample.  The learned template is fixed and the unused labels
-are uniformly ordered, so \cref{eq:cui-finite-kernel} applies.  Including the
-sample and its final tail, whose cost is $O_u(nk_n)$, gives the conditional
-bound
-\[
- \EE[\ALG_{\mathcal A^*_{n,u}}(p)\mid\widehat D_n,D_n^{\rm rem}]
- \le n^2F_{\mathsf{RO},u,D_n^{\rm rem}}(\widehat\pi)
-      +O_u(nk_n+n).
-\]
-Put $L_0=4(u+1)$.  Applying
-\cref{eq:cui-template-Lipschitz} first to $\widehat\pi$ and then to an
-optimal template for $D_n^{\rm rem}$ gives
-\[
- F_{\mathsf{RO},u,D_n^{\rm rem}}(\widehat\pi)
- \le \PhiRO(D_n^{\rm rem})
-      +2L_0\|\widehat D_n-D_n^{\rm rem}\|_1.
-\]
-A further application to an optimal template for $D_n$ gives
-$\PhiRO(D_n^{\rm rem})\le
-\PhiRO(D_n)+L_0\|D_n^{\rm rem}-D_n\|_1$.
-Moreover,
-$\|\widehat D_n-D_n^{\rm rem}\|_1
- \le \|\widehat D_n-D_n\|_1+\|D_n^{\rm rem}-D_n\|_1$.
-Average these inequalities, use \cref{eq:cui-histogram}, and finally use
-the rounding bound \cref{eq:cui-rounding-stability}.  Since
-\[
- h_n=O_u(n^{-1/6}),\qquad
- \sqrt{(K_n+1)/k_n}=O(n^{-1/6}),\qquad
- k_n/n=O(n^{-1/2}),
-\]
-the resulting bound is
-\begin{equation}
- \EE\ALG_{\mathcal A^*_{n,u}}(p)
- \le n^2\PhiRO(D[p])+O_u(n^{11/6})
- \label{eq:cui-universal-upper}
-\end{equation}
-for every $p\in[0,u]^n$.  Together with the announced lower bound
-\cref{eq:cui-announced-lower}, this proves
-\cref{thm:common-upper-instance}.  The larger logarithmic lower-bound error
-gives the common sequence in \cref{eq:cui-rate}.
+\begin{proof}[Proof of \cref{thm:common-upper-instance}]
+Take $r(p)=u$ and $Q=[0,1]$ in
+\cref{thm:common-fluid-instance-transfer}.  Then
+$v_r(D)=u$, and \cref{eq:cui-F,eq:cui-Phi} show that the common value
+$\Phi_{r,Q}(D)$ is exactly $\PhiRO(D)$.  The upper and lower conclusions are
+\cref{eq:cui-upper,eq:cui-lower}, and
+\cref{eq:common-transfer-rate} gives \cref{eq:cui-rate}.
+\end{proof}

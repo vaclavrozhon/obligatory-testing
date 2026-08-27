@@ -1,4 +1,4 @@
-\section{The finite fluid benchmark}
+\section{Fluid benchmarks and instance optimality}
 \label{sec:common-fluid-envelopes}
 
 The randomized instance-optimality results all have the same leading-order
@@ -22,10 +22,11 @@ decision at every real time.  The distribution below has finitely many job
 types, and a schedule is a finite sequence of divisible blocks.  Within one
 block, work and completions accrue proportionally.  This linear traversal is
 the limit of dividing the block into many finite batches; the later
-instance-optimality sections justify the corresponding approximation for
-actual jobs.  The present section contains no sampling or limiting argument:
-it solves the finite-dimensional fluid problem exactly when the distribution
-is known.
+subsections justify the corresponding approximation for actual jobs.  The
+fluid optimization developed first contains no sampling or limiting
+argument: it solves the finite-dimensional problem exactly when the
+distribution is known.  Only afterward do we transfer that solution to
+shuffled finite inputs.
 
 The same problem covers three models.  We prescribe a total tested fraction
 $q$ and let $v$ be the work per job in a completion mode that does not reveal
@@ -406,11 +407,13 @@ Integrating the pointwise inequality and applying
 \cref{eq:common-envelope-area} and optimality.
 \end{proof}
 
-\subsection{How the three models use the benchmark}
+\subsection{From the fluid theorem to finite inputs}
 \label{sec:fluid-specializations}
 
-The theorem deliberately fixes $D$, $q$, and $v$.  Later sections perform
-only model-specific algebra and the transfer to actual shuffled jobs.
+The theorem above deliberately fixes $D$, $q$, and $v$.  We next prove one
+transfer theorem showing that its value is also the correct leading-order
+cost for bounded shuffled inputs.  The remaining subsections then specialize
+that result and perform the model-specific algebra.
 
 In obligatory testing every job must be tested, so $q=1$ and the alternative
 block is absent.  In revealing optimization with raw time $u$, set $v=u$
@@ -426,9 +429,9 @@ $\PhiBE(D)$ in their respective sections.
 
 For an actual vector $p$, its empirical distribution $D[p]$ is already
 finitely supported.  Gridding merely reduces the number of coordinates so
-that one concentration event controls them simultaneously.  The later
-instance-optimality proofs show separately that every discrete competitor
-induces a fluid state obeying \cref{eq:common-fluid-envelope}, up to
-$o(1)$ normalized error, and that a sampled finite algorithm implements
-$\textnormal{\textsc{FluidSPT}}$ with the same accuracy.  Those transfer
-arguments are not assumptions of the fluid theorem above.
+that one concentration event controls them simultaneously.  The next three
+subsections show that every finite competitor induces a fluid state obeying
+\cref{eq:common-fluid-envelope}, up to $o(1)$ normalized error, and that a
+sampled finite algorithm implements $\textnormal{\textsc{FluidSPT}}$ with
+the same accuracy.  Thus the probabilistic transfer is a theorem following
+the exact fluid optimization, not an assumption used inside it.

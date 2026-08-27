@@ -610,8 +610,11 @@ supported distribution.  A schedule becomes a finite sequence of divisible
 blocks, or \emph{modules}.  Each module spends some work and completes some
 mass; its \emph{completion density} is the completed mass per unit of work.
 The finite fluid problem and its exact shortest-first optimum are developed
-in \cref{sec:common-fluid-envelopes}.  The actual algorithms approximate
-these blocks with finite batches.
+in \cref{sec:common-fluid-envelopes}.  The same section proves a common
+finite-to-fluid transfer, then derives the revealing-optimization,
+obligatory-testing, and blind-execution instance-optimality theorems.  The
+actual algorithms learn the block parameters from a sublinear pilot and
+approximate the fluid blocks with finite batches.
 
 \paragraph{Remaining-job and pair accounting.}
 Every unit of machine work delays every job that is still unfinished.
@@ -699,13 +702,15 @@ $u$.
 structures and adversaries, the corresponding offline optima, and our
 asymptotic competitive-ratio convention.
 
-\Cref{sec:common-fluid-envelopes} then isolates the deterministic
-leading-order problem shared by the randomized instance-optimality proofs.
-For a known finite processing-time distribution, it defines fluid schedules
+\Cref{sec:common-fluid-envelopes} develops all three bounded
+instance-optimality results in one place.  It first defines fluid schedules
 as finite sequences of divisible blocks and proves that one explicit
 maximum-density, shortest-first schedule maximizes completed mass after every
-amount of work.  The later model-specific sections separately justify the
-transfer between this benchmark and shuffled finite inputs.
+amount of work.  A common transfer theorem then compares this fluid optimum
+with arbitrary adaptive algorithms on shuffled finite inputs and implements
+it by learning a finite template.  Its specializations give the explicit
+revealing-optimization, obligatory-testing, and blind-execution benchmarks
+in \cref{sec:common-upper-instance,sec:obligatory-instance,sec:blind}.
 
 \Cref{sec:optional} then proves the exact deterministic
 revealing-optimization curve.  Its multilevel lower-bound instance, in which
@@ -716,24 +721,12 @@ jobs with $p_i=u$ in the matching upper bound.  Only after the finite curve is c
 does \cref{sec:obligatory} derive the deterministic obligatory ratio using
 bounds whose constants do not depend on the raw time $u$.
 
-\Cref{sec:common-upper-instance} identifies the optimal leading cost
-separately for every bounded revealing input and learns the associated
-threshold algorithm from a sublinear sample.  \Cref{sec:random-common-upper}
-maximizes this benchmark against the clairvoyant optimum and proves the exact
-four-piece randomized curve.  Its final subsection,
+\Cref{sec:random-common-upper} maximizes the revealing benchmark against the
+clairvoyant optimum and proves the exact four-piece randomized curve.  Its
+final subsection,
 \cref{sec:random-obligatory}, transfers the lower bound to the unbounded
 obligatory endpoint; for the upper bound it truncates very long observations
 and switches to a safe all-testing schedule when the sample is unreliable.
-\Cref{sec:obligatory-instance} then strengthens
-the randomized obligatory-testing algorithm from
-\cref{thm:rand-obligatory} to a single algorithm that is asymptotically
-optimal on every bounded obligatory input.
-
-\Cref{sec:blind} turns to blind execution.  It first derives the benchmark
-when the multiset of job lengths is announced in advance, proves that
-arbitrary adaptive algorithms cannot beat it, and then removes that advance
-knowledge by sampling.  It also explains why no finite worst-case ratio is
-possible without a bound on job lengths.
 \Cref{sec:blind-optimization} studies speedup without revelation, proves the
 deterministic lower bound using an adversary that hides when its first phase
 will stop, and obtains the matching two-algorithm curve.  It then proves the

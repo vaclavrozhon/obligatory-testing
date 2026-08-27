@@ -1,0 +1,354 @@
+\subsection{A common finite-to-fluid transfer}
+\label{sec:common-finite-transfer}
+
+The fluid theorem deliberately fixed a known distribution and made
+proportional revelation exact.  We now show that learning and private
+shuffling reproduce both features up to $o(n^2)$ cost on bounded finite
+inputs.  Doing this once also exposes the precise common structure of
+obligatory testing, revealing optimization, and blind execution.
+
+Fix $L<\infty$ and a known function
+\[
+ r:[0,L]\longrightarrow[0,L]
+\]
+with $|r(p)-r(p')|\le|p-p'|$.  A job first touched in the \emph{direct mode}
+runs nonpreemptively for $r(p)$ and completes.  The choice of this mode must
+be made before $p$ is known; revealing $p$ after completion may be granted
+to the algorithm for free.  Alternatively, the job may be tested for one
+unit, after which its processing operation of length $p$ can be scheduled.
+
+Let $Q$ be either $[0,1]$, when both first-touch modes are available, or
+$\{1\}$, when every job must first be tested.  For a distribution $D$, put
+\begin{equation}
+ v_r(D)\defeq\int r(p)\,dD(p).
+ \label{eq:common-direct-mean}
+\end{equation}
+Predictably chosen direct jobs have asymptotic mean work $v_r(D)$ per job.
+We therefore define the common fluid value
+\begin{equation}
+ \Phi_{r,Q}(D)\defeq
+ \min_{q\in Q}\Area\bigl(\mathcal C^{v_r(D)}_{D,q}\bigr).
+ \label{eq:common-instance-benchmark}
+\end{equation}
+When $Q=\{1\}$, the alternative block has zero mass and $r$ is immaterial.
+
+The three specializations used later are
+\begin{equation}
+ \begin{array}{c|c|c}
+  \text{model}&r(p)&Q\\
+  \hline
+  \mathsf{OT}&0&\{1\}\\
+  \mathsf{RO}(u)&u&[0,1]\\
+  \mathsf{BE}&p&[0,1].
+ \end{array}
+ \label{eq:common-instance-specializations}
+\end{equation}
+Thus the distinction between the last two models is entirely in the direct
+work: it is fixed in revealing optimization and sampled from the input in
+blind execution.
+
+\begin{theorem}[Common bounded instance-optimality transfer]
+\label{thm:common-fluid-instance-transfer}
+Fix $L$, $r$, and $Q$ as above.  There are randomized nonanticipating
+algorithms $\mathcal L_n$, depending only on $n,L,r,Q$, and a deterministic
+sequence
+\begin{equation}
+ \eps_L(n)
+ =O_L\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right)
+ \longrightarrow0
+ \label{eq:common-transfer-rate}
+\end{equation}
+such that every vector $p\in[0,L]^n$ satisfies
+\begin{equation}
+ \EE\ALG_{\mathcal L_n}(p)
+ \le n^2\Phi_{r,Q}(D[p])+\eps_L(n)n^2.
+ \label{eq:common-transfer-upper}
+\end{equation}
+Conversely, every randomized nonanticipating algorithm $\mathcal A$ whose
+allowed first-touch modes are described by $Q$, even if it is told the
+multiset of entries of $p$, satisfies
+\begin{equation}
+ \EE\ALG_{\mathcal A}(p)
+ \ge n^2\Phi_{r,Q}(D[p])-\eps_L(n)n^2.
+ \label{eq:common-transfer-lower}
+\end{equation}
+Both expectations include the private shuffle and the algorithms' remaining
+randomness.
+\end{theorem}
+
+The proof is split into a lower transfer and a learning upper transfer.  The
+first maps every finite adaptive run to the envelope from
+\cref{eq:common-fluid-envelope}.  The second estimates the empirical
+distribution and implements the finite block schedule
+$\textsc{FluidSPT}$.  The theorem then follows immediately by using the same
+fluid value between them.
+
+\subsection{From an adaptive run to the fluid envelope}
+\label{sec:common-lower-transfer}
+
+The central fact is that adaptivity cannot bias the hidden value at a first
+touch.  After fixing an algorithm's private seed, list jobs in the order in
+which their labels are first touched.  Their values form a uniform
+permutation $X_1,\ldots,X_n$ of the input.  The indicator $A_k$ that the
+$k$th job is tested is determined before $X_k$ is exposed.  Hence $A_k$ and
+$1-A_k$ are predictable selectors in
+\cref{lem:predictable-permutation-sampling}.
+
+Keep zero as a separate class, partition $(0,L]$ into
+\begin{equation}
+ K_n=\lfloor n^{1/6}\rfloor
+ \label{eq:common-transfer-grid-size}
+\end{equation}
+cells, and round positive values upward to their cell endpoints.  Write
+$D^+$ for the resulting empirical distribution and $h_n=L/K_n$ for the
+mesh.  Take $\delta_n=n^{-1/6}$ and stop the first-touch order while
+$\delta_n n+O(1)$ labels remain untouched.
+
+Apply the predictable-permutation estimate simultaneously to the vector of
+cell indicators selected by $A_k$ and to the scalar $r(X_k)$ selected by
+$1-A_k$.  With probability at least $1-n^{-2}$, every earlier prefix obeys
+\begin{align}
+ \bigl|\#\{\text{tested jobs in cell }j\}
+      -d_j\#\{\text{tests}\}\bigr|&\le\Gamma_n,
+ \label{eq:common-transfer-cell-discrepancy}\\
+ \bigl|\text{direct work}
+      -v_r(D[p])\#\{\text{direct jobs}\}\bigr|&\le\Gamma_n,
+ \label{eq:common-transfer-work-discrepancy}
+\end{align}
+for all cells and all such prefixes, where
+\begin{equation}
+ \frac{(K_n+1)\Gamma_n}{n}
+ =O\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right).
+ \label{eq:common-transfer-discrepancy-rate}
+\end{equation}
+For $Q=\{1\}$ the second estimate is vacuous.
+
+Edit the last $\delta_n n+O(1)$ first touches to one fixed legal mode: test
+them when $Q=\{1\}$ and complete them directly when $Q=[0,1]$.  Delete any
+operations superseded by this edit.  At most $\delta_n n+O(1)$ jobs and a
+constant number of operations per job change.  Since every legal job uses at
+most $1+L$ work, operation-by-operation remaining-job accounting gives
+\begin{equation}
+ C_{\rm original}\ge C_{\rm edited}
+   -O_L(\delta_n n^2+n).
+ \label{eq:common-transfer-suffix-edit}
+\end{equation}
+Let $q$ be the final tested fraction of the edited run; then $q\in Q$.
+
+\begin{claim}[Repairing a finite prefix]
+\label{clm:common-envelope-repair}
+On the event
+\cref{eq:common-transfer-cell-discrepancy,eq:common-transfer-work-discrepancy},
+there is
+\begin{equation}
+ \zeta_n=O_L\!\left(
+   \frac{(K_n+1)\Gamma_n}{n}+h_n+\delta_n\right)
+ \label{eq:common-transfer-zeta}
+\end{equation}
+such that, simultaneously throughout the edited run,
+\begin{equation}
+ \text{completed fraction after normalized work }x
+ \le \mathcal C^{v_r(D^+)}_{D^+,q}(x+\zeta_n)+\zeta_n.
+ \label{eq:common-transfer-envelope-repair}
+\end{equation}
+\end{claim}
+
+\begin{proof}
+At an operation boundary, let $t$ be tested mass, $b$ directly completed
+mass, and $c_j$ the processed tested mass in positive cell $j$.  The cell
+estimate gives
+\[
+ c_j\le d_jt+\Gamma_n/n,
+\]
+and gives the analogous bound for tested zeros.  Replace each $c_j$ by
+$(c_j-\Gamma_n/n)^+$.  The resulting class capacities are exact and the
+removed completed mass is at most $(K_n+1)\Gamma_n/n$.
+
+The work estimate replaces the actual direct work by
+$v_r(D[p])b$ with error at most $\Gamma_n/n$.  Upward rounding changes tested
+processing work by at most $h_n$ and, because $r$ is one-Lipschitz, changes
+the direct mean by at most $h_n$.  The edited suffix has mass
+$O(\delta_n)$.  After these horizontal repairs, the variables $t,b,c_j$
+satisfy every constraint in \cref{eq:common-fluid-envelope} with
+$v=v_r(D^+)$.  This proves the displayed inequality with
+\cref{eq:common-transfer-zeta}.
+\end{proof}
+
+We shall also use the following elementary stability observation.  It avoids
+any claim that the optimizing threshold itself changes continuously.
+
+\begin{lemma}[Zero-preserving rounding stability]
+\label{lem:common-transfer-rounding-stability}
+Suppose $D,D'$ admit a coupling that preserves zero and satisfies
+$|P-P'|\le h$ almost surely.  Then
+\begin{equation}
+ |\Phi_{r,Q}(D)-\Phi_{r,Q}(D')|\le2h.
+ \label{eq:common-transfer-rounding-stability}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Use the same tested fraction, selectors, and block order for coupled mass
+elements.  At every prefix, at most one unit of tested mass receives
+processing, so its work changes by at most $h$.  Direct work per unit mass
+also changes by at most $h$ because $r$ is one-Lipschitz.  Thus either
+completion curve lies within a horizontal $2h$ shift of the other.  Their
+areas differ by at most $2h$.  Exchange $D,D'$ and minimize over schedules.
+\end{proof}
+
+\begin{claim}[Common announced lower bound]
+\label{clm:common-announced-lower}
+Every announced randomized algorithm in the common finite model satisfies
+\begin{equation}
+ \frac{\EE\ALG_{\mathcal A}(p)}{n^2}
+ \ge\Phi_{r,Q}(D[p])
+ -O_L\!\left(n^{-1/6}\sqrt{\ln(n+2)}\right).
+ \label{eq:common-announced-lower}
+\end{equation}
+\end{claim}
+
+\begin{proof}
+The envelope reaches one after at most $1+L$ normalized work.  Integrating
+\cref{eq:common-transfer-envelope-repair} therefore loses only
+$O_L(\zeta_n)$ from its area.  By
+\cref{lem:test-module-envelope,eq:common-instance-benchmark}, this area is at
+least $\Phi_{r,Q}(D^+)$.  The sampling event fails with probability at most
+$n^{-2}$, while every fluid value is at most $(1+L)/2$.  Finally apply the
+suffix edit and \cref{lem:common-transfer-rounding-stability}.  Equations
+\eqref{eq:common-transfer-discrepancy-rate} and
+\eqref{eq:common-transfer-zeta} give the stated rate.  The argument is
+uniform after fixing the algorithm seed, so averaging proves the randomized
+claim.
+\end{proof}
+
+\subsection{Learning and implementing the fluid optimum}
+\label{sec:common-learning-transfer}
+
+For the upper transfer, a \emph{grid template} records a tested fraction, a
+selector on the grid classes, and a feasible order of the resulting testing,
+deferred, and direct blocks.  For a grid distribution $D$ and template
+$\pi$, let $F_{r,D}(\pi)$ be its fluid completion cost.  Theorem
+\ref{lem:test-module-envelope} says that
+\begin{equation}
+ \min_\pi F_{r,D}(\pi)=\Phi_{r,Q}(D).
+ \label{eq:common-template-optimum}
+\end{equation}
+
+Two finite facts make this template learnable.  We state them separately so
+that the model-specific corollaries can reuse them.
+
+\begin{claim}[Finite implementation of a fixed template]
+\label{clm:common-finite-template-kernel}
+For every fixed grid template $\pi$, selecting the prescribed number of test
+labels uniformly and executing its blocks gives
+\begin{equation}
+ \EE C_n(\pi)=n^2F_{r,D[p]}(\pi)+O_L(n),
+ \label{eq:common-finite-template-kernel}
+\end{equation}
+uniformly over the grid, its frequencies, and $\pi$.
+\end{claim}
+
+\begin{proof}
+Expand total completion time into one-job and unordered-pair contributions.
+For two distinct jobs, the probabilities that zero, one, or both are tested
+differ from the corresponding products of the tested fraction by $O(1/n)$.
+Every operation and pair contribution is bounded in terms of $L$.
+Summing the diagonal terms and these finite-population corrections gives
+$O_L(n)$; the remaining terms are exactly the fluid block area.
+\end{proof}
+
+\begin{claim}[Uniform stability of fixed templates]
+\label{clm:common-template-stability}
+There is $C_L<\infty$ such that any two distributions $D,E$ on the same
+grid and every common template $\pi$ satisfy
+\begin{equation}
+ |F_{r,D}(\pi)-F_{r,E}(\pi)|
+ \le C_L\|D-E\|_1.
+ \label{eq:common-template-stability}
+\end{equation}
+The same inequality holds after minimizing over templates.
+\end{claim}
+
+\begin{proof}
+For a fixed template, the block-area expansion is a finite sum of single and
+double integrals whose kernels are bounded by a constant depending only on
+$L$.  In a double integral, replace the first distribution and then the
+second.  This gives the displayed total-variation bound uniformly over the
+number of grid classes and over the template.  Applying the bound first to a
+minimizer for $D$ and then to one for $E$ proves the assertion for minima.
+\end{proof}
+
+The learner uses the grid from
+\cref{eq:common-transfer-grid-size}, privately permutes the labels, and tests
+the first
+\begin{equation}
+ k_n=\lceil n^{1/2}\rceil
+ \label{eq:common-transfer-pilot-size}
+\end{equation}
+jobs.  It keeps positive sample jobs pending and forms their rounded
+histogram $\widehat D_n$.  It chooses a template minimizing
+$F_{r,\widehat D_n}$ and applies it to the unused labels, then finishes the
+positive sample jobs.
+
+Let $D_n$ and $D_n^{\rm rem}$ be the full and remaining rounded histograms.
+The sampling-without-replacement estimate
+\cref{eq:without-replacement-histogram} and deletion of the pilot give
+\begin{equation}
+ \EE\|\widehat D_n-D_n\|_1
+ \le\sqrt{\frac{K_n+1}{k_n}},
+ \qquad
+ \|D_n^{\rm rem}-D_n\|_1
+ \le\frac{2k_n}{n-k_n}.
+ \label{eq:common-transfer-histogram}
+\end{equation}
+
+\begin{claim}[Common learning upper bound]
+\label{clm:common-learning-upper}
+The learner above satisfies
+\begin{equation}
+ \frac{\EE\ALG_{\mathcal L_n}(p)}{n^2}
+ \le\Phi_{r,Q}(D[p])+O_L(n^{-1/6})
+ \label{eq:common-learning-upper}
+\end{equation}
+uniformly over $p\in[0,L]^n$.
+\end{claim}
+
+\begin{proof}
+Condition on the pilot.  The unused labels remain uniformly permuted, so
+\cref{clm:common-finite-template-kernel} applies to the selected template.
+The pilot and its final positive tail use $O_L(k_n)$ work and therefore add
+$O_L(nk_n)$ to total completion time.
+
+The fixed-template kernel is applied to the upward-rounded values.  Coupling
+the physical and rounded executions with the same decisions changes tested
+processing work by at most $h_n$ per unit mass and direct work by at most
+$h_n$ per unit mass, because $r$ is one-Lipschitz.  Remaining-job accounting
+therefore changes the normalized template cost by at most $O(h_n)$.
+
+Apply \cref{clm:common-template-stability} first to the learned template,
+then to an optimal template for $D_n^{\rm rem}$, and finally to an optimal
+template for $D_n$.  This bounds the conditional fluid cost by
+\[
+ \Phi_{r,Q}(D_n)
+ +O_L\bigl(
+   \|\widehat D_n-D_n\|_1+
+   \|D_n^{\rm rem}-D_n\|_1\bigr).
+\]
+Average and use \cref{eq:common-transfer-histogram}.  The three remaining
+errors are
+\[
+ h_n=O_L(n^{-1/6}),\qquad
+ \sqrt{(K_n+1)/k_n}=O(n^{-1/6}),\qquad
+ k_n/n=O(n^{-1/2}).
+\]
+The rounding term is controlled by
+\cref{lem:common-transfer-rounding-stability}, proving the claim.
+\end{proof}
+
+\begin{proof}[Proof of \cref{thm:common-fluid-instance-transfer}]
+Claim~\ref{clm:common-learning-upper} gives
+\cref{eq:common-transfer-upper}.  Claim~\ref{clm:common-announced-lower}
+gives \cref{eq:common-transfer-lower}, since announcing the multiset only
+strengthens the competing algorithm.  Taking the larger of their vanishing
+errors gives \cref{eq:common-transfer-rate}.
+\end{proof}
