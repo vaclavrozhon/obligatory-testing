@@ -243,7 +243,13 @@ For an arbitrary input vector, take
 keep zero separate, and round every positive value upward; write
 $D[p]^{\rm grid}$ for the resulting empirical distribution.  If two
 distributions admit a zero-preserving coupling with pointwise displacement
-at most $h$, the transport lemma \cref{lem:zero-preserving-transport} gives
+at most $h$, couple each unit of job mass with its displaced copy and use the
+same fluid decisions on both copies.  Tested zeros still complete at exactly
+the same time.  At every prefix, at most one unit of mass has received
+processing, so its accumulated work changes by at most $h$.  The two
+unfinished-mass curves are therefore contained in horizontal $h$-shifts of
+one another.  Integrating them, and then exchanging the two distributions,
+gives
 \begin{equation}
  |\PhiRO(D)-\PhiRO(D')|\le h.
  \label{eq:cui-rounding-stability}

@@ -142,8 +142,10 @@ Choose a maximum-density prefix and put
 \end{equation}
 All zeros belong to every maximizer: adding a zero increases the numerator
 without increasing the denominator.
-The empirical prefix corollary \cref{cor:empirical-density-prefix} lets us
-choose a maximizer with
+For an occurrence of length $p$ outside $E$, adding it does not decrease
+$a/(1+\ell_E)$ exactly when $p\le(1+\ell_E)/a=\tau$; the analogous removal
+calculation applies to an occurrence inside $E$.  We may therefore choose a
+maximizer with
 \begin{equation}
  \tau=\tau_{D[p]},\qquad
  p_i\le\tau\ (i\in E),\qquad p_i\ge\tau\ (i\notin E),
@@ -308,10 +310,11 @@ $\widehat\tau$, including categories with zero sample count.
 \end{lemma}
 
 \begin{proof}
-The removal/addition calculation in
-\cref{cor:empirical-density-prefix} applies to every positive-mass sample
-category.  Empty categories do not change the sample statistics, and adding
-mass at equality preserves the identity
+For every positive-mass sample category, adding it preserves or improves the
+density exactly when its endpoint is at most $\widehat\tau$; removing it
+preserves or improves the density under the reverse inequality.  Empty
+categories do not change the sample statistics, and adding mass at equality
+preserves the identity
 $1+\widehat\ell=\widehat a\widehat\tau$.  Adding all categories up to the
 threshold therefore preserves optimality and makes the two pointwise
 assertions tautological.

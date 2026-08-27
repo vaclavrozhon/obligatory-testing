@@ -156,10 +156,14 @@ $g_*$, and put
 \end{equation}
 The residual measure $\nu$ from \cref{eq:common-module-data} has mass
 $1-a_*$ and support in $[\tau_D,\infty)$.  For an empirical measure one
-may equivalently sort the occurrences and maximize
-\cref{eq:empirical-prefix-density} over processing-time prefixes $E$
-containing all zeros.  A tied boundary class may be placed on either side,
-by \cref{cor:empirical-density-prefix}.
+may implement the selector with whole job occurrences.  Sort the jobs by
+processing time and, among prefixes $E$ containing all zero jobs, maximize
+\[
+ \frac{|E|/n}{1+n^{-1}\sum_{i\in E}p_i}.
+\]
+The addition/removal test for this ratio includes precisely the occurrences
+below $\tau_D$ and excludes those above it.  Adding or removing an occurrence
+with $p_i=\tau_D$ preserves the ratio, so ties may be placed on either side.
 
 Define
 \begin{equation}
@@ -297,9 +301,22 @@ The completion curve reaches one by normalized work $H=L+2$, so integrating
 \cref{eq:ot-pointwise-completion} loses at most
 $h_n+H(K_n+1)\gamma_n$ from $\PhiOT(D^+)$.  The good event fails with
 probability at most $n^{-2}$, and the immediate test--process algorithm gives
-$0\le\PhiOT(D^+)\le(L+1)/2$.  Finally, zero-preserving transport
-\cref{lem:zero-preserving-transport} changes the fluid value by at most
-$h_n$.  Because
+$0\le\PhiOT(D^+)\le(L+1)/2$.
+
+We also need to compare the rounded and original fluid values.  Couple every
+processing time with its rounded copy and use the same fluid decisions for
+both.  Zeros are unchanged and therefore complete at the same tests.  At
+every prefix, at most one unit of job mass has received processing, so the
+accumulated work changes by at most the rounding mesh.  The two
+unfinished-mass curves are consequently contained in horizontal shifts of
+one another.  Integrating and exchanging the two inputs proves that any
+zero-preserving coupling with displacement at most $h$ satisfies
+\begin{equation}
+ |\PhiOT(D)-\PhiOT(D')|\le h.
+ \label{eq:ot-rounding-stability}
+\end{equation}
+Applying this with $D[p]$ and $D^+$ changes the fluid value by at most $h_n$.
+Because
 $(K_n+1)\gamma_n=O(n^{-3/10}\sqrt{\ln(n+2)})$, every deterministic announced
 algorithm has private-shuffle expected cost at least
 \begin{equation}
@@ -358,11 +375,10 @@ By \cref{lem:ot-completion-envelope}, a maximum-density prefix minimizes
 $F_{\mathsf{OT},D}(J)$ over grid prefixes.  Let $\widehat J$ be the prefix
 learned from the sample.
 Rounding each processing time upward by at most $\eta$ preserves zeros, so
-\cref{lem:zero-preserving-transport} gives
-\begin{equation}
+\cref{eq:ot-rounding-stability} gives
+\[
  \PhiOT(D^+)\le\PhiOT(D[p])+\eta.
- \label{eq:ot-rounding-stability}
-\end{equation}
+\]
 
 Conditional on the unordered sample, compare the actual schedule, which
 tests the sample before the other jobs, with the fully stationary algorithm

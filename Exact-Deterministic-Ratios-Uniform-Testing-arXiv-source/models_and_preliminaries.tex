@@ -90,11 +90,23 @@ adversary.  For a randomized algorithm, this vector is then relabeled by a
 uniform permutation.  We abbreviate the expectation over this shuffle and
 all further private randomness by $\EE\ALG_{\mathcal A}(p)$.  Thus randomized
 performance depends only on the entries of $p$, not on their displayed
-order.  An \emph{announced} algorithm is additionally given the multiset
-$\{p_1,\ldots,p_n\}$, but not its shuffled assignment to labels.
-Every algorithm is \emph{nonanticipating}: each action may depend on the
-public parameters, its private randomness, and everything revealed so far,
-but not on a hidden value that the model has not yet exposed.
+order.  We distinguish three levels of information.
+\begin{itemize}
+\item A \emph{clairvoyant offline algorithm} knows the entire labeled vector,
+including the assignment of processing times to labels.  Its minimum cost is
+$\OPT(p)$.
+\item An \emph{announced online algorithm} knows the multiset
+$\{p_1,\ldots,p_n\}$, but not its assignment to labels.  Thus it knows the
+input distribution exactly, but not which value belongs to the next job it
+chooses.
+\item An \emph{unannounced}, or \emph{fully online}, algorithm initially knows
+only the public parameters, such as $n$, $L$, and $u$, and receives no
+input-specific information.  Our instance-optimal algorithms belong to this
+class.
+\end{itemize}
+Both online classes are \emph{nonanticipating}: each action may depend on the
+public parameters, private randomness, and everything revealed so far, but
+not on a hidden value that the model has not yet exposed.
 The \emph{transcript} of a run is the resulting ordered sequence of actions
 and observations.
 
@@ -115,10 +127,10 @@ for the empirical distribution of the input, where $\delta_x$ denotes one
 unit of probability concentrated at $x$.  It is unchanged by the
 shuffle.
 
-Our instance-optimality results compare against all algorithms receiving
-this shuffled input.  This is ordinary instance optimality when the input is
-viewed as a multiset, and order-oblivious instance optimality when it is
-viewed as an ordered vector; see
+Our instance-optimality results compare a single unannounced algorithm against
+all announced online algorithms on this shuffled input.  This is ordinary
+instance optimality when the input is viewed as a multiset, and order-oblivious
+instance optimality when it is viewed as an ordered vector; see
 \cite{AfshaniBarbayChan2017,NarayananRozhonTetekThorup2024}.
 
 \subsection{Offline optima and pair accounting}
@@ -235,9 +247,7 @@ Given $D,q$, and $v$, perform the following steps.
 
 \begin{enumerate}[label=\textnormal{(\roman*)},leftmargin=*]
  \item Reserve a $q$-fraction of every processing-time group for testing and
-       assign the remaining $1-q$ fraction to the other completion mode.  In
-       the finite online algorithm this split is produced by a private random
-       order; it does not use the hidden processing times.
+       assign the remaining $1-q$ fraction to the other completion mode.
  \item Whenever a tested job reveals a sufficiently short processing time,
        process it together with its test.  Defer the other positive tested
        jobs.  The threshold for ``sufficiently short'' will be denoted by
@@ -345,32 +355,6 @@ fraction left for later.  Its support lies in $[\tau_D,\infty)$ because the
 threshold rule accepts every shorter outcome.  This ordering fact will make
 it possible to execute the test module before all residual work.
 
-For an empirical input, this threshold rule has an elementary finite
-interpretation: sort the jobs by processing time and take a prefix.
-
-\begin{corollary}[Empirical maximum-density prefix]
-\label{cor:empirical-density-prefix}
-For an empirical distribution $D[p]$ from
-\cref{eq:empirical-distributions}, the maximum of
-\begin{equation}
- \frac{|E|/n}{1+n^{-1}\sum_{i\in E}p_i}
- \label{eq:empirical-prefix-density}
-\end{equation}
-over sets $E\subseteq[n]$ containing all zero jobs and satisfying
-$p_i\le p_j$ whenever $i\in E$ and $j\notin E$ is
-$1/\tau_{D[p]}$.  It is attained by taking every occurrence below
-$\tau_{D[p]}$, no occurrence above it, and any subset of occurrences equal to
-$\tau_{D[p]}$.  Thus every selected value is at most $\tau_{D[p]}$ and every
-unselected value is at least $\tau_{D[p]}$.
-\end{corollary}
-
-\begin{proof}
-Apply \cref{lem:maximum-density-module} to $D[p]$.  At the boundary
-$p_i=\tau_{D[p]}$, adding or removing an occurrence preserves the ratio
-$1/\tau_{D[p]}$, so the fractional boundary rule may be replaced by any
-subset of the tied occurrences.
-\end{proof}
-
 \paragraph{Ordering all blocks.}
 We now justify step~(iv) of the general schedule.  Besides the test module,
 we have the processing of the deferred tested jobs and the other completion
@@ -392,14 +376,10 @@ This is the largest mass that can be completed using work $x$.  The variables
 $z_k$ allow us to use only part of a block.  Thus
 $K_{\mathcal M}$ is the \emph{completion curve} of the blocks.
 
-If a finite schedule has completed $N(nx)$ jobs after $nx$ units of actual
-work, then its normalized cost is
-\[
- \frac{\ALG}{n^2}=\int_0^\infty
-       \left(1-\frac{N(nx)}n\right)dx.
-\]
-The fluid analogue is therefore the area under the unfinished fraction.  For
-any completion curve $C$, write
+During an infinitesimal amount $dx$ of work, every job in the unfinished
+mass $1-C(x)$ waits for time $dx$.  The total fluid completion cost is
+therefore the area under the unfinished fraction.  For any completion curve
+$C$, write
 \begin{equation}
  \Area(C)\defeq\int_0^\infty(1-C(x))\,dx
  \label{eq:completion-curve-area}
@@ -544,66 +524,6 @@ schedule processes them.  The schedule is feasible and realizes
 $K_{\mathcal M_{D,q,v}}(x)$ at every work budget $x$.  Its area is given by
 \cref{lem:divisible-spt-area}.
 \end{proof}
-
-\paragraph{Rounding processing times.}
-The later finite algorithms round processing times to a grid.  Moving every
-positive value by at most $h$ shifts any fluid completion curve horizontally
-by at most $h$, and hence changes its area by at most $h$.  The only caveat is
-zero: a tested zero completes without a processing operation, so rounding
-must preserve exactly which jobs have value zero.
-
-\begin{lemma}[Stability under zero-preserving rounding]
-\label{lem:zero-preserving-transport}
-Suppose there are joint random variables $(P,P')$, with respective laws
-$D,D'$, such that
-$P=0$ if and only if $P'=0$ and $|P-P'|\le h$ almost surely.  Transporting
-the same fluid algorithm through this coupling preserves all completion events
-and changes accumulated processing work by at most $h$.  Consequently, each
-model-specific fluid value $\Phi$ defined below satisfies
-\begin{equation}
- |\Phi(D)-\Phi(D')|\le h.
- \label{eq:zero-preserving-transport}
-\end{equation}
-\end{lemma}
-
-\begin{proof}
-Pair each infinitesimal job occurrence under the stated joint distribution
-and make the same decision for the two paired values, exposing them only
-when the model exposes the corresponding processing time.  Zero preservation
-makes test completions coincide.  At
-every prefix, the total mass that has received processing is at most one, so
-replacing its processing times changes cumulative work by at most $h$.  One
-unfinished-mass curve is therefore contained in a horizontal $h$-shift of
-the other, and its area changes by at most $h$.  Taking the infimum over
-algorithms gives one inequality; exchanging $D,D'$ gives the other.
-\end{proof}
-
-\paragraph{Learning from a pilot sample.}
-The instance-optimal algorithms do not know $D$.  They use a small pilot
-sample with empirical law $\widehat D$, choose the best fluid parameters for
-that estimate, and run the resulting schedule on the remaining jobs, whose
-empirical law we denote by $D^{\rm rem}$.  We call a fixed choice of these
-few parameters---for example, a threshold and a tested fraction---a
-\emph{template} $\pi$, and write $F_D(\pi)$ for its fluid cost on $D$.
-
-The learning argument used later is elementary.  Suppose every template is
-$L_0$-Lipschitz in a distance $d$, and let $\widehat\pi$ minimize
-$F_{\widehat D}$.  Comparing the same template first on $D^{\rm rem}$ and
-$\widehat D$, then comparing their respective minimizers, gives
-\[
- F_{D^{\rm rem}}(\widehat\pi)
- \le \Phi(D^{\rm rem})
-      +2L_0d(\widehat D,D^{\rm rem}).
-\]
-Comparing the remaining input with the original one gives
-\[
- \Phi(D^{\rm rem})
- \le \Phi(D)+L_0d(D^{\rm rem},D).
-\]
-Thus pilot learning costs two copies of the estimation error and one copy of
-the change caused by removing the pilot.  In each application we combine
-these two inequalities directly with the model-specific finite-schedule
-error.
 
 \subsection{Probabilistic tools}
 \label{sec:probabilistic-tools}

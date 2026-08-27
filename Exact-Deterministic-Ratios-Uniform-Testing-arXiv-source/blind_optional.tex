@@ -405,8 +405,12 @@ Zero preservation matters because a tested zero completes at its test.
 Write $D[p]^{\rm grid}$ for the rounded empirical distribution and
 $\mu_p^{\rm grid}=\int p\,dD[p]^{\rm grid}(p)$.
 
-Coupling each value with its rounded value and applying
-\cref{lem:zero-preserving-transport} gives
+Couple each value with its rounded copy and use the same fluid decisions for
+the two copies.  Zeros remain zeros and hence complete at the same tests.  At
+every prefix, at most one unit of job mass has received processing, so
+rounding changes accumulated work by at most $h_n$.  Thus either
+unfinished-mass curve is contained in a horizontal $h_n$-shift of the other;
+integrating gives
 \begin{equation}
  |\PhiBE(D)-\PhiBE(D^{\rm grid})|\le h_n.
  \label{eq:blind-rounding-stability}
