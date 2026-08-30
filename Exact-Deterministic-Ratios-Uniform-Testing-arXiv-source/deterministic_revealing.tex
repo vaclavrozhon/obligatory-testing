@@ -46,14 +46,8 @@ and let $\Rquad(u)$ be its positive root, so
  T_s(\Rquad(u))=0.
  \label{eq:opt:Rquad-equation}
 \end{equation}
-Equivalently,
-\begin{equation}
- \Rquad(u)=
- \frac{-1-u+2u^2-u^3+
- \sqrt{u^6-4u^5+10u^4-6u^3-3u^2+6u-3}}
- {2(u-1)}.
- \label{eq:opt:Rquad-explicit}
-\end{equation}
+The positive-root characterization is the form used below; expanding it by
+the quadratic formula gives an equivalent but uninformative radical.
 
 At the other end, let $\uDet{5}>1$ solve
 $\uDet{5}-3=\ln \uDet{5}$ and define
@@ -150,20 +144,21 @@ are developed in \cref{sec:det-branchwise-lower}.  The following table maps
 each interval to its upper-bound witness.
 
 \begin{center}
-\begin{tabular}{@{}lll@{}}
+\footnotesize
+\begin{tabular}{@{}L{0.16\linewidth}L{0.22\linewidth}L{0.17\linewidth}L{0.29\linewidth}@{}}
 \toprule
-range & algorithm & parameter choice \\
+range & algorithm & parameter choice & matching lower construction \\
 \midrule
 $0<u\le \uDet{2}$
- & \textsc{Raw} & none \\
+ & \textsc{Raw} & none & binary hidden stopping \\
 $\uDet{2}<u\le \uDet{3}$
- & \textsc{ForcedPrefixUTE} & $b=b(u)$ from \eqref{eq:opt:ute-parameters} \\
+ & \textsc{ForcedPrefixUTE} & $b=b(u)$ & binary hidden stopping \\
 $\uDet{3}<u\le\uDet{4}$
- & \textsc{ForcedPrefixUTE} & $b=0$ \\
+ & \textsc{ForcedPrefixUTE} & $b=0$ & binary hidden stopping \\
 $\uDet{4}<u<\uDet{5}$
- & \textsc{AdaptiveThreshold} & $c=c(u)$ from \eqref{eq:opt:cm-parametrization} \\
+ & \textsc{AdaptiveThreshold} & $c=c(u)$ & cap plus harmonic block \\
 $\uDet{5}\le u<\infty$
- & \textsc{AdaptiveThreshold} & $c=r$ \\
+ & \textsc{AdaptiveThreshold} & $c=r$ & harmonic core \\
 \bottomrule
 \end{tabular}
 \end{center}

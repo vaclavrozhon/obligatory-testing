@@ -24,6 +24,14 @@ Kazuoki Azuma.
 \newblock \href {https://doi.org/10.2748/tmj/1178243286}
   {\path{doi:10.2748/tmj/1178243286}}.
 
+\bibitem[BGH{\etalchar{+}}26]{GrebikEtAl2026Bolzano}
+Martin Balko, Jan Greb{\'i}k, Pavel Hub{\'a}{\v c}ek, Martin Kouteck{\'y},
+  Mat{\v e}j Kripner, V{\'a}clav Rozho{\v n}, Robert {\v S}{\'a}mal, and
+  Adri{\'a}n Z{\'a}me{\v c}n{\'i}k.
+\newblock Bolzano: Case studies in {LLM}-assisted mathematical research, 2026.
+\newblock URL: \url{https://arxiv.org/abs/2604.16989}, \href
+  {https://arxiv.org/abs/2604.16989} {\path{arXiv:2604.16989}}.
+
 \bibitem[BS26]{BuldSchulz2026}
 Felix Buld and Andreas~S. Schulz.
 \newblock Scheduling with testing: Competitive algorithms for minimizing the
@@ -96,14 +104,6 @@ Mingyang Gong, Zhi-Zhong Chen, and Kuniteru Hayashi.
 \newblock \href {https://doi.org/10.1007/s00453-023-01198-w}
   {\path{doi:10.1007/s00453-023-01198-w}}.
 
-\bibitem[GHK{\etalchar{+}}26]{GrebikEtAl2026Bolzano}
-Jan Greb{\'i}k, Pavel Hub{\'a}{\v c}ek, Martin Kouteck{\'y}, Mat{\v e}j
-  Kripner, V{\'a}clav Rozho{\v n}, Robert {\v S}{\'a}mal, and Adri{\'a}n
-  Z{\'a}me{\v c}n{\'i}k.
-\newblock Bolzano: Case studies in {LLM}-assisted mathematical research, 2026.
-\newblock URL: \url{https://arxiv.org/abs/2604.16989}, \href
-  {https://arxiv.org/abs/2604.16989} {\path{arXiv:2604.16989}}.
-
 \bibitem[Hoe63]{Hoeffding1963}
 Wassily Hoeffding.
 \newblock Probability inequalities for sums of bounded random variables.
@@ -131,10 +131,10 @@ Bob Krekelberg, Alison Hsiang-Hsuan Liu, Fu-Hong Liu, Prudence W.~H. Wong, and
 
 \bibitem[LL26]{LiangLiang2026}
 Kao-Chuan Liang and Ya-Chun Liang.
-\newblock The completion-threshold framework for obligatory-test scheduling on
-  multiple machines, 2026.
+\newblock Hardness of obligatory-test scheduling on multiple machines, 2026.
 \newblock Version 2, revised 14 July 2026.
-\newblock \href {https://arxiv.org/abs/2606.02029} {\path{arXiv:2606.02029}}.
+\newblock URL: \url{https://arxiv.org/abs/2606.02029}, \href
+  {https://arxiv.org/abs/2606.02029} {\path{arXiv:2606.02029}}.
 
 \bibitem[LLWZ23]{LiuLiuWongZhang2023}
 Alison Hsiang-Hsuan Liu, Fu-Hong Liu, Prudence W.~H. Wong, and Xiao-Ou Zhang.

@@ -92,6 +92,16 @@ comparison loses at most `800 (L+3)^2/m` after normalization by `n^2` for
 each fixed input bound `L`. This is a fully checked vanishing rate, though it
 is intentionally slower than the sharper manuscript rate.
 
+The later modules `ObligatoryGrowingCutoffFourThirds` and
+`ObligatoryPaperAlgorithm` reuse the paper's literal growing policy with
+pilot `floor(n^(3/4))`, grid `floor(n^(1/4))`, cutoff `32+n^(1/20)`, and
+mesh cutoff/grid.  They export both
+`paperGrowingPolicy_four_thirds_multiplicative` and
+`exists_fixedPlacement_paperGrowingPolicy_concrete_rate` with the identical
+left-hand term `physicalGrowingRunCost`.  The older universal-grid theorem
+above remains useful as the auxiliary competitor lower discretization; it is
+not a different policy needed by the paper statement.
+
 ### Randomized optional-testing structure
 
 `RandomizedOptionalFluid` checks the exact fractional full-module replacement,

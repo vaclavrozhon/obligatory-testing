@@ -1,0 +1,137 @@
+\section{Standard concentration estimates}
+\label{sec:standard-concentration}
+
+We collect here the concentration estimates used in the randomized sections.
+All of them are finite-space statements.  We use without further mention the
+union bound, Markov's inequality
+$\Prob(Y\ge t)\le \EE Y/t$ for $Y\ge0$, and the tail identity
+$\EE Y=\int_0^\infty\Prob(Y\ge t)\,dt$.
+
+We begin with Chernoff bounds for sums of independent Bernoulli variables.
+
+\begin{lemma}[Chernoff bounds]
+\label{lem:chernoff}
+Let $X=\sum_{i=1}^m X_i$, where the $X_i$ are independent Bernoulli random
+variables, and write $\mu=\EE X$.  For every $\delta>0$,
+\begin{equation}
+ \Prob\bigl(X\ge(1+\delta)\mu\bigr)
+ \le \left(\frac{e^\delta}{(1+\delta)^{1+\delta}}\right)^\mu
+ \le \exp\!\left(-\frac{\delta^2\mu}{2+\delta}\right).
+ \label{eq:chernoff-upper}
+\end{equation}
+For $0\le\delta\le1$,
+\begin{equation}
+ \Prob\bigl(X\le(1-\delta)\mu\bigr)
+ \le \exp\!\left(-\frac{\delta^2\mu}{2}\right).
+ \label{eq:chernoff-lower}
+\end{equation}
+\end{lemma}
+
+These are the standard exponential-moment bounds of
+Chernoff~\cite{Chernoff1952}.
+
+Most of our samples are drawn from a fixed input without replacement.  The
+next lemma gives both a tail bound and the finite-population variance used
+for such samples.
+
+\begin{lemma}[Sampling without replacement]
+\label{lem:sampling-without-replacement}
+Let $x_1,\ldots,x_N\in[0,1]$, let $X_1,\ldots,X_N$ be a uniformly random
+permutation of these numbers, and put
+$\bar x=N^{-1}\sum_i x_i$.  For $1\le k\le N$ and $t\ge0$,
+\begin{equation}
+ \Prob\left(\left|\sum_{i=1}^kX_i-k\bar x\right|\ge t\right)
+ \le 2\exp\!\left(-\frac{2t^2}{k}\right).
+ \label{eq:without-replacement-hoeffding}
+\end{equation}
+Moreover, if $\widehat x_k=k^{-1}\sum_{i=1}^kX_i$ and
+$\sigma^2=N^{-1}\sum_i(x_i-\bar x)^2$, then, for $N>1$,
+\begin{equation}
+ \operatorname{Var}(\widehat x_k)
+ =\frac{N-k}{k(N-1)}\sigma^2
+ \le\frac{1}{4k}.
+ \label{eq:without-replacement-variance}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+The estimate \cref{eq:without-replacement-hoeffding} is Hoeffding's
+sampling-without-replacement inequality~\cite[Section~6]{Hoeffding1963}.
+The variance identity is the elementary finite-population correction.
+\end{proof}
+
+Applying the scalar variance bound to class indicators gives a concise
+estimate for an empirical histogram.
+
+\begin{lemma}[Histogram error without replacement]
+\label{lem:without-replacement-histogram}
+Partition a population of $N$ occurrences into $d$ classes.  Let $p$ be the
+vector of class frequencies in the population and let $\widehat p$ be the
+corresponding frequency vector among the first $k$ occurrences in a uniformly
+random permutation.  Then
+\begin{equation}
+ \EE\|\widehat p-p\|_1\le\sqrt{\frac d k}.
+ \label{eq:without-replacement-histogram}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+For a class of mass $p_j$, \cref{eq:without-replacement-variance} and
+Cauchy--Schwarz give
+$\EE|\widehat p_j-p_j|\le\sqrt{p_j/k}$.  Summing over the classes and using
+$\sum_j\sqrt{p_j}\le\sqrt d$ proves the claim.
+\end{proof}
+
+An adaptive algorithm may stop at a data-dependent time.  We therefore also
+need one event that controls every class at every possible prefix.
+
+\begin{lemma}[Uniform prefix histogram bounds]
+\label{lem:uniform-prefix-histogram}
+In the same population, let $H_{k,j}$ count class $j$ among the first $k$
+entries of a uniformly random permutation.  Then
+\begin{align}
+ \Prob\left(
+   \max_{0\le k\le N}\max_{1\le j\le d}|H_{k,j}-kp_j|\ge t
+ \right)
+ &\le 2d(N+1)\exp\!\left(-\frac{2t^2}{N}\right),
+ \label{eq:uniform-prefix-hoeffding}\\
+ \EE\max_{0\le k\le N}\max_{1\le j\le d}|H_{k,j}-kp_j|
+ &\le C\sqrt{N\ln(2d(N+1))}
+ \label{eq:uniform-prefix-mean}
+\end{align}
+for a universal constant $C$.
+\end{lemma}
+
+\begin{proof}
+Apply \cref{eq:without-replacement-hoeffding} to every binary class indicator
+and union-bound over $k$ and $j$ to obtain
+\cref{eq:uniform-prefix-hoeffding}.  Integrating that tail bound proves
+\cref{eq:uniform-prefix-mean}.
+\end{proof}
+
+Predictable sampling introduces dependent increments rather than a fixed
+prefix.  The following maximal inequalities provide the needed uniform
+control.
+
+\begin{lemma}[Martingale maximal inequalities]
+\label{lem:martingale-maximal}
+Let $(M_k,\mathcal F_k)_{k=0}^N$ be a real martingale with $M_0=0$; that is,
+$\mathcal F_k$ records the information available by time $k$ and
+$\EE[M_k\mid\mathcal F_{k-1}]=M_{k-1}$.
+If $\EE|M_N|^2<\infty$, then Doob's inequality gives
+\begin{equation}
+ \EE\max_{0\le k\le N}|M_k|^2\le4\EE|M_N|^2.
+ \label{eq:doob-L2}
+\end{equation}
+If instead $|M_k-M_{k-1}|\le b_k$ almost surely for deterministic $b_k$,
+then maximal Azuma--Hoeffding gives, for every $t\ge0$,
+\begin{equation}
+ \Prob\left(\max_{0\le k\le N}|M_k|\ge t\right)
+ \le2\exp\!\left(-\frac{t^2}{2\sum_{k=1}^N b_k^2}\right).
+ \label{eq:maximal-azuma}
+\end{equation}
+\end{lemma}
+
+We use the classical forms due to Doob~\cite{Doob1953} and
+Azuma~\cite{Azuma1967}; the maximal version of the latter follows by stopping
+the usual exponential bound when the displayed threshold is first crossed.

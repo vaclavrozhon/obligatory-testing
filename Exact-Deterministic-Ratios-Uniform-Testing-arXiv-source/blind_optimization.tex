@@ -22,6 +22,14 @@ This small change removes the threshold decision entirely.  It also shows
 that the bounded randomized ratio in the revealing model is genuinely an
 information effect.
 
+\begin{figure}[htbp]
+\centering
+\input{blind_optimization_curve_tikz}
+\caption{Exact deterministic and randomized blind-optimization curves.
+Unlike their revealing counterparts, both diverge with the raw cap $u$.}
+\label{fig:blind-optimization-curves}
+\end{figure}
+
 The section first proves that deterministic instance optimality is impossible
 and determines the exact deterministic worst-case curve.  It then proves two
 closely related randomized statements.  The first, \cref{thm:bo-instance},
@@ -369,7 +377,7 @@ The asymptotic formula \eqref{eq:bo-det-asymptotic} follows directly from
 
 \begin{theorem}[Blind-optimization instance optimality]
 \label{thm:bo-instance}
-For every fixed $u<\infty$ there exist a randomized nonanticipating algorithm
+For every fixed $0<u<\infty$ there exist a randomized nonanticipating algorithm
 $\mathcal A_{\mathsf{BO}}$, depending only on $n,u$, and a sequence
 $\eps_u(n)\to0$ such that every vector $p\in[0,u]^n$ satisfies
 \begin{equation}
@@ -412,7 +420,7 @@ length $u$.  Either action completes exactly one job.
 Fix the private seed of an algorithm and place the announced occurrences
 uniformly behind the labels.  We may assume that the algorithm completes every
 job.  Treat equal-valued jobs as distinct and reveal their values in the
-analysis in first-touch order.  By deferred decisions this order is a
+analysis in first-touch order.  By the principle of deferred decisions, this order is a
 uniform permutation, and the decision whether to optimize the next job uses
 only the values revealed by earlier optimized jobs.  Running a job raw does
 not reveal its value to the algorithm; exposing it

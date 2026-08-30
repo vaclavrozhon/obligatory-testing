@@ -62,6 +62,14 @@ The curve is continuous and has global maximum
 attained at $u=(3+\sqrt3)/2$.
 \end{theorem}
 
+\begin{figure}[htbp]
+\centering
+\input{randomized_curve_tikz}
+\caption{The exact randomized revealing-optimization curve.  The two
+binary hard-instance families switch at the marked transition points.}
+\label{fig:randomized-revealing-curve}
+\end{figure}
+
 \Cref{thm:common-upper-instance} identifies the best asymptotic online cost
 on each input.  Here we compare that value with the clairvoyant SPT cost and
 maximize over all empirical distributions.  Replacing an initial part of the
@@ -207,6 +215,35 @@ it can only increase the ratio.  We may therefore assume
  \label{eq:rcu-flat-prefix}
 \end{equation}
 
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=0.95cm,y=2.5cm]
+  \begin{scope}
+    \draw[->,black!65] (0,0)--(4.4,0) node[right] {$t$};
+    \draw[->,black!65] (0,0)--(0,1.08) node[above] {$S_D$};
+    \draw[violet!80!black,very thick]
+      (0,0.95)--(0.7,0.95)--(0.7,0.78)--(1.45,0.78)--
+      (1.45,0.55)--(2.4,0.55)--(2.4,0.3)--(4.0,0.3)--(4.0,0);
+    \draw[black!45,densely dashed] (2.4,0)--(2.4,1.02);
+    \node[font=\small] at (2.15,-0.13) {$\tau_D$};
+    \node[font=\small] at (2.0,1.15) {before};
+  \end{scope}
+  \begin{scope}[xshift=6cm]
+    \draw[->,black!65] (0,0)--(4.4,0) node[right] {$t$};
+    \draw[->,black!65] (0,0)--(0,1.08) node[above] {$S_D$};
+    \draw[teal!75!black,very thick]
+      (0,0.68)--(2.4,0.68)--(2.4,0.3)--(4.0,0.3)--(4.0,0);
+    \draw[black!45,densely dashed] (2.4,0)--(2.4,1.02);
+    \node[font=\small] at (2.15,-0.13) {$\tau_D$};
+    \node[font=\small] at (2.0,1.15) {flattened prefix};
+    \node[font=\small,teal!70!black] at (1.2,0.76) {height $y$};
+  \end{scope}
+\end{tikzpicture}
+\caption{Survival-function flattening preserves the threshold constraint
+and stationary numerator while decreasing the offline denominator.}
+\label{fig:survival-flattening}
+\end{figure}
+
 If $u-1\le\tau_D\le u$, the offline integral lies entirely in the flat part,
 and $S_D(t)^2\le y^2$ on the remaining tail.  It follows that
 \begin{equation}
@@ -255,6 +292,14 @@ $E=Ly^2$.  Substitution of these two values gives, respectively,
 \end{align}
 They are attained by rectangular survival functions: respectively a binary
 distribution on $\{0,\tau_D\}$ and one on $\{0,u\}$.
+
+Thus the two scalar candidates have a concrete interpretation.  The
+$B_u$ family, supported on $\{0,u\}$, determines the curve from $u=1$
+through $u=25/4$ (with its optimizer moving from the boundary
+$\tau_D=u$ to an interior value at $\uRand{2}$).  The $A$ family, supported
+on $\{0,\tau_D\}$, takes over at $u=25/4$; its choice
+$\tau_D=2$ gives the obligatory $4/3$ plateau.  The calculations below
+verify these dominance ranges.
 
 It remains to cover $\tau_D>u$.  Equation
 \eqref{eq:rcu-threshold-equation} and the zero extension of $S_D$ give

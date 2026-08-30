@@ -234,7 +234,7 @@ labeling with $n/2$ zero jobs and $n/2$ length-two jobs for which
 \end{equation}
 On the same input, an announced randomized algorithm $\mathcal A'$ has
 \[
- \ALG_{\mathcal A'}=n^2+\frac34n.
+ \EE\ALG_{\mathcal A'}=n^2+\frac34n.
 \]
 
 \item If processing times are not bounded by a fixed constant, there is no
@@ -244,7 +244,7 @@ independent of the input and every sufficiently large $n$, there is an input
 with values in $[0,n^2]$ and an announced randomized algorithm $\mathcal A'$
 such that
 \begin{equation}
- \ALG_{\mathcal A}\ge\ALG_{\mathcal A'}+\frac18n^2.
+ \EE\ALG_{\mathcal A}\ge\EE\ALG_{\mathcal A'}+\frac18n^2.
  \label{eq:ot-unbounded-not-instance-optimal}
 \end{equation}
 \end{enumerate}
@@ -278,7 +278,7 @@ operation contributes the same $Hn(n+1)/2$ in total, regardless of its
 position.  Relative to the algorithm $\mathcal A'$ that tests and processes
 each job immediately, the expected excess is
 \begin{equation}
- \ALG_{\mathcal A}-\ALG_{\mathcal A'}
+ \EE\ALG_{\mathcal A}-\EE\ALG_{\mathcal A'}
  =\EE\sum_{k=1}^n(k-1-X_k).
  \label{eq:ot-all-H-excess}
 \end{equation}
@@ -297,7 +297,7 @@ order, defer positive jobs until it finds the zero, and then finish them;
 moving its unit tests away from the corresponding processing operations
 costs at most $n^2$.  Hence
 \[
- \ALG_{\mathcal A}-\ALG_{\mathcal A'}
+ \EE\ALG_{\mathcal A}-\EE\ALG_{\mathcal A'}
  \ge H\left(\frac{3n}{8}-\frac12\right)-n^2,
 \]
 which exceeds $n^2/8$ for all sufficiently large $n$.  Averaging over the

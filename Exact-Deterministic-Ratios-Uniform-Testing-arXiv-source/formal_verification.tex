@@ -10,13 +10,66 @@ It then displays the decisive part of a public Lean signature and explains
 how to read it.
 
 The excerpts suppress namespace prefixes, routine positivity hypotheses, and
-local parameter definitions, but not the quantified input, algorithm,
-completion premise, cost comparison, or error term.  The exact export name is
-shown in every excerpt, so that the complete statement can be found by text
-search in the accompanying source.  Randomized Lean statements represent
-private randomness by a nonempty finite type of seeds and
-\texttt{uniformAverage}; permutations, samples, and tie-breaking coins are
-all included in such seeds.
+some local parameter definitions.  Ellipses are expository: the exact export
+name is shown in every excerpt, and the source signature---not the excerpt---is
+authoritative about all arguments.  In particular, an excerpt should not be
+read as evidence for a quantifier that it does not display.  Randomized Lean
+statements represent private randomness by a nonempty finite type of seeds
+and \texttt{uniformAverage}; permutations, samples, and tie-breaking coins
+are all included in such seeds.
+
+\begin{center}
+\scriptsize
+\renewcommand{\arraystretch}{1.1}
+\begin{longtable}{@{}L{0.22\linewidth}L{0.31\linewidth}L{0.12\linewidth}L{0.25\linewidth}@{}}
+\toprule
+paper result & principal Lean export & coverage & boundary/convention \\
+\midrule
+deterministic $\mathsf{OT}$ ratio
+ & \path{exact_ratio_main} & full
+ & fixed inputs; completing strategy \\
+randomized $\mathsf{OT}$ ratio
+ & \path{paperGrowingPolicy_four_thirds_multiplicative};
+   \path{oblivious_iid_binary_lower_online_actualOPT}
+ & partial
+ & finite uniform seeds; paper-level shuffle bridge is prose \\
+bounded $\mathsf{OT}$ instance comparison
+ & \path{exists_fixedPlacement_paperGrowingPolicy_concrete_rate}
+ & partial
+ & chooses one placement; symmetrized corollary is not exported \\
+bounded $\mathsf{BE}$ comparison and unbounded impossibility
+ & \path{boundedUniform_blindPilot_concrete_rate};
+   \path{no_finite_ratio_at_quadratic_scale_operational}
+ & finite-seed full
+ & finite uniform seeds \\
+$\mathsf{BO}$ curves and instance comparison
+ & \path{deterministicCurve_operational_exact};
+   \path{exists_binary_mass_operational_ratio_tendsto_curve};
+   \path{finiteSeed_expectedCost_ge_instanceBenchmark_nsq}
+ & finite-seed full
+ & placement average appears in the lower export \\
+deterministic $\mathsf{RO}$ curve
+ & \path{exact_ratio_main} & full
+ & all positive finite caps \\
+randomized $\mathsf{RO}$ curve
+ & \path{randomizedRevealingCurveExact} & finite-seed full
+ & fixed-input finite Yao selection \\
+bounded $\mathsf{RO}$ instance comparison
+ & \path{exists_fixedPlacement_compiled_le_randomizedCompetitor_concrete_rate}
+ & partial
+ & chooses one placement; symmetrized corollary is not exported \\
+\bottomrule
+\end{longtable}
+\end{center}
+
+Here ``full'' means full relative to the seed convention in the last column,
+not that the surrounding paper proof has been replaced line for line.  The
+mathematical paper allows general private randomness.  Its reduction to
+finite support uses the fact that, on each finite input family used by a
+bound, only finitely many transcript decisions and their expected costs are
+relevant; conditioning and finite-support approximation preserve the desired
+inequality with an arbitrarily small additional error.  This reduction is
+not currently a Lean export.
 
 \subsection{The common asymptotic meaning}
 
@@ -100,16 +153,25 @@ theorem oblivious_iid_binary_lower_online_actualOPT
           finiteObligatoryOPT (iidBinaryProcessingTime input) <=
         uniformAverage fun seed =>
           Online.runCompletionCost .infinite ...
+
+theorem paperGrowingPolicy_four_thirds_multiplicative
+    (n : Nat) (hR : 12 <= fourthRoot n)
+    (p : Fin (paperPilotSize n + paperRest n) -> Real)
+    (hp : forall i, 0 <= p i) :
+    uniformAverage (physicalGrowingRunCost ... p) <=
+      (4 / 3 + paperWorstCaseError n) * finiteObligatoryOPT p
+
+theorem paperWorstCaseError_tendsto_zero :
+  Tendsto paperWorstCaseError atTop (nhds 0)
 \end{lstlisting}
 
-The upper theorem uses the literal fixed-cutoff sample--learn--fallback
-algorithm $\mathcal A_n^{(32)}$ from
-\cref{thm:rand-obligatory}, with $d=\lfloor n^{1/4}\rfloor$,
-$k=\lfloor n^{3/4}\rfloor$, and cutoff $32$.  With this checked parameter
-choice, $R^7=o(n^2)$.  Thus Lean verifies the exact competitive ratio.  This
-is the fixed-cutoff branch now displayed explicitly in
-\cref{alg:intro-obligatory-rand}, not its growing-cutoff companion.  In the
-lower theorem the selected
+The public growing-policy theorem uses exactly the parameters printed in
+\cref{alg:ot-growing-cutoff-instance}: $d=\lfloor n^{1/4}\rfloor$,
+$k=\lfloor n^{3/4}\rfloor$, $B=32+n^{1/20}$, and $\eta=B/d$.
+The vanishing-error theorem therefore verifies the $4/3$ competitive ratio
+for $\mathcal A_n^*$ itself.  Lean also retains the fixed-cutoff companion
+$\mathcal A_n^{(32)}$ and its sharper explicit $20378n^{7/4}$ additive
+bound.  In the lower theorem the selected
 $\{0,2\}$ input is outside the seed average, and $4n/(3n+5)\to4/3$.
 
 \subsection{Obligatory-testing instance optimality}
@@ -133,7 +195,7 @@ The final Lean comparison is already between the physical learned run and an
 arbitrary family of completing competitors.
 
 \begin{lstlisting}[style=lean]
-theorem exists_fixedPlacement_universalGrowingPolicy_concrete_rate
+theorem exists_fixedPlacement_paperGrowingPolicy_concrete_rate
     {Seeds : Type*} [Fintype Seeds] [Nonempty Seeds]
     ... {L : Real} (hL : 0 < L)
     (p : Fin (k + r) -> Real)
@@ -146,10 +208,10 @@ theorem exists_fixedPlacement_universalGrowingPolicy_concrete_rate
         (k + r : Real) ^ 2 *
           (uniformAverage (fun seed =>
              normalizedCost p (competitor seed) placement) +
-           2 * concreteUniversalGrowingError L n)
+           paperInstanceError L n)
 
-theorem concreteUniversalGrowingError_tendsto_zero (L : Real) :
-  Tendsto (concreteUniversalGrowingError L) atTop (nhds 0)
+theorem paperInstanceError_tendsto_zero (hL : 0 < L) :
+  Tendsto (paperInstanceError L) atTop (nhds 0)
 \end{lstlisting}
 
 \texttt{FirstTouchesAreTests} is exactly the obligatory-testing restriction.
@@ -158,16 +220,28 @@ competitor's seed, while the learned algorithm averages over its own private
 sample and order.  The second theorem turns the displayed normalized error
 into $o_L(1)$.
 
-The checked universal growing-cutoff family is structurally the same
-sample--learn--fallback algorithm but uses a deliberately slower convenient
-parameter sequence: if $m=\lfloor n^{1/32}\rfloor$, it has cutoff $m-1$,
-$m^2-1$ positive grid intervals, mesh $1/m$, and pilot size of order
-$n^{7/8}$.  The development does not currently identify this literal family
-with the fixed-cutoff family used above or prove the uniform unbounded
-$4/3$ estimate for this growing family.  The manuscript separately proves its
-sharper $n^{3/4}$-pilot, $32+n^{1/20}$-cutoff version.  Hence the exact ratio
-and the bounded instance comparison are both checked, but their realization
-by one definitionally identical Lean strategy is not part of the audit.
+This is not, by itself, the uniform-placement average in the paper theorem.
+For a finite-seed competitor, the standard bridge is to enlarge its seed by
+an independent uniform permutation $\rho$ and run it after composing the
+hidden placement with $\rho$.  For every fixed placement $\sigma$,
+$\sigma\circ\rho$ is uniform, so the symmetrized competitor has the same
+expected cost at every fixed $\sigma$, namely the original competitor's
+uniform-placement average.  Applying the displayed \texttt{exists
+placement} theorem to this enlarged finite seed therefore yields the paper
+inequality.  The same symmetrization turns the fixed binary input in the
+randomized obligatory lower theorem into the private-shuffle convention.
+This corollary is mathematically routine but is not among the public Lean
+exports displayed here; the coverage table marks the distinction.
+
+Both displayed exports have the identical left-hand term
+\texttt{physicalGrowingRunCost} with pilot size
+$\lfloor n^{3/4}\rfloor$, grid size $\lfloor n^{1/4}\rfloor$, cutoff
+$32+n^{1/20}$, and mesh $B/d$.  The instance proof compares its fine-grid
+upper bound to an exact, grid-independent population optimum.  It is then
+free to use a slower $m=\lfloor n^{1/32}\rfloor$ auxiliary grid solely for
+the adversarial lower bound on the competitor.  Thus that scale is a proof
+device, not a second algorithm, and the ``one algorithm'' statement is now a
+literal fact of the Lean theorem signatures.
 
 \subsection{Why the obligatory instance assumptions are necessary}
 
@@ -348,7 +422,7 @@ growing sublinear pilot makes the upper error vanish.
 
 \begin{theorem}[Blind-optimization instance statement]
 \label{thm:lean-audit-blind-optimization-instance}
-For fixed $u<\infty$, a sample-then-commit randomized algorithm satisfies,
+For fixed $0<u<\infty$, a sample-then-commit randomized algorithm satisfies,
 for every $p\in[0,u]^n$,
 \[
  \EE\ALG_{\mathcal A^*}(p)
@@ -485,7 +559,7 @@ learner.
 
 \begin{theorem}[Lean-audited revealing instance comparison]
 \label{thm:lean-audit-revealing-instance}
-Fix $u<\infty$.  There is one randomized nonanticipating algorithm such that
+Fix $0<u<\infty$.  There is one randomized nonanticipating algorithm such that
 for every $p\in[0,u]^n$ and every completing announced algorithm
 $\mathcal B$ with a finite private seed,
 \[
@@ -522,6 +596,14 @@ independent pilot and main permutations.  The competitor may adapt among
 tests, processing, and raw execution and is given the input multiset.  The
 placement is chosen before its seed is averaged, and the second theorem
 supplies the required $o_u(1)$ normalized error.
+
+As for obligatory testing, existence of one placement is weaker than a
+uniform-placement average until the competitor is symmetrized.  Enlarge its
+finite seed by an independent uniform permutation and compose that
+permutation with the fixed placement.  The competitor's expected cost then
+becomes placement-independent and equals its original private-shuffle
+average, so the displayed theorem implies the finite-seed paper statement.
+No public Lean theorem currently packages this final symmetrization step.
 
 The concrete checked pilot has size
 $\lfloor n/m^2\rfloor=\Theta(n^{7/8})$, where
@@ -567,15 +649,43 @@ it proves mathematical properties of the algorithms but does not extract a
 floating-point implementation.  The randomized lower statements shown here
 quantify over nonempty finite seed types.
 
-All mathematical directions of the Section~1 headline theorems now have
-Lean exports.  The checked obligatory $4/3$ and
-bounded instance-optimal upper bounds currently use different concrete
-parameter families, as recorded above.  Lean verifies the exact symbolic
-constants, branch transition equations, and the rational decimal brackets
-listed above.  Longer printed digit strings remain readability aids unless a
-correspondingly narrow interval is explicitly exported.
+The coverage table at the start of this appendix is the authoritative
+summary.  In particular, it distinguishes full operational packages from
+paper-level corollaries whose finite-seed symmetrization is still supplied in
+prose.  The obligatory $4/3$ and bounded instance-optimal upper exports use
+the same \texttt{physicalGrowingRunCost} policy and the same concrete
+parameter family; the slower grid mentioned above is only a lower-bound
+proof device.  Lean verifies the exact symbolic constants, branch transition
+equations, and the rational decimal brackets listed above.  Longer printed
+digit strings remain readability aids unless a correspondingly narrow
+interval is explicitly exported.
 
-From the repository root, the complete development is checked with
+The public development is available at
+\begin{center}
+\url{https://github.com/vaclavrozhon/obligatory-testing}.
+\end{center}
+The archive supplied with this manuscript is
+\begin{center}
+\path{obligatory-testing-lean-artifact.zip}.
+\end{center}
+It is the immutable reproduction target; its SHA-256 digest is recorded
+below.  The file \path{lean-toolchain} pins Lean to
+\texttt{leanprover/lean4:v4.30.0}, and \path{lake-manifest.json} pins mathlib
+release \texttt{v4.30.0}.  Its exact commit is
+\begin{center}
+\path{c5ea00351c28e24afc9f0f84379aa41082b1188f}.
+\end{center}
+No archival DOI has been
+minted for this draft, so the archive digest, rather than the rolling branch,
+identifies the checked source exactly.
+
+\begin{center}
+\small\ttfamily
+SHA-256:\par
+54ac140a8235db3344866c8f3fcf98c8355ab369642fc01c759ed49dbc15f1a3
+\end{center}
+
+From the unpacked archive root, the complete development is checked with
 \begin{center}
 \texttt{lake build}
 \end{center}

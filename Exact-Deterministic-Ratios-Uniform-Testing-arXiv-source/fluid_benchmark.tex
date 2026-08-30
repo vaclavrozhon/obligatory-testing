@@ -85,6 +85,29 @@ layer-cake identity gives
 Thus continuous work is only a convenient coordinate for drawing the
 completion curve; the schedule itself makes finitely many block decisions.
 
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1.35cm,y=3.1cm]
+  \fill[teal!12]
+    (0,1)--(4.3,1)--(4.3,0.98)--(3.6,0.82)--(3.0,0.72)--
+    (2.35,0.38)--(1.55,0.38)--(0.85,0.16)--(0,0)--cycle;
+  \draw[->,black!70] (0,0)--(4.55,0) node[right] {normalized work $x$};
+  \draw[->,black!70] (0,0)--(0,1.08) node[above] {mass};
+  \draw[black!45,densely dashed] (0,1)--(4.35,1)
+    node[right,font=\small] {all jobs};
+  \draw[teal!75!black,very thick]
+    (0,0)--(0.85,0.16)--(1.55,0.38)--(2.35,0.38)--
+    (3.0,0.72)--(3.6,0.82)--(4.3,0.98);
+  \node[teal!70!black,font=\small,anchor=south west] at (1.55,0.42)
+    {completion curve $C(x)$};
+  \node[font=\small,align=center] at (2.75,0.9)
+    {$\Area(C)=\int(1-C(x))\,dx$};
+\end{tikzpicture}
+\caption{A fluid completion curve.  Total completion cost is the shaded
+area between completed mass and total mass.}
+\label{fig:fluid-completion-curve}
+\end{figure}
+
 \paragraph{The best testing block.}
 
 We next determine which positive types should be processed in the same block
@@ -392,6 +415,16 @@ Integrating the pointwise inequality and applying
 \cref{eq:common-envelope-area} and optimality.
 \end{proof}
 
+\begin{center}
+\fbox{\begin{minipage}{0.9\linewidth}
+\textbf{Fluid takeaway.}
+For fixed $D,q,v$, one maximum-density testing block followed by the
+remaining blocks in shortest-work-per-completion order dominates every
+other feasible fluid schedule at every work budget.  Instance optimality
+will follow by learning this finite block plan from a private pilot sample.
+\end{minipage}}
+\end{center}
+
 \paragraph{The three models.}
 The theorem above fixes $D$, $q$, and $v$.  In obligatory testing we use
 $q=1$.  In revealing optimization with raw time $u$, we use $v=u$ and choose
@@ -407,5 +440,11 @@ processing time.
 It remains to connect this idealized problem with finite inputs.  For an
 input vector $p$, the empirical distribution $D[p]$ is already finitely
 supported.  We only round it to a smaller grid so that one concentration
-event controls all types simultaneously.  The next subsection proves both
-directions of this approximation.
+event controls all types simultaneously.  The finite transfer has the
+following architecture:
+\begin{center}
+\small
+fluid lower envelope $\longrightarrow$ plan learned from a pilot
+$\longrightarrow$ finite nonanticipating schedule.
+\end{center}
+The next subsection proves both directions of this approximation.

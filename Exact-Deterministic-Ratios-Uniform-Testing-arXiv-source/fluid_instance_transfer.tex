@@ -40,7 +40,7 @@ The three specializations used later are
  \begin{array}{c|c|c}
   \text{model}&r(p)&Q\\
   \hline
-  \mathsf{OT}&0&\{1\}\\
+  \mathsf{OT}&\text{irrelevant}&\{1\}\\
   \mathsf{RO}(u)&u&[0,1]\\
   \mathsf{BE}&p&[0,1].
  \end{array}
@@ -98,7 +98,7 @@ Keep zero as a separate class, partition $(0,L]$ into
 \end{equation}
 cells, and round positive values upward to their cell endpoints.  Write
 $D^+$ for the resulting empirical distribution and $h_n=L/K_n$ for the
-mesh.  Take $\delta_n=n^{-1/6}$ and stop the first-touch order while
+mesh.  Take $\delta_n=n^{-1/6}$ and stop when
 $\delta_n n+O(1)$ labels remain untouched.
 
 Apply the predictable-permutation estimate simultaneously to the vector of
@@ -235,6 +235,17 @@ $D$ and plan $\pi$, let $F_{r,D}(\pi)$ be its fluid completion cost.
  \label{eq:common-template-optimum}
 \end{equation}
 
+We use plans defined on the \emph{entire} grid, not only on the support of
+$D$.  Concretely, the maximum-density selector is extended canonically to an
+empty class: include it below the reciprocal-density threshold, exclude it
+above the threshold, and use the fixed convention ``include'' at equality.
+Thus a short type absent from the pilot still receives the correct action if
+it occurs later.  Among multiple minimizing tested fractions and block
+orders, choose the smallest tested fraction and then the lexicographically
+first order, with testing blocks before deferred blocks at equal density and
+grid index as the final tie-breaker.  These conventions make the learned
+plan a deterministic function of the public histogram on every grid cell.
+
 We need two simple facts about these plans.
 
 \begin{claim}[Implementing a fixed grid plan]
@@ -249,10 +260,26 @@ uniformly over the grid, its frequencies, and $\pi$.
 \end{claim}
 
 \begin{proof}
+Let $N$ be the number of labels to which the plan is applied.  Replace the
+tested fraction $q$ by $q_N=\lfloor qN\rfloor/N$ and select exactly
+$\lfloor qN\rfloor$ labels by a private uniform permutation.  This decision
+is made before any of their values are exposed.  Whenever a tested value in
+grid class $b$ is revealed, realize a fractional selector $g_b\in[0,1]$ by
+an independent private mark of probability $g_b$; the mark may determine
+whether the now-known processing operation is immediate or joins its
+class queue.  Within every queue use the private order, and order queues by
+the canonical block order above.  Direct-mode labels are likewise fixed
+before their hidden values are exposed.  Hence every action is
+nonanticipating.  A queue is used only after the tests that populate it, as
+guaranteed by the feasible order in \textsc{FluidSPT}.
+
 Expand total completion time into one-job and unordered-pair contributions.
 For two distinct jobs, the probabilities that zero, one, or both are tested
 differ from the corresponding products of the tested fraction by $O(1/n)$.
-Every operation and pair contribution is bounded in terms of $L$.
+The selector marks give the prescribed fractional class products exactly in
+expectation.  Replacing $q$ by $q_N$, stable tie-breaking, and diagonal terms
+change only $O_L(N)$ in total.  Every operation and pair contribution is
+bounded in terms of $L$.
 Summing the diagonal terms and these finite-population corrections gives
 $O_L(n)$; the remaining terms are exactly the fluid block area.
 \end{proof}
@@ -273,8 +300,17 @@ The same inequality holds after minimizing over grid plans.
 For a fixed plan, expand the area into the contributions of individual
 blocks and pairs of blocks.  Every contribution is bounded by a constant
 depending only on $L$.  Replacing first one input of each pair and then the
-other gives the displayed total-variation bound, uniformly over the number
-of grid classes and over the plan.  Applying the bound first to a
+other gives the displayed total-variation bound.  Explicitly, with
+$\|\cdot\|_{\rm TV}=\frac12\|\cdot\|_1$,
+\begin{equation}
+ \|D\otimes D-E\otimes E\|_{\rm TV}
+ \le \|(D-E)\otimes D\|_{\rm TV}
+     +\|E\otimes(D-E)\|_{\rm TV}
+ \le2\|D-E\|_{\rm TV}.
+ \label{eq:common-product-tv}
+\end{equation}
+The bound is uniform over the number of grid classes and over the plan.
+Applying it first to a
 minimizer for $D$ and then to one for $E$ proves the assertion for minima.
 \end{proof}
 
@@ -286,7 +322,7 @@ the first
  \label{eq:common-transfer-pilot-size}
 \end{equation}
 jobs.  It keeps positive sample jobs pending and forms their rounded
-histogram $\widehat D_n$.  It chooses a plan minimizing
+histogram $\widehat D_n$.  It chooses the canonical full-grid plan minimizing
 $F_{r,\widehat D_n}$ and applies it to the unused labels, then finishes the
 positive sample jobs.
 
@@ -316,6 +352,11 @@ uniformly over $p\in[0,L]^n$.
 \begin{proof}
 Condition on the pilot.  The unused labels remain uniformly permuted, so
 \cref{clm:common-finite-template-kernel} applies to the selected plan.
+In particular, the decision to use the direct mode and the random tested
+quota are fixed from the pilot before an unused hidden value is seen;
+selector marks are drawn only after a test reveals their grid class.  Empty
+pilot cells cause no undefined behavior because the canonical threshold
+extension above defines their marks and queue positions on the full grid.
 The pilot and its final positive tail use $O_L(k_n)$ work and therefore add
 $O_L(nk_n)$ to total completion time.
 

@@ -554,6 +554,26 @@ The following single algorithm covers both parameter regimes
 $\uDet{4}\le u\le\uDet{5}$ and $u\ge\uDet{5}$.  It does not use raw
 execution, so its schedule does not depend on $u$.
 
+The formula is best read backwards from the pair accounting.  The state
+\[
+ y=\frac{N_{\rm def}-R N}{x}
+\]
+is the normalized balance between positive jobs already deferred and the
+$R$-weighted number of positive outcomes seen so far, per still-untested
+label.  The adversarial endpoint types $M$ and $Q$ sit immediately below and
+above the current threshold.  Equalizing their limiting local drifts forces
+\begin{equation}
+ a_c'(y)=\frac1{c-2y},
+ \qquad a_c(-1)=1,
+ \label{eq:opt:threshold-ode-motivation}
+\end{equation}
+whose solution is exactly \cref{eq:opt:threshold}.  Integrating the remaining
+endpoint drifts produces the base potential below.  Jobs at the offline cap
+$p=u$ have a different pair charge; on the middle interval their uncancelled
+part is stored in a separate cap reserve, which vanishes at the plateau
+$u=\uDet{5}$.  This derivation explains the threshold, the base potential,
+and the additional reserve term before the verification starts.
+
 \begin{algorithm}[H]
 \caption{\textsc{AdaptiveThreshold}$(J,c)$}
 \label{alg:adaptive-threshold}
@@ -759,9 +779,12 @@ changing any later threshold decision.
 
 \begin{claim}[Local pair allocation]
 \label{clm:opt:adaptive-local-allocation}
-Assign every term of $\Gamma_n$ for a pair $i<j$ to the later endpoint $j$.
-The resulting total charge is at most the sum of the local quantities
-$\ell_i$ defined below.  To express them, distinguish earlier endpoints of
+Use the following mixed precharge/refund accounting.  When an endpoint of
+type $M$ is processed immediately, precharge its processing time against
+every label that is still untested.  When a later endpoint is exposed,
+charge or refund the part of each pair not already covered by such a
+precharge.  The resulting total charge is at most the sum of the local
+quantities $\ell_i$ defined below.  To express them, distinguish earlier endpoints of
 type $E$
 from the positive endpoint types $M,Q,U$.  Let
 \[
@@ -798,13 +821,36 @@ the exact charge
 \end{claim}
 
 \begin{proof}
-To verify these formulas, pair the current job once with each earlier
-endpoint type and use \cref{eq:opt:pair-objective}.  An earlier job processed
-after its test was already charged for the delay that its processing causes
-when it appeared.  Hence a current endpoint $U$, whose value is $u$, contributes
-only $-Rp$ against such an earlier job.  Against an earlier endpoint $Q$ of
-value $p$ it contributes $p-Rp=-cp$, and against an earlier endpoint $U$ it
-contributes $h_U$.
+We make the accounting explicit.  If an earlier type-$M$ endpoint has value
+$a_i$, its precharge contributes $a_i$ to its pair with every later label.
+For example, the actual pair charge for $M$ followed by $Z$ is $a_i$ even
+though $\ell_Z=0$ when no job has been deferred; it is exactly this earlier
+precharge that pays the pair.  This is why a purely later-endpoint charging
+description would be false.
+
+Now expose a current endpoint with threshold $a$.  Threshold monotonicity
+gives $a_i\ge a$ for all earlier types $M$ and $Q$.  After subtracting the
+type-$M$ precharges, \cref{eq:opt:pair-objective} gives the following
+remaining charges.  A current $Z$ or $E$ receives one from every earlier
+deferred endpoint, hence $N_{\rm def}$.  A current $M$ precharges $a$ against
+its $x-1$ genuinely later labels and receives
+$-Ra$ from every earlier $M$ and $1-ca$ from every earlier deferred
+endpoint.  Replacing $x-1$ by $x$ only overcharges by $a\ge0$ and yields
+\[
+ N_{\rm def}+a(x+N_{\rm def}-RP)=\ell_M.
+\]
+A current $Q$ makes no precharge and receives the same earlier-endpoint
+terms, giving
+\[
+ -RaI+(1-ca)N_{\rm def}
+ =N_{\rm def}+a(N_{\rm def}-RP)=\ell_Q.
+\]
+
+Finally, for a current $U$, an earlier type $M$ of value $p$ has actual pair
+charge $-cp$; after its precharge $p$, the remaining charge is $-Rp$.
+An earlier $Q$ of value $p$ contributes $1-cp$, and an earlier $U$
+contributes $h_U$.  Summing these terms gives exactly
+\cref{eq:opt:cap-local-charge}.
 Summing over the five endpoint types gives
 \begin{equation}
  \Gamma_n\le\sum_i\ell_i;
@@ -1146,21 +1192,21 @@ which has bounded one-sided second derivatives.  The calculation following
 and the positive-part square is $C^1$ at
 $\eta=-1$.
 
-For the additional term $\mathcal R(x,K)=x^2\mathcal H(K/x)$, whenever
+For the additional term $W_{\mathrm{cap}}(x,K)=x^2\mathcal H(K/x)$, whenever
 $0\le q\le q_*$ one has bounded $\mathcal H''$, and
 \begin{equation}
- \mathcal R_{xx}=2\mathcal H-2q\mathcal H'+q^2\mathcal H'',
+ (W_{\mathrm{cap}})_{xx}=2\mathcal H-2q\mathcal H'+q^2\mathcal H'',
  \quad
- \mathcal R_{xK}=\mathcal H'-q\mathcal H'',
+ (W_{\mathrm{cap}})_{xK}=\mathcal H'-q\mathcal H'',
  \quad
- \mathcal R_{KK}=\mathcal H''.
+ (W_{\mathrm{cap}})_{KK}=\mathcal H''.
  \label{eq:opt:reserve-hessian}
 \end{equation}
-For $q\ge q_*$, $\mathcal R=0$; moreover
+For $q\ge q_*$, $W_{\mathrm{cap}}=0$; moreover
 $\mathcal H(q_*)=\mathcal H'(q_*)=0$.  Thus the join is $C^1$ with
-bounded one-sided Hessians.  At $x=0$, set $\mathcal R=0$: for $K>0$ it is
+bounded one-sided Hessians.  At $x=0$, set $W_{\mathrm{cap}}=0$: for $K>0$ it is
 already locally zero, while
-$\mathcal R(\theta x,\theta K)=\theta^2\mathcal R(x,K)$ gives zero gradient
+$W_{\mathrm{cap}}(\theta x,\theta K)=\theta^2W_{\mathrm{cap}}(x,K)$ gives zero gradient
 at $(x,K)=(0,0)$.  Altogether $W$ is continuously differentiable with a Lipschitz
 gradient on all states that the algorithm can reach.  For
 $\uDet{4}\le u\le\uDet{5}$, its regularity constant may depend on the fixed

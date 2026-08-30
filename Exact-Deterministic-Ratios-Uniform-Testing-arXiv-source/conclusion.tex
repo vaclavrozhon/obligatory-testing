@@ -1,0 +1,44 @@
+\section{Conclusion and open problems}
+\label{sec:conclusion}
+
+The four models isolate two effects of a unit preliminary action: it may
+reduce the work needed to finish a job, and it may reveal where that job
+belongs in the schedule.  Their exact phase diagrams make the separation
+quantitative.  With revelation, both optimal competitive ratios remain
+bounded as the raw cap $u$ grows and converge to the obligatory-testing
+constants.  Without revelation, the blind-optimization ratios grow as
+$\Theta(\sqrt u)$---deterministically with leading constant one and under an
+oblivious adversary with leading constant one half.  Thus advance
+information changes not merely a constant but the asymptotic dependence on
+the available speedup.
+
+The reusable part of the analysis is the completion-density description of
+the fluid optimum.  It turns a distribution of hidden lengths into a
+pointwise optimal completion curve, and its finite-to-fluid transfer shows
+that a universal online algorithm can learn and implement that curve from a
+sublinear private sample.  The resulting guarantee is instance-specific in
+a precise sense: it is in expectation, compares against a multiset-aware but
+placement-oblivious online competitor, and matches the leading $n^2$ cost up
+to $o(n^2)$.  In blind execution this additive statement need not imply a
+multiplicative bound when the clairvoyant optimum itself is $o(n^2)$.
+
+Randomization plays two related roles.  A private shuffle converts the
+unseen labels into a representative without-replacement population, and a
+pilot sample then supports a stationary threshold or block plan.  The
+deterministic lower bounds show what fails without that stationarity: an
+adversary can correlate the revealed prefix with the algorithm's history,
+forcing adaptive thresholds and, in some models, ruling out deterministic
+instance optimality altogether.  Boundedness is equally structural for the
+learned per-instance guarantees; rare unbounded values cannot be certified
+from a sublinear pilot without a fallback or an additional loss.
+
+Several directions remain open.  Nonuniform test costs would replace the
+single completion-density module by a heterogeneous selection problem.
+Weights and multiple machines would break the present one-dimensional
+shortest-first envelope, while an adaptive adversary would remove the clean
+private-shuffle reduction.  It would also be useful to complement the
+size-asymptotic theory with explicit finite-$n$ algorithms and tuning rules,
+and to determine whether sharper rates can be obtained without the slowly
+growing grids and cutoffs used here.  These questions offer natural tests of
+how far completion-density methods extend beyond uniform single-machine
+testing.

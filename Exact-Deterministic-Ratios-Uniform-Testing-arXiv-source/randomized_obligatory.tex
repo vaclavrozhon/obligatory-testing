@@ -292,9 +292,16 @@ For a finite category prefix $J$, define
  \widehat\kappa(J)=\frac{\widehat a(J)}{1+\widehat\ell(J)}.
 \]
 Let $\widehat\kappa$ be the maximum and
-$\widehat\tau=1/\widehat\kappa$.  Starting with a maximizing category
-prefix, also include every finite category whose endpoint is at most
-$\widehat\tau$.  Thus the algorithm uses
+$\widehat\tau=1/\widehat\kappa$.  If the sample has no mass in any finite
+category (equivalently, every pilot value is in the overflow category), set
+\begin{equation}
+ \widehat\kappa=0,
+ \qquad \widehat\tau=+\infty.
+ \label{eq:rand-empty-finite-sample}
+\end{equation}
+Otherwise, starting with a maximizing category prefix, also include every
+finite category whose endpoint is at most $\widehat\tau$.  Thus the
+algorithm uses
 \begin{equation}
  \widehat J=\{\text{finite categories }b:q_b\le\widehat\tau\}.
  \label{eq:rand-threshold-closure}
@@ -320,7 +327,7 @@ threshold therefore preserves optimality and makes the two pointwise
 assertions tautological.
 \end{proof}
 
-For large $n$, set
+For $n\ge12^4$, set
 \begin{equation}
  k=\lfloor n^{3/4}\rfloor,\qquad
  d=\lfloor n^{1/4}\rfloor,\qquad \eta=B/d.
@@ -341,6 +348,9 @@ then test the remaining jobs in random order and immediately process each
 positive job whose category lies in $\widehat J$; finally process all other
 positive tested jobs in SPT order.  The overflow category never belongs to
 $\widehat J$.
+For $n<12^4$, define the algorithm to use fallback mode immediately.  This
+small-$n$ branch makes $k<n$ whenever the histogram lemma is invoked; its
+finite cost is absorbed by the universal constant in the asymptotic bound.
 
 \subsubsection{Analysis on good and bad samples}
 
@@ -411,6 +421,33 @@ On event $G$ when the fallback schedule is used, comparison of sample and
 population densities shows that the reciprocal of the true maximum density
 satisfies
 $\tau_{D[p]}\ge B/4\ge8$.
+Here are the constants, including the grid and floor effects.  If, to the
+contrary, $\tau_{D[p]}<B/4$, let $E$ be a true maximum-density threshold
+prefix, of mass $a$, and let $J$ contain all rounded finite categories met
+by $E$.  Upward rounding changes every selected value by at most $\eta$;
+closing $J$ can add only endpoints no larger than
+$\tau_{D[p]}+\eta$.  Hence the population reciprocal density of $J$ is at
+most $\tau_{D[p]}+\eta$, while
+\begin{equation}
+ a=\frac{1+\ell_E}{\tau_{D[p]}}>\frac4B.
+ \label{eq:rand-fallback-prefix-mass}
+\end{equation}
+For $n\ge12^4$, the floor in $d=\lfloor n^{1/4}\rfloor$ gives
+$d\ge12$ and hence $\eta\le B/12$.  On $G$, the sample mass of $J$ is at
+least $a-\gamma$, and its sample work numerator is at most its population
+numerator plus $B\gamma$.  Consequently its sample reciprocal density is
+at most
+\begin{align}
+ \frac{a(B/4+\eta)+B\gamma}{a-\gamma}
+ &\le \frac B3+
+   \frac{(4B/3)\gamma}{4/B-\gamma}
+ \notag\\
+ &=\frac B3+\frac{4B}{3(4B+3)}<B,
+ \label{eq:rand-fallback-mesh-bridge}
+\end{align}
+where $\gamma=1/[B(B+1)]$.  Thus the sample maximum density exceeds
+$1/B$, contradicting \cref{eq:rand-fallback-test}.  This proves
+$\tau_{D[p]}\ge B/4$ with the mesh, floors, and constants accounted for.
 The exact threshold inequalities imply
 \begin{equation}
  \frac{2\SPT([n])}{n^2}-\frac1{n^2}\sum_i p_i

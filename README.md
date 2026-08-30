@@ -130,6 +130,17 @@ after normalization by `n^2`, and Lean proves that this error tends to zero
 for each fixed `L`. This checked rate is deliberately slower than the sharper
 rate derived in the manuscript.
 
+`ObligatoryGrowingCutoffFourThirds` and `ObligatoryPaperAlgorithm` strengthen
+this assembly for the literal parameter family printed in the paper:
+pilot size `floor(n^(3/4))`, grid size `floor(n^(1/4))`, cutoff
+`32+n^(1/20)`, and mesh equal to cutoff/grid size.  The same
+`physicalGrowingRunCost` now has both the vanishing `4/3` worst-case export
+`paperGrowingPolicy_four_thirds_multiplicative` and the bounded-multiset
+comparison
+`exists_fixedPlacement_paperGrowingPolicy_concrete_rate`.  The slower
+`n^(1/32)` grid remains only an auxiliary discretization in the competitor
+lower bound, not a second online policy.
+
 The common-upper revealing instance-optimal theorem is likewise closed for
 the literal compiled learner. `RevealingOptimizationRawObserved` records raw
 completion durations in the observed trace;

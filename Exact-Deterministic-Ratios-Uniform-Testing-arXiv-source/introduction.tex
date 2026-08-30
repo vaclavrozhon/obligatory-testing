@@ -24,6 +24,76 @@ this means, we obtain three further variants.  The same algorithmic
 ideas---random sampling, thresholding, and shortest-first execution---give
 exact asymptotic answers in all four models.
 
+\subsection{Models and results at a glance}
+\label{sec:intro-results-glance}
+
+The optional models separate information from speedup.  Blind execution buys
+information only; blind optimization buys speedup only; revealing
+optimization buys both.  Obligatory testing is the compulsory baseline in
+which the preliminary action unlocks every job, so it sits outside the
+optional $2\times2$ comparison.
+
+\begin{figure}[htbp]
+\centering
+\small
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{c|L{0.32\linewidth}|L{0.32\linewidth}}
+ & no speedup & speedup from raw time $u$ \\
+\hline
+advance information
+ & \textbf{Blind execution}: testing reveals $p$, but does not shorten it
+ & \textbf{Revealing optimization}: optimization reveals and reduces $p$ \\
+no advance information
+ & not studied (the preliminary action would provide neither benefit)
+ & \textbf{Blind optimization}: optimization reduces $p$ but leaves it hidden
+\end{tabular}
+\caption{Separating the two benefits of an optional preliminary action.
+Obligatory testing is the compulsory revealing baseline.}
+\label{fig:intro-model-map}
+\end{figure}
+
+Our contributions have three levels.  First, we close the obligatory-testing
+problem.  Second, a common fluid theorem characterizes the optimal leading
+cost on every bounded multiset and turns that characterization into one
+learned online algorithm.  Third, complete phase diagrams compare the value
+of information across the optional models.
+
+\begin{center}
+\small
+\renewcommand{\arraystretch}{1.14}
+\begin{tabular}{@{}L{0.23\linewidth}L{0.69\linewidth}@{}}
+\toprule
+setting & main result \\
+\midrule
+obligatory testing
+ & exact ratios $1.570574\ldots$ deterministic and $4/3$ randomized \\
+bounded-input fluid theory
+ & a completion-density characterization and universal
+   sample--then--schedule algorithms matching every multiset-aware online
+   competitor up to $o(n^2)$ \\
+revealing optimization
+ & exact six-piece deterministic and four-piece randomized curves; both
+   remain bounded as $u\to\infty$ \\
+blind optimization
+ & exact deterministic and randomized curves growing respectively as
+   $\sqrt u$ and $\sqrt u/2+1/2$ \\
+blind execution
+ & bounded-input instance optimality, and impossibility without a common
+   input bound \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+All ratios are \emph{size-asymptotic}: model parameters are fixed and
+$n\to\infty$, with a uniform additive $o(n^2)$ term.  Randomized results use
+an oblivious adversary.  The algorithm privately permutes the labels at time
+zero after the adversary has fixed the input; ``private shuffle'' is
+algorithmic randomness, not a random-order assumption supplied by the
+environment.  Instance optimality means an expected, leading-$n^2$
+comparison with a multiset-aware but placement-oblivious online competitor.
+For blind execution this additive guarantee need not be multiplicative when
+$\OPT=o(n^2)$.
+
 \subsection{Warmup: every job has to be tested}
 \label{sec:intro-obligatory}
 
@@ -60,7 +130,7 @@ nondecreasing order of $p_i$.  The following pseudocode gives a little more
 detail about the two algorithms.  The formulas are not meant to be memorable.
 
 \begin{algorithm}[H]
-\caption{Deterministic threshold}
+\caption{Schematic deterministic threshold}
 \label{alg:intro-obligatory-det}
 \begin{algorithmic}
 \State Put $c=0.570574\ldots$ and $R=1+c=\RdetOT$.
@@ -80,18 +150,16 @@ positive jobs processed immediately and $d_i$ the number deferred.
 \end{algorithm}
 
 \begin{algorithm}[H]
-\caption{Lean-audited learned randomized thresholds}
+\caption{Schematic learned randomized obligatory algorithm $\mathcal A_n^*$}
 \label{alg:intro-obligatory-rand}
 \begin{algorithmic}
-\State For the $4/3$ guarantee, set $B=32$,
+\State For $n<12^4$, use the all-test fallback below.  Otherwise set
+$B=32+n^{1/20}$,
 $d=\lfloor n^{1/4}\rfloor$, $\eta=B/d$, and
 $k=\lfloor n^{3/4}\rfloor$.
-For bounded-input instance optimality, set
-$m=\lfloor n^{1/32}\rfloor$, $B=m-1$, $d=m^2-1$,
-$\eta=1/m$, and $k=\lfloor n/m^4\rfloor$.
 Test $k$ random jobs and form the rounded empirical distribution
 $\widehat D$ on the resulting $d$ positive bins (plus zero and overflow).
-\State For each candidate threshold $0\le t\le B$, put
+\State For each candidate cutoff $0\le t\le B$, put
 \[
  a(t)=\widehat D([0,t]),\qquad
  m(t)=\int_{[0,t]}p\,d\widehat D(p),
@@ -102,11 +170,12 @@ and define
  =\min_{\substack{0\le t\le B\\a(t)>0}}
    \frac{1+m(t)}{a(t)}.
 \]
+If there is no finite sample mass, set $\widehat\tau=+\infty$.
 \State If $\widehat\tau>B$, test every remaining job and then finish all
 revealed jobs shortest first.
-\State Otherwise process the sampled jobs with $p\le\widehat\tau$.  Keep
-testing jobs, processing them immediately when $p\le\widehat\tau$ and
-deferring them otherwise.
+\State Otherwise select every rounded category whose endpoint is at most
+$\widehat\tau$.  Process selected sampled jobs; keep testing and process a
+new job immediately exactly when its rounded category is selected.
 \State After all tests, finish deferred jobs shortest first.
 \end{algorithmic}
 \end{algorithm}
@@ -140,6 +209,10 @@ includes the tests of \emph{all} jobs, including those deferred to the tail.
 The algorithm minimizes this quantity and uses its optimum
 $\widehat\tau$ as the actual threshold.  Equivalently, adding an outcome of
 length $p$ improves the module exactly when $p<\widehat\tau$.
+Throughout the schematic randomized algorithms, $t$ denotes a candidate
+cutoff, $(1+m(t))/a(t)$ is the attained work per completion, and
+$\widehat\tau$ is the resulting scheduling threshold.  The fixed-point fact
+is that the minimum attained ratio itself closes the optimal cutoff prefix.
 
 The matching randomized lower bound is correspondingly simple: half of the
 jobs have length zero and half have length two, and their labels are shuffled.
@@ -147,7 +220,7 @@ Until the shuffle is uncovered, one unit of work completes only about half a
 job.  Counting the area under the number of unfinished jobs gives the lower
 bound $4/3$.  The formal argument is in \cref{sec:random-obligatory}.
 
-\subsection{One algorithm for every input}
+\subsection{One algorithm for every bounded input multiset}
 \label{sec:intro-obligatory-instance}
 
 Let us return to \cref{alg:intro-obligatory-rand}.  The ratio $4/3$ describes
@@ -159,20 +232,21 @@ first is nearly optimal.  The worst-case guarantee of
 \cref{alg:intro-obligatory-rand} still tells us only that its cost is at most
 $1.33\ldots$ times the optimum.
 
-The growing-cutoff companion in the same pseudocode satisfies a much stronger
-per-input guarantee: it is \emph{instance-optimal} on every class with a
-fixed upper bound on job lengths.  It has the same sample--learn--fallback
-structure as the fixed-cutoff $4/3$ algorithm, but the two Lean exports use
-the distinct parameter sequences displayed above.
+The same growing-cutoff algorithm satisfies a much stronger per-input
+guarantee: it is \emph{instance-optimal} on every class with a fixed upper
+bound on job lengths.  The Lean development uses the very same definition
+and the same parameter sequence above for this guarantee and for the
+$4/3+o(1)$ worst-case bound.  A slower $n^{1/32}$ scale occurs only inside
+the proof of the competitor lower bound; it is not a second online algorithm.
 
 \begin{theorem}[Obligatory-testing instance optimality, informal version of
 \protect\cref{thm:obligatory-instance}]
 \label{thm:intro-obligatory-instance}
-Fix $L<\infty$.  The growing-cutoff algorithm in
+Fix $L<\infty$.  The algorithm $\mathcal A_n^*$ in
 \cref{alg:intro-obligatory-rand} has the following property: for every
 vector $p\in[0,L]^n$ and every online algorithm $\mathcal A'$,
 \[
- \EE\ALG_{\mathcal A^{\rm grow}}\le \EE\ALG_{\mathcal A'}+o_L(n^2),
+ \EE\ALG_{\mathcal A_n^*}\le \EE\ALG_{\mathcal A'}+o_L(n^2),
 \]
 where both costs are measured on $p$ and include the private shuffle and the
 algorithms' remaining randomness.
@@ -201,7 +275,7 @@ estimate the empirical distribution of the entries of $p$ and then runs an
 optimal algorithm for that estimate.  The
 substantive part of the theorem is that no complicated meta-algorithm is
 needed.  The optimal leading-order algorithm for a known input is itself a simple
-threshold algorithm, so $\mathcal A^{\rm grow}$ has essentially the same form as
+threshold algorithm, so $\mathcal A_n^*$ has essentially the same form as
 \cref{alg:intro-obligatory-rand}: sample the input distribution, choose the
 threshold that completes the most job mass per unit of work, and use it for
 the rest of the schedule.
@@ -234,17 +308,17 @@ These choices give the following four models.
 model & without the unit action & with the unit action & where discussed \\
 \hline
 obligatory testing & cannot be run & reveals $p_i$ and unlocks the job
- & Intro~\ref{sec:intro-obligatory};
+ & Section~\ref{sec:intro-obligatory};
    \cref{sec:obligatory,sec:random-obligatory,sec:obligatory-instance} \\
 \hline
 blind execution & runs for its hidden length $p_i$ & reveals $p_i$ before execution
- & Intro~\ref{sec:intro-blind}; \cref{sec:blind} \\
+ & Section~\ref{sec:intro-blind}; \cref{sec:blind} \\
 \hline
 blind optimization & runs for raw time $u$ & replaces $u$ by a still-hidden $p_i\leq u$
- & Intro~\ref{sec:intro-blind-optimization}; \cref{sec:blind-optimization} \\
+ & Section~\ref{sec:intro-blind-optimization}; \cref{sec:blind-optimization} \\
 \hline
 revealing optimization & runs for raw time $u$ & reveals $p_i$ and replaces $u$ by $p_i$
- & Intro~\ref{sec:intro-revealing-optimization}; \cref{sec:optional,sec:common-upper-instance,sec:random-common-upper} \\
+ & Section~\ref{sec:intro-revealing-optimization}; \cref{sec:optional,sec:common-upper-instance,sec:random-common-upper} \\
 \hline
 \end{tabular}
 \end{center}
@@ -289,6 +363,10 @@ $\mathcal A'$,
 \]
 \end{theorem}
 
+This is an additive leading-scale statement, not a multiplicative guarantee
+when $\OPT=o(n^2)$; for example, many zero-length jobs can make the
+clairvoyant blind-execution cost subquadratic.
+
 To describe the algorithm, let $\widehat D$ denote the estimated
 job-length distribution and put
 $\widehat\mu=\int p\,d\widehat D(p)$.  As in
@@ -327,7 +405,7 @@ $F_{\mathsf{BE},\widehat D}$ from \cref{eq:blind-F}.
 
 
 \begin{algorithm}[H]
-\caption{Instance-optimal blind execution}
+\caption{Schematic instance-optimal blind execution}
 \label{alg:intro-blind}
 \begin{algorithmic}
 \State Shuffle the jobs and run $o(n)$ of them blindly; use their observed
@@ -359,6 +437,12 @@ is also the \emph{offline cap} on the resulting job length.  We start with
 the case in which optimization does not reveal $p_i$.  Before execution,
 all optimized jobs still look the same.
 
+We use this model primarily as a controlled ablation of revealing
+optimization: the speedup is held fixed while advance information is
+removed.  This isolates the informational value of the preliminary action
+without claiming that the asymptotic policy is already a tuned finite-$n$
+scheduler.
+
 This is the simpler case.  Let us first describe the hardest inputs for both
 deterministic and randomized algorithms.  Roughly a $1/\sqrt u$ fraction of
 the jobs cannot be shortened at all: they have $p_i=u$.  The remaining jobs
@@ -377,7 +461,8 @@ beginning of the schedule.  The exact ratios are as follows.
 \protect\cref{thm:bo-det-curve,thm:bo-curve}]
 \label{thm:intro-bo-det-curve}
 \label{thm:intro-bo-curve}
-The exact deterministic and randomized asymptotic competitive ratios satisfy
+As $u\to\infty$, the exact deterministic and randomized asymptotic
+competitive ratios satisfy
 \[
  \RdetBO(u)=\sqrt u+o(1),
  \qquad
@@ -399,7 +484,7 @@ samples the input and chooses between these two options.
 \begin{theorem}[Blind-optimization instance optimality, informal version of
 \protect\cref{thm:bo-instance}]
 \label{thm:intro-bo-instance}
-Consider the blind-optimization model with some $u<\infty$.  There is one
+Consider the blind-optimization model with some $0<u<\infty$.  There is one
 randomized algorithm $\mathcal A^*$ such that, for every vector
 $p\in[0,u]^n$ and every online algorithm $\mathcal A'$,
 \[
@@ -409,7 +494,7 @@ $p\in[0,u]^n$ and every online algorithm $\mathcal A'$,
 
 
 \begin{algorithm}[H]
-\caption{Instance-optimal blind optimization}
+\caption{Schematic instance-optimal blind optimization}
 \label{alg:intro-blind-optimization}
 \begin{algorithmic}
 \State Shuffle the jobs, optimize and run $o(n)$ of them,
@@ -510,7 +595,7 @@ For $\uDet{3}\le u\le\uDet{4}$, the zero-prefix specialization gives the
 formula $1+1/\sqrt{u-1}$.
 
 \begin{algorithm}[htbp]
-\caption{\textsc{ForcedPrefixUTE}$(J,u)$}
+\caption{Schematic \textsc{ForcedPrefixUTE}$(J,u)$}
 \label{alg:intro-ro-ute}
 \begin{algorithmic}
 \Statex \textbf{Range:} $\uDet{2}\le u\le\uDet{4}$.
@@ -545,7 +630,7 @@ tested jobs belong before the untouched raw block.
 \begin{theorem}[Revealing-optimization instance optimality, informal version of
 \protect\cref{thm:common-upper-instance}]
 \label{thm:intro-common-upper-instance}
-Fix $u<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
+Fix $0<u<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
 for every vector $p\in[0,u]^n$ and every online algorithm
 $\mathcal A'$,
 \[
@@ -565,7 +650,7 @@ definition of $\RrandRO(u)$.  The exact formulas and
 matching constructions are in \cref{sec:random-common-upper}.
 
 \begin{algorithm}[H]
-\caption{Instance-optimal revealing-optimization algorithm}
+\caption{Schematic instance-optimal revealing-optimization algorithm}
 \label{alg:intro-common-upper}
 \begin{algorithmic}
 \State Put $m=\lfloor n^{1/16}\rfloor$.  Shuffle the jobs, test
@@ -670,16 +755,46 @@ adversarial, need not converge to a distribution, and are not announced to
 the universal algorithm.
 
 D{\"u}rr et al.~\cite{DurrErlebachMegowMeissner2020} introduced the
-adversarial revealing-optimization model and obtained deterministic bounds, including
-the $1.87\ldots$ guarantee for binary values.  We close the deterministic
-gap for arbitrary values $p_i\in[0,u]$ and give the exact randomized curve
-against an oblivious adversary.  Related work allows nonuniform test
+adversarial revealing-optimization model.  Their summary table already
+contains a deterministic lower bound $1.8546$, a randomized lower bound
+$1.6257$, a randomized upper bound $1.7453$, an arbitrary-uniform
+deterministic upper bound $1.9338$, and an extreme-uniform upper bound
+$1.8668$.  The last two lower/upper constants numerically foreshadow the
+global maxima of our randomized and deterministic curves.  Our novelty is
+the matching randomized upper bound, exactness for every fixed $u$ and every
+vector $p_i\in[0,u]$ rather than only binary or extreme inputs, the improved
+arbitrary-uniform deterministic bound, and the instance-specific fluid
+characterization---not the first numerical appearance of $1.6257\ldots$ or
+$1.8668\ldots$.
+
+For clarity, the main before/after comparison is
+\begin{center}
+\small
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{@{}L{0.22\linewidth}L{0.22\linewidth}L{0.22\linewidth}L{0.25\linewidth}@{}}
+\toprule
+setting & previous lower & previous upper & this paper \\
+\midrule
+$\mathsf{OT}$ deterministic
+ & $3/2$ & $1.585\ldots$ & exact $1.570574\ldots$ \\
+$\mathsf{OT}$ randomized
+ & no matching result & no matching result & exact $4/3$ \\
+$\mathsf{RO}$ deterministic
+ & $1.8546$ globally & $1.9338$ arbitrary-uniform & exact per-$u$ curve;
+   global maximum $1.866760\ldots$ \\
+$\mathsf{RO}$ randomized
+ & $1.6257$ & $1.7453$ & exact per-$u$ curve;
+   global maximum $1.625752\ldots$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Related work allows nonuniform test
 times~\cite{AlbersEckl2021,LiuLiuWongZhang2023,KrekelbergEtAl2026}, multiple
 machines~\cite{GongChenHayashi2024}, or weights~\cite{BuldSchulz2026}.
 
 Dogeas, Erlebach, and Liang~\cite{DogeasErlebachLiang2024} introduced
 obligatory testing for total completion time.  For uniform tests they proved
-a deterministic upper bound of $1.58\ldots$ and the lower bound
+a deterministic upper bound of $1.585\ldots$ and the lower bound
 $\sqrt2$.  Liang and Liang~\cite{LiangLiang2026} later raised the lower bound
 to $3/2$.  Our matching value is $1.57\ldots$, and our randomized
 result gives the oblivious value $4/3$.  More strongly, the resulting
@@ -687,8 +802,13 @@ fixed-threshold algorithm is asymptotically optimal separately for every
 bounded input.
 
 The processing-time oracle of Dufoss{\'e} et al.~\cite{DufosseEtAl2022} is
-close to blind execution, but allows only two possible hidden durations.  If
-no tests are available and processing times are revealed only at completion,
+the closest comparison to blind execution, but it studies a deterministic
+minimax game with binary hidden durations and different announced
+parameters.  It is therefore neither subsumed by our adversarial multiset
+benchmark nor a special case of our randomized instance-optimal statement:
+the admissible length set, the adversary's information, the benchmark, and
+the role of randomization differ.  If no tests are available and processing
+times are revealed only at completion,
 one obtains the classical nonclairvoyant model of Motwani, Phillips, and
 Torng~\cite{MotwaniPhillipsTorng1994}, in which the scheduler does not know a
 job's length before it completes.  These semantics differ from raw

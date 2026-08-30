@@ -814,12 +814,21 @@ Subtracting the two identities gives the final assertion.
 \label{lem:opt:cap-quota}
 Fix $m\in(0,1)$ and a later block satisfying the hypotheses of
 \cref{lem:opt:cap-deferral}, in particular $1+p\le u$ for each of its jobs.
-Against every deterministic revealing algorithm there are fixed instances
-whose asymptotic excess is at least the combined
-coefficient $A^{\rm lb}-R\cdot O$ obtained from the initial $p=u$ jobs and
-the later block in
-\cref{eq:opt:combined-A,eq:opt:combined-O} for every target
-$R\le u$.
+Let $A^{\rm lb}$ and $O$ be the combined coefficients from
+\cref{eq:opt:combined-A,eq:opt:combined-O}, and put
+$D=A^{\rm lb}-R O$.  If $R\le u$ and $D\ge0$, then the quota construction
+has nonnegative asymptotic excess at ratio $R$.
+
+More precisely, suppose that along a sequence of quota crossings the
+remaining block has size $S$ and $S/n\to\sigma$.  Up to a vanishing
+finite-instance error, the excess divided by $n^2$ is at least
+\begin{equation}
+ \frac{u-R}{2}(1-\sigma^2)+\sigma^2D.
+ \label{eq:opt:cap-quota-correct-excess}
+\end{equation}
+In particular, this lemma asserts preservation of the sign of the later
+excess; it does not assert that the full coefficient $D$ survives when
+$S<n$.
 \end{lemma}
 
 \begin{proof}
@@ -874,10 +883,22 @@ of this physical obligatory-testing simulation.  Then
  \bigl(\ALG_{\rm hyb}-R\cdot\OPT_{\rm hyb}\bigr)-O_u(n).
  \label{eq:opt:cap-raw-decomposition}
 \end{equation}
-The first term is nonnegative.  Finally, record every assigned value on its
-job label.  Replaying this fixed vector produces the same transcript because
-the values learned only by the physical simulation were hidden from the
-virtual algorithm.  This proves legality.
+If $S/n\to\sigma$, then
+\[
+ \frac{Z_v}{n^2}=\frac{1-\sigma^2}{2}+o(1),
+ \qquad
+ \frac{\ALG_{\rm hyb}-R\OPT_{\rm hyb}}{n^2}
+ \ge \sigma^2D-o(1).
+\]
+Substitution in \cref{eq:opt:cap-raw-decomposition} gives
+\cref{eq:opt:cap-quota-correct-excess}.  Both terms there are nonnegative
+when $R\le u$ and $D\ge0$.  If no quota crossing occurs, the all-zero
+instance has ratio $u\ge R$, as observed above.
+
+Finally, record every assigned value on its job label.  Replaying this fixed
+vector produces the same transcript because the values learned only by the
+physical simulation were hidden from the virtual algorithm.  This proves
+legality and turns each adaptive construction into a fixed input.
 \end{proof}
 
 \begin{proposition}[Lower bound for $\uDet{4}\le u\le\uDet{5}$]
@@ -1006,25 +1027,57 @@ $u\in[\uDet{4},\uDet{5}]$ has exactly one parameter pair.
 \label{clm:opt:cm-finite-instances}
 Fix $\uDet{4}<u<\uDet{5}$ and the associated parameters $(c,m,t)$ from
 \cref{clm:opt:cm-feasibility}.  Against every deterministic revealing
-algorithm there is a sequence of fixed finite instances $I_H$ such that
+algorithm, for every $\eps>0$ there are arbitrarily large fixed finite
+instances $I$ such that
 \begin{equation}
- \liminf_{H\to\infty}
- \frac{\ALG(I_H)-(1+c)\cdot\OPT(I_H)}{|I_H|^2}\ge0.
+ \ALG(I)\ge(1+c-\eps)\OPT(I).
  \label{eq:opt:cm-finite-excess}
 \end{equation}
 \end{claim}
 
 \begin{proof}
-To pass to fixed finite instances, first approximate $(m,t)$ rationally
-while retaining the strict inequalities $1+p<u$, then choose a sufficiently
-fine harmonic family, and finally multiply all rational block sizes by a
-common integer $H$.  For a fixed number of positive levels, the error of
-fewer than one job at the quota crossing, the terms contributed by
-individual jobs, and rounding are $O_u(H)$, whereas the displayed pair costs
-are $\Theta(H^2)$.  Let $H\to\infty$ first, then increase the harmonic depth, and finally
-let the rational approximation converge to $(m,t)$.  Together with
-\cref{lem:opt:cap-quota}, this proves
-\cref{eq:opt:cm-finite-excess}.
+Fix $\eps>0$ and write $R_\eps=1+c-\eps$.  For the limiting combined
+construction, \cref{clm:opt:combined-ratio} gives
+\begin{equation}
+ A^{\rm lb}-R_\eps O=\eps O>0.
+ \label{eq:opt:cm-positive-margin}
+\end{equation}
+Choose rational approximations of $(m,t)$ that retain $1+p<u$ and make the
+left side of \cref{eq:opt:cm-positive-margin} at least $\eps O/2$.
+
+We spell out why the size of the harmonic remainder, which is selected by
+the algorithm, does not invalidate the limiting construction.  Choose a
+small constant $\delta>0$.  If the quota crossing leaves
+$S\ge\delta n$ labels, use a finite harmonic approximation whose depth and
+rational accuracy are chosen as functions of the available size $S$.
+For accuracy level $j$, first fix the harmonic depth and rational data, and
+then choose $N_j$ so that every $S\ge N_j$ realizes all block sizes with
+rounding and one-job errors at most $j^{-1}S^2$.  Take
+\[
+ j(S)=\max\{j:N_j\le S\},
+\]
+after replacing $(N_j)$ by a strictly increasing sequence.  Thus
+$j(S)\to\infty$, the harmonic depth tends to infinity, the rational data
+converge to $(m,t)$, and all finite errors are $o(S^2)$ simultaneously.
+The positive margin in \cref{eq:opt:cm-positive-margin} and
+\cref{lem:opt:cap-quota} then give nonnegative excess at ratio $R_\eps$.
+
+If instead $S<\delta n$, the raw prefix in
+\cref{eq:opt:cap-raw-decomposition} contributes
+\[
+ (u-R_\eps)Z_v
+ \ge \frac{u-R_\eps}{2}(1-\delta^2)n^2-O_u(n).
+\]
+The unfinished part has only $S$ jobs and all its operation lengths are
+bounded in terms of $u$, so its possible negative excess is
+$O_u(S^2+n)$.  Taking $\delta$ sufficiently small makes the displayed raw
+slack dominate this loss.  This also covers values of $S$ too small for the
+next harmonic accuracy level.
+
+The quota overshoot, harmonic depth, rational approximation, and input size
+have now been diagonalized in that order.  Recording every revealed value
+on its label, as in \cref{lem:opt:cap-quota}, produces a fixed input and
+proves \cref{eq:opt:cm-finite-excess} for arbitrarily large $n$.
 \end{proof}
 
 We can now prove the proposition.
@@ -1034,8 +1087,12 @@ For $\uDet{4}<u<\uDet{5}$,
 \cref{clm:opt:combined-ratio,clm:opt:cm-stationary-point} identify the target
 ratio as $1+c(u)$, \cref{clm:opt:cm-feasibility} verifies the hypotheses of
 the construction, and \cref{clm:opt:cm-finite-instances} supplies fixed
-instances approaching that ratio.  The bounds at $u=\uDet{4}$ and
-$u=\uDet{5}$ follow by taking limits from the open interval.
+instances approaching that ratio.  At $u=\uDet{4}$ the same value is supplied
+directly by the binary construction in \cref{prop:opt:binary-lower}.  At
+$u=\uDet{5}$, \cref{lem:opt:obligatory-transfer,thm:lower} give the
+obligatory lower bound $1+r$, which equals $1+c(\uDet{5})$ by
+\cref{eq:opt:cm-endpoints}.  No passage between models by continuity is
+used at either endpoint.
 \end{proof}
 
 \subsubsection{Transferring the lower bound when raw execution is no shorter}
