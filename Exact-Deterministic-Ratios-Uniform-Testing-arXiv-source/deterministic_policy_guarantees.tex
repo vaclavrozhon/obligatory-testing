@@ -239,7 +239,7 @@ deferred suffix value to $u$.  This cannot decrease ALG, and it leaves OPT
 unchanged because such a job already has effective length
 $\min\{u,1+p\}=u$.
 
-For the remaining coordinates, construct a random binary vector as follows,
+For the remaining jobs, construct a random binary input as follows,
 independently from job to job.  Replace a prefix value $p$ by $u$ with
 probability $p/u$ and by zero otherwise.  Replace an immediate suffix value
 $p\le u-1$ by $u$ with probability $p$ and by zero otherwise.  The latter
@@ -284,7 +284,7 @@ first step.  Since the minimum is jointly concave,
 \]
 The offline pair identity therefore shows that expected OPT does not
 increase.  Consequently the expected value of
-$\ALG-R\cdot\OPT$ for the binary vector is at least its value for the original
+$\ALG-R\cdot\OPT$ for the binary input is at least its value for the original
 input, up to $O_u(n)$ one-job terms.  Some binary realization is at least as
 bad as this expectation, and the binary bound proves the claim.
 \end{proof}
@@ -680,8 +680,8 @@ known.
 Fix a decision transcript of \textnormal{\textsc{AdaptiveThreshold}}: for each tested job,
 fix whether its revealed value is zero or positive and whether the job is
 processed immediately or placed in the final queue.  This also fixes the
-state and threshold before every subsequent test.  Among all processing-time
-vectors consistent with this transcript, the supremum of the pairwise term
+state and threshold before every subsequent test.  Among all inputs
+consistent with this transcript, the supremum of the pairwise term
 $\Gamma_n$ from \cref{eq:opt:pair-objective} is unchanged if every job is
 restricted to one of the five endpoint types in
 \cref{eq:opt:five-endpoints}.  The symbols $0^+$ and $a_c(y)^+$ denote
@@ -1228,7 +1228,7 @@ a finite sum of affine and minimum terms, converges as
 $\eps\downarrow0$.  Equivalently, retain an
 $O(\eps n^2)$ error and take this limit for each fixed $n$.
 Therefore the directional-derivative bound for the formal type $E$ transfers to
-actual input vectors without an asymptotic loss.
+actual inputs without an asymptotic loss.
 
 Summing \eqref{eq:opt:finite-taylor}, using $W\ge0$, and applying
 \eqref{eq:opt:initial-calibration} gives

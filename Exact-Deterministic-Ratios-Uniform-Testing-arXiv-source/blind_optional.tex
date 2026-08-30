@@ -11,14 +11,14 @@ tested long jobs.  We now compute its cost explicitly.
 \label{thm:blind-instance}
 Fix $L<\infty$.  There exist randomized nonanticipating algorithms
 $\mathcal A^*_{n,L}$, depending only on $n,L$, and a deterministic sequence
-$\eps_L(n)\to0$ such that every vector $p\in[0,L]^n$ satisfies
+$\eps_L(n)\to0$ such that every input $p\in[0,L]^n$ satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A^*_{n,L}}(p)
  \le n^2\PhiBE(D[p])+\eps_L(n)n^2.
  \label{eq:intro-blind-upper}
 \end{equation}
 Conversely, every randomized nonanticipating algorithm $\mathcal A$, even if
-it is told the multiset of entries of $p$, satisfies
+it is told the multiset of job lengths in $p$, satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
  \ge n^2\PhiBE(D[p])-\eps_L(n)n^2.
@@ -180,7 +180,7 @@ Without it, blind execution has no finite worst-case ratio.
 \begin{theorem}[No finite ratio for unbounded blind execution]
 \label{thm:blind-unbounded-impossible}
 There are no randomized algorithms $\mathcal A_n$, constant $R<\infty$, and
-sequence $\eta(n)\to0$ such that every vector
+sequence $\eta(n)\to0$ such that every input
 $p\in[0,\infty)^n$ satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A_n}(p)

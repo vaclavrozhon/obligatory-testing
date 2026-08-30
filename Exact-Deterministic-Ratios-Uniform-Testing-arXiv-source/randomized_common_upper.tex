@@ -5,7 +5,7 @@
 for every fixed input in the revealing-optimization model.  We now compare that cost with the
 clairvoyant optimum and maximize over all inputs.  The raw-execution cap $u$
 is fixed, but
-the algorithm is not told the entries of the input vector.  This section proves
+the algorithm is not told the job lengths in the input.  This section proves
 \cref{thm:random-common-upper}, the rigorous randomized half of the informal
 curve theorem \cref{thm:intro-common-upper-curves}.  Its three transition
 points are
@@ -38,7 +38,7 @@ ratio against an oblivious adversary is
 \end{equation}
 More precisely, there are randomized nonanticipating algorithms
 $\mathcal A_{n,u}$ and numbers $\eps_u(n)\to0$ such that every
-vector $p\in[0,u]^n$ satisfies
+input $p\in[0,u]^n$ satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A_{n,u}}(p)
  \le \RrandRO(u)\cdot\OPT_u(p)+\eps_u(n)n^2.
@@ -46,7 +46,7 @@ vector $p\in[0,u]^n$ satisfies
 \end{equation}
 Conversely, for every randomized online algorithm $\mathcal A$ and every
 $\eps>0$, there
-are arbitrarily large $n$ and a fixed vector $p\in[0,u]^n$ for which
+are arbitrarily large $n$ and a fixed input $p\in[0,u]^n$ for which
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
  \ge\bigl(\RrandRO(u)-\eps\bigr)\cdot\OPT_u(p).
@@ -77,7 +77,7 @@ survival function by its average reduces this optimization to distributions
 supported on two values.  Two one-variable maximizations give the four
 formulas in \cref{eq:intro-random-common-upper-curve}.  A sublinear sample
 removes advance knowledge of the input,
-and shuffled binary vectors give matching lower bounds.
+and shuffled binary inputs give matching lower bounds.
 
 \subsection{Offline and stationary fluid coefficients}
 
@@ -428,12 +428,12 @@ is also optimal for the clairvoyant scheduler, so no learning is required.
 
 It remains to show that no adaptive algorithm improves the resulting
 worst-case upper bound.  We first record an
-envelope for shuffled binary vectors.
+envelope for shuffled binary inputs.
 
 \begin{lemma}[Binary-input envelope at the offline cap $u$]
 \label{lem:rcu-binary-lower}
 Fix $u>1$, $x\in[0,1]$, and put $z=1-x$.  Let $p^{(n)}$ have $xn+O(1)$
-coordinates of value $u$ and $zn+O(1)$ zero coordinates.  For every
+jobs of value $u$ and $zn+O(1)$ zero jobs.  For every
 randomized nonanticipating algorithm, even an announced one,
 \begin{equation}
  \frac{\EE\ALG}{n^2}\ge
@@ -559,8 +559,7 @@ $\{0,u\}$ used for smaller $u$.
 \begin{lemma}[Balanced zero--two lower bound]
 \label{lem:rcu-zero-two-lower}
 For every $u\ge\uRand{3}$ and every randomized algorithm, arbitrarily large even
-$n$ admit a vector with $n/2$ zero coordinates and $n/2$ coordinates of
-value two such that
+$n$ admit an input with $n/2$ zero jobs and $n/2$ jobs of value two such that
 \begin{equation}
  \EE\ALG\ge n^2-o_u(n^2),
  \qquad

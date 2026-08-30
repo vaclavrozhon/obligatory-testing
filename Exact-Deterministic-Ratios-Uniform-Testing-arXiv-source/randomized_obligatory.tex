@@ -2,10 +2,10 @@
 \label{sec:random-obligatory}
 
 We now pass from the randomized curve with a finite raw-execution cap $u$ to
-the unbounded obligatory endpoint.  The adversary fixes a vector
+the unbounded obligatory endpoint.  The adversary fixes an input
 $p\in[0,\infty)^n$ before the algorithm
-draws its random bits; the input convention then privately shuffles its
-coordinates.  The entries are not announced, and no upper bound on
+draws its random bits; the input convention then privately shuffles the
+jobs.  Their lengths are not announced, and no upper bound on
 the processing times is assumed.  The zero--two lower bound at the finite
 raw-execution cap $u=\uRand{3}$
 transfers directly.  The upper bound needs one additional step: the
@@ -22,7 +22,7 @@ the rigorous randomized part of the informal obligatory-testing result
 \label{thm:rand-obligatory}
 There are a universal constant $C$ and a randomized nonanticipating
 algorithm $\mathcal A_n^*$, depending only on $n$, such that every fixed
-vector $p\in[0,\infty)^n$ satisfies
+input $p\in[0,\infty)^n$ satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A_n^*}(p)
  \le \frac43\cdot\OPT(p)+Cn^{19/10}
@@ -38,8 +38,8 @@ explicit estimate
  \label{eq:rand-obligatory-fixed-upper}
 \end{equation}
 Conversely, for every randomized algorithm $\mathcal A$ and every $\eps>0$,
-arbitrarily large even $n$ admit a vector with $n/2$ zero coordinates and
-$n/2$ coordinates of value two such that
+arbitrarily large even $n$ admit an input with $n/2$ zero jobs and
+$n/2$ jobs of value two such that
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
  \ge\left(\frac43-\eps\right)\cdot\OPT(p),
@@ -72,7 +72,7 @@ coefficient
  \defeq\frac12+\SPT(D).
  \label{eq:rand-omega-ot}
 \end{equation}
-For a fixed vector $p$, the finite SPT identity gives
+For a fixed input $p$, the finite SPT identity gives
 \begin{equation}
  \Omega_{\mathsf{OT}}(D[p])
  =\frac12+\frac{\SPT([n])}{n^2}

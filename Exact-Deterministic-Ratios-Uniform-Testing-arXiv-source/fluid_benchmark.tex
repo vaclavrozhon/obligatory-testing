@@ -6,7 +6,7 @@ optimization, obligatory testing, and blind execution.  All three proofs use
 the same fluid model.  We first solve this model exactly, then show that its
 value gives the leading cost on every bounded input.
 
-Let us explain the main idea.  Fix an input vector and privately shuffle its
+Let us explain the main idea.  Fix an input and privately shuffle its
 values among the job labels.  Suppose the algorithm inspects a prefix whose
 length may depend on the jobs seen so far, but not on values that are still
 hidden.  The number of encountered jobs of each type is close to the prefix
@@ -444,7 +444,7 @@ covered by this model, since its preliminary operation does not reveal the
 processing time.
 
 It remains to connect this fluid problem with finite inputs.  For an
-input vector $p$, the empirical distribution $D[p]$ is already finitely
+input $p$, the empirical distribution $D[p]$ is already finitely
 supported.  We only round it to a smaller grid so that one concentration
 event controls all types simultaneously.  The finite transfer has the
 following form:

@@ -81,23 +81,23 @@ than pairs are typically only $O(n)$.
 \subsection{Input, information and adversaries}
 \label{par:input-convention}
 
-For a deterministic algorithm, the adversary may choose the processing-time
-vector and its assignment to labels with full knowledge of the algorithm.
-The randomized results use an \emph{oblivious} adversary: the processing-time
-vector is fixed before the algorithm draws its private random seed.
+For a deterministic algorithm, the adversary may choose all processing times
+and their assignment to labels with full knowledge of the algorithm.  The
+randomized results use an \emph{oblivious} adversary: the input is fixed before
+the algorithm draws its private random seed.
 
-An input is a vector $p=(p_1,\ldots,p_n)$ of job lengths chosen by the
-adversary.  For a randomized algorithm, this vector is then relabeled by a
+An input $p=(p_1,\ldots,p_n)$ consists of job lengths chosen by the
+adversary.  For a randomized algorithm, this input is then relabeled by a
 uniform permutation.  We abbreviate the expectation over this shuffle and
 all further private randomness by $\EE\ALG_{\mathcal A}(p)$.  Thus randomized
-performance depends only on the entries of $p$, not on their displayed
+performance depends only on the multiset of job lengths, not on their displayed
 order.  This ``private shuffle'' is an action of the algorithm at time zero:
-the oblivious adversary fixes the labeled vector first, and the algorithm
+the oblivious adversary fixes the labeled input first, and the algorithm
 then privately permutes the otherwise indistinguishable labels.  It is not a
 random-order input assumption or a benevolent ordering supplied by the
 environment.  We distinguish three levels of information.
 \begin{itemize}
-\item A \emph{clairvoyant offline algorithm} knows the entire labeled vector,
+\item A \emph{clairvoyant offline algorithm} knows the entire labeled input,
 including the assignment of processing times to labels.  Its minimum cost is
 $\OPT(p)$.
 \item An \emph{announced online algorithm} knows the multiset
@@ -140,7 +140,7 @@ shuffle.
 Our instance-optimality results compare a single unannounced algorithm against
 all announced online algorithms on this shuffled input.  This is ordinary
 instance optimality when the input is viewed as a multiset, and order-oblivious
-instance optimality when it is viewed as an ordered vector; see
+instance optimality when public-label order is treated as part of the input; see
 \cite{AfshaniBarbayChan2017,NarayananRozhonTetekThorup2024}.
 Every such comparison is in expectation, at the leading $n^2$ scale: the
 universal algorithm does not know the multiset, while its announced

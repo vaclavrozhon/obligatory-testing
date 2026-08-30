@@ -60,14 +60,14 @@ sequence
  \longrightarrow0
  \label{eq:common-transfer-rate}
 \end{equation}
-such that every vector $p\in[0,L]^n$ satisfies
+such that every input $p\in[0,L]^n$ satisfies
 \begin{equation}
  \EE\ALG_{\mathcal L_n}(p)
  \le n^2\Phi_{r,Q}(D[p])+\eps_L(n)n^2.
  \label{eq:common-transfer-upper}
 \end{equation}
 Conversely, every randomized nonanticipating algorithm $\mathcal A$ in the
-$(r,Q)$ model, even if it is told the multiset of entries of $p$, satisfies
+$(r,Q)$ model, even if it is told the multiset of job lengths in $p$, satisfies
 \begin{equation}
  \EE\ALG_{\mathcal A}(p)
  \ge n^2\Phi_{r,Q}(D[p])-\eps_L(n)n^2.

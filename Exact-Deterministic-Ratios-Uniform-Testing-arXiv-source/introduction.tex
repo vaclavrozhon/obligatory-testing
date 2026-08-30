@@ -162,14 +162,14 @@ lengths.
 \label{thm:intro-obligatory-instance}
 Fix $L<\infty$.  The algorithm $\mathcal A_n^*$ in
 \cref{alg:intro-obligatory-rand} has the following property: for every
-vector $p\in[0,L]^n$ and every online algorithm $\mathcal A'$,
+input $p\in[0,L]^n$ and every online algorithm $\mathcal A'$,
 \[
  \EE\ALG_{\mathcal A_n^*}\le \EE\ALG_{\mathcal A'}+o_L(n^2),
 \]
 where both costs are measured on $p$ and include the private shuffle and the
 algorithms' remaining randomness.
 The competing algorithm $\mathcal A'$ may even be designed specifically for
-$p$ and told all its entries in advance, though not their shuffled assignment
+$p$ and told all its job lengths in advance, though not their shuffled assignment
 to the public labels.
 \end{theorem}
 
@@ -178,14 +178,14 @@ there is no randomized instance-optimal algorithm, and without randomization
 there is no deterministic one; see \cref{thm:ot-instance-impossibility}.
 
 Two points about the theorem are worth emphasizing.  First, the comparison
-is made separately on every input vector.  We must therefore compete not only
+is made separately on every input.  We must therefore compete not only
 with one fixed online algorithm, but also with algorithms optimized for this
 particular $p$.  Allowing $\mathcal A'$ to know the entries of $p$ makes this
 strongest possible online benchmark explicit.
 
 Second, the existence of some instance-optimal algorithm is perhaps not
 surprising.  One could imagine a meta-algorithm that samples the input to
-estimate the empirical distribution of the entries of $p$ and then runs an
+estimate the empirical distribution of its job lengths and then runs an
 optimal algorithm for that estimate.  The
 substantive part of the theorem is that no complicated meta-algorithm is
 needed.  The optimal leading-order algorithm for a known input is itself a simple
@@ -263,14 +263,14 @@ Without an upper bound on the job lengths, no randomized algorithm has a
 finite competitive ratio, even if we ignore an additive $o(n^2)$ term; see
 \cref{thm:blind-unbounded-impossible} for a simple counterexample.  For every
 fixed bound $L$, however, sampling again gives one algorithm that is optimal
-on every bounded input vector.
+on every bounded input.
 
 
 \begin{theorem}[Blind-execution instance optimality, informal version of
 \protect\cref{thm:blind-instance}]
 \label{thm:intro-blind-instance}
 Fix $L<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
-for every vector $p\in[0,L]^n$ and every online algorithm
+for every input $p\in[0,L]^n$ and every online algorithm
 $\mathcal A'$,
 \[
  \EE\ALG_{\mathcal A^*}\le \EE\ALG_{\mathcal A'}+o_L(n^2).
@@ -389,7 +389,7 @@ samples the input and chooses between these two options.
 \protect\cref{thm:bo-instance}]
 \label{thm:intro-bo-instance}
 Consider the blind-optimization model with some $0<u<\infty$.  There is one
-randomized algorithm $\mathcal A^*$ such that, for every vector
+randomized algorithm $\mathcal A^*$ such that, for every input
 $p\in[0,u]^n$ and every online algorithm $\mathcal A'$,
 \[
  \EE\ALG_{\mathcal A^*}\le \EE\ALG_{\mathcal A'}+o_u(n^2).
@@ -535,7 +535,7 @@ tested jobs belong before the untouched raw block.
 \protect\cref{thm:common-upper-instance}]
 \label{thm:intro-common-upper-instance}
 Fix $0<u<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
-for every vector $p\in[0,u]^n$ and every online algorithm
+for every input $p\in[0,u]^n$ and every online algorithm
 $\mathcal A'$,
 \[
  \EE\ALG_{\mathcal A^*}\le \EE\ALG_{\mathcal A'}+o_u(n^2).

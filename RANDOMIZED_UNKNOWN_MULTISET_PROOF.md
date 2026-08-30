@@ -16,7 +16,7 @@ processing times.
 
 > **Theorem 1 (sharp randomized ratio).** There are randomized
 > nonanticipating algorithms `A_n`, depending only on `n`, such that for
-> every `n` and every vector `p in [0,infinity)^n`,
+> every `n` and every input `p in [0,infinity)^n`,
 >
 > ```text
 > E ALG_A_n(p) <= 4 OPT(p)/3 + 20378 n^(7/4)

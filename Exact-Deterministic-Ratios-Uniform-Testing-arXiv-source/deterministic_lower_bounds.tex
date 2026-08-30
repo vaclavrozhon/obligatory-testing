@@ -122,7 +122,7 @@ when $n-v$ is small.  The omitted one-job terms are $O_u(n)$ in the
 unnormalized costs.
 Finally, freeze every revealed or hidden answer on its job label.  Because
 the algorithm is deterministic and a raw action never reveals its assigned
-zero, rerunning it on this fixed vector reproduces the same transcript.  The
+zero, rerunning it on this fixed input reproduces the same transcript.  The
 adaptive description therefore yields a legal fixed hard instance.
 \end{proof}
 
@@ -731,7 +731,7 @@ $1+\ln(1+x)$ over the positive mass gives $L=s\ln t$, and
 rational approximations, clear their denominators, and apply the recording
 argument from \cref{clm:lower-fixed-input}: assign each revealed answer to
 its job label and rerun the deterministic algorithm on the resulting fixed
-vector.  This produces arbitrarily large fixed rational instances with the
+input.  This produces arbitrarily large fixed rational instances with the
 stated limit and liminf bounds.
 \end{proof}
 
@@ -896,7 +896,7 @@ when $R\le u$ and $D\ge0$.  If no quota crossing occurs, the all-zero
 instance has ratio $u\ge R$, as observed above.
 
 Finally, record every assigned value on its job label.  Replaying this fixed
-vector produces the same transcript because the values learned only by the
+input produces the same transcript because the values learned only by the
 physical simulation were hidden from the virtual algorithm.  This proves
 legality and turns each adaptive construction into a fixed input.
 \end{proof}
