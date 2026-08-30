@@ -29,11 +29,10 @@ exact asymptotic answers in all four models.
 
 Consider the following problem.  There are $n$ jobs.  Testing job $i$ takes
 one unit of time and reveals a number $p_i\geq0$.  The job then needs another
-$p_i$ units of processing; if $p_i=0$, it completes with the test.  For now
-every job has to be tested: testing is \emph{obligatory}.  The formal model
+$p_i$ units of processing; if $p_i=0$, it completes with the test.  In the simplest variant of this problem, every job has to be tested: testing is \emph{obligatory}.  The formal model
 is given in \cref{sec:model}.
 
-We compare an online scheduler with the shortest-first schedule that knows
+To analyze scheduling in this model, we compare an online scheduler with the shortest-first schedule that knows
 all values $p_i$ in advance.  The \emph{competitive ratio} is the online cost
 divided by this offline optimum.  We care about its asymptotic value.  Since
 every job must be tested, even the optimum has cost $\Omega(n^2)$, so we
@@ -60,7 +59,6 @@ nondecreasing order of $p_i$.  The following pseudocode gives a little more
 detail about the two algorithms.  The formulas are not meant to be memorable.
 
 \begin{algorithm}[H]
-\caption{\revision{Schematic deterministic threshold}}
 \label{alg:intro-obligatory-det}
 \begin{algorithmic}
 \State Put $c=0.570574\ldots$ and $R=1+c=\RdetOT$.
@@ -80,7 +78,6 @@ positive jobs processed immediately and $d_i$ the number deferred.
 \end{algorithm}
 
 \begin{algorithm}[H]
-\caption{\revision{Schematic learned randomized threshold $\mathcal A_n^*$}}
 \label{alg:intro-obligatory-rand}
 \begin{algorithmic}
 \State Set $B_n=O(n^{1/20})$ and test $O(n^{3/4})$ random jobs to estimate
@@ -105,10 +102,6 @@ deferring them otherwise.
 \end{algorithmic}
 \end{algorithm}
 
-\revision{The displayed algorithm is conceptual: the finite implementation
-uses rounded categories and canonical empty-sample and small-$n$ fallbacks,
-as specified in \cref{sec:random-obligatory}.}
-
 Both algorithms follow the same principle: process short jobs as soon as
 possible and leave long jobs for the end.  The difficult part is choosing the
 threshold.  A deterministic algorithm has no representative view of the
@@ -125,9 +118,6 @@ distribution stays close to the sampled one throughout the run.  The
 algorithm therefore faces essentially the same distribution at every step
 and can use one fixed threshold.
 
-\revision{The adversary fixes the labeled input before the algorithm draws
-its random bits; the private shuffle is performed by the algorithm at time
-zero and is not a random-order assumption supplied by the environment.}
 
 The choice of that threshold has a simple interpretation.  For a candidate
 $t$, a full round of tests together with the immediate processing of outcomes
@@ -181,15 +171,7 @@ $p$ and told all its entries in advance, though not their shuffled assignment
 to the public labels.
 \end{theorem}
 
-Here and in the instance-optimal statements below, randomized cost uses the
-\hyperref[par:input-convention]{input convention} formalized in the model
-section: the displayed vector is privately shuffled before the algorithm starts.
-
-\revision{Thus instance optimality here is an expected, leading-$n^2$
-comparison with a multiset-aware but placement-oblivious online competitor;
-the universal algorithm itself does not know the multiset in advance.}
-
-Both assumptions in the theorem are necessary.  Without a fixed bound $L$
+Assumptions in the theorem are necessary.  Without a fixed bound $L$
 there is no randomized instance-optimal algorithm, and without randomization
 there is no deterministic one; see \cref{thm:ot-instance-impossibility}.
 
@@ -293,10 +275,6 @@ $\mathcal A'$,
 \]
 \end{theorem}
 
-\revision{This is an additive leading-scale statement, not a multiplicative
-guarantee when $\OPT=o(n^2)$; for example, many zero-length jobs can make the
-clairvoyant blind-execution cost subquadratic.}
-
 To describe the algorithm, let $\widehat D$ denote the estimated
 job-length distribution and put
 $\widehat\mu=\int p\,d\widehat D(p)$.  As in
@@ -335,7 +313,6 @@ $F_{\mathsf{BE},\widehat D}$ from \cref{eq:blind-F}.
 
 
 \begin{algorithm}[H]
-\caption{\revision{Schematic instance-optimal blind execution}}
 \label{alg:intro-blind}
 \begin{algorithmic}
 \State Shuffle the jobs and run $o(n)$ of them blindly; use their observed
@@ -366,9 +343,6 @@ time $u$ and optimization followed by processing in time $1+p_i$; thus $u$
 is also the \emph{offline cap} on the resulting job length.  We start with
 the case in which optimization does not reveal $p_i$.  Before execution,
 all optimized jobs still look the same.
-
-\revision{We use this model as a controlled ablation of revealing
-optimization: it preserves the speedup while removing advance information.}
 
 This is the simpler case.  Let us first describe the hardest inputs for both
 deterministic and randomized algorithms.  Roughly a $1/\sqrt u$ fraction of
@@ -421,7 +395,6 @@ $p\in[0,u]^n$ and every online algorithm $\mathcal A'$,
 
 
 \begin{algorithm}[H]
-\caption{\revision{Schematic instance-optimal blind optimization}}
 \label{alg:intro-blind-optimization}
 \begin{algorithmic}
 \State Shuffle the jobs, optimize and run $o(n)$ of them,
@@ -522,7 +495,6 @@ For $\uDet{3}\le u\le\uDet{4}$, the zero-prefix specialization gives the
 formula $1+1/\sqrt{u-1}$.
 
 \begin{algorithm}[htbp]
-\caption{\revision{Schematic \textsc{ForcedPrefixUTE}$(J,u)$}}
 \label{alg:intro-ro-ute}
 \begin{algorithmic}
 \Statex \textbf{Range:} $\uDet{2}\le u\le\uDet{4}$.
@@ -615,13 +587,6 @@ $\Theta(\sqrt u)$.}
 
 The proofs repeatedly use similar ideas.  We summarize the main ones here.
 
-\revision{At the leading $n^2$ scale, the bounded-input problems admit a
-common fluid description in which job mass is divisible and a schedule is a
-sequence of completion-density blocks.  A pointwise optimal fluid completion
-curve supplies the common lower envelope, while a sublinear pilot and a
-finite grid implement the learned plan on the original finite input up to
-$o(n^2)$.}
-
 \paragraph{Remaining-job and pair accounting.}
 Every unit of machine work delays every job that is still unfinished.
 Total completion time can therefore be computed by tracking the number of
@@ -631,7 +596,7 @@ identities used throughout the paper.  For example, if an algorithm tests a
 fraction $q$ of the jobs, a pair may contain two tested jobs, one tested and
 one untested job, or two untested jobs.  The numbers of such pairs are
 proportional to $q^2$, $q(1-q)$, and $(1-q)^2$, respectively.  The leading
-cost is therefore often a quadratic function of $q$.
+cost is therefore often a quadratic function of $q$. Optimal parameters of our algorithms are often computed by solving equations stemming from arguments like this one. 
 
 \paragraph{Completion density.}
 Our algorithms can typically be viewed as a sequence of a few
@@ -639,8 +604,8 @@ Our algorithms can typically be viewed as a sequence of a few
 for example, it may test a random job, process it below a threshold, and
 defer it otherwise.  Each module spends some work and completes some mass of
 jobs.  Its \emph{completion density} is the completed mass per unit of work.
-Higher-density modules should come first.  This viewpoint leads to our
-algorithms by identifying the relevant modules and ordering them by
+Intuitively, higher-density modules should come first. Our
+algorithms typically identify the relevant modules and order them by
 completion density.
 
 \paragraph{A private shuffle.}
@@ -649,7 +614,7 @@ small prefix.  Its sublinear cost is negligible at the $n^2$ scale, while
 concentration makes it a reliable estimate of the input distribution.
 Because the labels were shuffled privately, the distribution of the
 remaining jobs stays close to this estimate throughout most of the schedule.
-This stability makes the randomized setting substantially simpler.
+This stability makes the randomized setting substantially simpler; in particular, we introduce a \emph{fluid model} -- a substantially simplified, idealized model, in which we disregard problems like that the distribution of remaining jobs changes over time. We analyze this simplified model and use concentration inequalities to reduce our problems to it. 
 
 \subsection{Related work}
 \label{sec:related}
