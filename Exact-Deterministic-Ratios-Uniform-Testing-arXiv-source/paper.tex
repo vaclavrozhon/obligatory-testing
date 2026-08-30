@@ -166,6 +166,8 @@
 \newcommand{\Area}{\operatorname{Area}}
 \newcommand{\Prob}{\mathbb{P}}
 \newcommand{\Stat}{\mathrm{stat}}
+\DeclareRobustCommand{\revision}[1]{{\color{blue!70!black}#1}}
+\pdfstringdefDisableCommands{\def\revision#1{#1}}
 
 \title{Scheduling with Uniform Tests: Exact Ratios, Instance Optimality, and the Value of Information}
 
@@ -177,20 +179,23 @@
 \maketitle
 
 \begin{abstract}
-We study single-machine scheduling with a unit-time preliminary action that
-may reveal and/or reduce an unknown processing time, under the total
-completion-time objective.  For obligatory testing, we determine the exact
-size-asymptotic competitive ratios: $1.570574\ldots$ deterministically and
-$4/3$ randomized against an oblivious adversary.  Our main structural result
-is a fluid completion-density theorem that characterizes the optimal leading
-cost on every bounded input multiset and yields universal
-sample-then-schedule algorithms attaining it up to $o(n^2)$.  We further
-derive complete deterministic and randomized phase diagrams for revealing
-and blind optimization.  Their contrast quantifies the value of advance
-information: with revelation the ratios remain bounded as the raw cap grows,
-whereas without revelation they grow as $\Theta(\sqrt u)$.  We also
-characterize bounded blind execution and identify the regimes in which
-boundedness and randomization are necessary.
+A machine faces many jobs whose lengths are hidden.  Spending one unit of
+time to inspect a job may reveal a short job that should be finished now, or
+it may reveal nothing useful while every other job waits.  When should the
+machine keep looking, and when should it start working?
+
+We study this question for one machine and total completion time.  We
+consider four natural rules: every job must be tested; a unit-time revealing
+optimization can replace a raw time $u$ by a shorter revealed length; an
+untested job can be run blindly for its true hidden length; or a unit-time
+optimization can shorten it without revealing the new length.  Together these
+models separate the two possible benefits of spending
+one unit before execution: learning which job to do next and making the job
+faster.
+
+We give exact asymptotic answers for these models, both as competitive ratios
+and as instance-optimal guarantees.  The resulting algorithms are often
+quite simple, which may make them useful in practice.
 \end{abstract}
 
 \tableofcontents
