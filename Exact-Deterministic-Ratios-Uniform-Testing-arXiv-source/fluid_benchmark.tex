@@ -7,11 +7,12 @@ the same fluid model.  We first solve this model exactly, then show that its
 value gives the leading cost on every bounded input.
 
 Let us explain the main idea.  Fix an input vector and privately shuffle its
-values among the job labels.  In every predictable prefix, the number of
-encountered jobs of each type is close to the prefix length times its
-proportion in the whole input.  Thus, if the algorithm tests a fraction $t$
-of all jobs, it sees approximately a fraction $t$ of every processing-time
-class.
+values among the job labels.  Suppose the algorithm inspects a prefix whose
+length may depend on the jobs seen so far, but not on values that are still
+hidden.  The number of encountered jobs of each type is close to the prefix
+length times its proportion in the whole input.  Thus, if the algorithm tests
+a fraction $t$ of all jobs, it sees approximately a fraction $t$ of every
+processing-time class.
 
 The fluid model simply makes this approximation exact.  We replace $n$ jobs
 by one unit of divisible mass and divide machine work by $n$.  For example,
@@ -22,12 +23,17 @@ later in this section.
 
 \subsection{The fluid model}
 
-Despite the name, a fluid algorithm does not make a new decision at every
-real time.  We consider only finitely many processing-time types, and an
-algorithm consists of finitely many divisible blocks.  Within each block,
-work and completions accrue proportionally.  We fix the total tested
-fraction $q$; the remaining fraction $1-q$ is completed by another mode that
-uses $v$ units of work per job.  Formally, let
+Here is a simple example.  Suppose that half of the jobs have length zero and
+half have length two.  If a block tests mass $0.2$ and immediately completes
+only the zero jobs, it uses $0.2$ units of work, completes mass $0.1$, and
+leaves mass $0.1$ of length-two jobs for later.  The fluid model records such
+aggregate blocks instead of individual jobs.
+
+We consider only finitely many processing-time types, and a fluid algorithm
+consists of finitely many divisible blocks.  Within each block, work and
+completions grow proportionally.  We fix the total tested fraction $q$;
+the remaining fraction $1-q$ is completed by another mode that uses $v$
+units of work per job.  Formally, let
 \begin{equation}
  D=\sum_{i=0}^m d_i\delta_{p_i},
  \qquad 0=p_0<p_1<\cdots<p_m,
@@ -239,10 +245,11 @@ Summing these terms and collecting each unordered pair gives
 
 \subsection{The optimal fluid schedule}
 
-We can now describe the optimal algorithm.  We fix the total tested fraction
-$q$ and compare complete curves, not just their areas: after every amount of
-work, our algorithm has completed at least as much mass as any other fluid
-algorithm with the same $q$.
+We can now describe an optimal fluid schedule for the fixed distribution
+$D$, tested fraction $q$, and alternative cost $v$.  We compare complete
+curves, not just their areas: after every amount of work, our schedule has
+completed at least as much mass as any other fluid schedule with the same
+$D$, $q$, and $v$.
 
 First describe the accounting state of an arbitrary schedule after it has
 used work $x$.  Let $t$ be its tested mass, $b$ its mass completed in the
@@ -275,8 +282,7 @@ $t+vb+\sum_i p_ic_i$.  Therefore define the finite-dimensional envelope
 The candidate schedule is completely explicit.
 
 \begin{algorithm}[H]
-\caption{Shortest-first fluid schedule
-$\textsc{FluidSPT}(D,q,v)$}
+\caption{}
 \label{alg:fluid-spt}
 \begin{algorithmic}
 \State Compute the maximum-density selector $g_*$, its completed mass $a_*$,
@@ -421,7 +427,7 @@ Integrating the pointwise inequality and applying
 For fixed $D,q,v$, one maximum-density testing block followed by the
 remaining blocks in shortest-work-per-completion order dominates every
 other feasible fluid schedule at every work budget.  Instance optimality
-will follow by learning this finite block plan from a private pilot sample.
+will follow by learning this finite block plan from a private random sample.
 \end{minipage}}
 \end{center}
 
@@ -437,14 +443,14 @@ so we use $v=\mu_D$ and again choose $q\in[0,1]$.  Blind optimization is not
 covered by this model, since its preliminary operation does not reveal the
 processing time.
 
-It remains to connect this idealized problem with finite inputs.  For an
+It remains to connect this fluid problem with finite inputs.  For an
 input vector $p$, the empirical distribution $D[p]$ is already finitely
 supported.  We only round it to a smaller grid so that one concentration
 event controls all types simultaneously.  The finite transfer has the
-following architecture:
+following form:
 \begin{center}
 \small
-fluid lower envelope $\longrightarrow$ plan learned from a pilot
+fluid lower envelope $\longrightarrow$ plan learned from a subsample
 $\longrightarrow$ finite nonanticipating schedule.
 \end{center}
 The next subsection proves both directions of this approximation.

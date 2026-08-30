@@ -11,7 +11,6 @@
 \usepackage{aliascnt}
 \usepackage{booktabs}
 \usepackage{array}
-\usepackage{longtable}
 \usepackage{graphicx}
 \usepackage{capt-of}
 \usepackage{pgfplots}
@@ -21,7 +20,6 @@
 \usepackage{enumitem}
 \usepackage{float}
 \usepackage{xcolor}
-\usepackage{listings}
 \usepackage[hidelinks]{hyperref}
 \usepackage[nameinlink,capitalise,noabbrev]{cleveref}
 
@@ -31,7 +29,7 @@
   pdfsubject={Online scheduling with testing under explorable uncertainty},
   pdfkeywords={scheduling with testing, explorable uncertainty, online algorithms,
     randomized algorithms, instance optimality, competitive analysis,
-    total completion time, Lean 4}
+    total completion time}
 }
 
 \allowdisplaybreaks
@@ -63,42 +61,6 @@
 \newcommand{\Statex}{\item[]}
 \crefname{algorithm}{algorithm}{algorithms}
 \Crefname{algorithm}{Algorithm}{Algorithms}
-
-% Lean excerpts in the formalization appendix.  The literate substitutions
-% keep the source's Unicode notation while remaining compatible with pdfLaTeX
-% and arXiv's standard TeX environment.
-\lstdefinelanguage{Lean}{
-  morekeywords={structure,where,theorem,by,constructor,intro,exact,Prop},
-  sensitive=true,
-  morecomment=[l]{--},
-  morecomment=[s]{/-}{-/}
-}
-\lstdefinestyle{lean}{
-  language=Lean,
-  basicstyle=\ttfamily\footnotesize,
-  keywordstyle=\bfseries,
-  commentstyle=\itshape\color{black!60},
-  columns=fullflexible,
-  keepspaces=true,
-  showstringspaces=false,
-  breaklines=true,
-  breakatwhitespace=true,
-  frame=single,
-  framerule=0.3pt,
-  rulecolor=\color{black!30},
-  framesep=5pt,
-  xleftmargin=0.5em,
-  xrightmargin=0.5em,
-  aboveskip=7pt,
-  belowskip=7pt,
-  literate=
-    {∀}{{$\forall$}}1
-    {∃}{{$\exists$}}1
-    {ℝ}{{$\mathbb{R}$}}1
-    {→}{{$\to$}}1
-    {∧}{{$\wedge$}}1
-    {·}{{$\mathord{\cdot}$}}1
-}
 
 \newtheorem{theorem}{Theorem}[section]
 \newaliascnt{lemma}{theorem}
@@ -166,8 +128,6 @@
 \newcommand{\Area}{\operatorname{Area}}
 \newcommand{\Prob}{\mathbb{P}}
 \newcommand{\Stat}{\mathrm{stat}}
-\DeclareRobustCommand{\revision}[1]{{\color{blue!70!black}#1}}
-\pdfstringdefDisableCommands{\def\revision#1{#1}}
 
 \title{Scheduling with Uniform Tests: Exact Ratios, Instance Optimality, and the Value of Information}
 
@@ -220,8 +180,6 @@ quite simple, which may make them useful in practice.
 
 \input{blind_optimization}
 
-\input{conclusion}
-
 \section*{Acknowledgements}
 \addcontentsline{toc}{section}{Acknowledgements}
 
@@ -229,17 +187,11 @@ An initial improvement over the then-current deterministic lower bound for
 obligatory testing was obtained with the Bolzano open-source multi-agent
 research system~\cite{GrebikEtAl2026Bolzano}.  That preliminary result
 motivated the present project.  Most of the subsequent conjecture generation,
-proof development, counterexample search, exposition, and Lean formalization
-was carried out with substantial assistance from OpenAI's GPT-5.6 through
+proof development, counterexample search, and exposition was carried out with
+substantial assistance from OpenAI's GPT-5.6 through
 interactive Codex sessions.  The author selected the research directions,
-reviewed and revised the arguments, and takes responsibility for the claims
+reviewed the arguments, and takes responsibility for the claims
 in this paper.
-
-\appendix
-
-\input{standard_concentration}
-
-\input{formal_verification}
 
 \addcontentsline{toc}{section}{References}
 \bibliographystyle{alphaurl}

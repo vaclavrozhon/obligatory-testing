@@ -79,7 +79,7 @@ randomness.
 
 We prove the two inequalities separately.  The lower bound uses only the
 random order of first touches.  The upper bound additionally uses a short
-pilot sample to choose the parameters of $\textsc{FluidSPT}$.
+random subsample to choose the parameters of $\textsc{FluidSPT}$.
 
 \subsubsection{Lower bound: comparing a finite run with the fluid curve}
 \label{sec:common-lower-transfer}
@@ -239,7 +239,7 @@ We use plans defined on the \emph{entire} grid, not only on the support of
 $D$.  Concretely, the maximum-density selector is extended canonically to an
 empty class: include it below the reciprocal-density threshold, exclude it
 above the threshold, and use the fixed convention ``include'' at equality.
-Thus a short type absent from the pilot still receives the correct action if
+Thus a short type absent from the sample still receives the correct action if
 it occurs later.  Among multiple minimizing tested fractions and block
 orders, choose the smallest tested fraction and then the lexicographically
 first order, with testing blocks before deferred blocks at equal density and
@@ -319,16 +319,21 @@ The learner uses the grid from
 the first
 \begin{equation}
  k_n=\lceil n^{1/2}\rceil
- \label{eq:common-transfer-pilot-size}
+ \label{eq:common-transfer-sample-size}
 \end{equation}
 jobs.  It keeps positive sample jobs pending and forms their rounded
 histogram $\widehat D_n$.  It chooses the canonical full-grid plan minimizing
 $F_{r,\widehat D_n}$ and applies it to the unused labels, then finishes the
 positive sample jobs.
 
+For $n<4$, let the learner instead use any fixed complete legal schedule.
+In the rest of the proof $n\ge4$, so $k_n<n$ and the remaining histogram
+below is well defined.  The cost of the finitely many smaller inputs is
+absorbed by the constant in \cref{eq:common-learning-upper}.
+
 Let $D_n$ and $D_n^{\rm rem}$ be the full and remaining rounded histograms.
 The sampling-without-replacement estimate
-\cref{eq:without-replacement-histogram} and deletion of the pilot give
+\cref{eq:without-replacement-histogram} and deletion of the sampled jobs give
 \begin{equation}
  \EE\|\widehat D_n-D_n\|_1
  \le\sqrt{\frac{K_n+1}{k_n}},
@@ -338,7 +343,7 @@ The sampling-without-replacement estimate
  \label{eq:common-transfer-histogram}
 \end{equation}
 
-\begin{claim}[Learning from a pilot sample]
+\begin{claim}[Learning from a random subsample]
 \label{clm:common-learning-upper}
 The learner above satisfies
 \begin{equation}
@@ -350,15 +355,15 @@ uniformly over $p\in[0,L]^n$.
 \end{claim}
 
 \begin{proof}
-Condition on the pilot.  The unused labels remain uniformly permuted, so
+Condition on the sample.  The unused labels remain uniformly permuted, so
 \cref{clm:common-finite-template-kernel} applies to the selected plan.
 In particular, the decision to use the direct mode and the random tested
-quota are fixed from the pilot before an unused hidden value is seen;
-selector marks are drawn only after a test reveals their grid class.  Empty
-pilot cells cause no undefined behavior because the canonical threshold
-extension above defines their marks and queue positions on the full grid.
-The pilot and its final positive tail use $O_L(k_n)$ work and therefore add
-$O_L(nk_n)$ to total completion time.
+quota are fixed from the sample before an unused hidden value is seen;
+selector marks are drawn only after a test reveals their grid class.  The
+canonical threshold extension defines marks and queue positions even for
+grid cells absent from the sample.  The sampled prefix and its final positive
+tail use $O_L(k_n)$ work and therefore add $O_L(nk_n)$ to total completion
+time.
 
 The fixed-plan estimate is applied to the upward-rounded values.  Coupling
 the physical and rounded executions with the same decisions changes tested

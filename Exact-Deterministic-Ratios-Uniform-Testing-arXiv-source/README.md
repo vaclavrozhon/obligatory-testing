@@ -1,7 +1,7 @@
-# Scheduling with Uniform Tests: Information and Optimization
+# Scheduling with Uniform Tests: Exact Ratios, Instance Optimality, and the Value of Information
 
-This directory is a self-contained arXiv source tree for the manuscript
-`paper.tex`.
+This directory is a self-contained source tree for the main manuscript
+`paper.tex` and the separate Lean audit `lean_appendix.tex`.
 
 ## Build
 
@@ -9,9 +9,12 @@ Run
 
 ```sh
 latexmk -pdf paper.tex
+latexmk -pdf lean_appendix.tex
 ```
 
-from this directory for the complete manuscript, including all appendices.
+from this directory to build the two documents.  The main manuscript contains
+the mathematical preliminaries and proofs; the second document records the
+Lean coverage, exported theorem statements, and reproduction instructions.
 
 The build uses only standard LaTeX packages and included vector figures.
 The introduction's deterministic overview is a native TikZ/pgfplots source
@@ -26,12 +29,19 @@ bibtex paper
 pdflatex -interaction=nonstopmode -halt-on-error paper.tex
 pdflatex -interaction=nonstopmode -halt-on-error paper.tex
 pdflatex -interaction=nonstopmode -halt-on-error paper.tex
+
+pdflatex -interaction=nonstopmode -halt-on-error lean_appendix.tex
+bibtex lean_appendix
+pdflatex -interaction=nonstopmode -halt-on-error lean_appendix.tex
+pdflatex -interaction=nonstopmode -halt-on-error lean_appendix.tex
+pdflatex -interaction=nonstopmode -halt-on-error lean_appendix.tex
 ```
 
 ## Submission metadata
 
 The manuscript title and PDF metadata are `Scheduling with Uniform Tests:
-Information and Optimization`; the current author block names Václav Rozhoň.
+Exact Ratios, Instance Optimality, and the Value of Information`; the current
+author block names Václav Rozhoň.
 The bibliography contains DOI/arXiv metadata for the cited literature, and the
 acknowledgements disclose the use of Bolzano and GPT-5.6 in developing the
 results and formalization.
@@ -75,7 +85,7 @@ is its variant with a slowly growing cutoff.
 The full revealing-optimization instance-optimal proof is Section 5 of the
 manuscript; its outer worst-case optimization is the separate four-piece
 curve in Section 6.  Lean now checks this instance theorem end to end for a
-literal pilot-learned transcript-only strategy against every finite
+literal sample-learned transcript-only strategy against every finite
 randomization of completing adaptive observed algorithms, including the
 fixed-placement Yao lower bound, the zero-mean branch, and a concrete
 input-size-only vanishing error.  It also checks the four-piece randomized
@@ -83,7 +93,7 @@ scalar maximization, including transition uniqueness, attainment, the
 plateau, and the global maximum.
 
 The blind-execution theorem is formalized in Lean.  For blind optimization,
-Lean checks the deterministic counterexample and curve, the universal pilot
+Lean checks the deterministic counterexample and curve, the universal sample
 upper, the randomized reduction for arbitrary finite empirical
 distributions, and literal operational fixed-input Yao selection.  For
 obligatory testing, Lean checks the fixed-cutoff `4/3` theorem, the full
@@ -97,11 +107,13 @@ The main file is intentionally short: `paper.tex` contains the build switch,
 preamble, front matter, and chapter order, while the shared model definitions
 and technical tools live in `models_and_preliminaries.tex`.
 
+The concentration tools are part of Section 2.5: the standard estimates in
+`standard_concentration.tex` are included by `models_and_preliminaries.tex`.
 The finite-dimensional fluid model and its common pointwise optimality
 theorem form Section 3 in `fluid_benchmark.tex`.  Section 4 is assembled by
 `deterministic_revealing.tex` from algorithm
 guarantees, branchwise lower bounds, curve assembly, and the obligatory
-endpoint.  The single appendix, `formal_verification.tex`, gives an
-English-to-Lean audit of the main theorem statements.  Superseded proofs,
-generated PDF plots, and their plotting scripts are retained under `old/`;
-the manuscript uses only the native TikZ sources listed above.
+endpoint.  The file `formal_verification.tex` supplies the body of the
+standalone Lean audit `lean_appendix.tex`.  Superseded proofs, generated PDF
+plots, and their plotting scripts are retained under `old/`; the manuscript
+uses only the native TikZ sources listed above.

@@ -1,7 +1,7 @@
 \section{Blind optimization: speedup without revelation}
 \label{sec:blind-optimization}
 
-We finally separate the two benefits that were bundled together in the
+We now separate the two benefits that were combined in the
 revealing-optimization model.  Raw execution still takes the known time $u$, and one
 unit of optimization still reduces the processing time to $p_i\in[0,u]$.
 The difference is that optimization does not reveal $p_i$.  An optimized job
@@ -19,8 +19,8 @@ a private random sample is representative after the initial shuffle,
 whereas an adversary can make a deterministic exploration history atypical.
 
 This small change removes the threshold decision entirely.  It also shows
-that the bounded randomized ratio in the revealing model is genuinely an
-information effect.
+that the bounded randomized ratio in the revealing model comes from the
+revealed information.
 
 \begin{figure}[htbp]
 \centering
@@ -33,9 +33,9 @@ Unlike their revealing counterparts, both diverge with the raw cap $u$.}
 The section first proves that deterministic instance optimality is impossible
 and determines the exact deterministic worst-case curve.  It then proves two
 closely related randomized statements.  The first, \cref{thm:bo-instance},
-is the rigorous version of the informal instance-optimality theorem
+is the formal version of the instance-optimality theorem
 \cref{thm:intro-bo-instance}.  The second, \cref{thm:bo-curve}, is the
-rigorous version of \cref{thm:intro-bo-curve} and maximizes that
+formal version of \cref{thm:intro-bo-curve} and maximizes that
 instance-specific value relative to the clairvoyant optimum.  Keeping the
 results together avoids repeating the same reduction to contiguous
 optimization-and-processing blocks.
@@ -533,7 +533,7 @@ Let $u_{\mathsf{BO}}>1$ denote the unique root greater than one of
 \begin{equation}
  u^3-2u^2-u+1=0,
  \qquad
- u_{\mathsf{BO}}=2.2469796037\ldots .
+ u_{\mathsf{BO}}=2.246980\ldots .
  \label{eq:bo-transition}
 \end{equation}
 

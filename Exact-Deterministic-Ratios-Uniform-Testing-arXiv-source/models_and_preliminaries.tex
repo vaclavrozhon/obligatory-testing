@@ -1,6 +1,6 @@
 \section{Models and common preliminaries}\label{sec:model}
 
-The four models differ in small but consequential ways.  This section
+The four models differ in small but important ways.  This section
 collects their common building blocks so that the later arguments need not
 repeat them.  We first define the models and adversaries, then develop the
 offline pair identities and asymptotic conventions, and finally record the
@@ -50,8 +50,8 @@ instance-optimal theorem we restrict the inputs to $[0,L]$ and make $L$
 public.  In the last two models, by contrast, $u$ is itself an available
 running time and hence part of every scheduling decision.  We call it the
 \emph{raw-execution cap}, or simply the \emph{cap}.  Since the offline
-effective length in these models is $\min\{u,1+p_j\}$, we call it the
-\emph{offline cap $u$} when discussing the clairvoyant benchmark.  The
+effective length in these models is $\min\{u,1+p_j\}$, we also call $u$ the
+\emph{offline cap} when discussing the clairvoyant benchmark.  The
 number $n$
 and any theorem-specific bound $L$ or model parameter $u$ are known to the
 algorithm.
@@ -115,14 +115,10 @@ not on a hidden value that the model has not yet exposed.
 The \emph{transcript} of a run is the resulting ordered sequence of actions
 and observations.
 
-Mathematically we allow arbitrary private probability spaces.  The Lean
-exports in \cref{sec:formalization} quantify over finite uniform seed types.
-This does not change the paper ratios: on each finite input family used in a
-bound, only finitely many transcript decisions and their costs are relevant,
-and conditioning followed by finite-support approximation changes every
-expected cost by an arbitrarily small amount.  The appendix records this
-seed convention explicitly and marks the two symmetrization corollaries that
-are not themselves exposed as Lean theorems.
+Mathematically we allow arbitrary private probability spaces.  On each finite
+input family used in a bound, only finitely many transcript decisions and
+their costs are relevant, and conditioning followed by finite-support
+approximation changes every expected cost by an arbitrarily small amount.
 
 For some lower bounds it is convenient to describe a finite distribution
 over inputs before selecting one fixed input.  If every deterministic
@@ -243,14 +239,15 @@ $\EE\ALG=n^2\PhiBE(D[p])+o_L(n^2)$, where the benchmark $\PhiBE$ is defined
 in \cref{sec:blind-benchmark}.  It does not claim a bounded ratio to the
 clairvoyant optimum when most jobs have length zero.
 
-\subsection{Predictable sampling}
+\subsection{Concentration and predictable sampling}
 \label{sec:probabilistic-tools}
+\label{sec:standard-concentration}
 
-The standard concentration estimates used below are collected in
-\cref{sec:standard-concentration}.  We retain here the specialized estimate
-that permits data-dependent weights while sampling a uniformly permuted
-finite population.
-The final estimate allows predictable weights and is uniform over prefixes.
+\input{standard_concentration}
+
+We finally record a specialized estimate that permits data-dependent weights
+while sampling a uniformly permuted finite population and is uniform over
+prefixes.
 
 \begin{lemma}[Predictable sampling from a random permutation]
 \label{lem:predictable-permutation-sampling}

@@ -125,9 +125,10 @@ We now specify the single algorithm promised in
 a grid whose mesh tends to zero.
 
 \begin{algorithm}[H]
-\caption{Growing-cutoff obligatory learner $\mathcal A^*$}
+\caption{}
 \label{alg:ot-growing-cutoff-instance}
 \begin{algorithmic}
+\State If $n<16$, test every job, process all positive jobs in SPT order, and stop.
 \State Set $k=\lfloor n^{3/4}\rfloor$, $d=\lfloor n^{1/4}\rfloor$,
        $B_n=32+n^{1/20}$, and $\eta=B_n/d$.
 \State Privately permute the labels and test labels $1,\ldots,k$, leaving
@@ -135,9 +136,11 @@ a grid whose mesh tends to zero.
 \State Keep zero as its own category, round values in $(0,B_n]$ upward to
        the $B_n$-grid of mesh $\eta$, and put values above $B_n$ in an
        overflow category.
-\State Among finite category prefixes, choose one with maximum sample
-       completion density as in \cref{eq:ot-finite-density}, and close it by
-       including every finite category up to its reciprocal density.
+\State If the sample has no mass in a finite category, choose no finite
+       category and set the maximum sample density to zero.
+\State Otherwise, among finite category prefixes, choose one with maximum
+       sample completion density as in \cref{eq:ot-finite-density}, and close
+       it by including every finite category up to its reciprocal density.
 \State If the maximum sample density is less than $1/B_n$, test all
        remaining jobs and process every positive job in SPT order.
 \State Otherwise, process the pending sample jobs in the chosen categories;
@@ -162,14 +165,16 @@ For every fixed $L<\infty$ and every $p\in[0,L]^n$,
 \end{claim}
 
 \begin{proof}
-Fix $L$.  For all sufficiently large $n$, $B_n>L$, so the overflow category
+Fix $L$.  The small-$n$ branch has bounded cost, which can be absorbed by the
+constant in \cref{eq:ot-instance-upper-rate}.  For all sufficiently large
+$n$, $B_n>L$, so the overflow category
 is empty.  The prefix containing the whole sample has density at least
 $1/(1+L+\eta)>1/B_n$, and hence fallback does not occur.
 
 Let $D^+$ be the rounded full histogram, $D^{\rm rem}$ the rounded histogram
 of the $n-k$ unused jobs, and $\widehat D$ the sample histogram.  The
 sampling-without-replacement estimate
-\cref{eq:without-replacement-histogram} and deletion of the pilot give
+\cref{eq:without-replacement-histogram} and deletion of the sampled jobs give
 \begin{equation}
  \EE\|\widehat D-D^+\|_1\le\sqrt{\frac{d+2}{k}},
  \qquad
@@ -182,7 +187,7 @@ $\widehat D$ by \cref{lem:maximum-density-module,lem:test-module-envelope}.
 Conditional on the sample, the remaining labels are uniformly permuted.
 The fixed-plan implementation
 \cref{clm:common-finite-template-kernel} therefore evaluates their main
-schedule, while testing the pilot first and finishing its pending tail adds
+schedule, while testing the sample first and finishing its pending tail adds
 only $O_L(nk+k^2)$ to total completion time.  The stability bound
 \cref{clm:common-template-stability}, applied to the learned plan and
 then to an optimizer, yields

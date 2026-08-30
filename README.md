@@ -2,7 +2,7 @@
 
 This is the Lean 4 / mathlib formalization accompanying the manuscript in
 `Exact-Deterministic-Ratios-Uniform-Testing-arXiv-source/`.  The current
-submission bundle, including the paper's Lean-formalization appendix, is
+submission bundle, including the separate Lean audit document, is
 `Exact-Deterministic-Ratios-Uniform-Testing-arXiv-source-with-Lean-appendix.zip`.
 The similarly named archive without `with-Lean-appendix` is a legacy snapshot,
 not the current submission package.
@@ -110,6 +110,9 @@ expression is proved equal to the literal clairvoyant objective.
 theorems; the lower theorem includes the generic compiler from every
 terminating public-transcript `Online.Strategy` to its fair binary tree. Thus
 Lean proves the exact asymptotic randomized ratio `4/3`.
+`PrivateShuffleCorollaries.lean` additionally exposes the lower theorem with
+the independent uniform label shuffle as a separate finite seed, while the
+selected oblivious input remains outside both seed averages.
 
 The bounded obligatory instance-optimal theorem is now also assembled end to
 end. `ObligatoryGrowingCutoffTrace`,
@@ -137,7 +140,8 @@ pilot size `floor(n^(3/4))`, grid size `floor(n^(1/4))`, cutoff
 `physicalGrowingRunCost` now has both the vanishing `4/3` worst-case export
 `paperGrowingPolicy_four_thirds_multiplicative` and the bounded-multiset
 comparison
-`exists_fixedPlacement_paperGrowingPolicy_concrete_rate`.  The slower
+`privateShuffle_paperGrowingPolicy_concrete_rate`, whose conclusion contains
+both the competitor-seed and hidden-placement averages.  The slower
 `n^(1/32)` grid remains only an auxiliary discretization in the competitor
 lower bound, not a second online policy.
 
@@ -154,7 +158,8 @@ bounds the learner by that benchmark with explicit quota, sampling, kernel,
 and pilot terms. `RevealingOptimizationInstanceOptimal` joins both directions,
 handles the zero-mean population by a completion-triangle lower bound, and
 exports the direct comparison
-`exists_fixedPlacement_compiled_le_randomizedCompetitor_concrete_rate`.
+`privateShuffle_compiled_le_randomizedCompetitor_concrete_rate`, again with
+both finite averages explicit in the conclusion.
 With `m=floor(n^(1/16))`, its normalized direct error is
 `1000 (u+1)^2/m`; Lean proves this tends to zero for every fixed `u`.
 This checked rate is intentionally slower than the manuscript rate.

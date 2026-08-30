@@ -8,7 +8,7 @@ draws its random bits; the input convention then privately shuffles its
 coordinates.  The entries are not announced, and no upper bound on
 the processing times is assumed.  The zero--two lower bound at the finite
 raw-execution cap $u=\uRand{3}$
-transfers directly.  The upper bound needs one additional safeguard: the
+transfers directly.  The upper bound needs one additional step: the
 algorithm groups every sampled value above a threshold into one category and
 switches to a safe test-all schedule when the sample does not identify a
 dense enough early group.  Letting this threshold grow slowly
@@ -59,7 +59,7 @@ whose nonnegative terms prove the factor $4/3$.  The universal algorithm
 learns an approximately separated prefix from a sublinear sample; the
 threshold and the safe test-all schedule described below protect it from
 unbounded values missed by the sample.  The matching lower
-bound is inherited from the zero--two lower bound at the finite
+bound is the zero--two lower bound at the finite
 raw-execution cap $u=\uRand{3}$.  We first prove the uniform upper bound and
 then give the short transfer.
 
@@ -293,7 +293,7 @@ For a finite category prefix $J$, define
 \]
 Let $\widehat\kappa$ be the maximum and
 $\widehat\tau=1/\widehat\kappa$.  If the sample has no mass in any finite
-category (equivalently, every pilot value is in the overflow category), set
+category (equivalently, every sampled value is in the overflow category), set
 \begin{equation}
  \widehat\kappa=0,
  \qquad \widehat\tau=+\infty.
@@ -324,7 +324,7 @@ categories do not change the sample statistics, and adding mass at equality
 preserves the identity
 $1+\widehat\ell=\widehat a\widehat\tau$.  Adding all categories up to the
 threshold therefore preserves optimality and makes the two pointwise
-assertions tautological.
+assertions immediate.
 \end{proof}
 
 For $n\ge12^4$, set

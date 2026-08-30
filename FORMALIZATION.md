@@ -52,6 +52,10 @@ theorem has no assumed good/bad schedule inequalities. For
 over arbitrary finite families of terminating `Online.Strategy` seeds and
 returns a fixed `0/2` input with ratio `4n/(3n+5)`. These two statements give
 the sharp asymptotic randomized ratio `4/3` entirely inside Lean. The
+corollary
+`oblivious_iid_binary_lower_online_privateShuffle_actualOPT` formally adds an
+independent uniform label shuffle to the private seed while keeping the
+selected input outside both averages. The
 small-`n` test-all convention used only to make the paper's displayed additive
 bound literally uniform over every `n` is not needed for the asymptotic theorem
 and is not packaged as a separate piecewise Lean strategy.
@@ -97,8 +101,9 @@ The later modules `ObligatoryGrowingCutoffFourThirds` and
 pilot `floor(n^(3/4))`, grid `floor(n^(1/4))`, cutoff `32+n^(1/20)`, and
 mesh cutoff/grid.  They export both
 `paperGrowingPolicy_four_thirds_multiplicative` and
-`exists_fixedPlacement_paperGrowingPolicy_concrete_rate` with the identical
-left-hand term `physicalGrowingRunCost`.  The older universal-grid theorem
+`privateShuffle_paperGrowingPolicy_concrete_rate` with the identical left-hand
+term `physicalGrowingRunCost`; the latter contains the full finite-seed and
+hidden-placement average.  The older universal-grid theorem
 above remains useful as the auxiliary competitor lower discretization; it is
 not a different policy needed by the paper statement.
 
@@ -268,7 +273,8 @@ and compares the learner with the better of the raw-all and test-all
 templates, whose value is `min u 1 / 2`. The branch-free public sandwich is
 `boundedUniform_matching_value_concrete_rate`; the direct paper-facing
 corollary is
-`exists_fixedPlacement_compiled_le_randomizedCompetitor_concrete_rate`.
+`privateShuffle_compiled_le_randomizedCompetitor_concrete_rate`, with the
+competitor-seed and hidden-placement averages both explicit.
 For `m=floor(n^(1/16))`, the latter loses at most
 `1000 (u+1)^2/m` after normalization by `n^2`, uniformly over every bounded
 nonnegative multiset and every finite randomized completing observed policy.

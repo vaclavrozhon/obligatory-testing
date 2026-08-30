@@ -6,7 +6,7 @@ job raw is optimal for $u\le1$ and gives the matching factor $u$ until the
 first nontrivial transition point $\uDet{2}$.
 
 \begin{algorithm}[H]
-\caption{\textsc{Raw}$(J,u)$}
+\caption{}
 \label{alg:raw}
 \begin{algorithmic}
 \Statex \textbf{Input:} jobs $J$ and a finite common upper limit $u$.
@@ -47,7 +47,7 @@ Here UTE stands for \emph{uniform-threshold execution}: outside the forced
 prefix, the algorithm uses the same threshold for every tested job.
 
 \begin{algorithm}[H]
-\caption{\textsc{ForcedPrefixUTE}$(J,u,b)$}
+\caption{}
 \label{alg:ute}
 \begin{algorithmic}
 \Statex \textbf{Input:} jobs $J$, finite $u>1$, and $b\in[0,1]$.
@@ -569,13 +569,13 @@ above the current threshold.  Equalizing their limiting local drifts forces
 \end{equation}
 whose solution is exactly \cref{eq:opt:threshold}.  Integrating the remaining
 endpoint drifts produces the base potential below.  Jobs at the offline cap
-$p=u$ have a different pair charge; on the middle interval their uncancelled
+$p=u$ have a different pair charge; on the middle interval their remaining
 part is stored in a separate cap reserve, which vanishes at the plateau
 $u=\uDet{5}$.  This derivation explains the threshold, the base potential,
 and the additional reserve term before the verification starts.
 
 \begin{algorithm}[H]
-\caption{\textsc{AdaptiveThreshold}$(J,c)$}
+\caption{}
 \label{alg:adaptive-threshold}
 \begin{algorithmic}
 \Statex \textbf{Input:} jobs $J$ and parameter $c>0$.
@@ -833,7 +833,7 @@ gives $a_i\ge a$ for all earlier types $M$ and $Q$.  After subtracting the
 type-$M$ precharges, \cref{eq:opt:pair-objective} gives the following
 remaining charges.  A current $Z$ or $E$ receives one from every earlier
 deferred endpoint, hence $N_{\rm def}$.  A current $M$ precharges $a$ against
-its $x-1$ genuinely later labels and receives
+its $x-1$ later labels and receives
 $-Ra$ from every earlier $M$ and $1-ca$ from every earlier deferred
 endpoint.  Replacing $x-1$ by $x$ only overcharges by $a\ge0$ and yields
 \[
@@ -1221,7 +1221,7 @@ It follows that each transition caused by one job has Taylor remainder
  \ell_i+W_{i+1}-W_i\le O_u(1).
  \label{eq:opt:finite-taylor}
 \end{equation}
-The endpoint $E=0^+$ is interpreted one-sidedly.  For a fixed sequence of
+The endpoint $E=0^+$ is interpreted as a one-sided limit.  For a fixed sequence of
 endpoint types, replace all $E$ coordinates by positive values $\eps$.  Its
 state trajectory is unchanged, and the exact finite pair objective, being
 a finite sum of affine and minimum terms, converges as
@@ -1287,8 +1287,8 @@ Thus, with $B=C_{\rm step}+r/2$,
  \qquad\text{for every finite }u\in[\uDet{5},\infty),
  \label{eq:opt:uniform-high-upper}
 \end{equation}
-and $B$ is independent of $u$.  The estimate is genuinely uniform rather
-than the result of sending a parameter-dependent remainder to infinity.
+and $B$ is independent of $u$.  This is a uniform estimate, not the result
+of sending a parameter-dependent remainder to infinity.
 This proves the claim.
 \end{proof}
 

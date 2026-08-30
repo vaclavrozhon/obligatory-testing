@@ -1,0 +1,91 @@
+\pdfoutput=1
+
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,margin=30mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+\usepackage[nameinlink,capitalise,noabbrev]{cleveref}
+
+\hypersetup{
+  pdftitle={Lean Audit for Scheduling with Uniform Tests},
+  pdfauthor={Václav Rozhoň},
+  pdfsubject={Lean 4 formalization audit for online scheduling with testing},
+  pdfkeywords={Lean 4, formal verification, scheduling with testing,
+    online algorithms, instance optimality}
+}
+
+\lstdefinelanguage{Lean}{
+  morekeywords={structure,where,theorem,by,constructor,intro,exact,Prop},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[s]{/-}{-/}
+}
+\lstdefinestyle{lean}{
+  language=Lean,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\bfseries,
+  commentstyle=\itshape\color{black!60},
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  breaklines=true,
+  breakatwhitespace=true,
+  frame=single,
+  framerule=0.3pt,
+  rulecolor=\color{black!30},
+  framesep=5pt,
+  xleftmargin=0.5em,
+  xrightmargin=0.5em,
+  aboveskip=7pt,
+  belowskip=7pt,
+  literate=
+    {∀}{{$\forall$}}1
+    {∃}{{$\exists$}}1
+    {ℝ}{{$\mathbb{R}$}}1
+    {→}{{$\to$}}1
+    {∧}{{$\wedge$}}1
+    {·}{{$\mathord{\cdot}$}}1
+}
+
+\newtheorem{theorem}{Theorem}[section]
+\crefname{theorem}{theorem}{theorems}
+\Crefname{theorem}{Theorem}{Theorems}
+
+\newcommand{\ALG}{\operatorname{ALG}}
+\newcommand{\OPT}{\operatorname{OPT}}
+\newcommand{\RdetRO}{R_{\mathsf{RO}}^{\mathrm{det}}}
+\newcommand{\RrandRO}{R_{\mathsf{RO}}^{\mathrm{rand}}}
+\newcommand{\RdetBO}{R_{\mathsf{BO}}^{\mathrm{det}}}
+\newcommand{\RrandBO}{R_{\mathsf{BO}}^{\mathrm{rand}}}
+\newcommand{\EE}{\mathbb{E}}
+\newcommand{\eps}{\varepsilon}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\title{Lean Audit for\\
+  \emph{Scheduling with Uniform Tests: Exact Ratios,\\
+  Instance Optimality, and the Value of Information}}
+\author{Václav Rozhoň}
+\date{August 2026}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\clearpage
+
+\input{formal_verification}
+
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{alphaurl}
+\bibliography{references}
+
+\end{document}
