@@ -48,7 +48,7 @@ case open.  We close both gaps.
 \protect\cref{thm:det-obligatory,thm:rand-obligatory}]
 \label{thm:intro-obligatory}
 In the obligatory-testing model, the best deterministic asymptotic
-competitive ratio is $\RdetOT=1.570574\ldots$.  Against an adversary
+competitive ratio is $\RdetOT=1.57\ldots$.  Against an adversary
 that fixes the input before the algorithm draws its random bits, the best
 randomized ratio is $\RrandOT=4/3$.  The two optimal algorithms are sketched in
 \cref{alg:intro-obligatory-det,alg:intro-obligatory-rand}.
@@ -63,7 +63,7 @@ be memorable.
 \caption{}
 \label{alg:intro-obligatory-det}
 \begin{algorithmic}
-\State Put $c=0.570574\ldots$ and $R=1+c=\RdetOT$.
+\State Put $c=0.57\ldots$ and $R=1+c=\RdetOT$.
 \State Before test $i+1$, where $0\le i<n$, let $c_i$ be the number of
 positive jobs processed immediately and $d_i$ the number deferred.
 \State Put
@@ -518,7 +518,7 @@ Finally, \textsc{AdaptiveThreshold} is the same history-dependent algorithm as
 \cref{alg:intro-obligatory-det}.  For finite $u$, only its parameter $c$
 changes: on $\uDet{4}\le u\le \uDet{5}$ it is chosen by the
 equations in \cref{eq:opt:cm-parametrization}, after which it equals
-the obligatory-testing value $0.570574\ldots$.  The three algorithms cover
+the obligatory-testing value $0.57\ldots$.  The three algorithms cover
 the deterministic curve in \cref{fig:intro-curves-det} in that order:
 \textsc{Raw} first, \textsc{ForcedPrefixUTE} in the middle, and
 \textsc{AdaptiveThreshold} for large $u$.  The exact formulas and matching
@@ -546,7 +546,7 @@ $\mathcal A'$,
 For the randomized curve, write
 \[
  \uRand{1}=1,
- \qquad \uRand{2}=5.048917\ldots,
+ \qquad \uRand{2}=5.04\ldots,
  \qquad \uRand{3}=\frac{25}{4}=6.25.
 \]
 These three points delimit the four parameter intervals in the piecewise
@@ -639,10 +639,10 @@ the universal algorithm.
 
 D{\"u}rr et al.~\cite{DurrErlebachMegowMeissner2020} introduced the
 adversarial revealing-optimization model.  Their summary already
-contains a deterministic lower bound $1.8546$, a randomized lower bound
-$1.6257$, a randomized upper bound $1.7453$, an arbitrary-uniform
-deterministic upper bound $1.9338$, and an extreme-uniform upper bound
-$1.8668$.  In particular, $1.6257$ and $1.8668$ numerically anticipate the
+contains a deterministic lower bound $1.85\ldots$, a randomized lower bound
+$1.62\ldots$, a randomized upper bound $1.74\ldots$, an arbitrary-uniform
+deterministic upper bound $1.93\ldots$, and an extreme-uniform upper bound
+$1.86\ldots$.  In particular, $1.62\ldots$ and $1.86\ldots$ numerically anticipate the
 global maxima of our randomized and deterministic curves, although they
 previously appeared respectively as a lower bound and as an upper bound for
 a restricted input class.  Our contribution is the matching randomized
@@ -660,20 +660,20 @@ setting & previous lower & previous upper & this paper \\
 \midrule
 $\mathsf{OT}$ deterministic
  & $3/2$~\cite{LiangLiang2026}
- & $1.585\ldots$~\cite{DogeasErlebachLiang2024}
- & exact $1.570574\ldots$ \\
+ & $1.58\ldots$~\cite{DogeasErlebachLiang2024}
+ & exact $1.57\ldots$ \\
 $\mathsf{OT}$ randomized
  & no matching result & no matching result & exact $4/3$ \\
 $\mathsf{RO}$ deterministic
- & $1.8546$~\cite{DurrErlebachMegowMeissner2020} globally
- & $1.9338$~\cite{DurrErlebachMegowMeissner2020} arbitrary-uniform
+ & $1.85\ldots$~\cite{DurrErlebachMegowMeissner2020} globally
+ & $1.93\ldots$~\cite{DurrErlebachMegowMeissner2020} arbitrary-uniform
  & exact per-$u$ curve;
-   global maximum $1.866760\ldots$ \\
+   global maximum $1.86\ldots$ \\
 $\mathsf{RO}$ randomized
- & $1.6257$~\cite{DurrErlebachMegowMeissner2020}
- & $1.7453$~\cite{DurrErlebachMegowMeissner2020}
+ & $1.62\ldots$~\cite{DurrErlebachMegowMeissner2020}
+ & $1.74\ldots$~\cite{DurrErlebachMegowMeissner2020}
  & exact per-$u$ curve;
-   global maximum $1.625752\ldots$ \\
+   global maximum $1.62\ldots$ \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -683,7 +683,7 @@ machines~\cite{GongChenHayashi2024}, or weights~\cite{BuldSchulz2026}.
 
 Dogeas, Erlebach, and Liang~\cite{DogeasErlebachLiang2024} introduced
 obligatory testing for total completion time.  For uniform tests they proved
-a deterministic upper bound of $1.585\ldots$ and the lower bound
+a deterministic upper bound of $1.58\ldots$ and the lower bound
 $\sqrt2$.  Liang and Liang~\cite{LiangLiang2026} later raised the lower bound
 to $3/2$.  Our matching value is $1.57\ldots$, and our randomized
 result gives the oblivious value $4/3$.  More strongly, the resulting

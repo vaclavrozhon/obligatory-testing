@@ -102,7 +102,7 @@ chosen.
 \label{thm:lean-audit-obligatory-ratios}
 Let $z_*>1$ be the unique solution of $z_*-3=\ln z_*$ and put
 \[
- R_*=1+\frac{2}{z_*-1}=1.570574\ldots.
+ R_*=1+\frac{2}{z_*-1}=1.57\ldots.
 \]
 In obligatory testing, the optimal deterministic size-asymptotic
 competitive ratio is $R_*$.  Against an oblivious adversary, the optimal
@@ -631,8 +631,9 @@ theorem RevealingOptimization.globalMaximum_decimal_bounds :
 \end{lstlisting}
 
 The algebraic intervals are discharged by exact polynomial arithmetic.  For
-$R_*$, Lean brackets $\log q$ by a finite, rational atanh series, proves
-$4.5051<z_*<4.5056$, and then derives the displayed interval for $R_*$.
+$R_*$, Lean brackets $\log q$ by a finite, rational atanh series, obtains
+explicit rational bounds on $z_*$, and then derives the displayed interval
+for $R_*$.
 
 \subsection{Proof boundary and reproduction}
 
