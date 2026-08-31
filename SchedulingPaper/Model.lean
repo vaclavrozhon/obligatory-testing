@@ -5,7 +5,7 @@ import Mathlib.Tactic.Linarith
 # Uniform testing: the static scheduling model
 
 This file formalizes the common-upper-limit model from Section 3 of
-"Exact Deterministic Ratios for Single-Machine Scheduling with Uniform Tests".
+"Test or Run? Scheduling Jobs of Unknown Length".
 
 The online information structure is deliberately not part of this first
 milestone.  Here we capture jobs, the finite/infinite cap, and the clairvoyant

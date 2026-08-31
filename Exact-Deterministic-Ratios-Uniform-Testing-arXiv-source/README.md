@@ -1,4 +1,4 @@
-# Scheduling with Uniform Tests: Exact Ratios, Instance Optimality, and the Value of Information
+# Test or Run? Scheduling Jobs of Unknown Length
 
 This directory is a self-contained source tree for the main manuscript
 `paper.tex` and the separate Lean audit `lean_appendix.tex`.
@@ -21,10 +21,11 @@ The introduction's deterministic overview is a native TikZ/pgfplots source
 in `curves_overview_tikz.tex`; standalone sources for the randomized and
 blind-optimization curves are retained alongside it.
 
-The arXiv upload archive additionally contains `anc/lean-audit.pdf` and
-`anc/obligatory-testing-lean-artifact.zip`.  The latter is the complete pinned
-Lean project and can be checked independently with the commands documented in
-the audit.
+The main-paper-only arXiv upload archive contains neither the audit nor Lean
+sources.  The fuller companion archive additionally contains
+`anc/lean-audit.pdf` and `anc/obligatory-testing-lean-artifact.zip`; the latter
+is the complete pinned Lean project and can be checked independently with the
+commands documented in the audit.
 
 If `latexmk` is unavailable, the equivalent manual build is
 
@@ -44,9 +45,8 @@ pdflatex -interaction=nonstopmode -halt-on-error lean_appendix.tex
 
 ## Submission metadata
 
-The manuscript title and PDF metadata are `Scheduling with Uniform Tests:
-Exact Ratios, Instance Optimality, and the Value of Information`; the current
-author block names Václav Rozhoň.
+The manuscript title and PDF metadata are `Test or Run? Scheduling Jobs of
+Unknown Length`; the current author block names Václav Rozhoň.
 The bibliography contains DOI/arXiv metadata for the cited literature, and the
 acknowledgements disclose the use of Bolzano and GPT-5.6 in developing the
 results and formalization.

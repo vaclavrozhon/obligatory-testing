@@ -2,10 +2,10 @@
 
 This is the Lean 4 / mathlib formalization accompanying the manuscript in
 `Exact-Deterministic-Ratios-Uniform-Testing-arXiv-source/`.  The current
-submission bundle, including the separate Lean audit document, is
-`Exact-Deterministic-Ratios-Uniform-Testing-arXiv-source-with-Lean-appendix.zip`.
-The similarly named archive without `with-Lean-appendix` is a legacy snapshot,
-not the current submission package.
+main-paper-only arXiv upload bundle is `Test-or-Run-arXiv-source.zip`.  It contains no
+Lean audit or Lean source archive.  The archive whose name contains
+`with-Lean-appendix` is retained as a fuller companion package, not as the
+current arXiv upload.
 
 The project now checks substantially more than the initial static model:
 
