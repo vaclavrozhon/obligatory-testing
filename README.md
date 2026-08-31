@@ -26,13 +26,13 @@ The project now checks substantially more than the initial static model:
   and a finite Yao lower bound on actual `0/2` instances whose coefficient
   `4n/(3n+5)` tends to `4/3`;
 - bounded obligatory-testing instance optimality for the literal
-  growing-cutoff learner against every finite randomized completing test-only
-  competitor, including an input-size-only parameter family and a checked
-  vanishing error;
+  growing-cutoff learner against every completing test-only competitor on an
+  arbitrary private probability space, including an input-size-only parameter
+  family and a checked vanishing error;
 - bounded common-upper revealing-optimization instance optimality for the
-  literal pilot-learned test/process/raw strategy against every finite
-  randomized completing observed policy, again with an input-size-only
-  vanishing error;
+  literal sample-learned test/process/raw strategy against every randomized
+  completing observed policy on an arbitrary private probability space, again
+  with an input-size-only vanishing error;
 - the binary stopping scalar game, Zero-prefix interpolation, the full UTE
   endpoint game, and reduction from arbitrary feasible endpoint masses;
 - harmonic finite sums and their limiting optimization;
@@ -110,9 +110,12 @@ expression is proved equal to the literal clairvoyant objective.
 theorems; the lower theorem includes the generic compiler from every
 terminating public-transcript `Online.Strategy` to its fair binary tree. Thus
 Lean proves the exact asymptotic randomized ratio `4/3`.
-`PrivateShuffleCorollaries.lean` additionally exposes the lower theorem with
-the independent uniform label shuffle as a separate finite seed, while the
-selected oblivious input remains outside both seed averages.
+`GeneralRandomization.lean` and `GeneralRandomizedResults.lean` additionally
+lift the lower theorem and every paper-facing randomized comparison from
+finite uniform seeds to arbitrary probability spaces with integrable run
+costs.  The independent uniform label shuffle remains explicit, while the
+selected oblivious input lies outside both the shuffle and the general
+private-seed integral.
 
 The bounded obligatory instance-optimal theorem is now also assembled end to
 end. `ObligatoryGrowingCutoffTrace`,
@@ -128,7 +131,7 @@ zero-mean branches are joined in `ObligatoryGrowingCutoffRates`, while
 `ObligatoryGrowingCutoffUniversalRates` supplies one parameter family
 independent of the input bound: with
 `m=floor(sqrt(sixteenthRoot n))`, the same literal policy is within
-`800 (L+3)^2/m` of every finite randomized completing test-only competitor
+`800 (L+3)^2/m` of every randomized completing test-only competitor
 after normalization by `n^2`, and Lean proves that this error tends to zero
 for each fixed `L`. This checked rate is deliberately slower than the sharper
 rate derived in the manuscript.
@@ -140,8 +143,9 @@ pilot size `floor(n^(3/4))`, grid size `floor(n^(1/4))`, cutoff
 `physicalGrowingRunCost` now has both the vanishing `4/3` worst-case export
 `paperGrowingPolicy_four_thirds_multiplicative` and the bounded-multiset
 comparison
-`privateShuffle_paperGrowingPolicy_concrete_rate`, whose conclusion contains
-both the competitor-seed and hidden-placement averages.  The slower
+`privateShuffle_paperGrowingPolicy_general_concrete_rate`, whose conclusion
+contains the general competitor-seed expectation and the hidden-placement
+average.  The slower
 `n^(1/32)` grid remains only an auxiliary discretization in the competitor
 lower bound, not a second online policy.
 
@@ -158,8 +162,9 @@ bounds the learner by that benchmark with explicit quota, sampling, kernel,
 and pilot terms. `RevealingOptimizationInstanceOptimal` joins both directions,
 handles the zero-mean population by a completion-triangle lower bound, and
 exports the direct comparison
-`privateShuffle_compiled_le_randomizedCompetitor_concrete_rate`, again with
-both finite averages explicit in the conclusion.
+`privateShuffle_compiled_le_generalCompetitor_concrete_rate`, with the
+arbitrary private-seed expectation and finite placement average explicit in
+the conclusion.
 With `m=floor(n^(1/16))`, its normalized direct error is
 `1000 (u+1)^2/m`; Lean proves this tends to zero for every fixed `u`.
 This checked rate is intentionally slower than the manuscript rate.
