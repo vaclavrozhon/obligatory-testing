@@ -428,7 +428,8 @@ algorithms.
 For every constant $u>0$, the exact deterministic and randomized asymptotic
 competitive ratios $\RdetRO(u)$ and $\RrandRO(u)$ are the six-piece and
 four-piece curves derived in
-\cref{sec:optional,sec:random-common-upper}, respectively (see also \cref{fig:intro-curves-det}).
+\cref{sec:optional,sec:random-common-upper}, respectively (see also
+\cref{fig:intro-curves-det,fig:intro-curves-rand}).
 The deterministic curve reaches
 $1.86\ldots$ and then falls to the obligatory value
 $1.57\ldots$.  The randomized curve reaches $1.62\ldots$ and
@@ -443,7 +444,12 @@ where it gives the best guarantee.}
 \label{fig:intro-curves-det}
 \end{figure}
 
-[sem pridej tu samou krivku pro randomized]
+\begin{figure}[H]
+\centering
+\input{randomized_curve_tikz}
+\caption{The exact randomized revealing-optimization curve.}
+\label{fig:intro-curves-rand}
+\end{figure}
 
 The deterministic curve is realized by three explicit algorithm families,
 used on consecutive ranges of $u$.  We describe them here and defer the exact
