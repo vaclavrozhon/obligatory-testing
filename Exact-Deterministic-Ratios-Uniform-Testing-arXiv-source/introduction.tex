@@ -95,7 +95,9 @@ and define
  =\min_{\substack{0\le t\le B_n\\a(t)>0}}
    \frac{1+m(t)}{a(t)}.
 \]
-\State Process the sampled jobs with $p\le\widehat\tau$.  Keep
+\State If the displayed minimum is empty or larger than $B_n$, test every
+remaining job and then finish all revealed jobs shortest first.
+\State Otherwise process the sampled jobs with $p\le\widehat\tau$.  Keep
 testing jobs, processing them immediately when $p\le\widehat\tau$ and
 deferring them otherwise.
 \State After all tests, finish deferred jobs shortest first.
@@ -426,7 +428,7 @@ algorithms.
 For every constant $u>0$, the exact deterministic and randomized asymptotic
 competitive ratios $\RdetRO(u)$ and $\RrandRO(u)$ are the six-piece and
 four-piece curves derived in
-\cref{sec:optional,sec:random-common-upper}, respectively (see also \cref{fig:intro-curves-det,fig:intro-curves-rand}).
+\cref{sec:optional,sec:random-common-upper}, respectively (see also \cref{fig:intro-curves-det}).
 The deterministic curve reaches
 $1.86\ldots$ and then falls to the obligatory value
 $1.57\ldots$.  The randomized curve reaches $1.62\ldots$ and
