@@ -503,7 +503,9 @@ constructions are in \cref{sec:optional}.
 
 
 For randomized algorithms, private sampling again gives instance optimality
-with an algorithm similar in shape to \cref{alg:intro-blind}.  
+with an algorithm similar in shape to \cref{alg:intro-blind} -- instance-optimality of this algorithm also implies that this single algorithm defines the curve in \cref{fig:intro-curves-rand}. The exact formulas and
+matching constructions are in \cref{sec:random-common-upper}.
+
 
 \begin{theorem}[Revealing-optimization instance optimality, informal version of
 \protect\cref{thm:common-upper-instance}]
@@ -517,15 +519,6 @@ $\mathcal A'$,
 
 \end{theorem}
 
-For the randomized curve, write
-\[
- \uRand{1}=1,
- \qquad \uRand{2}=5.04\ldots,
- \qquad \uRand{3}=\frac{25}{4}=6.25.
-\]
-These three points delimit the four parameter intervals in the piecewise
-definition of $\RrandRO(u)$.  The exact formulas and
-matching constructions are in \cref{sec:random-common-upper}.
 
 \begin{algorithm}[H]
 \caption{}
@@ -547,7 +540,7 @@ $\widehat\tau$ at once.
 \end{algorithmic}
 \end{algorithm}
 
-Notice that the two exact revealing-optimization curves are not monotone.
+Notice that the two exact revealing-optimization curves from \cref{fig:intro-curves-det,fig:intro-curves-rand} are not monotone.
 This is not a contradiction.  For very small $u$, testing is
 useless, while as $u\to\infty$ the model converges to the obligatory-testing
 setting of \cref{sec:obligatory}.  Both extreme cases are comparatively easy:
@@ -594,10 +587,7 @@ This stability makes the randomized setting substantially simpler; in particular
 \subsection{Related work}
 \label{sec:related}
 
-The closest papers have already appeared next to the models they introduced.
-We give a broader comparison here.
-
-More broadly, our problems belong to online algorithms and competitive
+Our problems belong to the area of online algorithms and competitive
 analysis; standard references are the textbook of Borodin and
 El-Yaniv~\cite{BorodinElYaniv1998} and the survey of Buchbinder and
 Naor~\cite{BuchbinderNaor2009}.  Classical examples include paging and list
@@ -605,23 +595,16 @@ update~\cite{SleatorTarjan1985}, online bipartite
 matching~\cite{KarpVaziraniVazirani1990}, and online facility
 location~\cite{Meyerson2001}.  As in this literature, one algorithm must work
 for every input and is compared with an offline optimum.  Our randomized
-results use the oblivious-adversary version of this comparison.  The
-size-asymptotic convention only allows an additional $o(n^2)$ term.
+results use the oblivious-adversary version of this comparison.  
 
 \pagebreak[3]
+
+Instance optimality is a closely related subfield of beyond worst-case analysis \cite{roughgarden}. 
 There are several related notions of instance optimality.  They have been
 studied for aggregation~\cite{FaginLotemNaor2003}, adaptive set
 operations~\cite{DemaineLopezOrtizMunro2000}, computational
-geometry~\cite{AfshaniBarbayChan2017}, and sampling and sequential
-estimation~\cite{NarayananRozhonTetekThorup2024}.  Self-improving algorithms
-also use samples to learn a good algorithm for an unknown input
-distribution~\cite{AilonEtAl2011}.  Our comparison is closest in spirit to
-the order-oblivious notion of Afshani, Barbay, and
-Chan~\cite{AfshaniBarbayChan2017}, but uses a different benchmark: the
-competitor may know the input multiset, but not its assignment to the hidden
-labels.  We compare expected costs only up to an additive $o(n^2)$ term.
-Thus the result need not be a multiplicative guarantee when the optimum is
-$o(n^2)$.
+geometry~\cite{AfshaniBarbayChan2017}, graph algorithms \cite{dijkstra}, and sampling and sequential
+estimation~\cite{NarayananRozhonTetekThorup2024}.  
 
 Scheduling with tests belongs to optimization with \emph{explorable
 uncertainty}, where uncertain data can be queried at a cost; the query
