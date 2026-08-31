@@ -7,14 +7,6 @@ Peyman Afshani, J{\'e}r{\'e}my Barbay, and Timothy~M. Chan.
 \newblock {\em Journal of the ACM}, 64(1):3:1--3:38, 2017.
 \newblock \href {https://doi.org/10.1145/3046673} {\path{doi:10.1145/3046673}}.
 
-\bibitem[ACC{\etalchar{+}}11]{AilonEtAl2011}
-Nir Ailon, Bernard Chazelle, Kenneth~L. Clarkson, Ding Liu, Wolfgang Mulzer,
-  and C.~Seshadhri.
-\newblock Self-improving algorithms.
-\newblock {\em SIAM Journal on Computing}, 40(2):350--375, 2011.
-\newblock \href {https://doi.org/10.1137/090766437}
-  {\path{doi:10.1137/090766437}}.
-
 \bibitem[AE21]{AlbersEckl2021}
 Susanne Albers and Alexander Eckl.
 \newblock Explorable uncertainty in scheduling with non-uniform testing times.
@@ -131,6 +123,15 @@ Mingyang Gong, Zhi-Zhong Chen, and Kuniteru Hayashi.
 \newblock \href {https://doi.org/10.1007/s00453-023-01198-w}
   {\path{doi:10.1007/s00453-023-01198-w}}.
 
+\bibitem[HHR{\etalchar{+}}24]{HaeuplerHladikRozhonTarjanTetek2024}
+Bernhard Haeupler, Richard Hlad{\'i}k, V{\'a}clav Rozho{\v n}, Robert~E.
+  Tarjan, and Jakub T{\v e}tek.
+\newblock Universal optimality of {Dijkstra} via beyond-worst-case heaps.
+\newblock In {\em 65th {IEEE} Annual Symposium on Foundations of Computer
+  Science ({FOCS} 2024)}, pages 2099--2130. IEEE, 2024.
+\newblock \href {https://doi.org/10.1109/FOCS61266.2024.00125}
+  {\path{doi:10.1109/FOCS61266.2024.00125}}.
+
 \bibitem[Hoe63]{Hoeffding1963}
 Wassily Hoeffding.
 \newblock Probability inequalities for sums of bounded random variables.
@@ -217,6 +218,13 @@ Shyam Narayanan, V{\'a}clav Rozho{\v n}, Jakub T{\v e}tek, and Mikkel Thorup.
   Science ({FOCS} 2024)}, pages 658--688. IEEE, 2024.
 \newblock \href {https://doi.org/10.1109/FOCS61266.2024.00048}
   {\path{doi:10.1109/FOCS61266.2024.00048}}.
+
+\bibitem[Rou21]{Roughgarden2021}
+Tim Roughgarden, editor.
+\newblock {\em Beyond the Worst-Case Analysis of Algorithms}.
+\newblock Cambridge University Press, 2021.
+\newblock \href {https://doi.org/10.1017/9781108637435}
+  {\path{doi:10.1017/9781108637435}}.
 
 \bibitem[ST85]{SleatorTarjan1985}
 Daniel~D. Sleator and Robert~E. Tarjan.

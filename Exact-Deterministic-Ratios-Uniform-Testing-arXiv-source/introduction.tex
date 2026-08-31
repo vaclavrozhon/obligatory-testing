@@ -599,12 +599,15 @@ results use the oblivious-adversary version of this comparison.
 
 \pagebreak[3]
 
-Instance optimality is a closely related subfield of beyond worst-case analysis \cite{roughgarden}. 
-There are several related notions of instance optimality.  They have been
-studied for aggregation~\cite{FaginLotemNaor2003}, adaptive set
-operations~\cite{DemaineLopezOrtizMunro2000}, computational
-geometry~\cite{AfshaniBarbayChan2017}, graph algorithms \cite{dijkstra}, and sampling and sequential
-estimation~\cite{NarayananRozhonTetekThorup2024}.  
+Instance optimality is one approach in the broader area of beyond-worst-case
+analysis; see the volume edited by Roughgarden~\cite{Roughgarden2021}.
+Related notions have been studied for aggregation~\cite{FaginLotemNaor2003},
+adaptive set operations~\cite{DemaineLopezOrtizMunro2000}, computational
+geometry~\cite{AfshaniBarbayChan2017}, and sampling and sequential
+estimation~\cite{NarayananRozhonTetekThorup2024}.  In graph algorithms,
+universal optimality asks one algorithm to match the best possible bound for
+every fixed graph topology; Dijkstra's algorithm with an appropriate heap has
+this property~\cite{HaeuplerHladikRozhonTarjanTetek2024}.
 
 Scheduling with tests belongs to optimization with \emph{explorable
 uncertainty}, where uncertain data can be queried at a cost; the query
@@ -691,42 +694,23 @@ asymptotic competitive-ratio convention.
 
 \Cref{sec:common-fluid-envelopes} develops the common bounded-input
 fluid optimum and the transfer from its completion curve to a learned finite
-schedule.  Its specializations yield the revealing-optimization,
-obligatory-testing, and blind-execution instance-optimal benchmarks in
-\cref{sec:common-upper-instance,sec:obligatory-instance,sec:blind}.
+schedule.  Its specializations in
+\cref{sec:common-upper-instance,sec:obligatory-instance,sec:blind} give the
+instance-optimal benchmarks for revealing optimization, obligatory testing,
+and blind execution.
 
-\Cref{sec:optional} then proves the exact deterministic
-revealing-optimization curve.  Its multilevel lower-bound instance, in which
-every job satisfies $1+p_i<u$ and raw execution is therefore never shorter,
-is reused both for $\uDet{4}\le u\le\uDet{5}$ and for
-$u\ge\uDet{5}$, while a bookkeeping potential handles
-jobs with $p_i=u$ in the matching upper bound.  Only after the finite curve is complete
-does \cref{sec:obligatory} derive the deterministic obligatory ratio using
-bounds whose constants do not depend on the raw time $u$.
+\Cref{sec:optional} proves the exact deterministic revealing-optimization
+curve, and \cref{sec:obligatory} derives the obligatory endpoint with bounds
+whose constants do not depend on $u$.
 
-\Cref{sec:common-upper-instance} identifies the optimal leading cost
-separately for every bounded revealing input and learns the associated
-threshold algorithm from a sublinear sample.  \Cref{sec:random-common-upper}
-maximizes this benchmark against the clairvoyant optimum and proves the exact
-four-piece randomized curve.  Its final subsection,
-\cref{sec:random-obligatory}, transfers the lower bound to the unbounded
-obligatory endpoint; for the upper bound it truncates very long observations
-and switches to a safe all-testing schedule when the sample is unreliable.
-\Cref{sec:obligatory-instance} then strengthens
-the randomized obligatory-testing algorithm from
-\cref{thm:rand-obligatory} to a single algorithm that is asymptotically
-optimal on every bounded obligatory input.
+\Cref{sec:random-common-upper} maximizes the revealing benchmark against the
+clairvoyant optimum and proves the exact randomized curve.  Its final
+subsection, \cref{sec:random-obligatory}, gives the unbounded obligatory
+endpoint.
 
-\Cref{sec:blind} turns to blind execution.  It first derives the benchmark
-when the multiset of job lengths is announced in advance, proves that
-arbitrary adaptive algorithms cannot beat it, and then removes that advance
-knowledge by sampling.  It also explains why no finite worst-case ratio is
-possible without a bound on job lengths.
-\Cref{sec:blind-optimization} studies speedup without revelation, proves the
-deterministic lower bound using an adversary that hides when its first phase
-will stop, and obtains the matching two-algorithm curve.  It then proves the
-randomized instance-optimal theorem and maximizes its mean-based
-benchmark to obtain the exact randomized worst-case curve.
+Finally, \cref{sec:blind-optimization} studies speedup without revelation and
+proves the deterministic and randomized blind-optimization curves together
+with randomized instance optimality.
 
 All main exact-ratio, instance-optimality, and impossibility results in this
 paper have been proved in Lean~4.  The complete development is provided as an
