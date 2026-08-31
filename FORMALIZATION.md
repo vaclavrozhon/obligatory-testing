@@ -53,12 +53,26 @@ over arbitrary finite families of terminating `Online.Strategy` seeds and
 returns a fixed `0/2` input with ratio `4n/(3n+5)`. These two statements give
 the sharp asymptotic randomized ratio `4/3` entirely inside Lean. The
 corollary
-`oblivious_iid_binary_lower_online_privateShuffle_actualOPT` formally adds an
-independent uniform label shuffle to the private seed while keeping the
-selected input outside both averages. The
-small-`n` test-all convention used only to make the paper's displayed additive
-bound literally uniform over every `n` is not needed for the asymptotic theorem
-and is not packaged as a separate piecewise Lean strategy.
+`oblivious_iid_binary_lower_online_general_privateShuffle_actualOPT` formally
+adds an independent uniform label shuffle and keeps the selected input outside
+both the shuffle and an arbitrary private-seed integral.
+`ObligatoryPaperFullAlgorithm` packages the literal small-`n` test-all/SPT
+branch together with the growing-cutoff branch as `fullPaperStrategy` and
+proves that this one piecewise family completes every input for every `n`.
+
+### Arbitrary private randomness
+
+`GeneralRandomization` defines expectation over an arbitrary probability
+measure, proves the finite-input/integral interchange, and gives the
+measure-theoretic one-sided Yao selection lemmas. `GeneralRandomizedResults`
+uses this layer to export the randomized OT, BO, and RO lower bounds; the
+bounded OT, BE, BO, and RO instance comparisons; and both unbounded BE and
+unbounded OT impossibility statements for arbitrary private probability
+spaces. The statements assume integrability of the displayed real-valued run
+costs (and, where a first-touch charge is integrated, of that finite trace
+charge). The fixed adversarial input is selected outside the private-seed
+integral. Thus none of the paper-facing randomized quantifiers relies on a
+finite-support approximation.
 
 ### Bounded obligatory-testing instance optimality
 

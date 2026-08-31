@@ -92,6 +92,12 @@ input-size-only vanishing error.  It also checks the four-piece randomized
 scalar maximization, including transition uniqueness, attainment, the
 plateau, and the global maximum.
 
+The paper-facing comparison and lower-bound corollaries additionally
+quantify over arbitrary private probability spaces with integrable
+real-valued run costs.  Lean proves the finite-input/integral interchange and
+selects each fixed adversarial input outside the general private-seed
+integral; no finite-support approximation is left to prose.
+
 The blind-execution theorem is formalized in Lean.  For blind optimization,
 Lean checks the deterministic counterexample and curve, the universal sample
 upper, the randomized reduction for arbitrary finite empirical

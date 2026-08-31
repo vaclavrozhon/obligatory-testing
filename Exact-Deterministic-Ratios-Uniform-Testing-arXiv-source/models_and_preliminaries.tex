@@ -115,10 +115,11 @@ not on a hidden value that the model has not yet exposed.
 The \emph{transcript} of a run is the resulting ordered sequence of actions
 and observations.
 
-Mathematically we allow arbitrary private probability spaces.  On each finite
-input family used in a bound, only finitely many transcript decisions and
-their costs are relevant, and conditioning followed by finite-support
-approximation changes every expected cost by an arbitrarily small amount.
+Mathematically we allow arbitrary private probability spaces.  Expected-cost
+comparisons are understood for integrable real-valued run costs; a policy with
+infinite expected cost cannot violate a lower bound.  The Lean development
+integrates over the general seed law directly, so no finite-support
+approximation of the private randomness is needed.
 
 For some lower bounds it is convenient to describe a finite distribution
 over inputs before selecting one fixed input.  If every deterministic

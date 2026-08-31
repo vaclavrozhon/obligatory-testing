@@ -13,10 +13,11 @@ The excerpts suppress namespace prefixes, routine positivity hypotheses, and
 some local parameter definitions.  Ellipses are expository: the exact export
 name is shown in every excerpt, and the source signature---not the excerpt---is
 authoritative about all arguments.  In particular, an excerpt should not be
-read as evidence for a quantifier that it does not display.  Randomized Lean
-statements represent private randomness by a nonempty finite type of seeds
-and \texttt{uniformAverage}; permutations, samples, and tie-breaking coins
-are all included in such seeds.
+read as evidence for a quantifier that it does not display.  The concrete
+algorithms use finite uniform seeds for permutations, samples, and
+tie-breaking.  The comparison and lower-bound theorems also have
+measure-theoretic corollaries for an arbitrary private probability space;
+these integrate the actual run cost directly.
 
 \begin{center}
 \scriptsize
@@ -30,46 +31,58 @@ deterministic $\mathsf{OT}$ ratio
  & fixed inputs; completing strategy \\
 randomized $\mathsf{OT}$ ratio
  & \path{paperGrowingPolicy_four_thirds_multiplicative};
-   \path{oblivious_iid_binary_lower_online_privateShuffle_actualOPT}
- & finite-seed full
- & independent uniform shuffle is explicit in the lower export \\
+   \path{oblivious_iid_binary_lower_online_general_privateShuffle_actualOPT}
+ & full
+ & arbitrary private probability space; independent shuffle explicit \\
 bounded $\mathsf{OT}$ instance comparison
- & \path{privateShuffle_paperGrowingPolicy_concrete_rate}
- & finite-seed full
- & seed and hidden-placement averages are both explicit \\
+ & \path{privateShuffle_paperGrowingPolicy_general_concrete_rate}
+ & full
+ & arbitrary private probability space and explicit placement average \\
+$\mathsf{OT}$ instance-impossibility directions
+ & \path{deterministic_balanced_cost_lower};
+   \path{exists_operational_quadratic_gap_general}
+ & full
+ & arbitrary private probability space in the randomized direction \\
 bounded $\mathsf{BE}$ comparison and unbounded impossibility
- & \path{boundedUniform_blindPilot_concrete_rate};
-   \path{no_finite_ratio_at_quadratic_scale_operational}
- & finite-seed full
- & finite uniform seeds \\
+ & \path{boundedUniform_blindPilot_general_concrete_rate};
+   \path{no_finite_ratio_at_quadratic_scale_operational_general}
+ & full
+ & arbitrary private probability space \\
 $\mathsf{BO}$ curves and instance comparison
  & \path{deterministicCurve_operational_exact};
-   \path{exists_binary_mass_operational_ratio_tendsto_curve};
-   \path{finiteSeed_expectedCost_ge_instanceBenchmark_nsq}
- & finite-seed full
- & placement average appears in the lower export \\
+   \path{exists_binary_mass_operational_ratio_tendsto_curve_general};
+   \path{generalExpectedCost_ge_instanceBenchmark_nsq}
+ & full
+ & arbitrary private probability space; placement average explicit \\
 deterministic $\mathsf{RO}$ curve
  & \path{exact_ratio_main} & full
  & all positive finite caps \\
 randomized $\mathsf{RO}$ curve
- & \path{randomizedRevealingCurveExact} & finite-seed full
- & fixed-input finite Yao selection \\
+ & \path{exists_operational_binary_family_ratio_tendsto_curve_general}
+ & full
+ & arbitrary private probability space; fixed-input Yao selection \\
 bounded $\mathsf{RO}$ instance comparison
- & \path{privateShuffle_compiled_le_randomizedCompetitor_concrete_rate}
- & finite-seed full
- & seed and hidden-placement averages are both explicit \\
+ & \path{privateShuffle_compiled_le_generalCompetitor_concrete_rate}
+ & full
+ & arbitrary private probability space and explicit placement average \\
 \bottomrule
 \end{longtable}
 \end{center}
 
-Here ``full'' means full relative to the seed convention in the last column,
-not that the surrounding paper proof has been replaced line for line.  The
-mathematical paper allows general private randomness.  Its reduction to
-finite support uses the fact that, on each finite input family used by a
-bound, only finitely many transcript decisions and their expected costs are
-relevant; conditioning and finite-support approximation preserve the desired
-inequality with an arbitrarily small additional error.  This reduction is
-not currently a Lean export.
+Here ``full'' refers to the theorem conclusion and quantifier convention in
+the last column, not to a line-for-line translation of the surrounding prose.
+For a general seed law $\mu$, the Lean statements assume that the displayed
+real-valued expected costs are integrable.  This is the usual well-formedness
+condition for a finite expected-cost comparison; a policy with infinite
+expected cost cannot violate any of the lower bounds.
+
+The measure-theoretic bridge is in
+\path{GeneralRandomization.lean}.  The paper-facing corollaries are in
+\path{GeneralRandomizedResults.lean}.  Together they prove interchange of a
+finite input average with integration over $\mu$, apply the deterministic
+bound seedwise, and then select one fixed oblivious input outside the
+integral.  Thus they do not use a finite-support approximation of the private
+seed.
 
 \subsection{The common asymptotic meaning}
 
@@ -144,14 +157,15 @@ theorem unknownMultiset_operational_expectedCost_le_20378
         (physicalSampledRunCost (k + rest) k d eta h_eta p) <=
       4 / 3 * finiteObligatoryOPT p + 20378 * R ^ 7
 
-theorem oblivious_iid_binary_lower_online_privateShuffle_actualOPT
+theorem oblivious_iid_binary_lower_online_general_privateShuffle_actualOPT
     {n : Nat} (hn : 0 < n)
-    (strategy : Seeds -> Online.Strategy n) (fuel : Nat)
+    (mu : Measure Omega) [IsProbabilityMeasure mu]
+    (strategy : Omega -> Online.Strategy n) (fuel : Nat)
     (hdone : forall seed input job, ... = .done) :
     exists input : BinaryInput n,
       (4 * n / (3 * n + 5)) *
           finiteObligatoryOPT (iidBinaryProcessingTime input) <=
-        uniformAverage fun seed =>
+        generalExpectation mu fun seed =>
           uniformAverage fun order : Equiv.Perm (Fin n) =>
             Online.runCompletionCost .infinite ...
 
@@ -183,32 +197,32 @@ permutation, so the input remains oblivious to all private randomness.
 \label{thm:lean-audit-obligatory-instance}
 Fix $L<\infty$.  There is one randomized nonanticipating algorithm, whose
 parameters depend on $n$ but not on the input or on $L$, such that for every
-$p\in[0,L]^n$ and every completing announced algorithm $\mathcal B$ with a
-finite private seed,
+$p\in[0,L]^n$ and every completing announced algorithm $\mathcal B$ with
+integrable cost on an arbitrary private probability space,
 \[
  \EE\ALG_{\mathcal A^*}(p)
  \le \EE\ALG_{\mathcal B}(p)+o_L(n^2).
 \]
 The assignment of the job lengths in $p$ to public labels is hidden by a private
-uniform permutation.  This is the finite-seed version of the obligatory
-instance-optimal theorem in the main paper.
+uniform permutation.  This is the obligatory instance-optimal theorem in the
+main paper.
 \end{theorem}
 
 The final Lean comparison is between the physical learned run and the full
 private-shuffle average of an arbitrary family of completing competitors.
 
 \begin{lstlisting}[style=lean]
-theorem privateShuffle_paperGrowingPolicy_concrete_rate
-    {Seeds : Type*} [Fintype Seeds] [Nonempty Seeds]
+theorem privateShuffle_paperGrowingPolicy_general_concrete_rate
+    (mu : Measure Omega) [IsProbabilityMeasure mu]
     ... {L : Real} (hL : 0 < L)
     (p : Fin (k + r) -> Real)
     (hp0 : forall job, 0 <= p job)
     (hpL : forall job, p job <= L)
-    (competitor : Seeds -> CompletePolicy p)
+    (competitor : Omega -> CompletePolicy p)
     (htest : forall seed, FirstTouchesAreTests (competitor seed)) :
     uniformAverage (physicalGrowingRunCost ... p) <=
       (k + r : Real) ^ 2 *
-        (uniformAverage (fun seed =>
+        (generalExpectation mu (fun seed =>
            uniformAverage (normalizedCost p (competitor seed))) +
          paperInstanceError L n)
 
@@ -245,7 +259,8 @@ literal fact of the Lean theorem signatures.
 Lean also checks both limitations stated after the obligatory
 instance-optimal theorem in the main paper.  Every completing deterministic policy
 has a fixed balanced zero--two input on which its literal cost is at least
-$9n^2/8$.  Without a fixed input bound, every finite-seed randomized policy
+$9n^2/8$.  Without a fixed input bound, every randomized policy with
+integrable cost on an arbitrary private probability space
 has a fixed input in $[0,n^2]^n$ on which it loses at least $n^2/8$ against
 the corresponding announced comparison schedule.
 
@@ -259,9 +274,10 @@ theorem deterministic_balanced_cost_lower
       9 * ((2 * m : Nat) : Real) ^ 2 / 8 <=
         runCompletionCost .infinite processing ...
 
-theorem finiteSeed_exists_operational_quadratic_gap
+theorem exists_operational_quadratic_gap_general
     {n : Nat} (hn : 7 <= n)
-    (strategy : Seeds -> Strategy n) (fuel : Nat)
+    (mu : Measure Omega) [IsProbabilityMeasure mu]
+    (strategy : Omega -> Strategy n) (fuel : Nat)
     (hdoneHigh : ...) (hdoneZero : ...) :
     n ^ 2 / 8 <= averageCostOnAllHigh - announcedAllHighCost \/
       exists label,
@@ -303,18 +319,18 @@ theorem boundedUniform_blindPilot_concrete_rate
 
 The left side is the learned four-block algorithm; the right side is the
 private-shuffle cost of an arbitrary announced competitor.  The checked
-parameter tends to infinity, so the last term tends to zero.  The finite-seed
-corollary
-\path{boundedUniform_blindPilot_finiteSeed_concrete_rate}
-performs the pointwise conditioning and averaging in Lean itself.
+parameter tends to infinity, so the last term tends to zero.  The general
+corollary \path{boundedUniform_blindPilot_general_concrete_rate} performs the
+pointwise conditioning and measure-theoretic averaging in Lean itself.
 
 For the unbounded part, Lean states the contradiction entirely in terms of
 literal completion costs.
 
 \begin{lstlisting}[style=lean]
-theorem no_finite_ratio_at_quadratic_scale_operational
+theorem no_finite_ratio_at_quadratic_scale_operational_general
     {n : Nat} (hn : 0 < n)
-    (strategy : Seeds -> Strategy n)
+    (mu : Measure Omega) [IsProbabilityMeasure mu]
+    (strategy : Omega -> Strategy n)
     (hcomplete : forall seed, CompletesAllNonnegative (strategy seed))
     (R eta : Real) ...
     (hzeroCost : average zeroCost <= eta * n ^ 2)
@@ -400,15 +416,17 @@ theorem operationalPilot_expectedCost_le_curve_normalized ... :
       randomizedCurve u * offlineCost u processing +
         pilotNormalizedError u n pilotSize * n ^ 2
 
-theorem exists_binary_mass_operational_ratio_tendsto_curve (hu : 1 < u) :
+theorem exists_binary_mass_operational_ratio_tendsto_curve_general
+    (hu : 1 < u) :
   exists b in Set.Icc (0 : Real) 1,
     Tendsto (fun n => binaryFiniteYaoRatio n u b)
       atTop (nhds (randomizedCurve u)) /\
-    forall n Seeds, 0 < n -> forall strategy : Seeds -> Strategy n,
+    forall n Omega (mu : Measure Omega), 0 < n ->
+      forall strategy : Omega -> Strategy n,
       (forall seed, CompletesAll u (strategy seed)) ->
       exists input : BinaryInput n,
         binaryFiniteYaoRatio n u b * offlineCost u input <=
-          uniformAverage fun seed => runCost u input (strategy seed) n
+          generalExpectation mu fun seed => runCost u input (strategy seed) n
 \end{lstlisting}
 
 The theorem \texttt{pilotNormalizedError\_tendsto\_zero} verifies that any
@@ -425,7 +443,8 @@ for every $p\in[0,u]^n$,
  \le \frac{n(n+1)}2\min\{u,1+\mu_p\}+o_u(n^2),
  \qquad \mu_p=\frac1n\sum_i p_i.
 \]
-Conversely, every completing algorithm with a finite private seed has
+Conversely, every completing algorithm with integrable cost on an arbitrary
+private probability space has
 expected cost at least
 \[
  \frac{n^2}{2}\min\{u,1+\mu_p\}-nu\sqrt{2n}.
@@ -448,11 +467,11 @@ theorem pilotPolicy_expectedCost_le ... :
       (1 + u) * pilotSize * n +
       n * (n + 1) / 2 * (u / sqrt pilotSize)
 
-theorem finiteSeed_expectedCost_ge_instanceBenchmark_nsq
-    {Seeds : Type*} [Fintype Seeds] [Nonempty Seeds]
+theorem generalExpectedCost_ge_instanceBenchmark_nsq
+    (mu : Measure Omega) [IsProbabilityMeasure mu]
     ... (p : Fin n -> Real)
     (hp : forall job, p job in Set.Icc 0 u)
-    (strategy : Seeds -> Online.Strategy n)
+    (strategy : Omega -> Online.Strategy n)
     (hcompletes : forall seed placement,
       Online.Completes (placedProcessing p placement) (strategy seed)) :
     n ^ 2 / 2 * min u (1 + populationMean p) -
@@ -540,14 +559,15 @@ theorem binaryFamilies_attain_curve (hu : 1 < u) :
 \end{lstlisting}
 
 The operational Yao theorem
-\path{exists_operational_binary_family_ratio_tendsto_curve} then
-selects one fixed labeled binary input outside every finite seed average.
+\path{exists_operational_binary_family_ratio_tendsto_curve_general} then
+selects one fixed labeled binary input outside an arbitrary private-seed
+integral.
 The theorem \path{randomizedRevealingCurveExact} is one public package
 containing this lower theorem, the announced operational upper theorem, the
 checked announced-to-unannounced transfer, and vanishing of the transfer
 error.  The transfer itself is exported as
 \path{compiledExpectedNormalizedCost_le_curve_of_competitor}: given a
-finite-seed announced policy satisfying the curve bound on every placement,
+announced policy satisfying the curve bound on every placement,
 it returns the corresponding direct bound for the literal unannounced
 sample-based learner.
 
@@ -557,28 +577,27 @@ sample-based learner.
 \label{thm:lean-audit-revealing-instance}
 Fix $0<u<\infty$.  There is one randomized nonanticipating algorithm such that
 for every $p\in[0,u]^n$ and every completing announced algorithm
-$\mathcal B$ with a finite private seed,
+$\mathcal B$ with integrable cost on an arbitrary private probability space,
 \[
  \EE\ALG_{\mathcal A^*}(p)
  \le \EE\ALG_{\mathcal B}(p)+o_u(n^2).
 \]
-This is the finite-seed version of the revealing-optimization instance
-comparison in the main paper.
+This is the revealing-optimization instance comparison in the main paper.
 \end{theorem}
 
 The final public theorem compares the literal learned strategy directly with
 the arbitrary competitor under the full private-shuffle average.
 
 \begin{lstlisting}[style=lean]
-theorem privateShuffle_compiled_le_randomizedCompetitor_concrete_rate
-    {Seeds : Type*} [Fintype Seeds] [Nonempty Seeds]
+theorem privateShuffle_compiled_le_generalCompetitor_concrete_rate
+    (mu : Measure Omega) [IsProbabilityMeasure mu]
     ... {u : Real} (hu : 0 < u)
     (p : Fin n -> Real)
     (hp0 : forall job, 0 <= p job)
     (hpu : forall job, p job <= u)
-    (competitor : Seeds -> CompletePolicy p) :
+    (competitor : Omega -> CompletePolicy p) :
     compiledExpectedNormalizedCost grid sample u <=
-      (uniformAverage fun seed =>
+      (generalExpectation mu fun seed =>
         uniformAverage (normalizedRawCost u p (competitor seed))) +
       concreteRevealingComparisonError u n
 
@@ -590,7 +609,7 @@ The left side is an actual fixed-fuel transcript-only strategy averaged over
 independent sample and main permutations.  The competitor may adapt among
 tests, processing, and raw execution and is given the input multiset.  Its
 inner average ranges over hidden placements and its outer average over the
-remaining finite seed; the second theorem supplies the required $o_u(1)$
+remaining private seed; the second theorem supplies the required $o_u(1)$
 normalized error.
 
 The same checked relabelling construction used for obligatory testing proves
@@ -642,13 +661,14 @@ all exports above.  The checked project contains no \texttt{sorry},
 \texttt{admit}, or project-defined \texttt{axiom}.  It uses mathlib's
 classical real analysis and noncomputable choices of exact real parameters;
 it proves mathematical properties of the algorithms but does not extract a
-floating-point implementation.  The randomized lower statements shown here
-quantify over nonempty finite seed types.
+floating-point implementation.  The concrete randomized policies have finite
+uniform seeds, while the randomized lower and comparison corollaries quantify
+over arbitrary probability spaces with integrable real-valued run costs.
 
 The coverage table at the start of this document is the authoritative
-summary.  The finite-seed private-shuffle corollaries for randomized
-obligatory testing and the two bounded instance comparisons are now explicit
-Lean exports.  The obligatory $4/3$ and bounded instance-optimal upper exports use
+summary.  The arbitrary-seed private-shuffle corollaries for randomized
+obligatory testing and the bounded instance comparisons are explicit Lean
+exports.  The obligatory $4/3$ and bounded instance-optimal upper exports use
 the same \texttt{physicalGrowingRunCost} policy and the same concrete
 parameter family; the slower grid mentioned above is only a lower-bound
 proof device.  Lean verifies the exact symbolic constants, branch transition
