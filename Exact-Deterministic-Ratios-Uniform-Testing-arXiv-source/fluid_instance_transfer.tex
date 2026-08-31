@@ -135,15 +135,15 @@ Let $q$ be the final tested fraction of the edited run; then $q\in Q$.
 
 \begin{claim}[Comparison with the fluid completion curve]
 \label{clm:common-envelope-repair}
-On the event
-\cref{eq:common-transfer-cell-discrepancy,eq:common-transfer-work-discrepancy},
-there is
+On the event that
+\cref{eq:common-transfer-cell-discrepancy,eq:common-transfer-work-discrepancy}
+hold, define
 \begin{equation}
- \zeta_n=O_L\!\left(
-   \frac{(K_n+1)\Gamma_n}{n}+h_n+\delta_n\right)
+ e_n\defeq\frac{(K_n+1)\Gamma_n}{n}+h_n+\delta_n.
  \label{eq:common-transfer-zeta}
 \end{equation}
-such that, simultaneously throughout the edited run,
+There is $\zeta_n=O_L(e_n)$ such that, simultaneously throughout the edited
+run,
 \begin{equation}
  \text{completed fraction after normalized work }x
  \le \mathcal C^{v_r(D^+)}_{D^+,q}(x+\zeta_n)+\zeta_n.
@@ -170,7 +170,7 @@ $O(\delta_n)$.  Increase the normalized work coordinate by these errors and
 the completed mass by the discarded cell discrepancies.  The variables
 $t,b,c_j$ then satisfy every constraint in
 \cref{eq:common-fluid-envelope} with $v=v_r(D^+)$.  This proves the
-displayed inequality with
+displayed inequality with the error scale in
 \cref{eq:common-transfer-zeta}.
 \end{proof}
 
