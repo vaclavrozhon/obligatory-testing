@@ -149,9 +149,13 @@ The definitions in \path{SchedulingPaper/Constants.lean} identify
 \texttt{RStar} with $R_*$, while the second conjunct supplies the matching
 lower and upper bounds.  The completion field rules out a certificate that
 only analyzes a partial transcript.
+The export \path{exact_ratio_main} is the deterministic assembly only; the
+randomized obligatory result is exported separately below.
 
 For the randomized statement, Lean exposes a finite upper error and a fixed
-binary input for the lower bound.
+binary input for the lower bound.  In particular, the upper export below is
+the universal unannounced sample-and-fallback policy from the main paper, not
+only its announced stationary corollary.
 
 \begin{lstlisting}[style=lean]
 theorem unknownMultiset_operational_expectedCost_le_20378
@@ -186,6 +190,10 @@ theorem paperWorstCaseError_tendsto_zero :
 The public growing-policy theorem uses exactly the parameters printed for the
 main paper's growing-cutoff algorithm: $d=\lfloor n^{1/4}\rfloor$,
 $k=\lfloor n^{3/4}\rfloor$, $B=32+n^{1/20}$, and $\eta=B/d$.
+Its \path{physicalGrowingRunCost} includes the empirical sample, the learned
+branch, the empty- or low-density fallback, the good-event estimate, and the
+bad-event average.  Thus it covers the concentration and fallback part of the
+unannounced algorithm as well as its scalar endpoint calculation.
 The vanishing-error theorem therefore verifies the $4/3$ competitive ratio
 for $\mathcal A_n^*$ itself.  Lean also retains the fixed-cutoff companion
 $\mathcal A_n^{(32)}$ and its sharper explicit $20378n^{7/4}$ additive
@@ -697,7 +705,7 @@ identifies the checked source exactly.
 \begin{center}
 \small\ttfamily
 SHA-256:\par
-1a4d42f4ea22414cbf74f8de088769eaaf1ca947f48ca61bfeb7b0b62963a012
+de812f0fb00bfaccce492d07fb424432878f7751405a871f3bc6e7525ebc7ba7
 \end{center}
 
 From the unpacked archive root, the complete development is checked with

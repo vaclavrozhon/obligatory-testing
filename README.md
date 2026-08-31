@@ -41,7 +41,7 @@ The project now checks substantially more than the initial static model:
   and the plateau reduction;
 - honest upper- and lower-bound assembly theorems over genuine fixed inputs.
 
-The top-level theorem is
+The top-level deterministic theorem is
 `SchedulingPaper.exact_ratio_main` in
 `SchedulingPaper/MainTheorems.lean`.  It proves both advertised exact-ratio
 directions unconditionally: for every positive finite cap it packages the
@@ -80,11 +80,14 @@ formalization:
   finite `4/3`-competitive.  The universal unknown-multiset `4/3` proof does
   not depend on its general lower-transfer theorem.
 
+### Finite-cap revealing optimization
+
 `RANDOMIZED_COMMON_UPPER_INSTANCE_OPTIMAL_PROOF.md` is the standalone
-analytic proof for the finite common-upper model with raw execution of length
+analytic proof for the finite common-upper revealing-optimization model with
+raw execution of length
 `u`.  It derives the explicit fixed-distribution quadratic benchmark,
 proves its announced-multiset lower envelope against every adaptive policy,
-removes the announcement by a tested pilot sample, and identifies the
+removes the announcement by a tested sample, and identifies the
 instance-specific asymptotic ratio `Phi_u(D)/Omega_u(D)`.  It also solves the
 outer optimization over distributions, giving an explicit four-branch exact
 randomized curve with global maximum `1.6257523846...`.  Both the
@@ -96,8 +99,13 @@ compiler, exact finite clairvoyant denominator, fixed-input weighted Yao
 selection, and convergence of the finite coefficients to the curve.  Lean now
 also checks common-upper instance optimality end to end: the raw-duration
 observed semantics, completion-envelope lower transfer, fixed-placement Yao
-selection, the shared raw-block benchmark, the pilot-learned operational
+selection, the shared raw-block benchmark, the sample-learned operational
 upper, the all-zero branch, and an input-size-only vanishing rate.
+
+This paragraph concerns finite-cap revealing optimization, not the
+obligatory-testing `4/3` endpoint discussed next.
+
+### Obligatory testing
 
 The obligatory analytic proof is complete. Lean checks its exact and
 robust fluid certificates, maximum-density optimizer and sample-empty-bin
@@ -110,6 +118,18 @@ expression is proved equal to the literal clairvoyant objective.
 theorems; the lower theorem includes the generic compiler from every
 terminating public-transcript `Online.Strategy` to its fair binary tree. Thus
 Lean proves the exact asymptotic randomized ratio `4/3`.
+
+In particular, the paper-facing universal upper bound is
+`paperGrowingPolicy_four_thirds_multiplicative` in
+`SchedulingPaper/ObligatoryPaperAlgorithm.lean`.  It bounds the literal
+`physicalGrowingRunCost` on every fixed nonnegative input.  This run includes
+the random sample, empirical histogram, learned branch, empty- or low-density
+fallback, good-event and bad-event averages, and the floor parameters printed
+in the paper.  It is therefore the unannounced sample-and-fallback theorem,
+not only the announced stationary endpoint.  This randomized result is a
+separate export: `exact_ratio_main` packages the deterministic finite-cap and
+obligatory exact-ratio results only.
+
 `GeneralRandomization.lean` and `GeneralRandomizedResults.lean` additionally
 lift the lower theorem and every paper-facing randomized comparison from
 finite uniform seeds to arbitrary probability spaces with integrable run
@@ -124,7 +144,7 @@ end. `ObligatoryGrowingCutoffTrace`,
 completion cost of the learned growing-cutoff transcript strategy.
 `ObligatoryMaximumDensityTemplate`, `ObligatoryGrowingCutoffAnalytic`, and
 `ObligatoryGrowingCutoffExpected` prove population-template optimality and the
-uniform pilot upper bound. `ObligatoryGrowingCutoffBenchmark` aligns that
+uniform sample upper bound. `ObligatoryGrowingCutoffBenchmark` aligns that
 upper bound exactly with the rounded benchmark used by the arbitrary adaptive
 test-only lower transfer and finite Yao selection. The positive- and
 zero-mean branches are joined in `ObligatoryGrowingCutoffRates`, while
@@ -138,7 +158,7 @@ rate derived in the manuscript.
 
 `ObligatoryGrowingCutoffFourThirds` and `ObligatoryPaperAlgorithm` strengthen
 this assembly for the literal parameter family printed in the paper:
-pilot size `floor(n^(3/4))`, grid size `floor(n^(1/4))`, cutoff
+sample size `floor(n^(3/4))`, grid size `floor(n^(1/4))`, cutoff
 `32+n^(1/20)`, and mesh equal to cutoff/grid size.  The same
 `physicalGrowingRunCost` now has both the vanishing `4/3` worst-case export
 `paperGrowingPolicy_four_thirds_multiplicative` and the bounded-multiset
