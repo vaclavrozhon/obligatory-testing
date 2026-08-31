@@ -7,6 +7,14 @@ Peyman Afshani, J{\'e}r{\'e}my Barbay, and Timothy~M. Chan.
 \newblock {\em Journal of the ACM}, 64(1):3:1--3:38, 2017.
 \newblock \href {https://doi.org/10.1145/3046673} {\path{doi:10.1145/3046673}}.
 
+\bibitem[ACC{\etalchar{+}}11]{AilonEtAl2011}
+Nir Ailon, Bernard Chazelle, Kenneth~L. Clarkson, Ding Liu, Wolfgang Mulzer,
+  and C.~Seshadhri.
+\newblock Self-improving algorithms.
+\newblock {\em SIAM Journal on Computing}, 40(2):350--375, 2011.
+\newblock \href {https://doi.org/10.1137/090766437}
+  {\path{doi:10.1137/090766437}}.
+
 \bibitem[AE21]{AlbersEckl2021}
 Susanne Albers and Alexander Eckl.
 \newblock Explorable uncertainty in scheduling with non-uniform testing times.
@@ -24,6 +32,11 @@ Kazuoki Azuma.
 \newblock \href {https://doi.org/10.2748/tmj/1178243286}
   {\path{doi:10.2748/tmj/1178243286}}.
 
+\bibitem[BEY98]{BorodinElYaniv1998}
+Allan Borodin and Ran El-Yaniv.
+\newblock {\em Online Computation and Competitive Analysis}.
+\newblock Cambridge University Press, 1998.
+
 \bibitem[BGH{\etalchar{+}}26]{GrebikEtAl2026Bolzano}
 Martin Balko, Jan Greb{\'i}k, Pavel Hub{\'a}{\v c}ek, Martin Kouteck{\'y},
   Mat{\v e}j Kripner, V{\'a}clav Rozho{\v n}, Robert {\v S}{\'a}mal, and
@@ -31,6 +44,15 @@ Martin Balko, Jan Greb{\'i}k, Pavel Hub{\'a}{\v c}ek, Martin Kouteck{\'y},
 \newblock Bolzano: Case studies in {LLM}-assisted mathematical research, 2026.
 \newblock URL: \url{https://arxiv.org/abs/2604.16989}, \href
   {https://arxiv.org/abs/2604.16989} {\path{arXiv:2604.16989}}.
+
+\bibitem[BN09]{BuchbinderNaor2009}
+Niv Buchbinder and Joseph Naor.
+\newblock The design of competitive online algorithms via a primal-dual
+  approach.
+\newblock {\em Foundations and Trends in Theoretical Computer Science},
+  3(2--3):93--263, 2009.
+\newblock \href {https://doi.org/10.1561/0400000024}
+  {\path{doi:10.1561/0400000024}}.
 
 \bibitem[BS26]{BuldSchulz2026}
 Felix Buld and Andreas~S. Schulz.
@@ -83,10 +105,23 @@ Christoph Damerius, Peter Kling, Minming Li, Chenyang Xu, and Ruilong Zhang.
 \newblock \href {https://doi.org/10.4230/LIPIcs.ESA.2023.38}
   {\path{doi:10.4230/LIPIcs.ESA.2023.38}}.
 
+\bibitem[DLOM00]{DemaineLopezOrtizMunro2000}
+Erik~D. Demaine, Alejandro L{\'o}pez-Ortiz, and J.~Ian Munro.
+\newblock Adaptive set intersections, unions, and differences.
+\newblock In {\em Proceedings of the 11th Annual ACM-SIAM Symposium on Discrete
+  Algorithms (SODA 2000)}, pages 743--752. SIAM, 2000.
+
 \bibitem[Doo53]{Doob1953}
 Joseph~L. Doob.
 \newblock {\em Stochastic Processes}.
 \newblock Wiley, New York, 1953.
+
+\bibitem[FLN03]{FaginLotemNaor2003}
+Ronald Fagin, Amnon Lotem, and Moni Naor.
+\newblock Optimal aggregation algorithms for middleware.
+\newblock {\em Journal of Computer and System Sciences}, 66(4):614--656, 2003.
+\newblock \href {https://doi.org/10.1016/S0022-0000(03)00026-6}
+  {\path{doi:10.1016/S0022-0000(03)00026-6}}.
 
 \bibitem[GCH24]{GongChenHayashi2024}
 Mingyang Gong, Zhi-Zhong Chen, and Kuniteru Hayashi.
@@ -121,6 +156,14 @@ Bob Krekelberg, Alison Hsiang-Hsuan Liu, Fu-Hong Liu, Prudence W.~H. Wong, and
 \newblock Version 2, revised 8 May 2026.
 \newblock \href {https://arxiv.org/abs/2503.13357} {\path{arXiv:2503.13357}}.
 
+\bibitem[KVV90]{KarpVaziraniVazirani1990}
+Richard~M. Karp, Umesh~V. Vazirani, and Vijay~V. Vazirani.
+\newblock An optimal algorithm for on-line bipartite matching.
+\newblock In {\em Proceedings of the 22nd Annual ACM Symposium on Theory of
+  Computing (STOC 1990)}, pages 352--358. ACM, 1990.
+\newblock \href {https://doi.org/10.1145/100216.100262}
+  {\path{doi:10.1145/100216.100262}}.
+
 \bibitem[LL26]{LiangLiang2026}
 Kao-Chuan Liang and Ya-Chun Liang.
 \newblock Hardness of obligatory-test scheduling on multiple machines, 2026.
@@ -151,6 +194,14 @@ Retsef Levi, Thomas~L. Magnanti, and Yaron Shaposhnik.
 \newblock \href {https://doi.org/10.1287/mnsc.2023.4833}
   {\path{doi:10.1287/mnsc.2023.4833}}.
 
+\bibitem[Mey01]{Meyerson2001}
+Adam Meyerson.
+\newblock Online facility location.
+\newblock In {\em 42nd IEEE Symposium on Foundations of Computer Science (FOCS
+  2001)}, pages 426--431. IEEE, 2001.
+\newblock \href {https://doi.org/10.1109/SFCS.2001.959917}
+  {\path{doi:10.1109/SFCS.2001.959917}}.
+
 \bibitem[MPT94]{MotwaniPhillipsTorng1994}
 Rajeev Motwani, Steven~J. Phillips, and Eric Torng.
 \newblock Nonclairvoyant scheduling.
@@ -166,6 +217,13 @@ Shyam Narayanan, V{\'a}clav Rozho{\v n}, Jakub T{\v e}tek, and Mikkel Thorup.
   Science ({FOCS} 2024)}, pages 658--688. IEEE, 2024.
 \newblock \href {https://doi.org/10.1109/FOCS61266.2024.00048}
   {\path{doi:10.1109/FOCS61266.2024.00048}}.
+
+\bibitem[ST85]{SleatorTarjan1985}
+Daniel~D. Sleator and Robert~E. Tarjan.
+\newblock Amortized efficiency of list update and paging rules.
+\newblock {\em Communications of the ACM}, 28(2):202--208, 1985.
+\newblock \href {https://doi.org/10.1145/2786.2793}
+  {\path{doi:10.1145/2786.2793}}.
 
 \bibitem[Yao77]{Yao1977}
 Andrew Chi-Chih Yao.

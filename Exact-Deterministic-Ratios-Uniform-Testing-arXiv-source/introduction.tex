@@ -636,6 +636,32 @@ This stability makes the randomized setting substantially simpler; in particular
 The closest papers have already appeared next to the models they introduced.
 We give a broader comparison here.
 
+More broadly, our problems belong to online algorithms and competitive
+analysis; standard references are the textbook of Borodin and
+El-Yaniv~\cite{BorodinElYaniv1998} and the survey of Buchbinder and
+Naor~\cite{BuchbinderNaor2009}.  Classical examples include paging and list
+update~\cite{SleatorTarjan1985}, online bipartite
+matching~\cite{KarpVaziraniVazirani1990}, and online facility
+location~\cite{Meyerson2001}.  As in this literature, one algorithm must work
+for every input and is compared with an offline optimum.  Our randomized
+results use the oblivious-adversary version of this comparison.  The
+size-asymptotic convention only allows an additional $o(n^2)$ term.
+
+\pagebreak[3]
+There are several related notions of instance optimality.  They have been
+studied for aggregation~\cite{FaginLotemNaor2003}, adaptive set
+operations~\cite{DemaineLopezOrtizMunro2000}, computational
+geometry~\cite{AfshaniBarbayChan2017}, and sampling and sequential
+estimation~\cite{NarayananRozhonTetekThorup2024}.  Self-improving algorithms
+also use samples to learn a good algorithm for an unknown input
+distribution~\cite{AilonEtAl2011}.  Our comparison is closest in spirit to
+the order-oblivious notion of Afshani, Barbay, and
+Chan~\cite{AfshaniBarbayChan2017}, but uses a different benchmark: the
+competitor may know the input multiset, but not its assignment to the hidden
+labels.  We compare expected costs only up to an additive $o(n^2)$ term.
+Thus the result need not be a multiplicative guarantee when the optimum is
+$o(n^2)$.
+
 Scheduling with tests belongs to optimization with \emph{explorable
 uncertainty}, where uncertain data can be queried at a cost; the query
 viewpoint goes back at least to Kahan~\cite{Kahan1991}.  Levi, Magnanti, and
