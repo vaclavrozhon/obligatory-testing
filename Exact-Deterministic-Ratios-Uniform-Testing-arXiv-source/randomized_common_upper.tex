@@ -62,6 +62,8 @@ The curve is continuous and has global maximum
 attained at $u=(3+\sqrt3)/2$.
 \end{theorem}
 
+The full curve is shown in \cref{fig:randomized-revealing-curve}.
+
 \begin{figure}[htbp]
 \centering
 \input{randomized_curve_tikz}
@@ -209,7 +211,8 @@ Replace $S_D$ on $(0,\tau_D)$ by the constant $y$ and leave its tail unchanged.
 This remains a nonincreasing survival function, preserves
 \eqref{eq:rcu-threshold-equation} and $\mathcal T_u(D)$, and by
 \eqref{eq:rcu-initial-cs} can only decrease the offline coefficient.  Hence
-it can only increase the ratio.  We may therefore assume
+it can only increase the ratio.  This replacement is illustrated in
+\cref{fig:survival-flattening}.  We may therefore assume
 \begin{equation}
  S_D(t)=y\quad(0<t<\tau_D).
  \label{eq:rcu-flat-prefix}
@@ -395,8 +398,8 @@ upper bound
 \end{equation}
 for every finite distribution $D$.
 
-The junction statements now follow directly.  Equations
-\cref{eq:rcu-transition-cubic,eq:rcu-B-at-u,eq:rcu-B-at-star} give
+The junction statements now follow directly.
+\Cref{eq:rcu-transition-cubic,eq:rcu-B-at-u,eq:rcu-B-at-star} give
 continuity at $\uRand{2}$, and the formula
 $1+1/[2(\sqrt u-1)]$ equals $4/3$ at $u=\uRand{3}$.
 Differentiating \eqref{eq:rcu-B-at-u} shows that its only
@@ -418,7 +421,7 @@ linear correction.  Therefore the instance-optimal upper bound immediately
 yields
 \begin{equation}
  \EE\ALG_{\mathcal A_{n,u}}
- \le\RrandRO(u)\cdot\OPT_u+o_u(n^2),
+ \le\RrandRO(u)\cdot\OPT_u+\,o_u(n^2),
  \label{eq:rcu-final-upper}
 \end{equation}
 which is \eqref{eq:intro-random-common-upper}.  For $0<u\le1$, raw execution
@@ -563,7 +566,7 @@ $n$ admit an input with $n/2$ zero jobs and $n/2$ jobs of value two such that
 \begin{equation}
  \EE\ALG\ge n^2-o_u(n^2),
  \qquad
- \OPT_u=\frac34n^2+O(n).
+ \OPT_u=\frac34n^2+\,O(n).
  \label{eq:rcu-zero-two-costs}
 \end{equation}
 \end{lemma}

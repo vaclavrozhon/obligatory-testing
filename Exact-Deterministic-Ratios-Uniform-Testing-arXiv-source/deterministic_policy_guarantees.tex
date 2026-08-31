@@ -83,7 +83,7 @@ For every $\uDet{2}\le u\le\uDet{3}$, define the algorithm parameter
 Then
 \textnormal{\textsc{ForcedPrefixUTE}}$(J,u,b)$ satisfies
 \begin{equation}
- \ALG\le\Rquad(u)\cdot\OPT+O_u(n).
+ \ALG\le\Rquad(u)\cdot\OPT+\,O_u(n).
  \label{eq:opt:ute-full-upper}
 \end{equation}
 \end{lemma}
@@ -141,7 +141,7 @@ $s^2R>16/15$.
 For every $\uDet{2}\le u\le2$,
 \textnormal{\textsc{ForcedPrefixUTE}}$(J,u,b)$ satisfies
 \[
- \ALG\le R\cdot\OPT+O_u(n).
+ \ALG\le R\cdot\OPT+\,O_u(n).
 \]
 \end{claim}
 
@@ -284,7 +284,7 @@ first step.  Since the minimum is jointly concave,
 \]
 The offline pair identity therefore shows that expected OPT does not
 increase.  Consequently the expected value of
-$\ALG-R\cdot\OPT$ for the binary input is at least its value for the original
+$\ALG-\,R\cdot\OPT$ for the binary input is at least its value for the original
 input, up to $O_u(n)$ one-job terms.  Some binary realization is at least as
 bad as this expectation, and the binary bound proves the claim.
 \end{proof}
@@ -294,7 +294,7 @@ bad as this expectation, and the binary bound proves the claim.
 For every $2\le u\le\uDet{3}$,
 \textnormal{\textsc{ForcedPrefixUTE}}$(J,u,b)$ satisfies
 \[
- \ALG\le R\cdot\OPT+O_u(n).
+ \ALG\le R\cdot\OPT+\,O_u(n).
 \]
 \end{claim}
 
@@ -303,7 +303,7 @@ Here $u\ge2$, so the algorithm uses threshold one.  A prefix job is always
 immediate, a suffix job with $p\le1$ is immediate, and a suffix job with
 $p>1$ is deferred.  First keep this immediate/deferred pattern fixed and
 vary one processing time at a time in the leading excess
-$\ALG-R\cdot\OPT$.  On each interval between the threshold and the offline
+$\ALG-\,R\cdot\OPT$.  On each interval between the threshold and the offline
 cap $u$,
 the pair formula \cref{eq:opt:pair-contribution} makes this excess convex in
 that coordinate.  Hence a maximum occurs at an interval endpoint.  This
@@ -480,7 +480,7 @@ ratio $1+1/\sqrt{u-1}$.
 \label{lem:opt:zero-prefix}
 Fix $\uDet{3}\le u\le\uDet{4}$ and set $b=0$ in \cref{alg:ute}.  Then
 \begin{equation}
- \ALG\le\left(1+\frac1{\sqrt{u-1}}\right)\cdot\OPT+O_u(n).
+ \ALG\le\left(1+\frac1{\sqrt{u-1}}\right)\cdot\OPT+\,O_u(n).
  \label{eq:opt:zero-prefix-guarantee}
 \end{equation}
 \end{lemma}
@@ -616,10 +616,10 @@ satisfies
 \[
  \ALG\le
  \begin{cases}
-  (1+c)\cdot\OPT+O_u(n),
+  (1+c)\cdot\OPT+\,O_u(n),
      & \uDet{4}\le u\le \uDet{5},
        \quad c\text{ given by \eqref{eq:opt:cm-parametrization}},\\[1mm]
-  (1+r)\cdot\OPT+O(n),
+  (1+r)\cdot\OPT+\,O(n),
      & u\ge \uDet{5}.
  \end{cases}
 \]
@@ -630,7 +630,7 @@ size-asymptotic competitive ratio.
 \end{theorem}
 
 We prove the theorem through six claims.  The first two rewrite
-$\ALG-R\cdot\OPT$ as a sum of contributions from ordered pairs of jobs plus
+$\ALG-\,R\cdot\OPT$ as a sum of contributions from ordered pairs of jobs plus
 $O_u(n)$ one-job terms, reduce the processing times to five boundary values,
 and assign the resulting pair contributions to local charges $\ell_i$.
 The next three claims construct and calibrate a nonnegative potential $W$
@@ -724,17 +724,17 @@ whereas the common offline pair identity \cref{eq:optional-opt-pair} gives
    +\sum_{i<j}\bigl(1+\min\{\bar p_i,\bar p_j\}\bigr).
  \label{eq:opt:opt-pair-decomposition}
 \end{equation}
-Collecting the pair contributions in $\ALG-R\cdot\OPT$, define
+Collecting the pair contributions in $\ALG-\,R\cdot\OPT$, define
 \begin{equation}
  \Gamma_n=\sum_{i<j}
  \left(e_{ij}+\min\{p_i,p_j\}
        -R\min\{\bar p_i,\bar p_j\}\right).
  \label{eq:opt:pair-objective}
 \end{equation}
-Equations \eqref{eq:opt:alg-pair-decomposition}--
+Equations \eqref{eq:opt:alg-pair-decomposition}--%
 \eqref{eq:opt:pair-objective} yield the exact identity
 \begin{equation}
- \ALG-R\cdot\OPT
+ \ALG-\,R\cdot\OPT
  =\Gamma_n-c\binom n2
   +\sum_i\bigl[(1+p_i)-R(1+\bar p_i)\bigr].
  \label{eq:opt:gap-decomposition}
@@ -1159,7 +1159,7 @@ Together with
 \cref{clm:opt:adaptive-base-potential,clm:opt:adaptive-cap-potential}, this
 gives
 \begin{equation}
- \ALG\le(1+c)\cdot\OPT+O_u(n).
+ \ALG\le(1+c)\cdot\OPT+\,O_u(n).
  \label{eq:opt:adaptive-finite-claim}
 \end{equation}
 For every finite $u\ge\uDet{5}$, there is an absolute constant $B$,
@@ -1239,7 +1239,7 @@ Summing \eqref{eq:opt:finite-taylor}, using $W\ge0$, and applying
 Together with \eqref{eq:opt:gap-decomposition} and
 \eqref{eq:opt:pair-allocation-dominates}, this yields
 \begin{align}
- \ALG-R\cdot\OPT
+ \ALG-\,R\cdot\OPT
  &\le -c\binom n2+\frac c2n^2+O_u(n)
  =O_u(n).
  \label{eq:opt:adaptive-middle-upper}

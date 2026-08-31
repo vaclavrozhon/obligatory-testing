@@ -21,6 +21,11 @@ The introduction's deterministic overview is a native TikZ/pgfplots source
 in `curves_overview_tikz.tex`; standalone sources for the randomized and
 blind-optimization curves are retained alongside it.
 
+The arXiv upload archive additionally contains `anc/lean-audit.pdf` and
+`anc/obligatory-testing-lean-artifact.zip`.  The latter is the complete pinned
+Lean project and can be checked independently with the commands documented in
+the audit.
+
 If `latexmk` is unavailable, the equivalent manual build is
 
 ```sh

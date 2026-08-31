@@ -14,7 +14,7 @@ $p_j=u$ is a \emph{long job}.
 \label{lem:opt:hidden-stopping}
 Fix $u>1$, a target $R\le u$, and a stopping fraction $\alpha\in(0,1)$.
 Against a deterministic algorithm, there is a legal binary adversary whose
-leading normalized excess $2(\ALG-R\cdot\OPT)/n^2$ at its stopping time is,
+leading normalized excess $2(\ALG-\,R\cdot\OPT)/n^2$ at its stopping time is,
 up to $O_u(1/n)$,
 \begin{equation}
  (u-R)(1-\sigma^2)+\sigma^2 f_{u,R}(y,b),
@@ -878,16 +878,16 @@ models.  Write $\ALG_{\rm hyb}$ and $\OPT_{\rm hyb}$ for the online and
 offline costs
 of this physical obligatory-testing simulation.  Then
 \begin{equation}
- \ALG_{\mathsf{RO}}-R\cdot\OPT_{\mathsf{RO}}
+ \ALG_{\mathsf{RO}}-\,R\cdot\OPT_{\mathsf{RO}}
  \ge (u-R)Z_v+
- \bigl(\ALG_{\rm hyb}-R\cdot\OPT_{\rm hyb}\bigr)-O_u(n).
+ \bigl(\ALG_{\rm hyb}-\,R\cdot\OPT_{\rm hyb}\bigr)-O_u(n).
  \label{eq:opt:cap-raw-decomposition}
 \end{equation}
 If $S/n\to\sigma$, then
 \[
  \frac{Z_v}{n^2}=\frac{1-\sigma^2}{2}+o(1),
  \qquad
- \frac{\ALG_{\rm hyb}-R\OPT_{\rm hyb}}{n^2}
+ \frac{\ALG_{\rm hyb}-\,R\cdot\OPT_{\rm hyb}}{n^2}
  \ge \sigma^2D-o(1).
 \]
 Substitution in \cref{eq:opt:cap-raw-decomposition} gives

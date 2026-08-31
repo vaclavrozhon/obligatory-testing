@@ -20,7 +20,8 @@ whereas an adversary can make a deterministic exploration history atypical.
 
 This small change removes the threshold decision entirely.  It also shows
 that the bounded randomized ratio in the revealing model comes from the
-revealed information.
+revealed information.  The two curves are compared in
+\cref{fig:blind-optimization-curves}.
 
 \begin{figure}[htbp]
 \centering
@@ -182,7 +183,7 @@ Fix $u>1$, a target $R\le u$, and $\alpha\in(0,1)$.  Against every
 deterministic algorithm there is a fixed binary input with $p_j\in\{0,u\}$ on
 which
 \begin{equation}
- \ALG-R\cdot\OPT
+ \ALG-\,R\cdot\OPT
  \ge \frac{n^2}{2}\left((u-R)(1-\sigma^2)
        +\sigma^2 f^{\mathsf{BO}}_{u,R}(y)\right)-O_u(n),
  \label{eq:bo-det-stopping-decomposition}
@@ -367,9 +368,9 @@ $G_{\mathsf{BO}}(u)$; hence
 All survival-function inequalities above are tight for a binary multiset
 with a $b$-fraction of values $u$ and the remaining values zero, labeled so
 that the optimized jobs with $p=u$ occur first.
-Equations \eqref{eq:bo-det-optall-online}--
+Equations \eqref{eq:bo-det-optall-online}--%
 \eqref{eq:bo-det-optall-envelope} prove
-$\ALG_{\textsc{OptimizeAll}}\le R\cdot\OPT+O_u(n)$.
+$\ALG_{\textsc{OptimizeAll}}\le R\cdot\OPT+\,O_u(n)$.
 This matches the lower bound and proves \eqref{eq:bo-det-curve}.
 The asymptotic formula \eqref{eq:bo-det-asymptotic} follows directly from
 \eqref{eq:bo-det-optall-ratio}.
@@ -533,9 +534,15 @@ Let $u_{\mathsf{BO}}>1$ denote the unique root greater than one of
 \begin{equation}
  u^3-2u^2-u+1=0,
  \qquad
- u_{\mathsf{BO}}=2.24\ldots .
+ u_{\mathsf{BO}}=1+2\cos(2\pi/7)=2.24\ldots .
  \label{eq:bo-transition}
 \end{equation}
+The factorization
+\[
+ v^6-6v^4+5v^2-1
+ =(v^3-2v^2-v+1)(v^3+2v^2-v-1)
+\]
+also shows that $\uRand{2}=u_{\mathsf{BO}}^2$.
 
 \begin{theorem}[Exact blind-optimization curve]
 \label{thm:bo-curve}
