@@ -17,17 +17,16 @@ short and completing jobs that are already understood.
 Variants of this question have appeared in both stochastic and adversarial
 scheduling with
 testing~\cite{LeviMagnantiShaposhnik2019,DurrErlebachMegowMeissner2020,DogeasErlebachLiang2024}.
-This work improves earlier results and studies new models.  We start
+This work improves earlier results and studies new variants of this problem.  We start
 with the cleanest version, in which every paper has to be opened.
-We then allow a job to be run without opening its paper.  Depending on what
-this means, we obtain three further variants.  The same algorithmic
+We then allow a job to be run without opening its paper. We also consider the variant where opening a paper actually corresponds to \emph{optimizing} the running time -- it may or may not speed up the execution of the job. Together, this leads to several variants of this problem. However, the same algorithmic
 ideas---random sampling, thresholding, and shortest-first execution---give
-exact asymptotic answers in all four models.
+exact asymptotic answers in all considered models.
 
 \subsection{Warmup: every job has to be tested}
 \label{sec:intro-obligatory}
 
-Consider the following problem.  There are $n$ jobs.  Testing job $i$ takes
+Consider the following problem from the area of online algorithms.  There are $n$ jobs.  Testing job $i$ takes
 one unit of time and reveals a number $p_i\geq0$.  The job then needs another
 $p_i$ units of processing; if $p_i=0$, it completes with the test.  In the simplest variant of this problem, every job has to be tested: testing is \emph{obligatory}.  The formal model
 is given in \cref{sec:model}.
@@ -96,10 +95,7 @@ and define
  =\min_{\substack{0\le t\le B_n\\a(t)>0}}
    \frac{1+m(t)}{a(t)}.
 \]
-\State If the set in this minimum is empty, put $\widehat\tau=+\infty$.
-\State If $\widehat\tau>B_n$, test every remaining job and then finish all
-revealed jobs shortest first.
-\State Otherwise process the sampled jobs with $p\le\widehat\tau$.  Keep
+\State Process the sampled jobs with $p\le\widehat\tau$.  Keep
 testing jobs, processing them immediately when $p\le\widehat\tau$ and
 deferring them otherwise.
 \State After all tests, finish deferred jobs shortest first.
@@ -160,7 +156,7 @@ lengths.
 \begin{theorem}[Obligatory-testing instance optimality, informal version of
 \protect\cref{thm:obligatory-instance}]
 \label{thm:intro-obligatory-instance}
-Fix $L<\infty$.  The algorithm $\mathcal A_n^*$ in
+Fix $L<\infty$ and the obligatory model.  The algorithm $\mathcal A_n^*$ in
 \cref{alg:intro-obligatory-rand} has the following property: for every
 input $p\in[0,L]^n$ and every online algorithm $\mathcal A'$,
 \[
@@ -187,12 +183,9 @@ Second, the existence of some instance-optimal algorithm is perhaps not
 surprising.  One could imagine a meta-algorithm that samples the input to
 estimate the empirical distribution of its job lengths and then runs an
 optimal algorithm for that estimate.  The
-substantive part of the theorem is that no complicated meta-algorithm is
-needed.  The optimal leading-order algorithm for a known input is itself a simple
-threshold algorithm, so $\mathcal A_n^*$ has essentially the same form as
-\cref{alg:intro-obligatory-rand}: sample the input distribution, choose the
-threshold that completes the most job mass per unit of work, and use it for
-the rest of the schedule.
+substantive part of the theorem is that no complicated, unimplementable meta-algorithm is
+needed.  The optimal algorithm is itself a simple
+threshold algorithm from \cref{alg:intro-obligatory-rand}. 
 
 
 \subsection{Generalizations of the model}
@@ -269,7 +262,7 @@ on every bounded input.
 \begin{theorem}[Blind-execution instance optimality, informal version of
 \protect\cref{thm:blind-instance}]
 \label{thm:intro-blind-instance}
-Fix $L<\infty$.  There is one randomized algorithm $\mathcal A^*$ such that,
+Fix $L<\infty$ and the blind-execution model.  There is one randomized algorithm $\mathcal A^*$ from \cref{alg:intro-blind} such that,
 for every input $p\in[0,L]^n$ and every online algorithm
 $\mathcal A'$,
 \[
@@ -323,7 +316,7 @@ lengths to estimate $\widehat D$ and $\widehat\mu$.
 \State Compute
 $\widehat\tau=\min_{t\ge0,\,a(t)>0}(1+m(t))/a(t)$.
 \State If $\widehat\tau\ge\widehat\mu$, put $q=0$.  Otherwise choose
-$q\in\arg\min_{0\le z\le1}F_{\mathsf{BE},\widehat D}(z)$.
+$q\in\arg\min_{0\le z\le1}F_{\mathsf{BE},\widehat D}(z)$ from \cref{eq:blind-F}. 
 \State Test a random $q$-fraction of the remaining jobs.  Whenever a test
 reveals $p<\widehat\tau$, process that job immediately; defer all other
 outcomes.
@@ -365,7 +358,7 @@ beginning of the schedule.  The exact ratios are as follows.
 \protect\cref{thm:bo-det-curve,thm:bo-curve}]
 \label{thm:intro-bo-det-curve}
 \label{thm:intro-bo-curve}
-As $u\to\infty$, the exact deterministic and randomized
+For the blind-optimization model as $u\to\infty$, the exact deterministic and randomized
 asymptotic competitive ratios satisfy
 \[
  \RdetBO(u)=\sqrt u+o(1),
@@ -382,7 +375,7 @@ way to evaluate this model.  Instance optimality gives a more informative
 answer.  For every fixed $u$, the simple algorithm in
 \cref{alg:intro-blind-optimization} is instance-optimal.  The structure of
 the optimal algorithm is particularly simple: at the leading $n^2$ scale, it
-always either optimizes every job or optimizes none.  The algorithm therefore
+always either optimizes every job or optimizes none.  The algorithm simply
 samples the input and chooses between these two options.
 
 \begin{theorem}[Blind-optimization instance optimality, informal version of
@@ -407,15 +400,6 @@ and let $\widehat\mu$ be the mean observed length.
 \State Otherwise run every remaining job raw for time $u$.
 \end{algorithmic}
 \end{algorithm}
-
-More precisely, if $\mu_p$ is the mean optimized length in $p$, the best
-possible leading value is
-\[
- \frac{n^2}{2}\min\{u,1+\mu_p\}.
-\]
-The two terms correspond respectively to running every job raw and to
-optimizing every job.  Thus the mean $\mu_p$ is the only statistic that the
-algorithm needs to estimate.
 
 \subsection{Revealing optimization}
 \label{sec:intro-revealing-optimization}
@@ -442,26 +426,12 @@ algorithms.
 For every constant $u>0$, the exact deterministic and randomized asymptotic
 competitive ratios $\RdetRO(u)$ and $\RrandRO(u)$ are the six-piece and
 four-piece curves derived in
-\cref{sec:optional,sec:random-common-upper}, respectively.
+\cref{sec:optional,sec:random-common-upper}, respectively (see also \cref{fig:intro-curves-det,fig:intro-curves-rand}).
 The deterministic curve reaches
 $1.86\ldots$ and then falls to the obligatory value
 $1.57\ldots$.  The randomized curve reaches $1.62\ldots$ and
 eventually becomes $4/3$.
 \end{theorem}
-
-To describe the deterministic curve, define the following five transition
-points:
-\[
- \begin{gathered}
-  \uDet{1}=1,\qquad
-  \uDet{2}=1.86\ldots,\qquad
-  \uDet{3}=3.14\ldots,\qquad
-  \uDet{4}=3.61\ldots,\qquad
-  \uDet{5}=4.50\ldots .
- \end{gathered}
-\]
-They delimit the six parameter intervals in the piecewise definition of
-$\RdetRO(u)$.
 
 \begin{figure}[H]
 \centering
@@ -470,6 +440,8 @@ $\RdetRO(u)$.
 where it gives the best guarantee.}
 \label{fig:intro-curves-det}
 \end{figure}
+
+[sem pridej tu samou krivku pro randomized]
 
 The deterministic curve is realized by three explicit algorithm families,
 used on consecutive ranges of $u$.  We describe them here and defer the exact
