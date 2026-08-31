@@ -144,22 +144,7 @@ time to inspect a job may reveal a short job that should be finished now, or
 it may reveal nothing useful while every other job waits.  When should the
 machine keep looking, and when should it start working?
 
-We study this question for one machine and total completion time.  We
-consider four natural rules: every job must be tested; a unit-time revealing
-optimization can replace a raw time $u$ by a shorter revealed length; an
-untested job can be run blindly for its true hidden length; or a unit-time
-optimization can shorten it without revealing the new length.  Together these
-models separate the two possible benefits of spending
-one unit before execution: learning which job to do next and making the job
-faster.
-
-For obligatory testing, the exact size-asymptotic competitive ratios are
-$1.57\ldots$ deterministically and $4/3$ randomized against an oblivious
-adversary.  We also give exact deterministic and randomized phase diagrams
-for revealing and blind optimization.  On bounded input multisets, one
-universal randomized algorithm per model matches the best multiset-aware
-online competitor up to $o(n^2)$.  The resulting algorithms are often quite
-simple, which may make them useful in practice.
+We study natural variants of this question and provide optimal algorithms in the sense of worst-case analysis and instance optimality. The resulting algorithms are often quite simple, which may make them useful in practice.
 \end{abstract}
 
 \tableofcontents
