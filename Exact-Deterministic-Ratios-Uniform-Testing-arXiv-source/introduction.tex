@@ -566,15 +566,12 @@ $\Theta(\sqrt u)$.
 The proofs repeatedly use similar ideas.  We summarize the main ones here.
 
 \paragraph{Remaining-job and pair accounting.}
-Every unit of machine work delays every job that is still unfinished.
-Total completion time can therefore be computed by tracking the number of
-unfinished jobs throughout the schedule.  Equivalently, each operation can
-be charged to the jobs that wait for it, giving the one-job and pairwise cost
-identities used throughout the paper.  For example, if an algorithm tests a
-fraction $q$ of the jobs, a pair may contain two tested jobs, one tested and
+Every unit of machine work delays every job that is still unfinished. 
+Total completion time can therefore be computed as a summation over all pairs of jobs, summing the length of the one going first. 
+
+This view can help us optimize the numerical parameters of the algorithms. For example, if an algorithm tests a fraction $q$ of the jobs, a pair of jobs may contain two tested jobs, one tested and
 one untested job, or two untested jobs.  The numbers of such pairs are
-proportional to $q^2$, $q(1-q)$, and $(1-q)^2$, respectively.  The leading
-cost is therefore often a quadratic function of $q$. Optimal parameters of our algorithms are often computed by solving equations stemming from arguments like this one. 
+proportional to $q^2$, $q(1-q)$, and $(1-q)^2$, respectively. The leading cost is therefore a quadratic function of $q$ -- the optimal parameter can thus be found solving a quadratic equation In general, computing the optimal parameters of our algorithms often leads to a lot of algebra -- going through it may be quite tiring, but it arises from arguments like this one. 
 
 \paragraph{Completion density.}
 Our algorithms can typically be viewed as a sequence of a few
@@ -592,7 +589,7 @@ small prefix.  Its sublinear cost is negligible at the $n^2$ scale, while
 concentration makes it a reliable estimate of the input distribution.
 Because the labels were shuffled privately, the distribution of the
 remaining jobs stays close to this estimate throughout most of the schedule.
-This stability makes the randomized setting substantially simpler; in particular, we introduce a \emph{fluid model} -- a substantially simplified, idealized model, in which we disregard problems like that the distribution of remaining jobs changes over time. We analyze this simplified model and use concentration inequalities to reduce our problems to it. 
+This stability makes the randomized setting substantially simpler; in particular, we introduce a \emph{fluid model} -- a substantially simplified, idealized model, in which we disregard problems like that the distribution of remaining jobs changes over time. We analyze this simplified model and use concentration inequalities to reduce our models to it. 
 
 \subsection{Related work}
 \label{sec:related}
