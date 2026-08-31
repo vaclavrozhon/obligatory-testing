@@ -463,12 +463,9 @@ create a tail that waits through most of the later tests.  The forced prefix
 limits this risk by testing and immediately processing a controlled initial
 fraction, at the cost of sometimes processing a long job too early.  After
 the forced prefix, the same threshold is applied to every tested job.
-
 The exact parameter $b(u)$ is defined in
 \cref{eq:opt:ute-parameters}; it is nonnegative on
 $[\uDet{2},\uDet{3}]$ and vanishes at $\uDet{3}$.
-For $\uDet{3}\le u\le\uDet{4}$, the zero-prefix specialization gives the
-formula $1+1/\sqrt{u-1}$.
 
 \begin{algorithm}[htbp]
 \caption{}
@@ -498,10 +495,7 @@ constructions are in \cref{sec:optional}.
 
 
 For randomized algorithms, private sampling again gives instance optimality
-with an algorithm similar in shape to \cref{alg:intro-blind}.  Unlike blind
-execution, every tested processing time is at most the raw time $u$, so all
-tested jobs belong before the untouched raw block.
-
+with an algorithm similar in shape to \cref{alg:intro-blind}.  
 
 \begin{theorem}[Revealing-optimization instance optimality, informal version of
 \protect\cref{thm:common-upper-instance}]
@@ -557,16 +551,6 @@ Taken together, the revealing- and blind-optimization curves
 quantify the value of advance information: with revelation the ratios remain
 bounded as $u$ grows, whereas without revelation they grow as
 $\Theta(\sqrt u)$.
-
-\noindent\begin{minipage}{\linewidth}
-More precisely, revelation first improves the deterministic ratio above
-$\uDet{2}=1.86\ldots$ and the randomized ratio above
-$u_{\mathsf{BO}}=1+2\cos(2\pi/7)=2.24\ldots$.  On
-$1\le u\le u_{\mathsf{BO}}$, the common randomized ratio is
-$u^3/[u^2+(u-1)^3]$.  The next randomized revealing transition satisfies
-$\uRand{2}=u_{\mathsf{BO}}^2$.
-\end{minipage}
-
 
 
 \subsection{Techniques}
